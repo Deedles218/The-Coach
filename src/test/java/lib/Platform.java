@@ -68,9 +68,9 @@ public class Platform {
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("deviceName", "iPhone 7 Plus");
-        capabilities.setCapability("platformVersion", "10.3");
-        capabilities.setCapability("app", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/Wikipedia.app");
+        capabilities.setCapability("deviceName", "iPhone 8");
+        capabilities.setCapability("platformVersion", "13.6");
+        capabilities.setCapability("app", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/iDelique.app");
         return capabilities;
     }
     private ChromeOptions getMwChromeOptions()
