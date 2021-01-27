@@ -4,26 +4,30 @@ import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
-
 public class SearchTests extends CoreTestCase
 {
     @Test
     public void testSearch()
     {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
+        String TAB_FEED = "id:Feed";
+        SearchPageObject.waitForElementAndClick(TAB_FEED,"error",10);
         SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("bject-oriented programming language");
+        SearchPageObject.typeSearchLine("Coronavirus");
+        SearchPageObject.typeSearchButton();
+        SearchPageObject.waitForSearchResult("Coronavirus");
     }
     @Test
     public void testCancelSearch() {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
-
+        String TAB_FEED = "id:Feed";
+        SearchPageObject.waitForElementAndClick(TAB_FEED,"error",10);
         SearchPageObject.initSearchInput();
         //SearchPageObject.typeSearchLine("Java");
         SearchPageObject.waitForCancelButtonToAppear();
         SearchPageObject.clickCancelSearch();
-        SearchPageObject.waitForCancelButtonToDisappear();
+        String FEED="id:FEED";
+        SearchPageObject.waitForElementPresent(FEED,"нет таббара фид",5);
     }
     @Test
     public void testAmountOfNotEmptySearch()

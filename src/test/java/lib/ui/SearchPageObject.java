@@ -5,7 +5,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 abstract public class SearchPageObject extends MainPageObject {
 
      protected static String
-            SEARCH_INIT_ELEMENT ,
+            SEARCH_INIT_ELEMENT,
+             SEARCH_INIT_BUTTON,
+             TAB_FEED,
+    FEED,
             SEARCH_INPUT,
             SEARCH_RESULT_BY_SUBSTRING_TPL,
             SEARCH_RESULT_BY_TWO_SUBSTRINGS_TPL,
@@ -31,7 +34,7 @@ abstract public class SearchPageObject extends MainPageObject {
 
     public void initSearchInput() {
         this.waitForElementAndClick(SEARCH_INIT_ELEMENT, "Cannot find and click search init element", 5);
-        this.waitForElementPresent(SEARCH_INIT_ELEMENT, "Cannot find search input after clicking search init element");
+        this.waitForElementPresent(SEARCH_INPUT, "Cannot find search input after clicking search init element");
     }
 
     public void waitForCancelButtonToAppear() {
@@ -49,7 +52,11 @@ abstract public class SearchPageObject extends MainPageObject {
     public void typeSearchLine(String search_line) {
         this.waitForElementAndSendKeys(SEARCH_INPUT, search_line, "Cannot find and type into  search input", 5);
     }
+ public void typeSearchButton ()
+ {
+     this.waitForElementAndClick(SEARCH_INIT_BUTTON, "Cannot find and type into  search input",10);
 
+ }
     public void waitForSearchResult(String substring)
     {
         String search_result_xpath = getResultSearchElement(substring);

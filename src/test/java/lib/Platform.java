@@ -68,9 +68,14 @@ public class Platform {
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("deviceName", "iPhone 8");
-        capabilities.setCapability("platformVersion", "13.6");
-        capabilities.setCapability("app", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/iDelique.app");
+        capabilities.setCapability("deviceName", "iPhone (Daria)");
+        capabilities.setCapability("platformVersion","13.3");
+        capabilities.setCapability("automationName","XCUITest");
+        capabilities.setCapability("bundleId", "com.vamapps.develop.The-Coach");
+        capabilities.setCapability("udid", "8a9d24ad2b8a7d2efd4a86eac6da7f4576edde37");
+        capabilities.setCapability("useNewWDA", "true");
+        capabilities.setCapability("xcodeOrgId", "QS3D868T5W");
+        capabilities.setCapability("xcodeSigningId", "iPhone Developer");
         return capabilities;
     }
     private ChromeOptions getMwChromeOptions()

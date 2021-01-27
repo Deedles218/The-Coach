@@ -18,7 +18,7 @@ public class CoreTestCase extends TestCase {
         super.setUp(); //!!
         driver = Platform.getInstance().getDriver();
         this.rotateScreenPortrait();
-        this.skipWelcomePageForIOSApp();
+//        this.skipWelcomePageForIOSApp();
         this.openWikiWebPageForMobileWeb();
     }
 
@@ -61,12 +61,12 @@ public class CoreTestCase extends TestCase {
             System.out.println("Method openWikiWebPageForMobileWeb() does nothing for platform " + Platform.getInstance().getPlatformVar());
         }
     }
-    private void skipWelcomePageForIOSApp()
-    {
-        if (Platform.getInstance().isIOS()) {
-            AppiumDriver driver = (AppiumDriver) this.driver;
-            WelcomePageObject WelcomePageObject = new WelcomePageObject(driver);
-            WelcomePageObject.clickSkip();
-        }
-    }
+//    private void skipWelcomePageForIOSApp()
+//    {
+//        if (Platform.getInstance().isIOS()) {
+//            AppiumDriver driver = (AppiumDriver) this.driver;
+//            WelcomePageObject WelcomePageObject = new WelcomePageObject(driver);
+//            WelcomePageObject.clickSkip();
+//        }
+//    }
 }
