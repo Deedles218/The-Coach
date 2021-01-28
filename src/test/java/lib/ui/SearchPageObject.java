@@ -7,8 +7,11 @@ abstract public class SearchPageObject extends MainPageObject {
      protected static String
             SEARCH_INIT_ELEMENT,
              SEARCH_INIT_BUTTON,
+             SEND_BUTTON,
              TAB_FEED,
-    FEED,
+            FEED,
+            INPUT_FIELD,
+             INPUT_FIELD_ACTIVE,
             SEARCH_INPUT,
             SEARCH_RESULT_BY_SUBSTRING_TPL,
             SEARCH_RESULT_BY_TWO_SUBSTRINGS_TPL,
@@ -88,9 +91,19 @@ abstract public class SearchPageObject extends MainPageObject {
     public void waitForArticleTitle() {
         this.waitForElementPresent(ARTICLE_TITLE, "Cannot find article title", 15);
     }
-    public String waitForElementByTitleAndDescription(String title, String description) {
+    public String waitForElementByTitleAndDescription(String title, String description)
+    {
         String search_result_xpath = getResultSearchElementByTwoOptions(title, description);
         this.waitForElementPresent(search_result_xpath, "Cannot find search result with title = '" + title + "' and description = '" + description + "'");
         return search_result_xpath;
+    }
+    public void clickOnInputField(){
+        this.waitForElementAndClick(INPUT_FIELD,"Cannot found and tap on input field", 10);
+    }
+    public void typeMessage(String debug_message){
+        this.waitForElementAndSendKeys(INPUT_FIELD_ACTIVE, debug_message, "Cannot find and type into  search input", 5);
+    }
+    public void sendMessage(){
+        this.waitForElementAndClick(SEND_BUTTON,"Button unactive",15);
     }
 }

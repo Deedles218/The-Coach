@@ -18,8 +18,8 @@ public class CoreTestCase extends TestCase {
         super.setUp(); //!!
         driver = Platform.getInstance().getDriver();
         this.rotateScreenPortrait();
-//        this.skipWelcomePageForIOSApp();
-        this.openWikiWebPageForMobileWeb();
+//        this.skipWelcomePageForIOSApp();this.openWikiWebPageForMobileWeb();
+
     }
 
     @Override
