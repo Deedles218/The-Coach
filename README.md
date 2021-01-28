@@ -1,2 +1,2 @@
 # IDEAJavaAppium
- Wikipedia App Test Automation Project. Tests adapted for Android, iOS, Mobile Web platforms.
+ The Coach life style app Test Automation Project. Tests for iOS platform.
