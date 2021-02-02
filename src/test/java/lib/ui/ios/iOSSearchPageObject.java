@@ -1,11 +1,37 @@
 package lib.ui.ios;
 import lib.ui.SearchPageObject;
+import org.apache.tools.ant.taskdefs.Sleep;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class iOSSearchPageObject extends SearchPageObject {
     static {
-        //главные экраны приложения
+        //элементы таббара
         TAB_FEED="id:Feed";
+//        TAB_CHAT="id:Coach";
+//        TAB_PROGRAM="id:Program";
+//        //профиль пользователя
+//        USER_PROFILE="id:ic option";
+//        SEND_FEEDBACK="xpath://XCUIElementTypeButton[@name='Send Feedback to Developers']";
+//        PRIVACY="xpath://XCUIElementTypeButton[@name='Privacy Policy']";
+//        TERMS="xpath://XCUIElementTypeButton[@name='Terms of Service']";
+//
+//        DATE_OF_BIRTH="id:Date of Birth";
+//        HEIGHT="id:Height";
+//        WEIGHT="id:Weight";
+//        EMAIL="id:Email";
+//        BACK_TO_PROFILE="xpath://XCUIElementTypeButton[@name='Program'])[1]";
+//        //элементы экрана програмы
+//
+//        PROGRAM_DP="xpath://XCUIElementTypeStaticText[@name='Your Plan for Today']";
+//        TRACKS="id:YOUR TRACKS";
+//        NUTRITION="id:Nutrition";
+//        SPORT="id:Sport";
+//        SLEEP="id:Sleep";
+//        HAIR_LOSS="id:Hair loss";
+//        MENTAL_HEALTH="id:Mental Health";
+//        MALE_HEALTH="id:Male Health";
+//        SUPPLEMENTS="id:Supplements";
+
         //элементы из чата для проверки инпутов
         IMAGE = "xpath://XCUIElementTypeStaticText[@label = 'This is image test']";
         GIF="xpath://XCUIElementTypeApplication[@name='Dev Coach']/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTable/XCUIElementTypeCell[100]/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeImage[1]";
@@ -15,7 +41,7 @@ public class iOSSearchPageObject extends SearchPageObject {
         INPUT_FIELD_ACTIVE="xpath://XCUIElementTypeOther[@name='inputAccessoryViewContainer']/XCUIElementTypeOther/XCUIElementTypeOther[2]/XCUIElementTypeOther[2]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTextView";
         SEND_BUTTON="id:chat send button active";
 
-        //элементы таббара
+        //главные экраны приложения - названия
         FEED_TAB ="id:FEED";
 
         FEED_SEARCH_INIT_ELEMENT = "xpath://XCUIElementTypeButton[@name='ic search']";
