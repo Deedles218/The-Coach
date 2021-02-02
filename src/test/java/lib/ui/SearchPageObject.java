@@ -3,22 +3,22 @@ package lib.ui;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class SearchPageObject extends MainPageObject {
-
-     protected static String
-            SEARCH_INIT_ELEMENT,
-             SEARCH_INIT_BUTTON,
-             SEND_BUTTON,
-             TAB_FEED,
-            FEED,
-            INPUT_FIELD,
-             INPUT_FIELD_ACTIVE,
-            SEARCH_INPUT,
-            SEARCH_RESULT_BY_SUBSTRING_TPL,
-            SEARCH_RESULT_BY_TWO_SUBSTRINGS_TPL,
-            SEARCH_CANCEL_BUTTON ,
-            SEARCH_RESULT_ELEMENT ,
-            SEARCH_EMPTY_RESULT_ELEMENT,
-            ARTICLE_TITLE;
+    protected static String
+    SEARCH_INIT_ELEMENT,
+    SEARCH_INIT_BUTTON,
+    SEND_BUTTON,
+    TAB_FEED,
+    FEED,
+    INPUT_FIELD,
+    IMAGE,
+    INPUT_FIELD_ACTIVE,
+    SEARCH_INPUT,
+    SEARCH_RESULT_BY_SUBSTRING_TPL,
+    SEARCH_RESULT_BY_TWO_SUBSTRINGS_TPL,
+    SEARCH_CANCEL_BUTTON,
+    SEARCH_RESULT_ELEMENT,
+    SEARCH_EMPTY_RESULT_ELEMENT,
+    ARTICLE_TITLE;
 
     public SearchPageObject(RemoteWebDriver driver) {
         super(driver);
@@ -105,5 +105,9 @@ abstract public class SearchPageObject extends MainPageObject {
     }
     public void sendMessage(){
         this.waitForElementAndClick(SEND_BUTTON,"Button unactive",15);
+    }
+
+    public void tapOnBotAnswer(){
+        this.waitForElementAndClick(IMAGE,  "Cannot found Image in bot answer", 5);
     }
 }

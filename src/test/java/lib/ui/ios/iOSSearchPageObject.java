@@ -5,8 +5,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class iOSSearchPageObject extends SearchPageObject {
     static {
         TAB_FEED="id:Feed";
+        IMAGE = "xpath://XCUIElementTypeStaticText[@label = 'This is image test']";
         INPUT_FIELD="xpath://XCUIElementTypeTextView[@value = 'Type Something...']";
-        INPUT_FIELD_ACTIVE="xpath:////XCUIElementTypeOther[@name='inputAccessoryViewContainer']/XCUIElementTypeOther/XCUIElementTypeOther[2]/XCUIElementTypeOther[2]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTextView";   // "XCUIElementTypeOther[@name='inputAccessoryViewContainer']/XCUIElementTypeOther/XCUIElementTypeOther[2]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTextView";
+        INPUT_FIELD_ACTIVE="xpath://XCUIElementTypeOther[@name='inputAccessoryViewContainer']/XCUIElementTypeOther/XCUIElementTypeOther[2]/XCUIElementTypeOther[2]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTextView";   // "XCUIElementTypeOther[@name='inputAccessoryViewContainer']/XCUIElementTypeOther/XCUIElementTypeOther[2]/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeTextView";
         SEND_BUTTON="id:chat send button active";
         FEED="id:FEED";
         SEARCH_INIT_ELEMENT = "xpath://XCUIElementTypeButton[@name='ic search']";

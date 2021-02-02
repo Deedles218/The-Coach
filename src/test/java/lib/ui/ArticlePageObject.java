@@ -18,6 +18,7 @@ abstract public class ArticlePageObject extends MainPageObject
     CLOSE_ARTICLE_BUTTON,
     MY_LISTS_MENU;
 
+
     public ArticlePageObject(RemoteWebDriver driver)
     {
         super(driver);
