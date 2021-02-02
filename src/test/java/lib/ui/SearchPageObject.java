@@ -4,15 +4,16 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class SearchPageObject extends MainPageObject {
     protected static String
-    SEARCH_INIT_ELEMENT,
-    SEARCH_INIT_BUTTON,
+            FEED_SEARCH_INIT_ELEMENT,
+            FEED_SEARCH_INIT_BUTTON,
     SEND_BUTTON,
     TAB_FEED,
-    FEED,
+    FEED_TAB,
     INPUT_FIELD,
     IMAGE,
+    GIF,
     INPUT_FIELD_ACTIVE,
-    SEARCH_INPUT,
+            FEED_SEARCH_INPUT,
     SEARCH_RESULT_BY_SUBSTRING_TPL,
     SEARCH_RESULT_BY_TWO_SUBSTRINGS_TPL,
     SEARCH_CANCEL_BUTTON,
@@ -36,8 +37,8 @@ abstract public class SearchPageObject extends MainPageObject {
     /* TEMPLATES METHODS */
 
     public void initSearchInput() {
-        this.waitForElementAndClick(SEARCH_INIT_ELEMENT, "Cannot find and click search init element", 5);
-        this.waitForElementPresent(SEARCH_INPUT, "Cannot find search input after clicking search init element");
+        this.waitForElementAndClick(FEED_SEARCH_INIT_ELEMENT, "Cannot find and click search init element", 5);
+        this.waitForElementPresent(FEED_SEARCH_INPUT, "Cannot find search input after clicking search init element");
     }
 
     public void waitForCancelButtonToAppear() {
@@ -53,11 +54,11 @@ abstract public class SearchPageObject extends MainPageObject {
     }
 
     public void typeSearchLine(String search_line) {
-        this.waitForElementAndSendKeys(SEARCH_INPUT, search_line, "Cannot find and type into  search input", 5);
+        this.waitForElementAndSendKeys(FEED_SEARCH_INPUT, search_line, "Cannot find and type into  search input", 5);
     }
  public void typeSearchButton ()
  {
-     this.waitForElementAndClick(SEARCH_INIT_BUTTON, "Cannot find and type into  search input",10);
+     this.waitForElementAndClick(FEED_SEARCH_INIT_BUTTON, "Cannot find and type into  search input",10);
 
  }
     public void waitForSearchResult(String substring)
@@ -107,7 +108,10 @@ abstract public class SearchPageObject extends MainPageObject {
         this.waitForElementAndClick(SEND_BUTTON,"Button unactive",15);
     }
 
-    public void tapOnBotAnswer(){
+    public void tapOnImage(){
         this.waitForElementAndClick(IMAGE,  "Cannot found Image in bot answer", 5);
+    }
+    public void tapOnGif(){
+        this.waitForElementAndClick(GIF,  "Cannot found Image in bot answer", 5);
     }
 }

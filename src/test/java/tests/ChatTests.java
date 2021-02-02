@@ -17,7 +17,7 @@ public class ChatTests extends CoreTestCase {
         SearchPageObject.sendMessage();
         Thread.sleep(7000);
         //дописать тап на картинку или проверку что картинка пришла
-        SearchPageObject.tapOnBotAnswer();
+        SearchPageObject.tapOnImage();
     }
     public void testChatInput2() throws InterruptedException
     {
@@ -28,6 +28,7 @@ public class ChatTests extends CoreTestCase {
         SearchPageObject.sendMessage();
         Thread.sleep(7000);
         //дописать тап на гифку или проверку что гиф пришла
+        SearchPageObject.tapOnGif();
     }
     public void testChatInput3() throws InterruptedException
     {
