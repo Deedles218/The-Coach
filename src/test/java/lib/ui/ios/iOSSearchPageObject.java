@@ -7,8 +7,8 @@ public class iOSSearchPageObject extends SearchPageObject {
     static {
         //элементы таббара
         TAB_FEED="id:Feed";
-//        TAB_CHAT="id:Coach";
-//        TAB_PROGRAM="id:Program";
+        //TAB_CHAT="id:Coach";
+
 //
 //        //элементы экрана програмы
 //
