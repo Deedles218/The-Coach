@@ -1,5 +1,6 @@
-package lib.ui;
+package lib.ui.HWPageObject;
 
+import lib.ui.MainPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WelcomePageObject extends MainPageObject {

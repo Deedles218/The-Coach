@@ -114,4 +114,5 @@ abstract public class SearchPageObject extends MainPageObject {
     public void tapOnGif(){
         this.waitForElementAndClick(GIF,  "Cannot found Image in bot answer", 5);
     }
+
 }

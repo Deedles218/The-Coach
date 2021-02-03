@@ -1,6 +1,7 @@
-package lib.ui;
+package lib.ui.HWPageObject;
 
 import lib.Platform;
+import lib.ui.MainPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class MyListsPageObject extends MainPageObject {

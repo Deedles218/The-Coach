@@ -29,6 +29,7 @@ public class SearchTests extends CoreTestCase
         String FEED="id:FEED";
         SearchPageObject.waitForElementPresent(FEED,"нет таббара фид",5);
     }
+    // ниже тесты не переделаны
     @Test
     public void testAmountOfNotEmptySearch()
     {

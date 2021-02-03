@@ -1,6 +1,6 @@
 package lib.ui.factories;
 import lib.Platform;
-import lib.ui.MyListsPageObject;
+import lib.ui.HWPageObject.MyListsPageObject;
 import lib.ui.ios.iOSMyListsPageObject;
 
 import org.openqa.selenium.remote.RemoteWebDriver;

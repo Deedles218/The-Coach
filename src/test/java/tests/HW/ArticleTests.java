@@ -1,7 +1,7 @@
-package tests;
+package tests.HW;
 
 import lib.CoreTestCase;
-import lib.ui.ArticlePageObject;
+import lib.ui.HWPageObject.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;

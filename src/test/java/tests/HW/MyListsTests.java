@@ -1,8 +1,11 @@
-package tests;
+package tests.HW;
 
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.ui.*;
+import lib.ui.HWPageObject.ArticlePageObject;
+import lib.ui.HWPageObject.AuthorizationPageObject;
+import lib.ui.HWPageObject.MyListsPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;

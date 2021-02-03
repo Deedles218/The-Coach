@@ -1,5 +1,6 @@
-package lib.ui;
+package lib.ui.HWPageObject;
 
+import lib.ui.MainPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 public class AuthorizationPageObject extends MainPageObject {
     private  static final String

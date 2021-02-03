@@ -1,5 +1,5 @@
 package lib.ui.ios;
-import lib.ui.MyListsPageObject;
+import lib.ui.HWPageObject.MyListsPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class iOSMyListsPageObject extends MyListsPageObject {

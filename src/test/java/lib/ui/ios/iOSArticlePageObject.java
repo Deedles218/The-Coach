@@ -1,5 +1,5 @@
 package lib.ui.ios;
-import lib.ui.ArticlePageObject;
+import lib.ui.HWPageObject.ArticlePageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class iOSArticlePageObject extends ArticlePageObject {

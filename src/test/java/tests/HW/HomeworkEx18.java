@@ -1,4 +1,4 @@
-package tests;
+package tests.HW;
 
 import lib.CoreTestCase;
 import lib.Platform;

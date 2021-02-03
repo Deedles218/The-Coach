@@ -1,15 +1,16 @@
-package tests;
+package tests.HW;
 
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.ui.*;
+import lib.ui.HWPageObject.ArticlePageObject;
+import lib.ui.HWPageObject.AuthorizationPageObject;
+import lib.ui.HWPageObject.MyListsPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;
 import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
-
-import static lib.ui.MyListsPageObject.*;
 
 public class HomeworkEx17 extends CoreTestCase {
         private static final String name_of_folder = "Learning programming";
