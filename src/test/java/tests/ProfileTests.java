@@ -25,4 +25,14 @@ public class ProfileTests extends CoreTestCase {
         ProfilePageObject.assertPrivacy();
         ProfilePageObject.assertSendFeedback();
     }
+    @Test
+    public  void testOpenNutrition()throws InterruptedException{
+        ProfilePageObject ProfilePageObject = ProfilePageObjectFactory.get(driver);
+        ProfilePageObject.tapOnProgramTab();
+        ProfilePageObject.openNutrition();
+        Thread.sleep(7000);
+        ProfilePageObject.openFasting();
+        Thread.sleep(7000);
+    }
+
 }

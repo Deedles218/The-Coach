@@ -17,6 +17,18 @@ public class iOSProfilePageObject extends ProfilePageObject {
         WEIGHT="id:Weight";
         EMAIL="id:Email";
         BACK_TO_PROFILE="xpath://XCUIElementTypeButton[@name='Program'])[1]";
+        FASTING="xpath://XCUIElementTypeStaticText[@label='Fasting']";
+        //элементы экрана програмы
+//
+//        PROGRAM_DP="xpath://XCUIElementTypeStaticText[@name='Your Plan for Today']";
+//        TRACKS="id:YOUR TRACKS";
+        NUTRITION="id:Nutrition";
+//        SPORT="id:Sport";
+//        SLEEP="id:Sleep";
+//        HAIR_LOSS="id:Hair loss";
+//        MENTAL_HEALTH="id:Mental Health";
+//        MALE_HEALTH="id:Male Health";
+//        SUPPLEMENTS="id:Supplements";
     }
     public iOSProfilePageObject(RemoteWebDriver driver)
     {

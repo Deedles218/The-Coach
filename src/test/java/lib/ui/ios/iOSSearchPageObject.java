@@ -10,17 +10,7 @@ public class iOSSearchPageObject extends SearchPageObject {
         //TAB_CHAT="id:Coach";
 
 //
-//        //элементы экрана програмы
 //
-//        PROGRAM_DP="xpath://XCUIElementTypeStaticText[@name='Your Plan for Today']";
-//        TRACKS="id:YOUR TRACKS";
-//        NUTRITION="id:Nutrition";
-//        SPORT="id:Sport";
-//        SLEEP="id:Sleep";
-//        HAIR_LOSS="id:Hair loss";
-//        MENTAL_HEALTH="id:Mental Health";
-//        MALE_HEALTH="id:Male Health";
-//        SUPPLEMENTS="id:Supplements";
 
         //элементы из чата для проверки инпутов
         IMAGE = "xpath://XCUIElementTypeStaticText[@label = 'This is image test']";

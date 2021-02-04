@@ -15,7 +15,10 @@ public class ProfilePageObject extends MainPageObject {
         HEIGHT,
         WEIGHT,
         EMAIL,
+    NUTRITION,
+    FASTING,
         BACK_TO_PROFILE;
+
     public ProfilePageObject(RemoteWebDriver driver) {
         super(driver);
     }
@@ -32,5 +35,11 @@ public class ProfilePageObject extends MainPageObject {
     }
     public void assertSendFeedback(){
         this.waitForElementAndClick(SEND_FEEDBACK,"cannot feedback",10);
+    }
+    public void openNutrition(){
+        this.waitForElementAndClick(NUTRITION,"lol",10);
+    }
+    public void openFasting(){
+        this.waitForElementAndClick(FASTING,"fasting not found",10);
     }
 }
