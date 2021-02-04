@@ -1,2 +1,2 @@
 appium &
-sleep 3m
+sleep 2m

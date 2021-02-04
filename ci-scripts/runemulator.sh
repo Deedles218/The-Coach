@@ -1,1 +1,0 @@
-emulator @and80 &
