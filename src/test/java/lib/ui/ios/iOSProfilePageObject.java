@@ -6,7 +6,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class iOSProfilePageObject extends ProfilePageObject {
     static {
         //профиль пользователя
-        USER_PROFILE="id:ic option";
+        USER_PROFILE="xpath://XCUIElementTypeNavigationBar[@name='The_Coach.DashboardView']/XCUIElementTypeButton";
         TAB_PROGRAM="id:Program";
         SEND_FEEDBACK="xpath://XCUIElementTypeButton[@name='Send Feedback to Developers']";
         PRIVACY="xpath://XCUIElementTypeButton[@name='Privacy Policy']";

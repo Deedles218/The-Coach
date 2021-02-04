@@ -15,4 +15,14 @@ public class ProfileTests extends CoreTestCase {
         ProfilePageObject.tapOnProgramTab();
         ProfilePageObject.tapOnProfileMenu();
     }
+    @Test
+    public void testAssertUserData(){
+        ProfilePageObject ProfilePageObject = ProfilePageObjectFactory.get(driver);
+        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
+        ProfilePageObject.tapOnProgramTab();
+        ProfilePageObject.tapOnProfileMenu();
+        ProfilePageObject.assertTerms();
+        ProfilePageObject.assertPrivacy();
+        ProfilePageObject.assertSendFeedback();
+    }
 }

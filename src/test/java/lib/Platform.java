@@ -68,11 +68,11 @@ public class Platform {
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("deviceName", "iPhone (Daria)");
-        capabilities.setCapability("platformVersion","13.3");
+        capabilities.setCapability("deviceName", "iPhone (Dasha)");
+        capabilities.setCapability("platformVersion","14.3");
         capabilities.setCapability("automationName","XCUITest");
         capabilities.setCapability("bundleId", "com.vamapps.develop.The-Coach");
-        capabilities.setCapability("udid", "8a9d24ad2b8a7d2efd4a86eac6da7f4576edde37");
+        capabilities.setCapability("udid", "00008030-000929442E01802E");
         capabilities.setCapability("useNewWDA", "true");
         capabilities.setCapability("xcodeOrgId", "QS3D868T5W");
         capabilities.setCapability("xcodeSigningId", "iPhone Developer");
