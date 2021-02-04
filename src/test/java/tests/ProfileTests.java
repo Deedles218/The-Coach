@@ -41,6 +41,8 @@ public class ProfileTests extends CoreTestCase {
         ProfilePageObject.setFastTimeInPiker();
         ProfilePageObject.saveFastTime();
         Thread.sleep(7000);
+        ProfilePageObject.startFast();
+        Thread.sleep(7000);
     }
 
 }

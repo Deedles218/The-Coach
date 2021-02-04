@@ -20,6 +20,7 @@ public class ProfilePageObject extends MainPageObject {
     CHANGE_TIME,
             CHANGED_TIME,
     SAVE_BUTTON,
+    FASTING_START,
             FASTING_PIKER_OPEN,
         BACK_TO_PROFILE;
 
@@ -59,9 +60,12 @@ public class ProfilePageObject extends MainPageObject {
         this.waitForElementAndClick(FASTING_PIKER_OPEN,"Cannot change fasting time",10);
     }
     public void setFastTimeInPiker(){
-        this.swipeUp(3);
+        this.swipeUp(5);
     }
     public void saveFastTime(){
         this.waitForElementAndClick(SAVE_BUTTON,"Cannot tap save button",5);
+    }
+    public void startFast(){
+        this.waitForElementAndClick(FASTING_START,"Cannot start fasting",10);
     }
 }

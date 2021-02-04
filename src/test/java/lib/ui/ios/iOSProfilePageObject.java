@@ -20,6 +20,8 @@ public class iOSProfilePageObject extends ProfilePageObject {
         FASTING="xpath://XCUIElementTypeStaticText[@label='Fasting']";
         FASTING_OFF="xpath://XCUIElementTypeSwitch[@value='1']";
         FASTING_ON="xpath://XCUIElementTypeSwitch[@value='0']";
+        FASTING_START="xpath://XCUIElementTypeButton[@name='START THE IF']";
+        //FASTING_END="";
         FASTING_PIKER_OPEN ="id:ic outline disclosure down";
         CHANGE_TIME="xpath://XCUIElementTypePickerWheel";
         //CHANGED_TIME="xpath://XCUIElementTypePickerWheel[@value='16 o’clock']";
