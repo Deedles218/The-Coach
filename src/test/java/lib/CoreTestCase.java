@@ -1,6 +1,7 @@
 package lib;
 
 import io.appium.java_client.AppiumDriver;
+import io.qameta.allure.Step;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +16,7 @@ public class CoreTestCase{
     private static final String PLATFORM_ANDROID = "android";
     protected RemoteWebDriver driver;
     @Before
+    @Step("Run driver and session")
     public void setUp() throws Exception {
         driver = Platform.getInstance().getDriver();
         this.rotateScreenPortrait();
@@ -23,9 +25,11 @@ public class CoreTestCase{
     }
 
     @After
+    @Step("Remove driver and session")
     public void tearDown() {
         driver.quit();
     }
+    @Step("rotate Screen to Portrait mode")
     protected void rotateScreenPortrait() {
         if (driver instanceof AppiumDriver) {
             AppiumDriver driver = (AppiumDriver) this.driver;
@@ -35,6 +39,7 @@ public class CoreTestCase{
         }
 
     }
+    @Step("rotate Screen to Landscape mode")
     protected void rotateScreenLandscape()
     { if (driver instanceof AppiumDriver){
         AppiumDriver driver = (AppiumDriver) this.driver;
@@ -43,7 +48,7 @@ public class CoreTestCase{
         System.out.println("Method rotateScreenLandscape() does nothing for platform " + Platform.getInstance().getPlatformVar());
     }
     }
-
+    @Step("Send mobile app to background")
     protected void backgroundApp(int seconds) {
         if (driver instanceof AppiumDriver) {
             AppiumDriver driver = (AppiumDriver) this.driver;
