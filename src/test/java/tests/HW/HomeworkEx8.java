@@ -9,6 +9,7 @@ import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Assert;
 
 public class HomeworkEx8 extends CoreTestCase
 {
@@ -21,7 +22,7 @@ public class HomeworkEx8 extends CoreTestCase
         SearchPageObject.typeSearchLine("Unicorn");
         SearchPageObject.waitForSearchResult("Unicorn");
         int amount_of_search_results = SearchPageObject.getAmountOfFoundArticles();
-        assertTrue(
+        Assert.assertTrue(
                 "We found too few results",
                 amount_of_search_results >0);
         SearchPageObject.waitForCancelButtonToAppear();

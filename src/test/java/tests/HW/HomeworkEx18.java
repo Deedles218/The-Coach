@@ -37,7 +37,7 @@ public class HomeworkEx18 extends CoreTestCase {
         String  article_element = null;
         for (int i = 1; i <= 3; i++) {
             article_element = SearchPageObject.waitForElementByTitleAndDescription("Languages","Languages");
-            assertEquals("Different title and description", true, article_element.contains("Languages"));
+            Assert.assertEquals("Different title and description", true, article_element.contains("Languages"));
         } */
         }
     }

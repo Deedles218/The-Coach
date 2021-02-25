@@ -5,6 +5,7 @@ import lib.ui.HWPageObject.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Assert;
 
 public class ArticleTests extends CoreTestCase
 {
@@ -15,7 +16,7 @@ public class ArticleTests extends CoreTestCase
         SearchPageObject.clickByArticleWithSubstring("bject-oriented programming language");
         ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
         String article_title = ArticlePageObject.getArticleTitle();
-        assertEquals("We see unexpected title",
+        Assert.assertEquals("We see unexpected title",
                 "Java (programming language)",
                 article_title
         );
