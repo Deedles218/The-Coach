@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: tests.SearchTests
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 0.68 sec <<< FAILURE!
-testAmountOfNotEmptySearch(tests.SearchTests)  Time elapsed: 0.409 sec  <<< ERROR!
+Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 0.763 sec <<< FAILURE!
+testAmountOfNotEmptySearch(tests.SearchTests)  Time elapsed: 0.432 sec  <<< ERROR!
 java.lang.Exception: Cannot detect type of the Driver. Platform value null
 	at lib.Platform.getDriver(Platform.java:51)
 	at lib.CoreTestCase.setUp(CoreTestCase.java:19)
@@ -37,7 +37,7 @@ java.lang.Exception: Cannot detect type of the Driver. Platform value null
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-testAmountOfNotEmptySearch(tests.SearchTests)  Time elapsed: 0.412 sec  <<< ERROR!
+testAmountOfNotEmptySearch(tests.SearchTests)  Time elapsed: 0.435 sec  <<< ERROR!
 java.lang.NullPointerException
 	at lib.CoreTestCase.tearDown(CoreTestCase.java:27)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -241,7 +241,7 @@ java.lang.Exception: Cannot detect type of the Driver. Platform value null
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-testSearch(tests.SearchTests)  Time elapsed: 0.003 sec  <<< ERROR!
+testSearch(tests.SearchTests)  Time elapsed: 0.004 sec  <<< ERROR!
 java.lang.NullPointerException
 	at lib.CoreTestCase.tearDown(CoreTestCase.java:27)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)

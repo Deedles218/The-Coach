@@ -1,28 +1,33 @@
-/Users/deedles/JavaAppium/src/test/java/lib/ui/android/AndroidNavigationUI.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/factories/NavigationUIFactory.java
-/Users/deedles/JavaAppium/src/test/java/tests/ChangeAppCondition.java
-/Users/deedles/JavaAppium/src/test/java/tests/GetStartedTest.java
-/Users/deedles/JavaAppium/src/test/java/tests/HomeworkEx12.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/NavigationUI.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/ios/iOSNavigationUI.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/android/AndroidMyListsPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/WelcomePageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/ArticlePageObject.java
-/Users/deedles/JavaAppium/src/test/java/tests/ArticleTests.java
-/Users/deedles/JavaAppium/src/test/java/tests/MyListsTests.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/android/AndroidSearchPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/MyListsPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/ios/iOSSearchPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/factories/MyListsPageObjectFactory.java
-/Users/deedles/JavaAppium/src/test/java/tests/SearchTests.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/factories/SearchPageObjectFactory.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/MainPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/Platform.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/ios/iOSArticlePageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/ios/iOSMyListsPageObject.java
-/Users/deedles/JavaAppium/src/test/java/suites/TestSuite.java
-/Users/deedles/JavaAppium/src/test/java/lib/CoreTestCase.java
-/Users/deedles/JavaAppium/src/test/java/tests/HomeworkEx8.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/SearchPageObject.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/factories/ArticlePageObjectFactory.java
-/Users/deedles/JavaAppium/src/test/java/lib/ui/android/AndroidArticlePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/factories/SearchPageObjectFactory.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/HWPageObject/WelcomePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/ChatTests.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/GetStartedTest.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/NavigationUI.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/factories/NavigationUIFactory.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ios/iOSProfilePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/HomeworkEx12.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/HomeworkEx8.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/ArticleTests.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/SearchPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/suites/TestSuite.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/ChangeAppCondition.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/factories/ProfilePageObjectFactory.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/SearchTests.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/ProfileTests.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/factories/MyListsPageObjectFactory.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ios/iOSMyListsPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/HomeworkEx17.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/MyListsTests.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ProfilePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/HWPageObject/AuthorizationPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/HWPageObject/ArticlePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ios/iOSArticlePageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ios/iOSSearchPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/ios/iOSNavigationUI.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/MainPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/suites/TestSuiteIOS.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/HWPageObject/MyListsPageObject.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/CoreTestCase.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/tests/HW/HomeworkEx18.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/Platform.java
+/Users/deedles/Documents/GitHub/ The-Coach/The-Coach/src/test/java/lib/ui/factories/ArticlePageObjectFactory.java

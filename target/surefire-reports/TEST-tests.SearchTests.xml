@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="tests.SearchTests" time="0.84" errors="8" skipped="0">
+<testsuite tests="8" failures="0" name="tests.SearchTests" time="0.887" errors="8" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
@@ -65,7 +65,7 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.SearchTests" name="testAmountOfNotEmptySearch" time="0.409">
+  <testcase classname="tests.SearchTests" name="testAmountOfNotEmptySearch" time="0.432">
     <error message="Cannot detect type of the Driver. Platform value null" type="java.lang.Exception">java.lang.Exception: Cannot detect type of the Driver. Platform value null
 	at lib.Platform.getDriver(Platform.java:51)
 	at lib.CoreTestCase.setUp(CoreTestCase.java:19)
@@ -101,7 +101,7 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </error>
   </testcase>
-  <testcase classname="tests.SearchTests" name="testAmountOfNotEmptySearch" time="0.412">
+  <testcase classname="tests.SearchTests" name="testAmountOfNotEmptySearch" time="0.435">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at lib.CoreTestCase.tearDown(CoreTestCase.java:27)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -311,7 +311,7 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </error>
   </testcase>
-  <testcase classname="tests.SearchTests" name="testSearch" time="0.003">
+  <testcase classname="tests.SearchTests" name="testSearch" time="0.004">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at lib.CoreTestCase.tearDown(CoreTestCase.java:27)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
