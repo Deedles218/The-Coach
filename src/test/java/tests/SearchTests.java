@@ -4,7 +4,10 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
+import lib.ui.HWPageObject.ArticlePageObject;
+import lib.ui.MainPageObject;
 import lib.ui.SearchPageObject;
+import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,6 +21,11 @@ public class SearchTests extends CoreTestCase
     {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         String TAB_FEED = "id:Feed";
+        ArticlePageObject ArticlePageObject =ArticlePageObjectFactory.get(driver);
+        //ArticlePageObject.takeScreenshot("feed_view");
+
+        SearchPageObject.screenshot(SearchPageObject.takeScreenshot("feed"));
+
         SearchPageObject.waitForElementAndClick(TAB_FEED,"error",10);
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine("Coronavirus");
