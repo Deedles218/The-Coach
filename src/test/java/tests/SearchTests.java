@@ -1,22 +1,24 @@
 package tests;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Step;
+import io.qameta.allure.*;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.ui.HWPageObject.ArticlePageObject;
-import lib.ui.MainPageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;
-import org.junit.Assert;
 import org.junit.Test;
+
+@Epic(value = "Tests For Search Articles in Feed")
 public class SearchTests extends CoreTestCase
 {
     @Test
+    @Features(value ={@Feature(value = "Search"),@Feature(value = "Feed")} )
     @DisplayName("Поиск в Feed по названию статьи")
     @Description("тест тест тест")
     @Step("Start test testSearch")
+    @Severity(value = SeverityLevel.BLOCKER)
+
     public void testSearch()
     {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
@@ -33,9 +35,12 @@ public class SearchTests extends CoreTestCase
         SearchPageObject.waitForSearchResult("Coronavirus");
     }
     @Test
+    @Features(value ={@Feature(value = "Search"),@Feature(value = "Feed")} )
     @DisplayName("Отмена поиска в Feed")
     @Description("тест тест тест")
     @Step("Start test testCancelSearch")
+    @Severity(value = SeverityLevel.NORMAL)
+
     public void testCancelSearch() {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         String TAB_FEED = "id:Feed";

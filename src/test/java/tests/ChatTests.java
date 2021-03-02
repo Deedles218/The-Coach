@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.Epic;
 import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.SearchPageObjectFactory;
