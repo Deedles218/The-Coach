@@ -69,7 +69,7 @@ public class Platform {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("deviceName", "iPhone (Dasha)");
-        capabilities.setCapability("platformVersion","14.3");
+        capabilities.setCapability("platformVersion","14.4");
         capabilities.setCapability("automationName","XCUITest");
         capabilities.setCapability("bundleId", "com.vamapps.develop.The-Coach");
         capabilities.setCapability("udid", "00008030-000929442E01802E");

@@ -8,6 +8,7 @@ lib/ui/ios/iOSNavigationUI.class
 lib/ui/factories/SearchPageObjectFactory.class
 lib/ui/ios/iOSArticlePageObject.class
 lib/ui/factories/MyListsPageObjectFactory.class
+suites/AutoSuite.class
 suites/TestSuiteIOS.class
 lib/ui/ios/iOSMyListsPageObject.class
 lib/ui/factories/ArticlePageObjectFactory.class
