@@ -8,9 +8,9 @@ import tests.SearchTests;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SearchTests.class,
-        ProfileTests.class,
-        ChatTests.class
+       // SearchTests.class,
+        ProfileTests.class
+        //ChatTests.class
 })
 public class AutoSuite {
 }
