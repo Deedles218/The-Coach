@@ -9,8 +9,5 @@
         <module name="JavaAppium" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="JavaAppium" target="8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

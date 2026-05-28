@@ -30,7 +30,9 @@ public class CoreTestCase{
     @After
     @Step("Remove driver and session")
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
     @Step("rotate Screen to Portrait mode")
     protected void rotateScreenPortrait() {

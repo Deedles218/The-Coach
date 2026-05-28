@@ -15,7 +15,9 @@ public class Platform {
     private static final String PLATFORM_IOS = "ios";
     private static final String PLATFORM_ANDROID = "android";
     private static final String PLATFORM_MOBILE_WEB = "mobile_web";
-    private static final String APPIUM_URL = "http://127.0.0.1:4723/wd/hub";
+    private static final String DEFAULT_PLATFORM = PLATFORM_IOS;
+    private static final String DEFAULT_APPIUM_URL = "http://127.0.0.1:4723/wd/hub";
+    private static final String DEFAULT_IOS_PLATFORM_VERSION = "26.5";
     private static Platform instance;
     private Platform(){}
     public static Platform getInstance()
@@ -40,7 +42,7 @@ public class Platform {
     }
     public RemoteWebDriver getDriver() throws Exception
     {
-        URL URL= new URL(APPIUM_URL);
+        URL URL= new URL(this.getAppiumUrl());
         if(this.isAndroid()) {
             return new AndroidDriver(URL, this.getAndroidDesiredCapabilities());
         }else if (this.isIOS()) {
@@ -56,26 +58,26 @@ public class Platform {
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", "AndroidTestDevice");
-        capabilities.setCapability("platformVersion", "8.0");
+        capabilities.setCapability("deviceName", this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", "AndroidTestDevice"));
+        this.setCapabilityIfPresent(capabilities, "platformVersion", this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", "8.0"));
         capabilities.setCapability("automationName", "Appium");
-        capabilities.setCapability("appPackage", "org.wikipedia");
-        capabilities.setCapability("appActivity", ".main.MainActivity");
-        capabilities.setCapability("app", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/org.wikipedia.apk");
+        capabilities.setCapability("appPackage", this.getConfig("android.appPackage", "ANDROID_APP_PACKAGE", "org.wikipedia"));
+        capabilities.setCapability("appActivity", this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", ".main.MainActivity"));
+        this.setCapabilityIfPresent(capabilities, "app", this.getConfig("android.app", "ANDROID_APP", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/org.wikipedia.apk"));
         return capabilities;
     }
     private DesiredCapabilities getIOSDesiredCapabilities()
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("deviceName", "iPhone (Dasha)");
-        capabilities.setCapability("platformVersion","14.4");
+        capabilities.setCapability("deviceName", this.getConfig("ios.deviceName", "IOS_DEVICE_NAME", "iPhone Simulator"));
         capabilities.setCapability("automationName","XCUITest");
-        capabilities.setCapability("bundleId", "com.vamapps.develop.The-Coach");
-        capabilities.setCapability("udid", "00008030-000929442E01802E");
-        capabilities.setCapability("useNewWDA", "true");
-        capabilities.setCapability("xcodeOrgId", "QS3D868T5W");
-        capabilities.setCapability("xcodeSigningId", "iPhone Developer");
+        capabilities.setCapability("bundleId", this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", "com.vamapps.develop.The-Coach"));
+        capabilities.setCapability("platformVersion", this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
+        this.setCapabilityIfPresent(capabilities, "udid", this.getConfig("ios.udid", "IOS_UDID", null));
+        this.setCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
+        this.setCapabilityIfPresent(capabilities, "xcodeOrgId", this.getConfig("ios.xcodeOrgId", "IOS_XCODE_ORG_ID", null));
+        this.setCapabilityIfPresent(capabilities, "xcodeSigningId", this.getConfig("ios.xcodeSigningId", "IOS_XCODE_SIGNING_ID", null));
         return capabilities;
     }
     private ChromeOptions getMwChromeOptions()
@@ -101,7 +103,34 @@ public class Platform {
 
     public String getPlatformVar()
     {
-        return System.getenv("PLATFORM");
+        return this.getConfig("platform", "PLATFORM", DEFAULT_PLATFORM);
+    }
+
+    private String getAppiumUrl()
+    {
+        return this.getConfig("appium.url", "APPIUM_URL", DEFAULT_APPIUM_URL);
+    }
+
+    private String getConfig(String propertyName, String envName, String defaultValue)
+    {
+        String propertyValue = System.getProperty(propertyName);
+        if (propertyValue != null && !propertyValue.trim().isEmpty()) {
+            return propertyValue;
+        }
+
+        String envValue = System.getenv(envName);
+        if (envValue != null && !envValue.trim().isEmpty()) {
+            return envValue;
+        }
+
+        return defaultValue;
+    }
+
+    private void setCapabilityIfPresent(DesiredCapabilities capabilities, String capabilityName, String value)
+    {
+        if (value != null && !value.trim().isEmpty()) {
+            capabilities.setCapability(capabilityName, value);
+        }
     }
 
 }
