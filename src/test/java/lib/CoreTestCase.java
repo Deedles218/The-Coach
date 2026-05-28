@@ -1,8 +1,8 @@
 package lib;
 
-import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.InteractsWithApps;
+import io.appium.java_client.remote.SupportsRotation;
 import io.qameta.allure.Step;
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.ScreenOrientation;
@@ -36,8 +36,8 @@ public class CoreTestCase{
     }
     @Step("rotate Screen to Portrait mode")
     protected void rotateScreenPortrait() {
-        if (driver instanceof AppiumDriver) {
-            AppiumDriver driver = (AppiumDriver) this.driver;
+        if (driver instanceof SupportsRotation) {
+            SupportsRotation driver = (SupportsRotation) this.driver;
             driver.rotate(ScreenOrientation.PORTRAIT);
         } else {
             System.out.println("Method rotateScreenPortrait() does nothing for platform " + Platform.getInstance().getPlatformVar());
@@ -46,8 +46,8 @@ public class CoreTestCase{
     }
     @Step("rotate Screen to Landscape mode")
     protected void rotateScreenLandscape()
-    { if (driver instanceof AppiumDriver){
-        AppiumDriver driver = (AppiumDriver) this.driver;
+    { if (driver instanceof SupportsRotation){
+        SupportsRotation driver = (SupportsRotation) this.driver;
         driver.rotate(ScreenOrientation.LANDSCAPE);
     }else {
         System.out.println("Method rotateScreenLandscape() does nothing for platform " + Platform.getInstance().getPlatformVar());
@@ -55,8 +55,8 @@ public class CoreTestCase{
     }
     @Step("Send mobile app to background")
     protected void backgroundApp(int seconds) {
-        if (driver instanceof AppiumDriver) {
-            AppiumDriver driver = (AppiumDriver) this.driver;
+        if (driver instanceof InteractsWithApps) {
+            InteractsWithApps driver = (InteractsWithApps) this.driver;
             driver.runAppInBackground(Duration.ofSeconds(seconds));
         } else {
             System.out.println("Method backgroundApp() does nothing for platform " + Platform.getInstance().getPlatformVar());

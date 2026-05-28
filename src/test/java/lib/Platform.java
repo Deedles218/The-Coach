@@ -1,13 +1,15 @@
 package lib;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ public class Platform {
     private static final String PLATFORM_ANDROID = "android";
     private static final String PLATFORM_MOBILE_WEB = "mobile_web";
     private static final String DEFAULT_PLATFORM = PLATFORM_IOS;
-    private static final String DEFAULT_APPIUM_URL = "http://127.0.0.1:4723/wd/hub";
+    private static final String DEFAULT_APPIUM_URL = "http://127.0.0.1:4723/";
     private static final String DEFAULT_IOS_PLATFORM_VERSION = "26.5";
     private static Platform instance;
     private Platform(){}
@@ -54,28 +56,27 @@ public class Platform {
         }
     }
 
-    private DesiredCapabilities getAndroidDesiredCapabilities()
+    private UiAutomator2Options getAndroidDesiredCapabilities()
     {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", "AndroidTestDevice"));
-        this.setCapabilityIfPresent(capabilities, "platformVersion", this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", "8.0"));
-        capabilities.setCapability("automationName", "Appium");
-        capabilities.setCapability("appPackage", this.getConfig("android.appPackage", "ANDROID_APP_PACKAGE", "org.wikipedia"));
-        capabilities.setCapability("appActivity", this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", ".main.MainActivity"));
+        UiAutomator2Options capabilities = new UiAutomator2Options();
+        capabilities.setPlatformName("Android");
+        capabilities.setDeviceName(this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", "AndroidTestDevice"));
+        capabilities.setPlatformVersion(this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", "8.0"));
+        capabilities.setAppPackage(this.getConfig("android.appPackage", "ANDROID_APP_PACKAGE", "org.wikipedia"));
+        capabilities.setAppActivity(this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", ".main.MainActivity"));
         this.setCapabilityIfPresent(capabilities, "app", this.getConfig("android.app", "ANDROID_APP", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/org.wikipedia.apk"));
         return capabilities;
     }
-    private DesiredCapabilities getIOSDesiredCapabilities()
+    private XCUITestOptions getIOSDesiredCapabilities()
     {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("deviceName", this.getConfig("ios.deviceName", "IOS_DEVICE_NAME", "iPhone Simulator"));
-        capabilities.setCapability("automationName","XCUITest");
-        capabilities.setCapability("bundleId", this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", "com.vamapps.develop.The-Coach"));
-        capabilities.setCapability("platformVersion", this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
+        XCUITestOptions capabilities = new XCUITestOptions();
+        capabilities.setPlatformName("iOS");
+        capabilities.setDeviceName(this.getConfig("ios.deviceName", "IOS_DEVICE_NAME", "iPhone Simulator"));
+        capabilities.setBundleId(this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", "com.vamapps.develop.The-Coach"));
+        capabilities.setPlatformVersion(this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
+        capabilities.setNewCommandTimeout(Duration.ofSeconds(Integer.parseInt(this.getConfig("appium.newCommandTimeout", "APPIUM_NEW_COMMAND_TIMEOUT", "120"))));
         this.setCapabilityIfPresent(capabilities, "udid", this.getConfig("ios.udid", "IOS_UDID", null));
-        this.setCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
         this.setCapabilityIfPresent(capabilities, "xcodeOrgId", this.getConfig("ios.xcodeOrgId", "IOS_XCODE_ORG_ID", null));
         this.setCapabilityIfPresent(capabilities, "xcodeSigningId", this.getConfig("ios.xcodeSigningId", "IOS_XCODE_SIGNING_ID", null));
         return capabilities;
@@ -126,10 +127,17 @@ public class Platform {
         return defaultValue;
     }
 
-    private void setCapabilityIfPresent(DesiredCapabilities capabilities, String capabilityName, String value)
+    private void setCapabilityIfPresent(org.openqa.selenium.MutableCapabilities capabilities, String capabilityName, String value)
     {
         if (value != null && !value.trim().isEmpty()) {
             capabilities.setCapability(capabilityName, value);
+        }
+    }
+
+    private void setBooleanCapabilityIfPresent(org.openqa.selenium.MutableCapabilities capabilities, String capabilityName, String value)
+    {
+        if (value != null && !value.trim().isEmpty()) {
+            capabilities.setCapability(capabilityName, Boolean.parseBoolean(value));
         }
     }
 
