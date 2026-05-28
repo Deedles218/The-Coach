@@ -1,6 +1,5 @@
 package lib.ui.ios;
 import lib.ui.SearchPageObject;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class iOSSearchPageObject extends SearchPageObject {
