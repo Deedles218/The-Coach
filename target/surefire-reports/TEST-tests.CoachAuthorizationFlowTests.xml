@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="1" failures="0" name="tests.CoachAuthorizationFlowTests" time="18.819" errors="1" skipped="0">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/classes"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.runtime.version" value="1.8.0_261-b12"/>
+    <property name="user.name" value="deedles"/>
+    <property name="ios.wdaLocalPort" value="8101"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="user.language" value="ru"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
+    <property name="classworlds.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/bin/m2.conf"/>
+    <property name="java.version" value="1.8.0_261"/>
+    <property name="user.timezone" value="Europe/Samara"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/endorsed"/>
+    <property name="sun.cpu.isalist" value=""/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="maven.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/conf"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="user.country" value="RU"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
+    <property name="ios.xcodeSigningId" value="Apple Development"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="os.version" value="26.5"/>
+    <property name="platform" value="ios"/>
+    <property name="ios.showXcodeLog" value="false"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.version" value="25.261-b12"/>
+    <property name="ios.platformVersion" value="26.5"/>
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="appium.url" value="http://127.0.0.1:4723/"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="appium.newCommandTimeout" value="600"/>
+    <property name="user.home" value="/Users/deedles"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="test" value="tests.CoachAuthorizationFlowTests"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
+    <property name="java.library.path" value="/Users/deedles/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="gopherProxySet" value="false"/>
+    <property name="maven.home" value="/usr/local/Cellar/maven/3.9.1/libexec"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.CoachAuthorizationFlowTests -Dplatform=ios -Dappium.url=http://127.0.0.1:4723/ -Dios.deviceName=iPhone Daria -Dios.platformVersion=26.5 -Dios.udid=00008150-00084CDE0CF0401C -Dios.bundleId=com.vamapps.The-Coach-for-her -Dios.noReset=true -Dios.wdaLocalPort=8101 -Dios.xcodeOrgId=QS3D868T5W -Dios.xcodeSigningId=Apple Development -Dios.updatedWDABundleId=com.vamapps.WebDriverAgentRunner -Dios.showXcodeLog=false -Dappium.newCommandTimeout=600 test"/>
+    <property name="java.class.path" value="/usr/local/Cellar/maven/3.9.1/libexec/boot/plexus-classworlds-2.6.0.jar"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.io.tmpdir" value="/var/folders/wm/dpc61p815hjbg72p6dt20dph0000gn/T/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="maven.multiModuleProjectDirectory" value="/Users/deedles/IdeaProjects/The-Coach"/>
+    <property name="ios.bundleId" value="com.vamapps.The-Coach-for-her"/>
+    <property name="ios.deviceName" value="iPhone Daria"/>
+    <property name="ios.noReset" value="true"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="java.ext.dirs" value="/Users/deedles/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
+    <property name="ios.udid" value="00008150-00084CDE0CF0401C"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="ios.updatedWDABundleId" value="com.vamapps.WebDriverAgentRunner"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="ios.xcodeOrgId" value="QS3D868T5W"/>
+  </properties>
+  <testcase classname="tests.CoachAuthorizationFlowTests" name="testFeedPopupLogoutAndStartScreenButtons" time="18.819">
+    <error message="Expected condition failed: Expected authorized The Coach dashboard before starting Feed/logout flow/n (tried for 15 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Expected authorized The Coach dashboard before starting Feed/logout flow/n (tried for 15 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
+	at lib.ui.CoachFlowPageObject.assertAuthorizedDashboardIsDisplayed_aroundBody0(CoachFlowPageObject.java:33)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.assertAuthorizedDashboardIsDisplayed(CoachFlowPageObject.java:33)
+	at tests.CoachAuthorizationFlowTests.testFeedPopupLogoutAndStartScreenButtons_aroundBody0(CoachAuthorizationFlowTests.java:34)
+	at tests.CoachAuthorizationFlowTests$AjcClosure1.run(CoachAuthorizationFlowTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.CoachAuthorizationFlowTests.testFeedPopupLogoutAndStartScreenButtons(CoachAuthorizationFlowTests.java:27)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [0375ab30-3a28-4c15-8942-c068373ba5b5, findElement {using=id, value=WomanProfileImage}]
+Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:noReset: true, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:wdaLocalPort: 8101, appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
+Session ID: 0375ab30-3a28-4c15-8942-c068373ba5b5
+	at sun.reflect.GeneratedConstructorAccessor13.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 42 more
+</error>
+    <system-err>log4j:WARN No appenders could be found for logger (io.netty.util.internal.logging.InternalLoggerFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+</system-err>
+  </testcase>
+</testsuite>

@@ -1,9 +1,12 @@
+tests/CoachAuthorizationFlowTests.class
 suites/TestSuite.class
 lib/ui/NavigationUI.class
 tests/SearchTests.class
+lib/ui/ios/iOSCoachFlowPageObject.class
 lib/ui/SearchPageObject.class
 lib/ui/ios/iOSSearchPageObject.class
 lib/Platform.class
+tests/CoachAuthorizationTests.class
 lib/ui/ios/iOSNavigationUI.class
 lib/ui/factories/SearchPageObjectFactory.class
 lib/ui/ios/iOSArticlePageObject.class
@@ -15,3 +18,5 @@ lib/ui/factories/ArticlePageObjectFactory.class
 lib/CoreTestCase.class
 lib/ui/MainPageObject.class
 lib/ui/factories/NavigationUIFactory.class
+lib/ui/CoachFlowPageObject.class
+lib/ui/factories/CoachFlowPageObjectFactory.class

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="1" failures="0" name="tests.CoachAuthorizationTests" time="16.252" errors="0" skipped="0">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/classes"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.runtime.version" value="1.8.0_261-b12"/>
+    <property name="user.name" value="deedles"/>
+    <property name="ios.wdaLocalPort" value="8101"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="user.language" value="ru"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
+    <property name="classworlds.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/bin/m2.conf"/>
+    <property name="java.version" value="1.8.0_261"/>
+    <property name="user.timezone" value="Europe/Samara"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/endorsed"/>
+    <property name="sun.cpu.isalist" value=""/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="maven.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/conf"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="user.country" value="RU"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
+    <property name="ios.xcodeSigningId" value="Apple Development"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="os.version" value="26.5"/>
+    <property name="platform" value="ios"/>
+    <property name="ios.showXcodeLog" value="false"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.version" value="25.261-b12"/>
+    <property name="ios.platformVersion" value="26.5"/>
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="appium.url" value="http://127.0.0.1:4723/"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="appium.newCommandTimeout" value="600"/>
+    <property name="user.home" value="/Users/deedles"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="test" value="tests.CoachAuthorizationTests"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
+    <property name="java.library.path" value="/Users/deedles/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="gopherProxySet" value="false"/>
+    <property name="maven.home" value="/usr/local/Cellar/maven/3.9.1/libexec"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.CoachAuthorizationTests -Dplatform=ios -Dappium.url=http://127.0.0.1:4723/ -Dios.deviceName=iPhone Daria -Dios.platformVersion=26.5 -Dios.udid=00008150-00084CDE0CF0401C -Dios.bundleId=com.vamapps.The-Coach-for-her -Dios.noReset=true -Dios.wdaLocalPort=8101 -Dios.xcodeOrgId=QS3D868T5W -Dios.xcodeSigningId=Apple Development -Dios.updatedWDABundleId=com.vamapps.WebDriverAgentRunner -Dios.showXcodeLog=false -Dappium.newCommandTimeout=600 test"/>
+    <property name="java.class.path" value="/usr/local/Cellar/maven/3.9.1/libexec/boot/plexus-classworlds-2.6.0.jar"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.io.tmpdir" value="/var/folders/wm/dpc61p815hjbg72p6dt20dph0000gn/T/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="maven.multiModuleProjectDirectory" value="/Users/deedles/IdeaProjects/The-Coach"/>
+    <property name="ios.bundleId" value="com.vamapps.The-Coach-for-her"/>
+    <property name="ios.deviceName" value="iPhone Daria"/>
+    <property name="ios.noReset" value="true"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="java.ext.dirs" value="/Users/deedles/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
+    <property name="ios.udid" value="00008150-00084CDE0CF0401C"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="ios.updatedWDABundleId" value="com.vamapps.WebDriverAgentRunner"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="ios.xcodeOrgId" value="QS3D868T5W"/>
+  </properties>
+  <testcase classname="tests.CoachAuthorizationTests" name="testAuthorizeWithEmailAndOtp" time="16.252"/>
+</testsuite>

@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: suites.TestSuite
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 0.146 sec <<< FAILURE!
-testCompareArticleTitle(tests.HW.ArticleTests)  Time elapsed: 0.002 sec  <<< ERROR!
+Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 81.41 sec <<< FAILURE!
+testCompareArticleTitle(tests.HW.ArticleTests)  Time elapsed: 10.172 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -71,13 +71,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -99,7 +97,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testSwipeArticle(tests.HW.ArticleTests)  Time elapsed: 0.015 sec  <<< ERROR!
+testSwipeArticle(tests.HW.ArticleTests)  Time elapsed: 10.184 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -168,13 +166,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -196,7 +192,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testChangeScreenOrientationOnSearchResult(tests.HW.ChangeAppCondition)  Time elapsed: 0.026 sec  <<< ERROR!
+testChangeScreenOrientationOnSearchResult(tests.HW.ChangeAppCondition)  Time elapsed: 10.167 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -265,13 +261,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -293,7 +287,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testCheckSearchArticleInBackground(tests.HW.ChangeAppCondition)  Time elapsed: 0.018 sec  <<< ERROR!
+testCheckSearchArticleInBackground(tests.HW.ChangeAppCondition)  Time elapsed: 10.175 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -362,13 +356,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -390,7 +382,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testPassThroughWelcome(tests.HW.GetStartedTest)  Time elapsed: 0.017 sec  <<< ERROR!
+testPassThroughWelcome(tests.HW.GetStartedTest)  Time elapsed: 10.17 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -459,13 +451,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -487,7 +477,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testSaveFirstArticleToMyList(tests.HW.MyListsTests)  Time elapsed: 0.02 sec  <<< ERROR!
+testSaveFirstArticleToMyList(tests.HW.MyListsTests)  Time elapsed: 10.175 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -556,13 +546,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -584,7 +572,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testCancelSearch(tests.SearchTests)  Time elapsed: 0.021 sec  <<< ERROR!
+testCancelSearch(tests.SearchTests)  Time elapsed: 10.169 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -653,13 +641,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
@@ -681,7 +667,7 @@ remote stacktrace: UnknownError: An unknown server-side error occurred while pro
 	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:126)
 	... 61 more
 
-testSearch(tests.SearchTests)  Time elapsed: 0.014 sec  <<< ERROR!
+testSearch(tests.SearchTests)  Time elapsed: 10.171 sec  <<< ERROR!
 org.openqa.selenium.WebDriverException: It is impossible to create a new session because 'createSession' which takes HttpClient, InputStream and long was not found or it is not accessible
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
@@ -750,13 +736,11 @@ Caused by: java.lang.reflect.InvocationTargetException
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at io.appium.java_client.remote.AppiumCommandExecutor$1.createSession(AppiumCommandExecutor.java:185)
 	... 56 more
-Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+Caused by: org.openqa.selenium.WebDriverException: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
 Build info: version: '3.12.0', revision: '7c6e0b3', time: '2018-05-08T14:04:26.12Z'
 System info: host: 'MacBook-Pro.local', ip: 'fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: driver.version: IOSDriver
-remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not determine iOS SDK version: Command 'xcrun --sdk iphonesimulator --show-sdk-version' exited with code 69: You have not agreed to the Xcode license agreements. Please run 'sudo xcodebuild -license' from within a Terminal window to review and agree to the Xcode and Apple SDKs license.
-
+remote stacktrace: UnknownError: An unknown server-side error occurred while processing the command. Original error: Failed to receive any data within the timeout: 5000
     at getResponseForW3CError (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/errors.js:804:9)
     at asyncHandler (/usr/local/Cellar/appium/1.22.3/libexec/lib/node_modules/appium/node_modules/appium-base-driver/lib/protocol/protocol.js:380:37)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)

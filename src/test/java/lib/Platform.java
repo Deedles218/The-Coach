@@ -76,7 +76,12 @@ public class Platform {
         capabilities.setPlatformVersion(this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
         capabilities.setNewCommandTimeout(Duration.ofSeconds(Integer.parseInt(this.getConfig("appium.newCommandTimeout", "APPIUM_NEW_COMMAND_TIMEOUT", "120"))));
         this.setCapabilityIfPresent(capabilities, "udid", this.getConfig("ios.udid", "IOS_UDID", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "noReset", this.getConfig("ios.noReset", "IOS_NO_RESET", null));
+        this.setCapabilityIfPresent(capabilities, "wdaLocalPort", this.getConfig("ios.wdaLocalPort", "IOS_WDA_LOCAL_PORT", null));
         this.setBooleanCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "showXcodeLog", this.getConfig("ios.showXcodeLog", "IOS_SHOW_XCODE_LOG", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "allowProvisioningDeviceRegistration", this.getConfig("ios.allowProvisioningDeviceRegistration", "IOS_ALLOW_PROVISIONING_DEVICE_REGISTRATION", null));
+        this.setCapabilityIfPresent(capabilities, "updatedWDABundleId", this.getConfig("ios.updatedWDABundleId", "IOS_UPDATED_WDA_BUNDLE_ID", null));
         this.setCapabilityIfPresent(capabilities, "xcodeOrgId", this.getConfig("ios.xcodeOrgId", "IOS_XCODE_ORG_ID", null));
         this.setCapabilityIfPresent(capabilities, "xcodeSigningId", this.getConfig("ios.xcodeSigningId", "IOS_XCODE_SIGNING_ID", null));
         return capabilities;
