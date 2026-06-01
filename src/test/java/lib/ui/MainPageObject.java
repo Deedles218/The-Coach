@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class MainPageObject {
@@ -46,6 +48,21 @@ public class MainPageObject {
     public WebElement waitForElementAndClick(String locator, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(locator, error_message, 5);
         element.click();
+        return element;
+    }
+
+    public WebElement waitForElementAndTapNearLeftEdge(String locator, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
+        int x = element.getLocation().getX() + Math.min(24, element.getSize().getWidth() / 2);
+        int y = element.getLocation().getY() + (element.getSize().getHeight() / 2);
+        try {
+            Map<String, Object> tapArgs = new HashMap<String, Object>();
+            tapArgs.put("x", x);
+            tapArgs.put("y", y);
+            ((JavascriptExecutor) driver).executeScript("mobile: tap", tapArgs);
+        } catch (WebDriverException e) {
+            element.click();
+        }
         return element;
     }
 
