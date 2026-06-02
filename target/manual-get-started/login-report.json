@@ -1,0 +1,90 @@
+[
+  {
+    "step": "current",
+    "visible": [
+      "Button:CloseRoundBlack",
+      "StaticText:ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT",
+      "StaticText:ENTER EMAIL",
+      "Button:ic outline mail",
+      "TextField:example@mail.com",
+      "Button:CONTINUE",
+      "StaticText:CONTINUE",
+      "StaticText:NEED HELP LOGGING IN?",
+      "StaticText:PLEASE CONTACT",
+      "Button:SUPPORT",
+      "StaticText:SUPPORT",
+      "StaticText:IF YOU DON'T HAVE AN ACCOUNT,",
+      "Button:PLEASE START HERE",
+      "StaticText:PLEASE START HERE"
+    ]
+  },
+  {
+    "step": "email entered",
+    "visible": [
+      "Button:CloseRoundBlack",
+      "StaticText:ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT",
+      "StaticText:ENTER EMAIL",
+      "Button:email clear icon",
+      "TextField:ds@vamapps.com",
+      "Button:CONTINUE",
+      "StaticText:CONTINUE",
+      "StaticText:NEED HELP LOGGING IN?",
+      "StaticText:PLEASE CONTACT",
+      "Button:SUPPORT",
+      "StaticText:SUPPORT",
+      "StaticText:IF YOU DON'T HAVE AN ACCOUNT,",
+      "Button:PLEASE START HERE",
+      "StaticText:PLEASE START HERE",
+      "Button:shift",
+      "Button:emoji",
+      "Button:Return",
+      "Button:Next keyboard",
+      "StaticText:",
+      "Button:dictation",
+      "StaticText:",
+      "Button:dictation",
+      "StaticText:"
+    ]
+  },
+  {
+    "step": "after CONTINUE",
+    "visible": [
+      "Button:CloseRoundBlack",
+      "StaticText:ENTER SECURITY CODE",
+      "StaticText:An email with a code has been sent to: &#10; ds@vamapps.com",
+      "StaticText:",
+      "StaticText:",
+      "StaticText:",
+      "StaticText:",
+      "StaticText:Didn't receive the code?",
+      "Button:RESEND CODE",
+      "StaticText:RESEND CODE",
+      "Button:dictation",
+      "StaticText:"
+    ]
+  },
+  {
+    "step": "after OTP 8654",
+    "visible": [
+      "StaticText:--%",
+      "Button:",
+      "StaticText:",
+      "Button:",
+      "StaticText:",
+      "Button:UserProfileImage",
+      "StaticText:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Cell:",
+      "Button:Today",
+      "Button:Explore",
+      "Button:Feed",
+      "Button:Shop"
+    ]
+  }
+]

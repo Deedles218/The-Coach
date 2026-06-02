@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Preprod Coach" label="Preprod Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits=""/>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="1" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+          <XCUIElementTypeImage type="XCUIElementTypeImage" name="hold_start_screen_white" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="Image"/>
+          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE" name="FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE" label="FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE" enabled="true" visible="true" accessible="true" x="24" y="495" width="392" height="103" index="1" traits="StaticText"/>
+          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that last" name="▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that last" label="▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that last" enabled="true" visible="true" accessible="true" x="110" y="605" width="220" height="101" index="2" traits="StaticText"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="GET STARTED" label="GET STARTED" enabled="true" visible="true" accessible="true" x="24" y="722" width="392" height="56" index="3" traits="Button">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="GET STARTED" name="GET STARTED" label="GET STARTED" enabled="true" visible="true" accessible="false" x="166" y="741" width="108" height="18" index="0" traits="StaticText"/>
+          </XCUIElementTypeButton>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="LOG IN" label="LOG IN" enabled="true" visible="true" accessible="true" x="24" y="786" width="392" height="56" index="4" traits="Button">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="LOG IN" name="LOG IN" label="LOG IN" enabled="true" visible="true" accessible="false" x="193" y="805" width="54" height="18" index="0" traits="StaticText"/>
+          </XCUIElementTypeButton>
+          <XCUIElementTypeTextView type="XCUIElementTypeTextView" value="BY CLICKING “START NOW” YOU AGREE&#10;TO OUR TERMS AND PRIVACY" enabled="true" visible="true" accessible="false" x="24" y="858" width="392" height="40" index="5" traits="StaticText">
+            <XCUIElementTypeTextView type="XCUIElementTypeTextView" name="BY CLICKING “START NOW” YOU AGREE" label="BY CLICKING “START NOW” YOU AGREE" enabled="true" visible="true" accessible="true" x="102" y="866" width="235" height="12" index="0" traits="StaticText"/>
+            <XCUIElementTypeTextView type="XCUIElementTypeTextView" name="TO OUR TERMS AND PRIVACY" label="TO OUR TERMS AND PRIVACY" enabled="true" visible="true" accessible="true" x="133" y="877" width="173" height="13" index="1" traits="StaticText">
+              <XCUIElementTypeLink type="XCUIElementTypeLink" name="TERMS" label="TERMS" enabled="true" visible="true" accessible="false" x="181" y="877" width="42" height="13" index="0" traits="Link"/>
+              <XCUIElementTypeLink type="XCUIElementTypeLink" name="PRIVACY" label="PRIVACY" enabled="true" visible="true" accessible="false" x="254" y="877" width="52" height="13" index="1" traits="Link"/>
+            </XCUIElementTypeTextView>
+            <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="383" y="858" width="30" height="36" index="2" traits="Adjustable">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="410" y="819" width="3" height="36" index="0" traits=""/>
+            </XCUIElementTypeOther>
+            <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="28" y="875" width="384" height="20" index="3" traits="Adjustable">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="-15" y="892" width="36" height="3" index="0" traits=""/>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeTextView>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

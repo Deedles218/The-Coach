@@ -1,0 +1,123 @@
+[
+  {
+    "step": "initial",
+    "visible": [
+      "StaticText:FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE",
+      "StaticText:▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that ",
+      "Button:GET STARTED",
+      "StaticText:GET STARTED",
+      "Button:LOG IN",
+      "StaticText:LOG IN",
+      "Link:TERMS",
+      "Link:PRIVACY"
+    ]
+  },
+  {
+    "step": "click TERMS",
+    "visible": [
+      "Button:BackButton",
+      "Button:PageFormatMenuButton",
+      "StaticText:",
+      "TextField:TabBarItemTitle",
+      "Button:StopButton",
+      "Button:MoreMenuButton"
+    ]
+  },
+  {
+    "step": "after TERMS return",
+    "visible": [
+      "StaticText:FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE",
+      "StaticText:▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that ",
+      "Button:GET STARTED",
+      "StaticText:GET STARTED",
+      "Button:LOG IN",
+      "StaticText:LOG IN",
+      "Link:TERMS",
+      "Link:PRIVACY"
+    ]
+  },
+  {
+    "step": "click PRIVACY",
+    "visible": [
+      "StaticText:THE COACH – PRIVACY POLICY",
+      "StaticText:Last updated: 19/03/2026",
+      "StaticText:This Privacy Policy (&quot;Policy&quot;) explains how VAM Apps Co., a Delaware corporation (registered office",
+      "StaticText:By using our Service, you express your unconditional agreement with this Policy and the conditions of process",
+      "StaticText:Information We Collect",
+      "StaticText:The Company gathers two types of information: (1) personally identifiable information that is supplied volunt",
+      "StaticText:A. Information You Provided to Us",
+      "StaticText:Personal Information",
+      "StaticText:When you register for an account to access or utilize Service (an &quot;Account&quot;) or signing up for the ",
+      "StaticText:The Company only collects &quot;sensitive&quot; Personal Information when you voluntarily provide us with thi",
+      "StaticText:do not provide sensitive information to the Company, unless you thereby consent to the Company's use of that ",
+      "StaticText:If you have any questions about whether the provision of sensitive information to the Company is, or may be, ",
+      "Link:support@the.coach",
+      "StaticText:support@the.coach",
+      "StaticText:.",
+      "StaticText:Transactional Data",
+      "StaticText:We use third party payment processors (currently Apple Payments, Inc.) to assist in securely processing your ",
+      "Link:https://www.apple.com/legal/applepayments/privacy-notice/",
+      "StaticText:https://www.apple.com/legal/applepayments/privacy-notice/",
+      "StaticText:."
+    ]
+  },
+  {
+    "step": "after PRIVACY return",
+    "visible": [
+      "StaticText:FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE",
+      "StaticText:▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that ",
+      "Button:GET STARTED",
+      "StaticText:GET STARTED",
+      "Button:LOG IN",
+      "StaticText:LOG IN",
+      "Link:TERMS",
+      "Link:PRIVACY"
+    ]
+  },
+  {
+    "step": "click GET STARTED",
+    "visible": [
+      "Button:ic outline chevron left",
+      "StaticText:QUIZ",
+      "StaticText:GOALS",
+      "StaticText:WHAT DO YOU WANT TO ACHIEVE?",
+      "StaticText:You'll be able to select additional goals later on",
+      "StaticText:BEAT PREMATURE EJACULATION",
+      "StaticText:BEAT ERECTILE DYSFUNCTION",
+      "StaticText:IMPROVE SEX SKILLS",
+      "StaticText:BOOST OVERALL HEALTH"
+    ]
+  },
+  {
+    "step": "after GET STARTED return",
+    "visible": [
+      "StaticText:FEEL THE NEW LEVEL &#10;OF YOUR INTIMATE LIFE",
+      "StaticText:▪ Last longer in bed &#10;▪ Full control of your erection&#10;▪ Brighter sex &amp; orgasm&#10;▪ Results that ",
+      "Button:GET STARTED",
+      "StaticText:GET STARTED",
+      "Button:LOG IN",
+      "StaticText:LOG IN",
+      "Link:TERMS",
+      "Link:PRIVACY"
+    ]
+  },
+  {
+    "step": "click LOG IN",
+    "visible": [
+      "Button:CloseRoundBlack",
+      "StaticText:ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT",
+      "StaticText:ENTER EMAIL",
+      "Button:ic outline mail",
+      "TextField:example@mail.com",
+      "Button:CONTINUE",
+      "StaticText:CONTINUE",
+      "StaticText:NEED HELP LOGGING IN?",
+      "StaticText:PLEASE CONTACT",
+      "Button:SUPPORT",
+      "StaticText:SUPPORT",
+      "StaticText:IF YOU DON'T HAVE AN ACCOUNT,",
+      "Button:PLEASE START HERE",
+      "StaticText:PLEASE START HERE"
+    ]
+  }
+]

@@ -25,6 +25,8 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/NavigationUI.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/TestSuite.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/TestSuiteIOS.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/MaleBuildSuite.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/MaleBuildStartScreenTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSArticlePageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachAuthorizationTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx12.java
@@ -32,6 +34,7 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSMyListsPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/HWPageObject/AuthorizationPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/CoachFlowPageObjectFactory.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachProfileTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSSearchPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/CoreTestCase.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachAuthorizationFlowTests.java
