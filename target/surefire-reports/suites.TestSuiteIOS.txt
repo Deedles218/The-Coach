@@ -1,13 +1,13 @@
 -------------------------------------------------------------------------------
 Test set: suites.TestSuiteIOS
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 74.422 sec <<< FAILURE!
-testCompareArticleTitle(tests.HW.ArticleTests)  Time elapsed: 20.739 sec  <<< ERROR!
+Tests run: 7, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 52.451 sec <<< FAILURE!
+testCompareArticleTitle(tests.HW.ArticleTests)  Time elapsed: 16.54 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
 	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -58,9 +58,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [642b9e66-3c28-46d2-8cc3-c99a5bfdb6cb, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 642b9e66-3c28-46d2-8cc3-c99a5bfdb6cb
+Command: [dd87fc8a-a29b-42ad-8446-98baea33bdc6, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: dd87fc8a-a29b-42ad-8446-98baea33bdc6
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
@@ -80,12 +80,12 @@ Session ID: 642b9e66-3c28-46d2-8cc3-c99a5bfdb6cb
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 47 more
 
-testSwipeArticle(tests.HW.ArticleTests)  Time elapsed: 8.15 sec  <<< ERROR!
+testSwipeArticle(tests.HW.ArticleTests)  Time elapsed: 5.881 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
 	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -136,9 +136,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [6d408609-5e0d-417f-8a49-4f3a7a5870d7, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 6d408609-5e0d-417f-8a49-4f3a7a5870d7
+Command: [bb80bb2b-8e22-4624-8c36-f82202a1ab7c, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: bb80bb2b-8e22-4624-8c36-f82202a1ab7c
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -157,12 +157,12 @@ Session ID: 6d408609-5e0d-417f-8a49-4f3a7a5870d7
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 47 more
 
-testChangeScreenOrientationOnSearchResult(tests.HW.ChangeAppCondition)  Time elapsed: 8.351 sec  <<< ERROR!
+testChangeScreenOrientationOnSearchResult(tests.HW.ChangeAppCondition)  Time elapsed: 5.94 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
 	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -213,9 +213,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [2ed5534a-998f-457c-a525-62d9b3903ce6, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 2ed5534a-998f-457c-a525-62d9b3903ce6
+Command: [92ad1dbf-8f26-47c9-9647-8f954c819105, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 92ad1dbf-8f26-47c9-9647-8f954c819105
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -234,12 +234,12 @@ Session ID: 2ed5534a-998f-457c-a525-62d9b3903ce6
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 47 more
 
-testCheckSearchArticleInBackground(tests.HW.ChangeAppCondition)  Time elapsed: 8.283 sec  <<< ERROR!
+testCheckSearchArticleInBackground(tests.HW.ChangeAppCondition)  Time elapsed: 5.808 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
 	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -290,9 +290,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [6603f810-1414-49a3-9304-c5b9e92d3943, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 6603f810-1414-49a3-9304-c5b9e92d3943
+Command: [cb21ef6b-d818-4449-bc0b-9a7bcffdfc2e, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: cb21ef6b-d818-4449-bc0b-9a7bcffdfc2e
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -311,12 +311,12 @@ Session ID: 6603f810-1414-49a3-9304-c5b9e92d3943
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 47 more
 
-testSaveFirstArticleToMyList(tests.HW.MyListsTests)  Time elapsed: 8.339 sec  <<< ERROR!
+testSaveFirstArticleToMyList(tests.HW.MyListsTests)  Time elapsed: 5.792 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
 	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -367,9 +367,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [4722f573-3cb1-40ef-b36f-e151a8e27521, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 4722f573-3cb1-40ef-b36f-e151a8e27521
+Command: [c8c145de-c6a5-44ad-bea1-7391107af229, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: c8c145de-c6a5-44ad-bea1-7391107af229
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -388,18 +388,13 @@ Session ID: 4722f573-3cb1-40ef-b36f-e151a8e27521
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 47 more
 
-testCancelSearch(tests.SearchTests)  Time elapsed: 10.868 sec  <<< ERROR!
-org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
+testCancelSearch(tests.SearchTests)  Time elapsed: 5.714 sec  <<< ERROR!
+org.openqa.selenium.TimeoutException: Expected condition failed: error/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
-	at lib.ui.SearchPageObject.initSearchInput_aroundBody0(SearchPageObject.java:42)
-	at lib.ui.SearchPageObject$AjcClosure1.run(SearchPageObject.java:1)
-	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
-	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.SearchPageObject.initSearchInput(SearchPageObject.java:42)
-	at tests.SearchTests.testCancelSearch_aroundBody2(SearchTests.java:48)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
+	at tests.SearchTests.testCancelSearch_aroundBody2(SearchTests.java:47)
 	at tests.SearchTests$AjcClosure3.run(SearchTests.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
@@ -448,9 +443,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [abb9ca6e-a99c-4525-a194-52088f822a98, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: abb9ca6e-a99c-4525-a194-52088f822a98
+Command: [3efe59d6-531e-43fd-ab17-e6db1eb17daf, findElement {using=id, value=Feed}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 3efe59d6-531e-43fd-ab17-e6db1eb17daf
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -467,14 +462,14 @@ Session ID: abb9ca6e-a99c-4525-a194-52088f822a98
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
-	... 51 more
+	... 46 more
 
-testSearch(tests.SearchTests)  Time elapsed: 9.216 sec  <<< ERROR!
+testSearch(tests.SearchTests)  Time elapsed: 6.328 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: error/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:47)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
 	at tests.SearchTests.testSearch_aroundBody0(SearchTests.java:31)
 	at tests.SearchTests$AjcClosure1.run(SearchTests.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
@@ -524,9 +519,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [21d32e82-ee32-4e48-886e-fa52edfff89b, findElement {using=id, value=Feed}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 21d32e82-ee32-4e48-886e-fa52edfff89b
+Command: [d35d6743-1d35-4c53-a3ca-5d9758141049, findElement {using=id, value=Feed}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: d35d6743-1d35-4c53-a3ca-5d9758141049
 	at sun.reflect.GeneratedConstructorAccessor14.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)

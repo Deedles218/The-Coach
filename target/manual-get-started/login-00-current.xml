@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Preprod Coach" label="Preprod Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits=""/>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="1" traits=""/>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="2" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="EnterEmailBackground" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="Image"/>
+                <XCUIElementTypeButton type="XCUIElementTypeButton" name="CloseRoundBlack" label="CloseRoundBlack" enabled="true" visible="true" accessible="true" x="344" y="78" width="72" height="72" index="1" traits="Button"/>
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="WhiteLogo" enabled="true" visible="true" accessible="false" x="181" y="102" width="78" height="38" index="2" traits="Image"/>
+                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT" name="ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT" label="ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT" enabled="true" visible="true" accessible="true" x="20" y="180" width="400" height="97" index="3" traits="StaticText"/>
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="24" y="276" width="392" height="295" index="4" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="24" y="308" width="392" height="59" index="0" traits="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ENTER EMAIL" name="ENTER EMAIL" label="ENTER EMAIL" enabled="true" visible="true" accessible="true" x="36" y="318" width="380" height="13" index="0" traits="StaticText"/>
+                    <XCUIElementTypeButton type="XCUIElementTypeButton" name="ic outline mail" label="ic outline mail" enabled="true" visible="true" accessible="true" x="380" y="325" width="24" height="25" index="1" traits="Button"/>
+                    <XCUIElementTypeTextField type="XCUIElementTypeTextField" value="example@mail.com" label="" enabled="true" visible="true" accessible="true" x="36" y="334" width="380" height="23" index="2" placeholderValue="example@mail.com" traits=""/>
+                  </XCUIElementTypeOther>
+                  <XCUIElementTypeButton type="XCUIElementTypeButton" name="CONTINUE" label="CONTINUE" enabled="false" visible="true" accessible="true" x="24" y="390" width="392" height="54" index="1" traits="NotEnabled, Button">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="CONTINUE" name="CONTINUE" label="CONTINUE" enabled="true" visible="true" accessible="false" x="178" y="408" width="84" height="18" index="0" traits="StaticText"/>
+                  </XCUIElementTypeButton>
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="85" y="467" width="270" height="104" index="2" traits="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="NEED HELP LOGGING IN?" name="NEED HELP LOGGING IN?" label="NEED HELP LOGGING IN?" enabled="true" visible="true" accessible="true" x="85" y="467" width="270" height="18" index="0" traits="StaticText"/>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="85" y="484" width="270" height="18" index="1" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="111" y="484" width="218" height="18" index="0" traits="">
+                        <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="PLEASE CONTACT" name="PLEASE CONTACT" label="PLEASE CONTACT" enabled="true" visible="true" accessible="true" x="111" y="484" width="141" height="18" index="0" traits="StaticText"/>
+                        <XCUIElementTypeButton type="XCUIElementTypeButton" name="SUPPORT" label="SUPPORT" enabled="true" visible="true" accessible="true" x="259" y="484" width="70" height="18" index="1" traits="Button">
+                          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SUPPORT" name="SUPPORT" label="SUPPORT" enabled="true" visible="true" accessible="false" x="259" y="484" width="70" height="18" index="0" traits="StaticText"/>
+                        </XCUIElementTypeButton>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="IF YOU DON'T HAVE AN ACCOUNT," name="IF YOU DON'T HAVE AN ACCOUNT," label="IF YOU DON'T HAVE AN ACCOUNT," enabled="true" visible="true" accessible="true" x="85" y="525" width="270" height="18" index="2" traits="StaticText"/>
+                    <XCUIElementTypeButton type="XCUIElementTypeButton" name="PLEASE START HERE" label="PLEASE START HERE" enabled="true" visible="true" accessible="true" x="85" y="542" width="270" height="30" index="3" traits="Button">
+                      <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="PLEASE START HERE" name="PLEASE START HERE" label="PLEASE START HERE" enabled="true" visible="true" accessible="false" x="146" y="548" width="148" height="18" index="0" traits="StaticText"/>
+                    </XCUIElementTypeButton>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeOther>
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="1" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits=""/>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>
