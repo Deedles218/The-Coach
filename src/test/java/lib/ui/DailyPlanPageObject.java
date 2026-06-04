@@ -37,6 +37,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
             CUSTOMIZATION_DELETE_CONFIRM_BUTTON,
             CUSTOMIZATION_CANCEL_DELETE_BUTTON,
+            CORE_EXERCISE_RESTRICTION_POPUP_TITLE,
+            CORE_EXERCISE_RESTRICTION_POPUP_BUTTON,
             LOCKED_MODULE_POPUP_TITLE,
             LOCKED_MODULE_POPUP_BUTTON,
             LOCKED_NEXT_DAY_POPUP_TITLE,
@@ -140,14 +142,30 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Open Daily Plan customization actions for the first Daily Practice card")
     public void openCustomizationActionsForFirstDailyPractice() {
+        Assert.assertTrue(
+                "Current Daily Plan state did not expose customization actions for the first Daily Practice card.",
+                this.tryOpenCustomizationActionsForFirstDailyPractice()
+        );
+    }
+
+    @Step("Try to open Daily Plan customization actions for the first Daily Practice card")
+    public boolean tryOpenCustomizationActionsForFirstDailyPractice() {
         this.assertDailyPracticeIsDisplayed();
+        this.closeCoreExerciseRestrictionPopupIfPresent();
         WebElement practiceCard = this.waitForElementPresent(
                 FIRST_PRACTICE_TITLE,
                 "First Daily Practice item is not displayed",
                 10
         );
         this.touchAndHoldElement(practiceCard, 0.8);
-        this.assertCustomizationActionsSheetIsDisplayed();
+        if (this.isCustomizationActionsSheetDisplayed()) {
+            return true;
+        }
+        if (this.isCoreExerciseRestrictionPopupDisplayed()) {
+            this.closeCoreExerciseRestrictionPopup();
+            return false;
+        }
+        return false;
     }
 
     @Step("Verify Daily Plan customization actions sheet is displayed")
@@ -162,6 +180,24 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Remove from Daily Plan action is not displayed",
                 10
         );
+    }
+
+    public boolean isCustomizationActionsSheetDisplayed() {
+        try {
+            this.waitForElementPresent(
+                    CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
+                    "Move to tomorrow action is not displayed",
+                    2
+            );
+            this.waitForElementPresent(
+                    CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
+                    "Remove from Daily Plan action is not displayed",
+                    2
+            );
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Step("Tap Remove from Daily Plan action")
@@ -204,6 +240,38 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Verify first Daily Practice card remains in Daily Plan")
     public void assertFirstDailyPracticeStillDisplayed() {
         this.assertDailyPracticeIsDisplayed();
+    }
+
+    public boolean isCoreExerciseRestrictionPopupDisplayed() {
+        return this.isElementPresent(CORE_EXERCISE_RESTRICTION_POPUP_TITLE);
+    }
+
+    @Step("Close core exercise restriction popup")
+    public void closeCoreExerciseRestrictionPopup() {
+        this.waitForElementAndClick(
+                CORE_EXERCISE_RESTRICTION_POPUP_BUTTON,
+                "Cannot close core exercise restriction popup",
+                10
+        );
+        this.waitForElementNotPresent(
+                CORE_EXERCISE_RESTRICTION_POPUP_TITLE,
+                "Core exercise restriction popup is still displayed",
+                10
+        );
+    }
+
+    @Step("Close core exercise restriction popup if it appears")
+    public void closeCoreExerciseRestrictionPopupIfPresent() {
+        try {
+            this.waitForElementPresent(
+                    CORE_EXERCISE_RESTRICTION_POPUP_TITLE,
+                    "Core exercise restriction popup is not displayed",
+                    2
+            );
+            this.closeCoreExerciseRestrictionPopup();
+        } catch (Exception e) {
+            System.out.println("Core exercise restriction popup was not shown; continuing.");
+        }
     }
 
     @Step("Close locked module popup")

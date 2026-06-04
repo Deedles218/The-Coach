@@ -63,6 +63,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         CLOSE_LOGIN_BUTTON = "id:CloseRoundBlack";
         NOTIFICATION_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']";
         NOTIFICATION_PROMPT_CLOSE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']/../XCUIElementTypeButton[1]";
+        CONNECT_EMAIL_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Connect you email to save the progress.' or @name='Connect your email to save the progress.']";
+        CONNECT_EMAIL_PROMPT_LATER_BUTTON = "id:LATER";
         PDF_GUIDE_UPSELL_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'ADD THE WORKBOOK')]";
         PDF_GUIDE_UPSELL_PRODUCT_TITLE = "id:E-workbook";
         PDF_GUIDE_UPSELL_BUY_BUTTON = "id:ADD TO MY PROGRAM";

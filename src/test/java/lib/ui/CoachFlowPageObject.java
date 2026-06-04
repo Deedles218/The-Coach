@@ -68,6 +68,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             CLOSE_LOGIN_BUTTON,
             NOTIFICATION_PROMPT_TITLE,
             NOTIFICATION_PROMPT_CLOSE_BUTTON,
+            CONNECT_EMAIL_PROMPT_TITLE,
+            CONNECT_EMAIL_PROMPT_LATER_BUTTON,
             PDF_GUIDE_UPSELL_TITLE,
             PDF_GUIDE_UPSELL_PRODUCT_TITLE,
             PDF_GUIDE_UPSELL_BUY_BUTTON,
@@ -85,6 +87,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.activateAppIfPossible();
         this.closePdfGuideUpsellIfPresent();
         this.closeNotificationPromptIfPresent();
+        this.closeConnectEmailPromptIfPresent();
 
         if (this.isElementPresent(START_SCREEN_TITLE)) {
             this.waitForStartScreen();
@@ -125,6 +128,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.activateAppIfPossible();
         this.closePdfGuideUpsellIfPresent();
         this.closeNotificationPromptIfPresent();
+        this.closeConnectEmailPromptIfPresent();
 
         if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)) {
             this.assertAuthorizedDashboardIsDisplayed();
@@ -177,6 +181,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     public void openToday() {
         this.waitForElementAndClick(TAB_TODAY, "Cannot find and tap Today tab", 10);
         this.waitForElementPresent(TAB_TODAY, "Today tab is not displayed", 10);
+        this.closeConnectEmailPromptIfPresent();
     }
 
     @Step("Open Explore screen")
@@ -544,6 +549,25 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             this.closePdfGuideUpsell();
         } catch (Exception e) {
             System.out.println("PDF guide upsell was not shown; continuing.");
+        }
+    }
+
+    @Step("Close Connect Email prompt if it is displayed")
+    public void closeConnectEmailPromptIfPresent() {
+        try {
+            this.waitForElementPresent(CONNECT_EMAIL_PROMPT_TITLE, "Connect Email prompt is not displayed", 2);
+            this.waitForElementAndClick(
+                    CONNECT_EMAIL_PROMPT_LATER_BUTTON,
+                    "Cannot close Connect Email prompt",
+                    10
+            );
+            this.waitForElementNotPresent(
+                    CONNECT_EMAIL_PROMPT_TITLE,
+                    "Connect Email prompt is still displayed",
+                    10
+            );
+        } catch (Exception e) {
+            System.out.println("Connect Email prompt was not shown; continuing.");
         }
     }
 

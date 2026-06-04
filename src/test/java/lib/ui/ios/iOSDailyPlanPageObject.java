@@ -31,6 +31,8 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Remove from Daily Plan'] | //XCUIElementTypeButton[@name='Remove from Daily Plan']";
         CUSTOMIZATION_DELETE_CONFIRM_BUTTON = "id:DELETE ANYWAYS";
         CUSTOMIZATION_CANCEL_DELETE_BUTTON = "id:CANCEL";
+        CORE_EXERCISE_RESTRICTION_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, \"can't postpone/remove this practice\") and contains(@name, 'core exercise')]";
+        CORE_EXERCISE_RESTRICTION_POPUP_BUTTON = "id:GOT IT";
         LOCKED_MODULE_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Complete current module to unlock the next one')]";
         LOCKED_MODULE_POPUP_BUTTON = "id:GOT IT";
 
