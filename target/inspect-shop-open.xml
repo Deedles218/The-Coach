@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="873" index="0" traits="">
+                  <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="62" width="440" height="811" index="0" traits="">
+                    <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="62" width="440" height="811" index="0" traits="">
+                      <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="62" width="440" height="811" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="811" index="0" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="811" index="0" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="440" height="811" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="NTT — The Coach Shop for Him" label="NTT — The Coach Shop for Him" enabled="true" visible="false" accessible="false" x="0" y="62" width="440" height="2026" index="0" traits="">
+                                <XCUIElementTypeLink type="XCUIElementTypeLink" name="Skip to content" label="Skip to content" enabled="true" visible="false" accessible="false" x="29" y="64" width="56" height="40" index="0" traits="Link">
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Skip to content" name="Skip to content" label="Skip to content" enabled="true" visible="false" accessible="true" x="29" y="64" width="56" height="40" index="0" traits="Link, StaticText"/>
+                                </XCUIElementTypeLink>
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" name="banner" label="banner" enabled="true" visible="true" accessible="false" x="0" y="62" width="440" height="44" index="1" traits="">
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="The Coach Shop" label="The Coach Shop" enabled="true" visible="true" accessible="false" x="14" y="76" width="160" height="16" index="0" traits="Link">
+                                    <XCUIElementTypeLink type="XCUIElementTypeLink" name="The Coach Shop" label="The Coach Shop" enabled="true" visible="true" accessible="false" x="14" y="76" width="160" height="16" index="0" traits="Link">
+                                      <XCUIElementTypeImage type="XCUIElementTypeImage" name="The Coach Shop" label="The Coach Shop" enabled="true" visible="true" accessible="true" x="14" y="76" width="160" height="16" index="0" traits="Link, Image"/>
+                                    </XCUIElementTypeLink>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" name="Cart" label="Cart" enabled="true" visible="true" accessible="true" x="386" y="62" width="44" height="44" index="1" traits=""/>
+                                </XCUIElementTypeOther>
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" name="main" label="main" enabled="true" visible="false" accessible="false" x="0" y="112" width="440" height="1976" index="2" traits="">
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="new-tab-shop-hero_optimized.png__PID:c0f3ecde-e998-4d4a-bcbf-ed3af389c91c" label="new-tab-shop-hero_optimized.png__PID:c0f3ecde-e998-4d4a-bcbf-ed3af389c91c" enabled="true" visible="true" accessible="true" x="0" y="113" width="440" height="440" index="0" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="1" name="We handpicked the best intimate products" label="We handpicked the best intimate products" enabled="true" visible="true" accessible="false" x="24" y="427" width="392" height="56" index="1" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="We handpicked" name="We handpicked" label="We handpicked" enabled="true" visible="true" accessible="true" x="63" y="427" width="200" height="30" index="0" traits="Header, StaticText"/>
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="the best intimate products" name="the best intimate products" label="the best intimate products" enabled="true" visible="true" accessible="true" x="104" y="427" width="273" height="56" index="1" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="24" y="487" width="392" height="44" index="2" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="So your sex life gets the upgrade it deserves." name="So your sex life gets the upgrade it deserves." label="So your sex life gets the upgrade it deserves." enabled="true" visible="true" accessible="true" x="43" y="487" width="354" height="44" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="BESTSELLERS" label="BESTSELLERS" enabled="true" visible="true" accessible="false" x="15" y="582" width="410" height="27" index="3" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="BESTSELLERS" name="BESTSELLERS" label="BESTSELLERS" enabled="true" visible="true" accessible="true" x="15" y="582" width="159" height="27" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="28" y="638" width="79" height="27" index="4" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Her" name="For Her" label="For Her" enabled="true" visible="true" accessible="true" x="39" y="642" width="57" height="19" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="1_mini-lets-spin-intimacy-gel.png__PID:9b1454a5-2c3e-4b5a-8a7b-98599d80e43b" label="1_mini-lets-spin-intimacy-gel.png__PID:9b1454a5-2c3e-4b5a-8a7b-98599d80e43b" enabled="true" visible="true" accessible="true" x="15" y="665" width="172" height="172" index="5" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Mini LET’S SPIN Intimacy Gel" label="Mini LET’S SPIN Intimacy Gel" enabled="true" visible="true" accessible="false" x="15" y="834" width="172" height="35" index="6" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Mini LET’S SPIN Intimacy Gel" name="Mini LET’S SPIN Intimacy Gel" label="Mini LET’S SPIN Intimacy Gel" enabled="true" visible="true" accessible="true" x="38" y="834" width="125" height="35" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="15" y="876" width="172" height="20" index="7" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$21.00" name="$21.00" label="$21.00" enabled="true" visible="false" accessible="true" x="76" y="876" width="50" height="20" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" label="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" enabled="true" visible="false" accessible="true" x="70" y="905" width="61" height="12" index="8" traits="Image"/>
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="false" x="70" y="937" width="61" height="14" index="9" traits="Link">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SHOP NOW" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="true" x="70" y="937" width="61" height="14" index="0" traits="Link, StaticText"/>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="211" y="638" width="84" height="27" index="10" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Two" name="For Two" label="For Two" enabled="true" visible="true" accessible="true" x="222" y="642" width="62" height="19" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="1_melt-massage-candle.png__PID:eb919b14-54a5-4c3e-8b5a-0a7b98599d80" label="1_melt-massage-candle.png__PID:eb919b14-54a5-4c3e-8b5a-0a7b98599d80" enabled="true" visible="true" accessible="true" x="198" y="665" width="173" height="172" index="11" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Melt: Massage Candle" label="Melt: Massage Candle" enabled="true" visible="true" accessible="false" x="198" y="834" width="173" height="20" index="12" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Melt: Massage Candle" name="Melt: Massage Candle" label="Melt: Massage Candle" enabled="true" visible="true" accessible="true" x="200" y="834" width="168" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="198" y="861" width="173" height="20" index="13" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$35.00" name="$35.00" label="$35.00" enabled="true" visible="true" accessible="true" x="259" y="861" width="50" height="20" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" label="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" enabled="true" visible="false" accessible="true" x="254" y="890" width="61" height="12" index="14" traits="Image"/>
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="false" x="254" y="922" width="61" height="14" index="15" traits="Link">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SHOP NOW" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="true" x="254" y="922" width="61" height="14" index="0" traits="Link, StaticText"/>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="395" y="638" width="84" height="27" index="16" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Two" name="For Two" label="For Two" enabled="true" visible="true" accessible="true" x="406" y="642" width="62" height="19" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="1_melt-massage-oil.png__PID:919b1454-a52c-4e4b-9a0a-7b98599d80e4" label="1_melt-massage-oil.png__PID:919b1454-a52c-4e4b-9a0a-7b98599d80e4" enabled="true" visible="true" accessible="true" x="382" y="665" width="172" height="172" index="17" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Melt: Massage Oil" label="Melt: Massage Oil" enabled="true" visible="true" accessible="false" x="382" y="834" width="172" height="20" index="18" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Melt: Massage Oil" name="Melt: Massage Oil" label="Melt: Massage Oil" enabled="true" visible="true" accessible="true" x="400" y="834" width="136" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="382" y="861" width="172" height="20" index="19" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$32.00" name="$32.00" label="$32.00" enabled="true" visible="true" accessible="true" x="443" y="861" width="50" height="20" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" label="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" enabled="true" visible="false" accessible="true" x="437" y="890" width="61" height="12" index="20" traits="Image"/>
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="false" x="437" y="922" width="61" height="14" index="21" traits="Link">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SHOP NOW" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="true" x="437" y="922" width="61" height="14" index="0" traits="Link, StaticText"/>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="578" y="638" width="84" height="27" index="22" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Two" name="For Two" label="For Two" enabled="true" visible="false" accessible="true" x="589" y="642" width="62" height="19" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="1_love-oil.png__PID:1eeb919b-1454-452c-be4b-5a0a7b98599d" label="1_love-oil.png__PID:1eeb919b-1454-452c-be4b-5a0a7b98599d" enabled="true" visible="false" accessible="true" x="565" y="665" width="173" height="172" index="23" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Coconut Love Oil" label="Coconut Love Oil" enabled="true" visible="false" accessible="false" x="565" y="834" width="173" height="20" index="24" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Coconut Love Oil" name="Coconut Love Oil" label="Coconut Love Oil" enabled="true" visible="false" accessible="true" x="585" y="834" width="133" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="565" y="861" width="173" height="20" index="25" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$22.00" name="$22.00" label="$22.00" enabled="true" visible="false" accessible="true" x="626" y="861" width="50" height="20" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" label="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" enabled="true" visible="false" accessible="true" x="621" y="890" width="61" height="12" index="26" traits="Image"/>
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="false" x="621" y="922" width="61" height="14" index="27" traits="Link">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SHOP NOW" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="true" x="621" y="922" width="61" height="14" index="0" traits="Link, StaticText"/>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="762" y="638" width="84" height="27" index="28" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Two" name="For Two" label="For Two" enabled="true" visible="false" accessible="true" x="773" y="642" width="62" height="19" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="1_uberlube.png__PID:a52c3e4b-5a0a-4b98-999d-80e43b9532e3" label="1_uberlube.png__PID:a52c3e4b-5a0a-4b98-999d-80e43b9532e3" enabled="true" visible="false" accessible="true" x="749" y="665" width="172" height="172" index="29" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Signature Bottle: Silicone Lube" label="Signature Bottle: Silicone Lube" enabled="true" visible="false" accessible="false" x="749" y="834" width="172" height="35" index="30" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Signature Bottle: Silicone Lube" name="Signature Bottle: Silicone Lube" label="Signature Bottle: Silicone Lube" enabled="true" visible="false" accessible="true" x="770" y="834" width="130" height="35" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="749" y="876" width="172" height="20" index="31" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$21.99" name="$21.99" label="$21.99" enabled="true" visible="false" accessible="true" x="810" y="876" width="50" height="20" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" label="5-stars.svg__PID:19086c56-0a8c-4aec-ab43-9233ffbc1af9" enabled="true" visible="false" accessible="true" x="804" y="905" width="61" height="12" index="32" traits="Image"/>
+                                  <XCUIElementTypeLink type="XCUIElementTypeLink" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="false" x="804" y="937" width="62" height="14" index="33" traits="Link">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SHOP NOW" name="SHOP NOW" label="SHOP NOW" enabled="true" visible="false" accessible="true" x="804" y="937" width="62" height="14" index="0" traits="Link, StaticText"/>
+                                  </XCUIElementTypeLink>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="CATEGORY" label="CATEGORY" enabled="true" visible="false" accessible="false" x="15" y="1003" width="410" height="28" index="34" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="CATEGORY" name="CATEGORY" label="CATEGORY" enabled="true" visible="false" accessible="true" x="15" y="1003" width="127" height="28" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="15" y="1049" width="137" height="138" index="35" traits="">
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" name="category-him.png__PID:667422c4-00a3-48c0-a4ba-5c511aa9128c" label="category-him.png__PID:667422c4-00a3-48c0-a4ba-5c511aa9128c" enabled="true" visible="false" accessible="true" x="15" y="1049" width="137" height="138" index="0" traits="Image"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="For Him" label="For Him" enabled="true" visible="false" accessible="false" x="159" y="1082" width="224" height="20" index="36" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Him" name="For Him" label="For Him" enabled="true" visible="false" accessible="true" x="159" y="1082" width="62" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="159" y="1113" width="224" height="29" index="37" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="From bedroom performance to grooming that actually works." name="From bedroom performance to grooming that actually works." label="From bedroom performance to grooming that actually works." enabled="true" visible="false" accessible="true" x="159" y="1113" width="217" height="29" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="390" y="1103" width="35" height="30" index="38" traits=""/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="15" y="1206" width="137" height="138" index="39" traits="">
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" name="category-her.png__PID:4b667422-c400-4338-8024-ba5c511aa912" label="category-her.png__PID:4b667422-c400-4338-8024-ba5c511aa912" enabled="true" visible="false" accessible="true" x="15" y="1206" width="137" height="138" index="0" traits="Image"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="For Her" label="For Her" enabled="true" visible="false" accessible="false" x="159" y="1239" width="224" height="20" index="40" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Her" name="For Her" label="For Her" enabled="true" visible="false" accessible="true" x="159" y="1239" width="58" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="159" y="1270" width="224" height="29" index="41" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Intimate care, solo exploration, and wellness extras that matter." name="Intimate care, solo exploration, and wellness extras that matter." label="Intimate care, solo exploration, and wellness extras that matter." enabled="true" visible="false" accessible="true" x="159" y="1270" width="188" height="29" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="390" y="1260" width="35" height="30" index="42" traits=""/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="15" y="1363" width="137" height="137" index="43" traits="">
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" name="category-couples.png__PID:6f4b6674-22c4-40a3-b8c0-24ba5c511aa9" label="category-couples.png__PID:6f4b6674-22c4-40a3-b8c0-24ba5c511aa9" enabled="true" visible="false" accessible="true" x="15" y="1363" width="137" height="137" index="0" traits="Image"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="For Two" label="For Two" enabled="true" visible="false" accessible="false" x="159" y="1395" width="224" height="20" index="44" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="For Two" name="For Two" label="For Two" enabled="true" visible="false" accessible="true" x="159" y="1395" width="62" height="20" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="159" y="1426" width="224" height="29" index="45" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Sensory play, lubes, and a little something to spice things up." name="Sensory play, lubes, and a little something to spice things up." label="Sensory play, lubes, and a little something to spice things up." enabled="true" visible="false" accessible="true" x="159" y="1426" width="166" height="29" index="0" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="390" y="1416" width="35" height="31" index="46" traits=""/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="AWARD-WINNING PRODUCTS RECOGNISED BY" label="AWARD-WINNING PRODUCTS RECOGNISED BY" enabled="true" visible="false" accessible="false" x="15" y="1528" width="410" height="49" index="47" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="AWARD-WINNING PRODUCTS RECOGNISED BY" name="AWARD-WINNING PRODUCTS RECOGNISED BY" label="AWARD-WINNING PRODUCTS RECOGNISED BY" enabled="true" visible="false" accessible="true" x="15" y="1528" width="337" height="49" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-Glamour.svg__PID:38191e27-c2ca-481a-bc46-70b7d0141b44" label="Brand-Glamour.svg__PID:38191e27-c2ca-481a-bc46-70b7d0141b44" enabled="true" visible="false" accessible="true" x="31" y="1595" width="151" height="79" index="48" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-Forbes.svg__PID:b338191e-27c2-4aa8-9abc-4670b7d0141b" label="Brand-Forbes.svg__PID:b338191e-27c2-4aa8-9abc-4670b7d0141b" enabled="true" visible="false" accessible="true" x="197" y="1595" width="151" height="79" index="49" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-NYP.svg__PID:27c2caa8-1abc-4670-b7d0-141b4477dbc9" label="Brand-NYP.svg__PID:27c2caa8-1abc-4670-b7d0-141b4477dbc9" enabled="true" visible="false" accessible="true" x="363" y="1595" width="152" height="79" index="50" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-Vanity.svg__PID:c2caa81a-bc46-40b7-9014-1b4477dbc91d" label="Brand-Vanity.svg__PID:c2caa81a-bc46-40b7-9014-1b4477dbc91d" enabled="true" visible="false" accessible="true" x="530" y="1595" width="151" height="79" index="51" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-goop.svg__PID:191e27c2-caa8-4abc-8670-b7d0141b4477" label="Brand-goop.svg__PID:191e27c2-caa8-4abc-8670-b7d0141b4477" enabled="true" visible="false" accessible="true" x="696" y="1595" width="152" height="79" index="52" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-Vogue.svg__PID:caa81abc-4670-47d0-941b-4477dbc91d6b" label="Brand-Vogue.svg__PID:caa81abc-4670-47d0-941b-4477dbc91d6b" enabled="true" visible="false" accessible="true" x="863" y="1595" width="151" height="79" index="53" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="Brand-Guardian.svg__PID:1e27c2ca-a81a-4c46-b0b7-d0141b4477db" label="Brand-Guardian.svg__PID:1e27c2ca-a81a-4c46-b0b7-d0141b4477db" enabled="true" visible="false" accessible="true" x="1029" y="1595" width="151" height="79" index="54" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="TRENDING NOW" label="TRENDING NOW" enabled="true" visible="false" accessible="false" x="15" y="1702" width="410" height="28" index="55" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="TRENDING NOW" name="TRENDING NOW" label="TRENDING NOW" enabled="true" visible="false" accessible="true" x="15" y="1702" width="183" height="28" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="main-bottom-1.png__PID:a496d674-770b-4e87-bfa4-0681c2db1510" label="main-bottom-1.png__PID:a496d674-770b-4e87-bfa4-0681c2db1510" enabled="true" visible="false" accessible="true" x="15" y="1748" width="308" height="308" index="56" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="main-bottom-adam-sensor.PNG__PID:0bfe87ff-a406-41c2-9b15-10a8f998fb2e" label="main-bottom-adam-sensor.PNG__PID:0bfe87ff-a406-41c2-9b15-10a8f998fb2e" enabled="true" visible="false" accessible="true" x="338" y="1748" width="309" height="308" index="57" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="main-bottom-reliefher.jpg__PID:d674770b-fe87-4fa4-8681-c2db1510a8f9" label="main-bottom-reliefher.jpg__PID:d674770b-fe87-4fa4-8681-c2db1510a8f9" enabled="true" visible="false" accessible="true" x="662" y="1748" width="308" height="308" index="58" traits="Image"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="main-bottom-shebar.jpg__PID:74770bfe-87ff-4406-81c2-db1510a8f998" label="main-bottom-shebar.jpg__PID:74770bfe-87ff-4406-81c2-db1510a8f998" enabled="true" visible="false" accessible="true" x="985" y="1748" width="309" height="308" index="59" traits="Image"/>
+                                </XCUIElementTypeOther>
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="440" y="62" width="440" height="811" index="3" traits="">
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="Cart • 0" label="Cart • 0" enabled="true" visible="false" accessible="false" x="460" y="82" width="76" height="40" index="0" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Cart • 0" name="Cart • 0" label="Cart • 0" enabled="true" visible="false" accessible="true" x="460" y="87" width="76" height="30" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                  <XCUIElementTypeButton type="XCUIElementTypeButton" name="Close cart" label="Close cart" enabled="true" visible="false" accessible="true" x="830" y="87" width="30" height="30" index="1" traits="Button"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" value="3" name="Your cart is empty" label="Your cart is empty" enabled="true" visible="false" accessible="false" x="573" y="493" width="174" height="30" index="2" traits="Header">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Your cart is empty" name="Your cart is empty" label="Your cart is empty" enabled="true" visible="false" accessible="true" x="573" y="493" width="174" height="30" index="0" traits="Header, StaticText"/>
+                                  </XCUIElementTypeOther>
+                                </XCUIElementTypeOther>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeOther>
+                      </XCUIElementTypeWebView>
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 3 pages" label="Vertical scroll bar, 3 pages" enabled="true" visible="true" accessible="false" x="407" y="62" width="30" height="811" index="1" traits="Adjustable">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="434" y="19" width="3" height="37" index="0" traits=""/>
+                      </XCUIElementTypeOther>
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="0" y="840" width="440" height="30" index="2" traits="Adjustable">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="-46" y="867" width="37" height="3" index="0" traits=""/>
+                      </XCUIElementTypeOther>
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 3 pages" label="Vertical scroll bar, 3 pages" enabled="true" visible="true" accessible="false" x="407" y="62" width="30" height="811" index="3" traits="Adjustable">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="434" y="19" width="3" height="37" index="0" traits=""/>
+                      </XCUIElementTypeOther>
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="0" y="840" width="440" height="30" index="4" traits="Adjustable">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="-46" y="867" width="37" height="3" index="0" traits=""/>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeWebView>
+                  </XCUIElementTypeWebView>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="1" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+                <XCUIElementTypeTabBar type="XCUIElementTypeTabBar" name="Tab Bar" label="Tab Bar" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="83" y="873" width="274" height="62" index="0" traits="">
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="83" y="873" width="94" height="54" index="0" traits=""/>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="83" y="873" width="274" height="62" index="1" traits="">
+                      <XCUIElementTypeButton type="XCUIElementTypeButton" name="Today" label="Today" enabled="true" visible="true" accessible="true" x="87" y="877" width="94" height="54" index="0" traits="Button">
+                        <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_glyph_checklist" enabled="true" visible="true" accessible="false" x="122" y="885" width="24" height="24" index="0" traits="Image"/>
+                      </XCUIElementTypeButton>
+                      <XCUIElementTypeButton type="XCUIElementTypeButton" name="Explore" label="Explore" enabled="true" visible="true" accessible="true" x="173" y="877" width="94" height="54" index="1" traits="Button">
+                        <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_Glyph_Program_New_Tab" enabled="true" visible="true" accessible="false" x="208" y="885" width="24" height="24" index="0" traits="Image"/>
+                      </XCUIElementTypeButton>
+                      <XCUIElementTypeButton type="XCUIElementTypeButton" value="1" name="Shop" label="Shop" enabled="true" visible="true" accessible="true" x="259" y="877" width="94" height="54" index="2" traits="Selected, Button">
+                        <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_glyph_shop" enabled="true" visible="true" accessible="false" x="294" y="885" width="24" height="24" index="0" traits="Image"/>
+                      </XCUIElementTypeButton>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="2" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="0" traits=""/>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="1" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="0" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="1" traits=""/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="259" y="877" width="94" height="54" index="1" traits=""/>
+                        </XCUIElementTypeOther>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeTabBar>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="1" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits="">
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits=""/>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="1" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="873" width="440" height="83" index="0" traits=""/>
+                    </XCUIElementTypeOther>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="1" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits=""/>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>
+

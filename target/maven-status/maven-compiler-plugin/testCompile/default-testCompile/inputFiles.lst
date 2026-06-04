@@ -6,11 +6,14 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/MainPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/ChatTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/AutoSuite.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/DailyPlanTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/HWPageObject/ArticlePageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx8.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSNavigationUI.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSDailyPlanPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/ProfileTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/Platform.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/PushNotificationTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/ArticlePageObjectFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/MyListsPageObjectFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx17.java
@@ -36,7 +39,10 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/CoachFlowPageObjectFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachProfileTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSSearchPageObject.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/DailyPlanPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/CoreTestCase.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachAuthorizationFlowTests.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/DailyPlanPageObjectFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSProfilePageObject.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/PdfGuideTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx18.java
