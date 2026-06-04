@@ -46,7 +46,7 @@ public class MainPageObject {
     }
 
     public WebElement waitForElementAndClick(String locator, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(locator, error_message, 5);
+        WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
         element.click();
         return element;
     }
@@ -67,7 +67,7 @@ public class MainPageObject {
     }
 
     public WebElement waitForElementAndSendKeys(String locator, String value, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(locator, error_message, 5);
+        WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
         element.sendKeys(value);
         return element;
     }
@@ -89,17 +89,23 @@ public class MainPageObject {
 
     public void swipeUp(int timeOfSwipe) {
         if (driver instanceof PerformsTouchActions) {
-            TouchAction action = new TouchAction((PerformsTouchActions) driver);
-            Dimension size = driver.manage().window().getSize();
-            int x = size.width / 2;
-            int start_y = (int) (size.height * 0.8);
-            int end_y = (int) (size.height * 0.2);
-            action
-                    .press(PointOption.point(x, start_y))
-                    .waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeOfSwipe)))
-                    .moveTo(PointOption.point(x, end_y))
-                    .release()
-                    .perform();
+            try {
+                Map<String, Object> args = new HashMap<String, Object>();
+                args.put("direction", "up");
+                ((JavascriptExecutor) driver).executeScript("mobile: swipe", args);
+            } catch (WebDriverException e) {
+                TouchAction action = new TouchAction((PerformsTouchActions) driver);
+                Dimension size = driver.manage().window().getSize();
+                int x = size.width / 2;
+                int start_y = (int) (size.height * 0.8);
+                int end_y = (int) (size.height * 0.2);
+                action
+                        .press(PointOption.point(x, start_y))
+                        .waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeOfSwipe)))
+                        .moveTo(PointOption.point(x, end_y))
+                        .release()
+                        .perform();
+            }
         } else {
             System.out.println("Method swipeUp does nothing for platform " + Platform.getInstance().getPlatformVar());
         }

@@ -5,7 +5,9 @@ lib/ui/NavigationUI.class
 tests/SearchTests.class
 lib/ui/ios/iOSCoachFlowPageObject.class
 lib/ui/SearchPageObject.class
+tests/PushNotificationTests.class
 lib/ui/ios/iOSSearchPageObject.class
+tests/PdfGuideTests.class
 lib/Platform.class
 lib/ui/DailyPlanPageObject.class
 tests/CoachAuthorizationTests.class

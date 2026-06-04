@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="440" height="956" index="0" traits=""/>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="1" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="440" height="956" index="0" traits="">
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="PDFGuideUpsellCloseImage" label="PDFGuideUpsellCloseImage" enabled="true" visible="true" accessible="true" x="24" y="62" width="32" height="32" index="0" traits="Button"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="RESTORE" label="RESTORE" enabled="true" visible="true" accessible="true" x="296" y="62" width="120" height="32" index="1" traits="Button">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="RESTORE" name="RESTORE" label="RESTORE" enabled="true" visible="true" accessible="false" x="319" y="69" width="74" height="18" index="0" traits="StaticText"/>
+          </XCUIElementTypeButton>
+          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ADD THE WORKBOOK &#10;TO YOUR PLAN" name="ADD THE WORKBOOK &#10;TO YOUR PLAN" label="ADD THE WORKBOOK &#10;TO YOUR PLAN" enabled="true" visible="true" accessible="true" x="16" y="101" width="408" height="73" index="2" traits="StaticText"/>
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="22" y="182" width="396" height="610" index="3" traits="">
+            <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellBookImage" enabled="true" visible="true" accessible="false" x="12" y="172" width="190" height="190" index="0" traits="Image"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="E-workbook" name="E-workbook" label="E-workbook" enabled="true" visible="true" accessible="true" x="182" y="205" width="220" height="15" index="1" traits="StaticText"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="&quot;Essential skills of a great partner&quot;" name="&quot;Essential skills of a great partner&quot;" label="&quot;Essential skills of a great partner&quot;" enabled="true" visible="true" accessible="true" x="182" y="225" width="226" height="34" index="2" traits="StaticText"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Discount for new users" name="Discount for new users" label="Discount for new users" enabled="true" visible="true" accessible="true" x="182" y="269" width="143" height="15" index="3" traits="StaticText"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$19.99" name="$19.99" label="$19.99" enabled="true" visible="true" accessible="true" x="182" y="289" width="66" height="26" index="4" traits="StaticText">
+              <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellLineImage" enabled="true" visible="true" accessible="false" x="182" y="292" width="66" height="20" index="0" traits="Image"/>
+            </XCUIElementTypeStaticText>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="$9.99" name="$9.99" label="$9.99" enabled="true" visible="true" accessible="true" x="255" y="286" width="70" height="32" index="5" traits="StaticText"/>
+            <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellCheckImage" enabled="true" visible="true" accessible="false" x="67" y="352" width="9" height="8" index="6" traits="Image"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Deeper Emotional Connection" name="Deeper Emotional Connection" label="Deeper Emotional Connection" enabled="true" visible="true" accessible="true" x="106" y="348" width="219" height="17" index="7" traits="StaticText"/>
+            <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellCheckImage" enabled="true" visible="true" accessible="false" x="67" y="381" width="9" height="9" index="8" traits="Image"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Enhanced Physical Intimacy" name="Enhanced Physical Intimacy" label="Enhanced Physical Intimacy" enabled="true" visible="true" accessible="true" x="106" y="377" width="205" height="17" index="9" traits="StaticText"/>
+            <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellCheckImage" enabled="true" visible="true" accessible="false" x="67" y="411" width="9" height="8" index="10" traits="Image"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Build the perfect relationship" name="Build the perfect relationship" label="Build the perfect relationship" enabled="true" visible="true" accessible="true" x="106" y="407" width="214" height="17" index="11" traits="StaticText"/>
+          </XCUIElementTypeOther>
+          <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellManWomanImage" enabled="true" visible="true" accessible="false" x="0" y="386" width="440" height="571" index="4" traits="Image"/>
+          <XCUIElementTypeImage type="XCUIElementTypeImage" name="PDFGuideUpsellCircleImage" enabled="true" visible="true" accessible="false" x="0" y="402" width="440" height="539" index="5" traits="Image"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="ADD TO MY PROGRAM" label="ADD TO MY PROGRAM" enabled="true" visible="true" accessible="true" x="16" y="801" width="408" height="53" index="6" traits="Button">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ADD TO MY PROGRAM" name="ADD TO MY PROGRAM" label="ADD TO MY PROGRAM" enabled="true" visible="true" accessible="false" x="133" y="819" width="174" height="17" index="0" traits="StaticText"/>
+          </XCUIElementTypeButton>
+          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="This is a one-time payment." name="This is a one-time payment." label="This is a one-time payment." enabled="true" visible="true" accessible="true" x="16" y="883" width="408" height="15" index="7" traits="StaticText"/>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>
+

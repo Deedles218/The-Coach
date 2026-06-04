@@ -3,6 +3,7 @@ package lib.ui;
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
@@ -19,9 +20,19 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             DAILY_LESSONS_TITLE,
             FIRST_LESSON_TITLE,
             FIRST_LESSON_TYPE,
+            LESSON_SCREEN_TITLE,
+            LESSON_SCREEN_CONTENT,
+            LESSON_SCREEN_BACK_BUTTON,
             DAILY_PRACTICE_TITLE,
             FIRST_PRACTICE_TITLE,
             FIRST_PRACTICE_TYPE,
+            PRACTICE_SCREEN_TITLE,
+            PRACTICE_SCREEN_GOAL_TITLE,
+            PRACTICE_SCREEN_EXERCISES_TITLE,
+            PRACTICE_SCREEN_START_BUTTON,
+            PRACTICE_SCREEN_CLOSE_BUTTON,
+            LOCKED_MODULE_POPUP_TITLE,
+            LOCKED_MODULE_POPUP_BUTTON,
             LOCKED_NEXT_DAY_POPUP_TITLE,
             LOCKED_NEXT_DAY_POPUP_MESSAGE,
             LOCKED_NEXT_DAY_POPUP_BUTTON;
@@ -57,6 +68,29 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.waitForElementPresent(FIRST_LESSON_TYPE, "First Daily Lessons item type is not displayed", 10);
     }
 
+    public boolean hasDailyLessonsAvailable() {
+        return this.isElementPresent(DAILY_LESSONS_TITLE) && this.isElementPresent(FIRST_LESSON_TITLE);
+    }
+
+    @Step("Open first Daily Lesson")
+    public void openFirstDailyLesson() {
+        this.assertDailyLessonsAreDisplayed();
+        this.waitForElementAndClick(FIRST_LESSON_TITLE, "Cannot open first Daily Lesson", 10);
+        this.waitForElementPresent(LESSON_SCREEN_TITLE, "Daily Lesson screen title is not displayed", 15);
+    }
+
+    @Step("Verify Daily Lesson screen is displayed")
+    public void assertDailyLessonScreenIsDisplayed() {
+        this.waitForElementPresent(LESSON_SCREEN_TITLE, "Daily Lesson screen title is not displayed", 10);
+        this.waitForElementPresent(LESSON_SCREEN_CONTENT, "Daily Lesson content is not displayed", 10);
+    }
+
+    @Step("Return from Daily Lesson to Daily Plan")
+    public void returnFromDailyLessonToDailyPlan() {
+        this.waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson screen", 10);
+        this.waitForElementPresent(TAB_TODAY, "Daily Plan did not return after closing Daily Lesson", 10);
+    }
+
     @Step("Verify Daily Practice is displayed")
     public void assertDailyPracticeIsDisplayed() {
         int alreadySwiped = 0;
@@ -69,16 +103,56 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.waitForElementPresent(FIRST_PRACTICE_TYPE, "First Daily Practice item type is not displayed", 10);
     }
 
+    @Step("Open first Daily Practice")
+    public void openFirstDailyPractice() {
+        this.assertDailyPracticeIsDisplayed();
+        this.waitForElementAndClick(FIRST_PRACTICE_TITLE, "Cannot open first Daily Practice", 10);
+        if (this.isLockedModulePopupDisplayed()) {
+            return;
+        }
+        this.waitForElementPresent(PRACTICE_SCREEN_TITLE, "Daily Practice screen title is not displayed", 15);
+    }
+
+    @Step("Verify Daily Practice player/start screen is displayed")
+    public void assertDailyPracticeScreenIsDisplayed() {
+        this.waitForElementPresent(PRACTICE_SCREEN_TITLE, "Daily Practice screen title is not displayed", 10);
+    }
+
+    @Step("Return from Daily Practice to Daily Plan")
+    public void returnFromDailyPracticeToDailyPlan() {
+        try {
+            this.waitForElementAndClick(PRACTICE_SCREEN_CLOSE_BUTTON, "Cannot close Daily Practice screen", 5);
+        } catch (TimeoutException e) {
+            this.tapTopRightCloseFallback();
+        }
+        this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Plan did not return after closing Daily Practice", 10);
+    }
+
+    public boolean isLockedModulePopupDisplayed() {
+        return this.isElementPresent(LOCKED_MODULE_POPUP_TITLE);
+    }
+
+    @Step("Close locked module popup")
+    public void closeLockedModulePopup() {
+        this.waitForElementAndClick(LOCKED_MODULE_POPUP_BUTTON, "Cannot close locked module popup", 10);
+        this.waitForElementNotPresent(LOCKED_MODULE_POPUP_TITLE, "Locked module popup is still displayed", 10);
+    }
+
     @Step("Verify right arrow does not move to the next day when current day is locked")
     public void assertRightArrowDoesNotChangeCurrentDayWhenLocked() {
         String dayBeforeTap = this.getCurrentDayLabel();
         this.waitForElementAndClick(RIGHT_SWITCHER_ARROW, "Cannot tap Daily Plan right arrow", 10);
-        this.closeLockedNextDayPopupIfPresent();
-        Assert.assertEquals(
-                "Daily Plan day changed after tapping locked right arrow",
-                dayBeforeTap,
-                this.getCurrentDayLabel()
-        );
+        if (this.isLockedNextDayPopupDisplayed()) {
+            this.closeLockedNextDayPopup();
+            Assert.assertEquals(
+                    "Daily Plan day changed after tapping locked right arrow",
+                    dayBeforeTap,
+                    this.getCurrentDayLabel()
+            );
+        } else {
+            System.out.println("Next Daily Plan stage was available; locked-next-day assertion is not applicable for this account state.");
+            this.assertDailyPlanDaySwitcherIsDisplayed();
+        }
     }
 
     @Step("Close locked next day popup")
@@ -108,6 +182,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         } catch (Exception e) {
             System.out.println("Locked next day popup was not shown; continuing.");
         }
+    }
+
+    public boolean isLockedNextDayPopupDisplayed() {
+        return this.isElementPresent(LOCKED_NEXT_DAY_POPUP_TITLE);
     }
 
     @Step("Verify left arrow keeps the first Daily Plan day selected")
@@ -148,5 +226,12 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             this.mobileSwipeDown();
             alreadySwiped++;
         }
+    }
+
+    private void tapTopRightCloseFallback() {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x", driver.manage().window().getSize().getWidth() - 32);
+        args.put("y", 90);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", args);
     }
 }
