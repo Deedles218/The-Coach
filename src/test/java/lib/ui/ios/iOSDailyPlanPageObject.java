@@ -27,6 +27,10 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         PRACTICE_SCREEN_EXERCISES_TITLE = "xpath://XCUIElementTypeStaticText[@label='EXERCISES' or @name='EXERCISES' or contains(@name, 'ADVANCED')]";
         PRACTICE_SCREEN_START_BUTTON = "id:START WORKOUT";
         PRACTICE_SCREEN_CLOSE_BUTTON = "id:ProgramCloseButtonIcon";
+        CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Move to tomorrow'] | //XCUIElementTypeButton[@name='Move to tomorrow']";
+        CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Remove from Daily Plan'] | //XCUIElementTypeButton[@name='Remove from Daily Plan']";
+        CUSTOMIZATION_DELETE_CONFIRM_BUTTON = "id:DELETE ANYWAYS";
+        CUSTOMIZATION_CANCEL_DELETE_BUTTON = "id:CANCEL";
         LOCKED_MODULE_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Complete current module to unlock the next one')]";
         LOCKED_MODULE_POPUP_BUTTON = "id:GOT IT";
 

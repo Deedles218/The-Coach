@@ -4,6 +4,8 @@ import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
@@ -31,6 +33,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             PRACTICE_SCREEN_EXERCISES_TITLE,
             PRACTICE_SCREEN_START_BUTTON,
             PRACTICE_SCREEN_CLOSE_BUTTON,
+            CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
+            CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
+            CUSTOMIZATION_DELETE_CONFIRM_BUTTON,
+            CUSTOMIZATION_CANCEL_DELETE_BUTTON,
             LOCKED_MODULE_POPUP_TITLE,
             LOCKED_MODULE_POPUP_BUTTON,
             LOCKED_NEXT_DAY_POPUP_TITLE,
@@ -130,6 +136,74 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     public boolean isLockedModulePopupDisplayed() {
         return this.isElementPresent(LOCKED_MODULE_POPUP_TITLE);
+    }
+
+    @Step("Open Daily Plan customization actions for the first Daily Practice card")
+    public void openCustomizationActionsForFirstDailyPractice() {
+        this.assertDailyPracticeIsDisplayed();
+        WebElement practiceCard = this.waitForElementPresent(
+                FIRST_PRACTICE_TITLE,
+                "First Daily Practice item is not displayed",
+                10
+        );
+        this.touchAndHoldElement(practiceCard, 0.8);
+        this.assertCustomizationActionsSheetIsDisplayed();
+    }
+
+    @Step("Verify Daily Plan customization actions sheet is displayed")
+    public void assertCustomizationActionsSheetIsDisplayed() {
+        this.waitForElementPresent(
+                CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
+                "Move to tomorrow action is not displayed",
+                10
+        );
+        this.waitForElementPresent(
+                CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
+                "Remove from Daily Plan action is not displayed",
+                10
+        );
+    }
+
+    @Step("Tap Remove from Daily Plan action")
+    public void tapRemoveFromDailyPlanAction() {
+        this.waitForElementAndClick(
+                CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
+                "Cannot tap Remove from Daily Plan action",
+                10
+        );
+    }
+
+    @Step("Verify Remove from Daily Plan confirmation is displayed")
+    public void assertRemoveFromDailyPlanConfirmationIsDisplayed() {
+        this.waitForElementPresent(
+                CUSTOMIZATION_DELETE_CONFIRM_BUTTON,
+                "Delete confirmation button is not displayed",
+                10
+        );
+        this.waitForElementPresent(
+                CUSTOMIZATION_CANCEL_DELETE_BUTTON,
+                "Cancel delete button is not displayed",
+                10
+        );
+    }
+
+    @Step("Cancel Remove from Daily Plan confirmation")
+    public void cancelRemoveFromDailyPlan() {
+        this.waitForElementAndClick(
+                CUSTOMIZATION_CANCEL_DELETE_BUTTON,
+                "Cannot cancel Remove from Daily Plan confirmation",
+                10
+        );
+        this.waitForElementNotPresent(
+                CUSTOMIZATION_DELETE_CONFIRM_BUTTON,
+                "Delete confirmation is still displayed after cancelling",
+                10
+        );
+    }
+
+    @Step("Verify first Daily Practice card remains in Daily Plan")
+    public void assertFirstDailyPracticeStillDisplayed() {
+        this.assertDailyPracticeIsDisplayed();
     }
 
     @Step("Close locked module popup")
@@ -233,5 +307,12 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         args.put("x", driver.manage().window().getSize().getWidth() - 32);
         args.put("y", 90);
         ((JavascriptExecutor) driver).executeScript("mobile: tap", args);
+    }
+
+    private void touchAndHoldElement(WebElement element, double duration) {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("elementId", ((RemoteWebElement) element).getId());
+        args.put("duration", duration);
+        ((JavascriptExecutor) driver).executeScript("mobile: touchAndHold", args);
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="4" failures="0" name="tests.DailyPlanTests" time="56.23" errors="0" skipped="2">
+<testsuite tests="1" failures="0" name="tests.DailyPlanTests" time="68.476" errors="1" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="RU"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
-    <property name="test" value="DailyPlanTests"/>
+    <property name="test" value="DailyPlanTests#test05DailyPlanRemoveActionCanBeCancelled"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
     <property name="java.runtime.version" value="1.8.0_261-b12"/>
@@ -26,6 +26,7 @@
     <property name="line.separator" value="
 "/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="ios.deviceName" value="iPhone 17 Pro Max"/>
     <property name="os.name" value="Mac OS X"/>
     <property name="classworlds.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/bin/m2.conf"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -35,8 +36,8 @@
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="os.version" value="26.5"/>
-    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="user.home" value="/Users/deedles"/>
     <property name="user.timezone" value="Europe/Samara"/>
     <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
@@ -48,7 +49,8 @@
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=DailyPlanTests -Dios.bundleId=com.vamapps.The-Coach test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=DailyPlanTests#test05DailyPlanRemoveActionCanBeCancelled -Dios.bundleId=com.vamapps.The-Coach -Dios.deviceName=iPhone 17 Pro Max -Dios.xcodeOrgId=3RZUQ28RXP -Dios.xcodeSigningId=Apple Development test"/>
+    <property name="ios.xcodeSigningId" value="Apple Development"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="ru"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -64,20 +66,79 @@
     <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ios.xcodeOrgId" value="3RZUQ28RXP"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.DailyPlanTests" name="test01DailyPlanLessonsAndPracticeDisplayed" time="16.839"/>
-  <testcase classname="tests.DailyPlanTests" name="test02DailyPlanLockedNextDayAndFirstDayLeftArrow" time="14.733"/>
-  <testcase classname="tests.DailyPlanTests" name="test03DailyPlanLessonOpensAndReturns" time="9.303">
-    <skipped/>
-    <system-out>PDF guide upsell was not shown; continuing.
-Notification prompt was not shown; continuing.
-</system-out>
-  </testcase>
-  <testcase classname="tests.DailyPlanTests" name="test04DailyPlanExerciseOpensAndReturns" time="15.355">
-    <skipped/>
-    <system-out>PDF guide upsell was not shown; continuing.
-Notification prompt was not shown; continuing.
-</system-out>
+  <testcase classname="tests.DailyPlanTests" name="test05DailyPlanRemoveActionCanBeCancelled" time="68.476">
+    <error message="Could not start a new session. Response code 500. Message: An unknown server-side error occurred while processing the command. Original error: Unable to launch WebDriverAgent. Original error: xcodebuild failed with code 65. This usually indicates an issue with the local Xcode setup or WebDriverAgent project configuration or the driver-to-platform version mismatch. Consider setting &apos;showXcodeLog&apos; capability to true in order to check the Appium server log for build-related error messages.. Make sure you follow the tutorial at https://appium.github.io/appium-xcuitest-driver/latest/preparation/real-device-config/ 
+Host info: host: &apos;MacBook-Pro.local&apos;, ip: &apos;fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0&apos;
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [null, newSession {capabilities=[{appium:automationName=XCUITest, appium:bundleId=com.vamapps.The-Coach, appium:deviceName=iPhone 17 Pro Max, appium:noReset=true, platformName=IOS, appium:platformVersion=26.5, appium:udid=00008150-00084CDE0CF0401C, appium:xcodeOrgId=3RZUQ28RXP, appium:xcodeSigningId=Apple Development}], desiredCapabilities=Capabilities {automationName: XCUITest, bundleId: com.vamapps.The-Coach, deviceName: iPhone 17 Pro Max, noReset: true, platformName: IOS, platformVersion: 26.5, udid: 00008150-00084CDE0CF0401C, xcodeOrgId: 3RZUQ28RXP, xcodeSigningId: Apple Development}}]
+Capabilities {automationName: XCUITest, bundleId: com.vamapps.The-Coach, deviceName: iPhone 17 Pro Max, noReset: true, platformName: IOS, platformVersion: 26.5, udid: 00008150-00084CDE0CF0401C, xcodeOrgId: 3RZUQ28RXP, xcodeSigningId: Apple Development}" type="org.openqa.selenium.SessionNotCreatedException">org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: An unknown server-side error occurred while processing the command. Original error: Unable to launch WebDriverAgent. Original error: xcodebuild failed with code 65. This usually indicates an issue with the local Xcode setup or WebDriverAgent project configuration or the driver-to-platform version mismatch. Consider setting &apos;showXcodeLog&apos; capability to true in order to check the Appium server log for build-related error messages.. Make sure you follow the tutorial at https://appium.github.io/appium-xcuitest-driver/latest/preparation/real-device-config/ 
+Host info: host: &apos;MacBook-Pro.local&apos;, ip: &apos;fd88:197c:787a:0:1c2b:edc0:b7e2:f4e7%en0&apos;
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [null, newSession {capabilities=[{appium:automationName=XCUITest, appium:bundleId=com.vamapps.The-Coach, appium:deviceName=iPhone 17 Pro Max, appium:noReset=true, platformName=IOS, appium:platformVersion=26.5, appium:udid=00008150-00084CDE0CF0401C, appium:xcodeOrgId=3RZUQ28RXP, appium:xcodeSigningId=Apple Development}], desiredCapabilities=Capabilities {automationName: XCUITest, bundleId: com.vamapps.The-Coach, deviceName: iPhone 17 Pro Max, noReset: true, platformName: IOS, platformVersion: 26.5, udid: 00008150-00084CDE0CF0401C, xcodeOrgId: 3RZUQ28RXP, xcodeSigningId: Apple Development}}]
+Capabilities {automationName: XCUITest, bundleId: com.vamapps.The-Coach, deviceName: iPhone 17 Pro Max, noReset: true, platformName: IOS, platformVersion: 26.5, udid: 00008150-00084CDE0CF0401C, xcodeOrgId: 3RZUQ28RXP, xcodeSigningId: Apple Development}
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:140)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at io.appium.java_client.remote.AppiumProtocolHandshake.createSession(AppiumProtocolHandshake.java:133)
+	at io.appium.java_client.remote.AppiumProtocolHandshake.createSession(AppiumProtocolHandshake.java:102)
+	at io.appium.java_client.remote.AppiumCommandExecutor.createSession(AppiumCommandExecutor.java:182)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at io.appium.java_client.AppiumDriver.startSession(AppiumDriver.java:274)
+	at org.openqa.selenium.remote.RemoteWebDriver.&lt;init&gt;(RemoteWebDriver.java:163)
+	at io.appium.java_client.AppiumDriver.&lt;init&gt;(AppiumDriver.java:89)
+	at io.appium.java_client.AppiumDriver.&lt;init&gt;(AppiumDriver.java:101)
+	at io.appium.java_client.ios.IOSDriver.&lt;init&gt;(IOSDriver.java:104)
+	at lib.Platform.getDriver(Platform.java:52)
+	at lib.CoreTestCase.setUp_aroundBody0(CoreTestCase.java:23)
+	at lib.CoreTestCase$AjcClosure1.run(CoreTestCase.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.CoreTestCase.setUp(CoreTestCase.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:242)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:137)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+</error>
+    <system-err>log4j:WARN No appenders could be found for logger (io.netty.util.internal.logging.InternalLoggerFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+</system-err>
   </testcase>
 </testsuite>
