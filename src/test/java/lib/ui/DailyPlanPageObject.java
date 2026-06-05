@@ -36,9 +36,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             KEGEL_DAILY_PLAN_TITLE,
             KEGEL_START_SCREEN_TITLE,
             KEGEL_START_SCREEN_DESCRIPTION,
+            KEGEL_START_SCREEN_LEVEL,
             KEGEL_START_SCREEN_DURATION,
+            KEGEL_START_SCREEN_DURATION_VALUE,
             KEGEL_START_SCREEN_INTENSITY,
+            KEGEL_START_SCREEN_INTENSITY_VALUE,
+            KEGEL_START_SCREEN_STRETCHING_TITLE,
+            KEGEL_START_SCREEN_STRETCHING_DESCRIPTION,
             KEGEL_START_SCREEN_EXERCISE_TITLE,
+            KEGEL_START_SCREEN_EXERCISE_ITEMS,
+            KEGEL_START_SCREEN_EXERCISE_METADATA,
             KEGEL_PLAYER_BACK_BUTTON,
             KEGEL_PLAYER_MUTE_BUTTON,
             KEGEL_PLAYER_UNMUTE_BUTTON,
@@ -51,6 +58,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             KEGEL_PLAYER_REWIND_BACK_BUTTON,
             KEGEL_PLAYER_REWIND_FORWARD_BUTTON,
             KEGEL_PLAYER_VIBRATION_BUTTON,
+            KEGEL_PLAYER_VIBRATION_ON_BUTTON,
+            KEGEL_PLAYER_VIBRATION_OFF_BUTTON,
             KEGEL_PLAYER_INFO_BUTTON,
             KEGEL_PLAYER_INFO_TOOLTIP,
             KEGEL_PLAYER_INFO_MODAL_TITLE,
@@ -64,6 +73,9 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON,
             PRACTICE_COMPLETION_FEEDBACK_TITLE,
             PRACTICE_COMPLETION_FEEDBACK_CLOSE_BUTTON,
+            PRACTICE_COMPLETION_INTENSITY_TOO_EASY,
+            PRACTICE_COMPLETION_INTENSITY_GREAT,
+            PRACTICE_COMPLETION_INTENSITY_TOO_HARD,
             CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
             CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
             CUSTOMIZATION_DELETE_CONFIRM_BUTTON,
@@ -174,7 +186,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Close Kegel exercise flow if it is already open")
     public void closeKegelExerciseFlowIfPresent() {
         try {
-            if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
+            if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE)
+                    && this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
                         "Cannot close Kegel player info modal",
@@ -212,7 +225,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             }
 
             if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
-                this.waitForElementAndClick(
+                this.tapElementCenter(
                         PRACTICE_SCREEN_CLOSE_BUTTON,
                         "Cannot close Kegel start screen",
                         5
@@ -220,13 +233,18 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             } else if (this.isElementPresent(PRACTICE_SCREEN_START_BUTTON)) {
                 this.scrollToKegelStartHeader();
                 if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
-                    this.waitForElementAndClick(
+                    this.tapElementCenter(
                             PRACTICE_SCREEN_CLOSE_BUTTON,
                             "Cannot close Kegel start screen",
                             5
                     );
                 }
             }
+            this.waitForElementNotPresent(
+                    KEGEL_START_SCREEN_TITLE,
+                    "Kegel start screen is still displayed after closing",
+                    10
+            );
         } catch (Exception e) {
             System.out.println("Kegel exercise flow was not open or did not need closing; continuing.");
         }
@@ -296,6 +314,34 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         }
     }
 
+    @Step("Verify Kegel start screen exercise information")
+    public void assertKegelStartScreenExerciseInformation() {
+        this.scrollToKegelStartHeader();
+        this.waitForElementPresent(KEGEL_START_SCREEN_LEVEL, "Kegel level is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_DURATION, "Kegel duration label is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_DURATION_VALUE, "Kegel duration value is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_INTENSITY, "Kegel intensity label is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_INTENSITY_VALUE, "Kegel intensity value is not displayed", 10);
+        this.waitForElementPresent(PRACTICE_SCREEN_GOAL_TITLE, "Kegel goal title is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_DESCRIPTION, "Kegel goal description is not displayed", 10);
+        this.waitForElementPresent(PRACTICE_SCREEN_EXERCISES_TITLE, "Kegel exercises title is not displayed", 10);
+        this.waitForElementPresent(KEGEL_START_SCREEN_STRETCHING_TITLE, "Kegel stretching option is not displayed", 10);
+        this.waitForElementPresent(
+                KEGEL_START_SCREEN_STRETCHING_DESCRIPTION,
+                "Kegel stretching explanation is not displayed",
+                10
+        );
+        this.waitForElementPresent(KEGEL_START_SCREEN_EXERCISE_TITLE, "Kegel exercise title is not displayed", 10);
+        Assert.assertTrue(
+                "Kegel start screen should contain more than one exercise",
+                this.getAmountElements(KEGEL_START_SCREEN_EXERCISE_ITEMS) > 1
+        );
+        Assert.assertTrue(
+                "Kegel exercise intensity and duration metadata is not displayed",
+                this.getAmountElements(KEGEL_START_SCREEN_EXERCISE_METADATA) > 0
+        );
+    }
+
     @Step("Start Kegel exercise")
     public void startKegelExercise() {
         this.scrollToKegelStartButton();
@@ -329,7 +375,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Close Kegel player instructions if they are open")
     public void closeKegelPlayerInstructionsIfPresent() {
-        if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
+        if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE)
+                && this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
             this.waitForElementAndClick(
                     KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
                     "Cannot close Kegel player instructions",
@@ -365,10 +412,42 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         Assert.assertTrue("Kegel player sound control is not displayed after toggle", this.isKegelPlayerSoundControlDisplayed());
     }
 
+    @Step("Set Kegel player sound enabled: {enabled}")
+    public void setKegelPlayerSoundEnabled(boolean enabled) {
+        if (enabled && this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON)) {
+            this.tapElementCenter(KEGEL_PLAYER_MUTE_BUTTON, "Cannot enable Kegel player sound", 10);
+        } else if (!enabled && this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON)) {
+            this.tapElementCenter(KEGEL_PLAYER_UNMUTE_BUTTON, "Cannot disable Kegel player sound", 10);
+        }
+        this.assertKegelPlayerSoundEnabled(enabled);
+    }
+
+    @Step("Verify Kegel player sound enabled: {enabled}")
+    public void assertKegelPlayerSoundEnabled(boolean enabled) {
+        String expectedLocator = enabled ? KEGEL_PLAYER_UNMUTE_BUTTON : KEGEL_PLAYER_MUTE_BUTTON;
+        this.waitForElementPresent(expectedLocator, "Kegel player sound state did not change as expected", 10);
+    }
+
     @Step("Toggle Kegel player vibration")
     public void toggleKegelPlayerVibration() {
         this.tapElementCenter(KEGEL_PLAYER_VIBRATION_BUTTON, "Cannot tap Kegel player vibration control", 10);
         this.waitForElementPresent(KEGEL_PLAYER_VIBRATION_BUTTON, "Kegel player vibration control is not displayed after toggle", 10);
+    }
+
+    @Step("Set Kegel player vibration enabled: {enabled}")
+    public void setKegelPlayerVibrationEnabled(boolean enabled) {
+        if (enabled && this.isElementPresent(KEGEL_PLAYER_VIBRATION_OFF_BUTTON)) {
+            this.tapElementCenter(KEGEL_PLAYER_VIBRATION_OFF_BUTTON, "Cannot enable Kegel player vibration", 10);
+        } else if (!enabled && this.isElementPresent(KEGEL_PLAYER_VIBRATION_ON_BUTTON)) {
+            this.tapElementCenter(KEGEL_PLAYER_VIBRATION_ON_BUTTON, "Cannot disable Kegel player vibration", 10);
+        }
+        this.assertKegelPlayerVibrationEnabled(enabled);
+    }
+
+    @Step("Verify Kegel player vibration enabled: {enabled}")
+    public void assertKegelPlayerVibrationEnabled(boolean enabled) {
+        String expectedLocator = enabled ? KEGEL_PLAYER_VIBRATION_ON_BUTTON : KEGEL_PLAYER_VIBRATION_OFF_BUTTON;
+        this.waitForElementPresent(expectedLocator, "Kegel player vibration state did not change as expected", 10);
     }
 
     @Step("Open Kegel player info")
@@ -394,6 +473,37 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     public boolean isKegelPlayerSoundControlDisplayed() {
         return this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON) || this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON);
+    }
+
+    public boolean isKegelCompletionIntensityFeedbackDisplayed() {
+        return this.isElementPresent(PRACTICE_COMPLETION_FEEDBACK_TITLE)
+                && this.isElementPresent(PRACTICE_COMPLETION_INTENSITY_TOO_EASY)
+                && this.isElementPresent(PRACTICE_COMPLETION_INTENSITY_GREAT)
+                && this.isElementPresent(PRACTICE_COMPLETION_INTENSITY_TOO_HARD);
+    }
+
+    @Step("Select Too Hard Kegel completion intensity feedback")
+    public void selectTooHardKegelCompletionIntensityFeedback() {
+        this.waitForElementPresent(
+                PRACTICE_COMPLETION_INTENSITY_TOO_EASY,
+                "Too Easy intensity feedback option is not displayed",
+                10
+        );
+        this.waitForElementPresent(
+                PRACTICE_COMPLETION_INTENSITY_GREAT,
+                "Great intensity feedback option is not displayed",
+                10
+        );
+        this.waitForElementAndClick(
+                PRACTICE_COMPLETION_INTENSITY_TOO_HARD,
+                "Cannot select Too Hard intensity feedback",
+                10
+        );
+        this.waitForElementPresent(
+                PRACTICE_COMPLETION_INTENSITY_TOO_HARD,
+                "Too Hard intensity feedback option disappeared after selection",
+                10
+        );
     }
 
     private void scrollToKegelStartHeader() {
