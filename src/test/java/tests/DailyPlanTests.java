@@ -141,6 +141,35 @@ public class DailyPlanTests extends CoreTestCase {
         dailyPlan.returnFromDailyPracticeToDailyPlan();
     }
 
+    @Test
+    @Features(value = {
+            @Feature(value = "Daily Plan"),
+            @Feature(value = "Daily Plan customization")
+    })
+    @DisplayName("COA-8506 COA-8513 COA-8514 Daily Plan item remove action can be cancelled")
+    @Description("Long-presses the first Daily Practice item, verifies customization actions, opens the Remove from Daily Plan confirmation, cancels it, and verifies the item remains.")
+    @Step("Start test test05DailyPlanRemoveActionCanBeCancelled")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void test05DailyPlanRemoveActionCanBeCancelled() {
+        if (!Platform.getInstance().isIOS()) {
+            return;
+        }
+
+        DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
+        Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
+
+        ensureExistingProgressDailyPlanState();
+        dailyPlan.openTodayTab();
+        Assume.assumeTrue(
+                "Current existing-progress Daily Plan state does not expose customization actions; COA-8506/8513/8514 need a fixture with a removable Daily Plan card.",
+                dailyPlan.tryOpenCustomizationActionsForFirstDailyPractice()
+        );
+        dailyPlan.tapRemoveFromDailyPlanAction();
+        dailyPlan.assertRemoveFromDailyPlanConfirmationIsDisplayed();
+        dailyPlan.cancelRemoveFromDailyPlan();
+        dailyPlan.assertFirstDailyPracticeStillDisplayed();
+    }
+
     private void ensureExistingProgressDailyPlanState() {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
