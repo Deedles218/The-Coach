@@ -53,6 +53,9 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             KEGEL_PLAYER_VIBRATION_BUTTON,
             KEGEL_PLAYER_INFO_BUTTON,
             KEGEL_PLAYER_INFO_TOOLTIP,
+            KEGEL_PLAYER_INFO_MODAL_TITLE,
+            KEGEL_PLAYER_INFO_MODAL_CONTENT,
+            KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
             KEGEL_PLAYER_PHASE_SQUEEZE_BUTTON,
             KEGEL_PLAYER_PHASE_REST_BUTTON,
             KEGEL_PLAYER_PHASE_WAVES_BUTTON,
@@ -171,12 +174,22 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Close Kegel exercise flow if it is already open")
     public void closeKegelExerciseFlowIfPresent() {
         try {
-            if (this.isElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+            if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
+                this.waitForElementAndClick(
+                        KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
+                        "Cannot close Kegel player info modal",
+                        5
+                );
+            }
+
+            if (this.isElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
                         "Cannot confirm Kegel player exit",
                         5
                 );
+                this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Plan did not return after confirming Kegel exit", 15);
+                return;
             }
 
             if (this.isElementPresent(KEGEL_PLAYER_BACK_BUTTON)) {
@@ -185,15 +198,17 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                         "Cannot tap Kegel player close control",
                         5
                 );
-                if (this.isElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+                try {
                     this.waitForElementAndClick(
                             KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
                             "Cannot confirm Kegel player exit",
-                            10
+                            5
                     );
-                } else if (this.isElementPresent(KEGEL_PLAYER_BACK_BUTTON)) {
-                    this.tapTopRightCloseFallback();
+                } catch (TimeoutException e) {
+                    System.out.println("Kegel player closed without an exit confirmation; continuing.");
                 }
+                this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Plan did not return after closing Kegel player", 15);
+                return;
             }
 
             if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
@@ -222,7 +237,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.assertDailyPracticeIsDisplayed();
         this.closePracticeCompletionFeedbackIfPresent();
         this.scrollToKegelDailyPlanCard();
-        this.waitForElementAndClick(KEGEL_DAILY_PLAN_TITLE, "Cannot open Kegel exercise from Daily Plan", 10);
+        this.tapElementCenter(KEGEL_DAILY_PLAN_TITLE, "Cannot open Kegel exercise from Daily Plan", 10);
         this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel exercise start screen did not open", 15);
     }
 
@@ -304,21 +319,39 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Press all available Kegel player controls")
     public void pressAllKegelPlayerControls() {
-        this.pauseAndResumeKegelExercise();
-        this.toggleKegelPlayerSound();
-        this.toggleKegelPlayerVibration();
+        this.closeKegelPlayerInstructionsIfPresent();
+        this.pauseKegelExercise();
         this.openKegelPlayerInfo();
-        this.pressKegelPlayerPhaseControls();
+        this.toggleKegelPlayerVibration();
+        this.toggleKegelPlayerSound();
+        this.resumeKegelExercise();
     }
 
-    @Step("Pause and resume Kegel exercise")
-    public void pauseAndResumeKegelExercise() {
-        this.tapElementCenter(KEGEL_PLAYER_PAUSE_BUTTON, "Cannot pause Kegel exercise", 10);
-        if (this.isElementPresent(KEGEL_PLAYER_PLAY_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_PLAY_BUTTON, "Cannot resume Kegel exercise", 10);
-        } else {
-            System.out.println("Kegel player keeps the pause control exposed after tapping pause; continuing.");
+    @Step("Close Kegel player instructions if they are open")
+    public void closeKegelPlayerInstructionsIfPresent() {
+        if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
+            this.waitForElementAndClick(
+                    KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
+                    "Cannot close Kegel player instructions",
+                    10
+            );
+            this.waitForElementNotPresent(
+                    KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
+                    "Kegel player instructions are still displayed",
+                    10
+            );
         }
+    }
+
+    @Step("Pause Kegel exercise")
+    public void pauseKegelExercise() {
+        this.tapElementCenter(KEGEL_PLAYER_PAUSE_BUTTON, "Cannot pause Kegel exercise", 10);
+        this.waitForElementPresent(KEGEL_PLAYER_PLAY_BUTTON, "Kegel player resume control is not displayed after pause", 10);
+    }
+
+    @Step("Resume Kegel exercise")
+    public void resumeKegelExercise() {
+        this.tapElementCenter(KEGEL_PLAYER_PLAY_BUTTON, "Cannot resume Kegel exercise", 10);
         this.waitForElementPresent(KEGEL_PLAYER_PAUSE_BUTTON, "Kegel player pause control did not return after resume", 10);
     }
 
@@ -340,12 +373,11 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Open Kegel player info")
     public void openKegelPlayerInfo() {
-        boolean tooltipWasVisible = this.isElementPresent(KEGEL_PLAYER_INFO_TOOLTIP);
         this.tapElementCenter(KEGEL_PLAYER_INFO_BUTTON, "Cannot tap Kegel player info control", 10);
-        if (!tooltipWasVisible) {
-            this.waitForElementPresent(KEGEL_PLAYER_INFO_TOOLTIP, "Kegel player info tooltip is not displayed", 10);
-        }
-        this.waitForElementPresent(KEGEL_PLAYER_PAUSE_BUTTON, "Kegel player is not active after info tap", 10);
+        this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE, "Kegel player info modal title is not displayed", 10);
+        this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_CONTENT, "Kegel player info modal content is not displayed", 10);
+        this.waitForElementAndClick(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON, "Cannot close Kegel player info modal", 10);
+        this.waitForElementPresent(KEGEL_PLAYER_PLAY_BUTTON, "Kegel player did not return paused after closing info modal", 10);
     }
 
     @Step("Press Kegel player phase controls")

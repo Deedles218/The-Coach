@@ -47,12 +47,15 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_PLAYER_VIBRATION_BUTTON = "xpath://XCUIElementTypeButton[contains(@name, 'vibro')]";
         KEGEL_PLAYER_INFO_BUTTON = "id:ic outline info";
         KEGEL_PLAYER_INFO_TOOLTIP = "xpath://XCUIElementTypeStaticText[contains(@name, 'How to do the') and contains(@name, 'exercise correctly')]";
+        KEGEL_PLAYER_INFO_MODAL_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Kegels') and @visible='true']";
+        KEGEL_PLAYER_INFO_MODAL_CONTENT = "xpath://XCUIElementTypeStaticText[contains(@name, 'Contract your pelvic floor muscle') and @visible='true']";
+        KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON = "xpath://XCUIElementTypeButton[@name='ic outline close' and @visible='true']";
         KEGEL_PLAYER_PHASE_SQUEEZE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='SQUEEZE']";
         KEGEL_PLAYER_PHASE_REST_BUTTON = "xpath://XCUIElementTypeStaticText[@name='REST']";
         KEGEL_PLAYER_PHASE_WAVES_BUTTON = "xpath://XCUIElementTypeStaticText[@name='WAVES']";
         KEGEL_PLAYER_EXIT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[(contains(@value, 'You haven') or contains(@label, 'You haven')) and (contains(@value, 'quit') or contains(@label, 'quit')) and @visible='true']";
         KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON = "id:Quit";
-        KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON = "id:Continue";
+        KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON = "id:Don’t quit";
         PRACTICE_COMPLETION_FEEDBACK_TITLE = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='YOU’RE GREAT!']";
         PRACTICE_COMPLETION_FEEDBACK_CLOSE_BUTTON = "id:ic outline close";
         CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Move to tomorrow'] | //XCUIElementTypeButton[@name='Move to tomorrow']";
