@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract public class DailyPlanPageObject extends MainPageObject {
+    private String instructionIntensityRestoreOrder;
+
     protected static String
             TAB_TODAY,
             SELECTED_TODAY_TAB,
@@ -46,6 +48,21 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             KEGEL_START_SCREEN_EXERCISE_TITLE,
             KEGEL_START_SCREEN_EXERCISE_ITEMS,
             KEGEL_START_SCREEN_EXERCISE_METADATA,
+            KEGEL_START_SCREEN_FIRST_EXERCISE,
+            KEGEL_INSTRUCTION_BACK_BUTTON,
+            KEGEL_INSTRUCTION_TITLE,
+            KEGEL_INSTRUCTION_IMAGE,
+            KEGEL_INSTRUCTION_HEADING,
+            KEGEL_INSTRUCTION_STEP_NUMBERS,
+            KEGEL_INSTRUCTION_STEP_TEXTS,
+            KEGEL_INSTRUCTION_ADJUST_HEADING,
+            KEGEL_INSTRUCTION_INTENSITY_LABEL,
+            KEGEL_INSTRUCTION_INTENSITY_VALUE,
+            KEGEL_INSTRUCTION_INTENSITY_PICKER,
+            KEGEL_INSTRUCTION_INTENSITY_SELECT_BUTTON,
+            KEGEL_INSTRUCTION_SAVE_BUTTON,
+            KEGEL_MEDIA_PLAYER_BACK_BUTTON,
+            KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON,
             KEGEL_PLAYER_BACK_BUTTON,
             KEGEL_PLAYER_MUTE_BUTTON,
             KEGEL_PLAYER_UNMUTE_BUTTON,
@@ -186,6 +203,31 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Close Kegel exercise flow if it is already open")
     public void closeKegelExerciseFlowIfPresent() {
         try {
+            if (this.isElementPresent(KEGEL_MEDIA_PLAYER_BACK_BUTTON)) {
+                this.waitForElementAndClick(
+                        KEGEL_MEDIA_PLAYER_BACK_BUTTON,
+                        "Cannot close Kegel media player",
+                        5
+                );
+            }
+
+            if (this.isElementPresent(KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON)) {
+                this.waitForElementAndClick(
+                        KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON,
+                        "Cannot continue from Kegel stretching completion screen",
+                        5
+                );
+            }
+
+            if (this.isElementPresent(KEGEL_INSTRUCTION_BACK_BUTTON)) {
+                this.waitForElementAndClick(
+                        KEGEL_INSTRUCTION_BACK_BUTTON,
+                        "Cannot close Kegel exercise instruction",
+                        5
+                );
+                this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel start page did not return from instruction", 10);
+            }
+
             if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE)
                     && this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
                 this.waitForElementAndClick(
@@ -256,6 +298,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.closePracticeCompletionFeedbackIfPresent();
         this.scrollToKegelDailyPlanCard();
         this.tapElementCenter(KEGEL_DAILY_PLAN_TITLE, "Cannot open Kegel exercise from Daily Plan", 10);
+        this.scrollToKegelStartHeader();
         this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel exercise start screen did not open", 15);
     }
 
@@ -340,6 +383,114 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel exercise intensity and duration metadata is not displayed",
                 this.getAmountElements(KEGEL_START_SCREEN_EXERCISE_METADATA) > 0
         );
+    }
+
+    @Step("Open first Kegel exercise instruction")
+    public void openFirstKegelExerciseInstruction() {
+        int alreadySwiped = 0;
+        while (!this.isElementPresent(KEGEL_START_SCREEN_FIRST_EXERCISE) && alreadySwiped < 4) {
+            this.mobileSwipeUp();
+            alreadySwiped++;
+        }
+        this.tapElementCenter(
+                KEGEL_START_SCREEN_FIRST_EXERCISE,
+                "Cannot open first Kegel exercise instruction",
+                10
+        );
+        this.waitForElementPresent(KEGEL_INSTRUCTION_TITLE, "Kegel exercise instruction did not open", 15);
+    }
+
+    @Step("Verify Kegel exercise instruction page")
+    public void assertKegelExerciseInstructionIsDisplayed() {
+        this.waitForElementPresent(KEGEL_INSTRUCTION_BACK_BUTTON, "Kegel instruction back button is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_TITLE, "Kegel instruction exercise title is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_IMAGE, "Kegel instruction image is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_HEADING, "Kegel instruction heading is not displayed", 10);
+        Assert.assertEquals(
+                "Kegel instruction should contain three numbered steps",
+                3,
+                this.getAmountElements(KEGEL_INSTRUCTION_STEP_NUMBERS)
+        );
+        Assert.assertEquals(
+                "Kegel instruction should contain text for all three steps",
+                3,
+                this.getAmountElements(KEGEL_INSTRUCTION_STEP_TEXTS)
+        );
+        this.waitForElementPresent(KEGEL_INSTRUCTION_ADJUST_HEADING, "Kegel instruction adjust heading is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_INTENSITY_LABEL, "Kegel instruction intensity label is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_INTENSITY_VALUE, "Kegel instruction intensity value is not displayed", 10);
+        this.waitForElementPresent(KEGEL_INSTRUCTION_SAVE_BUTTON, "Kegel instruction save button is not displayed", 10);
+    }
+
+    @Step("Select next Kegel exercise instruction intensity")
+    public void selectNextKegelExerciseInstructionIntensity() {
+        String currentIntensity = this.waitForElementAndGetAttribute(
+                KEGEL_INSTRUCTION_INTENSITY_VALUE,
+                "name",
+                "Cannot get current Kegel instruction intensity",
+                10
+        );
+        String selectionOrder = "HARD".equals(currentIntensity) ? "previous" : "next";
+        this.instructionIntensityRestoreOrder = "next".equals(selectionOrder) ? "previous" : "next";
+        this.tapElementCenter(
+                KEGEL_INSTRUCTION_INTENSITY_VALUE,
+                "Cannot open Kegel instruction intensity picker",
+                10
+        );
+        WebElement picker = this.waitForElementPresent(
+                KEGEL_INSTRUCTION_INTENSITY_PICKER,
+                "Kegel instruction intensity picker is not displayed",
+                10
+        );
+        this.selectPickerWheelValue(picker, selectionOrder);
+        this.waitForElementAndClick(
+                KEGEL_INSTRUCTION_INTENSITY_SELECT_BUTTON,
+                "Cannot confirm next Kegel instruction intensity",
+                10
+        );
+        WebElement saveButton = this.waitForElementPresent(
+                KEGEL_INSTRUCTION_SAVE_BUTTON,
+                "Kegel instruction save button is not displayed after changing intensity",
+                10
+        );
+        Assert.assertEquals("Kegel instruction save button should be enabled after changing intensity", "true", saveButton.getAttribute("enabled"));
+    }
+
+    @Step("Restore previous Kegel exercise instruction intensity")
+    public void restorePreviousKegelExerciseInstructionIntensity() {
+        Assert.assertNotNull("Kegel instruction intensity restore direction is not set", this.instructionIntensityRestoreOrder);
+        this.tapElementCenter(
+                KEGEL_INSTRUCTION_INTENSITY_VALUE,
+                "Cannot reopen Kegel instruction intensity picker",
+                10
+        );
+        WebElement picker = this.waitForElementPresent(
+                KEGEL_INSTRUCTION_INTENSITY_PICKER,
+                "Kegel instruction intensity picker is not displayed",
+                10
+        );
+        this.selectPickerWheelValue(picker, this.instructionIntensityRestoreOrder);
+        this.waitForElementAndClick(
+                KEGEL_INSTRUCTION_INTENSITY_SELECT_BUTTON,
+                "Cannot restore previous Kegel instruction intensity",
+                10
+        );
+        WebElement saveButton = this.waitForElementPresent(
+                KEGEL_INSTRUCTION_SAVE_BUTTON,
+                "Kegel instruction save button is not displayed after restoring intensity",
+                10
+        );
+        Assert.assertEquals("Kegel instruction save button should be disabled after restoring intensity", "false", saveButton.getAttribute("enabled"));
+    }
+
+    @Step("Return from Kegel exercise instruction to start page")
+    public void returnFromKegelExerciseInstruction() {
+        this.waitForElementAndClick(
+                KEGEL_INSTRUCTION_BACK_BUTTON,
+                "Cannot return from Kegel exercise instruction",
+                10
+        );
+        this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel start page did not return after instruction", 15);
     }
 
     @Step("Start Kegel exercise")
@@ -782,5 +933,13 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         args.put("elementId", ((RemoteWebElement) element).getId());
         args.put("duration", duration);
         ((JavascriptExecutor) driver).executeScript("mobile: touchAndHold", args);
+    }
+
+    private void selectPickerWheelValue(WebElement picker, String order) {
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("element", ((RemoteWebElement) picker).getId());
+        args.put("order", order);
+        args.put("offset", 0.15);
+        ((JavascriptExecutor) driver).executeScript("mobile: selectPickerWheelValue", args);
     }
 }

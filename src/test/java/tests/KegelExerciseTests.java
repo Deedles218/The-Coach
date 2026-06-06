@@ -122,6 +122,27 @@ public class KegelExerciseTests extends CoreTestCase {
         dailyPlan.assertDailyPracticeIsDisplayed();
     }
 
+    @Test
+    @Features(value = {
+            @Feature(value = "Kegel exercises"),
+            @Feature(value = "Exercise instruction")
+    })
+    @DisplayName("Kegel exercise instruction shows steps and supports intensity selection")
+    @Description("Opens an exercise instruction, verifies its image, title, three steps, and adjust controls, changes intensity, restores it, and returns to the Kegel start page.")
+    @Step("Start test test05KegelExerciseInstructionPages")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void test05KegelExerciseInstructionPages() {
+        DailyPlanPageObject dailyPlan = openKegelStartScreen();
+
+        dailyPlan.openFirstKegelExerciseInstruction();
+        dailyPlan.assertKegelExerciseInstructionIsDisplayed();
+        dailyPlan.selectNextKegelExerciseInstructionIntensity();
+        dailyPlan.restorePreviousKegelExerciseInstructionIntensity();
+        dailyPlan.returnFromKegelExerciseInstruction();
+        dailyPlan.assertKegelStartScreenIsDisplayed();
+        dailyPlan.closeKegelExerciseFlowIfPresent();
+    }
+
     private DailyPlanPageObject openKegelPlayer() {
         DailyPlanPageObject dailyPlan = openKegelStartScreen();
         dailyPlan.startKegelExercise();
