@@ -15,6 +15,7 @@ import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 @Epic(value = "The Coach Kegel exercises")
@@ -52,5 +53,129 @@ public class KegelExerciseTests extends CoreTestCase {
         dailyPlan.pressAllKegelPlayerControls();
         dailyPlan.exitKegelExercisePlayer();
         dailyPlan.assertDailyPracticeIsDisplayed();
+    }
+
+    @Test
+    @Features(value = {
+            @Feature(value = "Kegel exercises"),
+            @Feature(value = "Exercise player settings")
+    })
+    @DisplayName("Kegel sound and vibration controls support independent configurations")
+    @Description("Checks enabled and disabled sound/vibration combinations independently and restores both controls to enabled.")
+    @Step("Start test test02KegelSoundAndVibrationConfigurations")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void test02KegelSoundAndVibrationConfigurations() {
+        DailyPlanPageObject dailyPlan = openKegelPlayer();
+
+        dailyPlan.closeKegelPlayerInstructionsIfPresent();
+        dailyPlan.setKegelPlayerSoundEnabled(true);
+        dailyPlan.setKegelPlayerVibrationEnabled(true);
+        dailyPlan.setKegelPlayerSoundEnabled(false);
+        dailyPlan.assertKegelPlayerVibrationEnabled(true);
+        dailyPlan.setKegelPlayerSoundEnabled(true);
+        dailyPlan.setKegelPlayerVibrationEnabled(false);
+        dailyPlan.assertKegelPlayerSoundEnabled(true);
+        dailyPlan.setKegelPlayerSoundEnabled(false);
+        dailyPlan.assertKegelPlayerVibrationEnabled(false);
+        dailyPlan.setKegelPlayerSoundEnabled(true);
+        dailyPlan.setKegelPlayerVibrationEnabled(true);
+        dailyPlan.exitKegelExercisePlayer();
+        dailyPlan.assertDailyPracticeIsDisplayed();
+    }
+
+    @Test
+    @Features(value = {
+            @Feature(value = "Daily Plan"),
+            @Feature(value = "Kegel exercises"),
+            @Feature(value = "Exercise start screen")
+    })
+    @DisplayName("Kegel start page shows level, goal, intensity, duration, and exercise information")
+    @Description("Verifies the Kegel start page information and confirms that multiple exercises include intensity and duration metadata.")
+    @Step("Start test test03KegelStartPageExerciseInformation")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void test03KegelStartPageExerciseInformation() {
+        DailyPlanPageObject dailyPlan = openKegelStartScreen();
+
+        dailyPlan.assertKegelStartScreenExerciseInformation();
+        dailyPlan.closeKegelExerciseFlowIfPresent();
+        dailyPlan.assertDailyPracticeIsDisplayed();
+    }
+
+    @Test
+    @Features(value = {
+            @Feature(value = "Kegel exercises"),
+            @Feature(value = "Exercise intensity")
+    })
+    @DisplayName("Kegel completion feedback allows changing exercise intensity")
+    @Description("Checks all post-workout intensity options and selects Too Hard when completion feedback is available for the progress account.")
+    @Step("Start test test04KegelCompletionIntensityCanBeChanged")
+    @Severity(value = SeverityLevel.NORMAL)
+    public void test04KegelCompletionIntensityCanBeChanged() {
+        DailyPlanPageObject dailyPlan = openDailyPlan();
+
+        Assume.assumeTrue(
+                "Kegel completion intensity feedback is not available for the current progress-account state.",
+                dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()
+        );
+        dailyPlan.selectTooHardKegelCompletionIntensityFeedback();
+        dailyPlan.closePracticeCompletionFeedbackIfPresent();
+        dailyPlan.assertDailyPracticeIsDisplayed();
+    }
+
+    @Test
+    @Features(value = {
+            @Feature(value = "Kegel exercises"),
+            @Feature(value = "Exercise instruction")
+    })
+    @DisplayName("Kegel exercise instruction shows steps and supports intensity selection")
+    @Description("Opens an exercise instruction, verifies its image, title, three steps, and adjust controls, changes intensity, restores it, and returns to the Kegel start page.")
+    @Step("Start test test05KegelExerciseInstructionPages")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void test05KegelExerciseInstructionPages() {
+        DailyPlanPageObject dailyPlan = openKegelStartScreen();
+
+        dailyPlan.openFirstKegelExerciseInstruction();
+        dailyPlan.assertKegelExerciseInstructionIsDisplayed();
+        dailyPlan.selectNextKegelExerciseInstructionIntensity();
+        dailyPlan.restorePreviousKegelExerciseInstructionIntensity();
+        dailyPlan.returnFromKegelExerciseInstruction();
+        dailyPlan.assertKegelStartScreenIsDisplayed();
+        dailyPlan.closeKegelExerciseFlowIfPresent();
+    }
+
+    private DailyPlanPageObject openKegelPlayer() {
+        DailyPlanPageObject dailyPlan = openKegelStartScreen();
+        dailyPlan.startKegelExercise();
+        dailyPlan.assertKegelPlayerIsDisplayed();
+        return dailyPlan;
+    }
+
+    private DailyPlanPageObject openKegelStartScreen() {
+        DailyPlanPageObject dailyPlan = openDailyPlan();
+        dailyPlan.closePracticeCompletionFeedbackIfPresent();
+        dailyPlan.openKegelExerciseFromDailyPlan();
+        dailyPlan.assertKegelStartScreenIsDisplayed();
+        return dailyPlan;
+    }
+
+    private DailyPlanPageObject openDailyPlan() {
+        if (!Platform.getInstance().isIOS()) {
+            Assume.assumeTrue("Kegel exercise coverage is iOS-only.", false);
+        }
+
+        CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
+        DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
+        Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
+        Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
+
+        dailyPlan.closeKegelExerciseFlowIfPresent();
+        if (dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
+            return dailyPlan;
+        }
+        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
+            dailyPlan.openTodayTab();
+        }
+        return dailyPlan;
     }
 }
