@@ -1,6 +1,6 @@
 package tests.HW;
 
-import lib.CoreTestCase;
+import lib.AndroidTestCase;
 import lib.ui.HWPageObject.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
@@ -8,30 +8,30 @@ import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ArticleTests extends CoreTestCase
-{
+public class ArticleTests extends AndroidTestCase {
     @Test
     public void testCompareArticleTitle() {
-        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("bject-oriented programming language");
-        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
-        String article_title = ArticlePageObject.getArticleTitle();
-        Assert.assertEquals("We see unexpected title",
+        SearchPageObject searchPage = SearchPageObjectFactory.get(driver);
+        searchPage.initSearchInput();
+        searchPage.typeSearchLine("Java");
+        searchPage.clickByArticleWithSubstring("bject-oriented programming language");
+        ArticlePageObject articlePage = ArticlePageObjectFactory.get(driver);
+        String articleTitle = articlePage.getArticleTitle();
+        Assert.assertEquals(
+                "We see unexpected title",
                 "Java (programming language)",
-                article_title
+                articleTitle
         );
     }
+
     @Test
     public void testSwipeArticle() {
-
-        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("bject-oriented programming language");
-        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
-        ArticlePageObject.waitForTitleElement();
-        ArticlePageObject.swipeToFooter();
+        SearchPageObject searchPage = SearchPageObjectFactory.get(driver);
+        searchPage.initSearchInput();
+        searchPage.typeSearchLine("Java");
+        searchPage.clickByArticleWithSubstring("bject-oriented programming language");
+        ArticlePageObject articlePage = ArticlePageObjectFactory.get(driver);
+        articlePage.waitForTitleElement();
+        articlePage.swipeToFooter();
     }
 }

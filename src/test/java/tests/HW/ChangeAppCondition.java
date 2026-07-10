@@ -1,7 +1,6 @@
 package tests.HW;
 
-import lib.CoreTestCase;
-import lib.Platform;
+import lib.AndroidTestCase;
 import lib.ui.HWPageObject.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
@@ -9,47 +8,38 @@ import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ChangeAppCondition extends CoreTestCase
-{
-
+public class ChangeAppCondition extends AndroidTestCase {
     @Test
     public void testChangeScreenOrientationOnSearchResult() {
-        if (Platform.getInstance().isMw()){
-            return;
-        }
-        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
-        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
-        String title_before_rotation = ArticlePageObject.getArticleTitle();
+        SearchPageObject searchPage = SearchPageObjectFactory.get(driver);
+        searchPage.initSearchInput();
+        searchPage.typeSearchLine("Java");
+        searchPage.clickByArticleWithSubstring("Object-oriented programming language");
+        ArticlePageObject articlePage = ArticlePageObjectFactory.get(driver);
+        String titleBeforeRotation = articlePage.getArticleTitle();
         this.rotateScreenLandscape();
-        String title_after_rotation = ArticlePageObject.getArticleTitle();
+        String titleAfterRotation = articlePage.getArticleTitle();
         Assert.assertEquals(
                 "Article title have been changed after rotation",
-                title_before_rotation,
-                title_after_rotation
+                titleBeforeRotation,
+                titleAfterRotation
         );
         this.rotateScreenPortrait();
-        String title_after_second_rotation = ArticlePageObject.getArticleTitle();
+        String titleAfterSecondRotation = articlePage.getArticleTitle();
         Assert.assertEquals(
                 "Article title have been changed after rotation",
-                title_before_rotation,
-                title_after_second_rotation
+                titleBeforeRotation,
+                titleAfterSecondRotation
         );
     }
-    @Test
-    public void testCheckSearchArticleInBackground()
-    {
-        if (Platform.getInstance().isMw()){
-            return;
-        }
-        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("Object-oriented programming language");
-        this.backgroundApp(2);
-        SearchPageObject.waitForSearchResult("Object-oriented programming language");
 
+    @Test
+    public void testCheckSearchArticleInBackground() {
+        SearchPageObject searchPage = SearchPageObjectFactory.get(driver);
+        searchPage.initSearchInput();
+        searchPage.typeSearchLine("Java");
+        searchPage.waitForSearchResult("Object-oriented programming language");
+        backgroundApp(2);
+        searchPage.waitForSearchResult("Object-oriented programming language");
     }
 }
