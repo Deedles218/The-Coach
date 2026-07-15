@@ -1,15 +1,13 @@
 package lib.ui.factories;
-import lib.Platform;
+import lib.ui.NavigationUI;
 import lib.ui.ios.iOSNavigationUI;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-public class NavigationUIFactory
-{
-    public static iOSNavigationUI get(RemoteWebDriver driver)
-    {
-        if (Platform.getInstance().isIOS()){
-            return new iOSNavigationUI(driver);
-        }
-        return null;
+public final class NavigationUIFactory {
+    private NavigationUIFactory() {
+    }
+
+    public static NavigationUI get(RemoteWebDriver driver) {
+        return IOSPageObjectFactory.create(() -> new iOSNavigationUI(driver));
     }
 }
