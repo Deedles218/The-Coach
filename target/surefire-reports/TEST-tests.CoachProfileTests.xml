@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="tests.CoachProfileTests" time="283.888" errors="3" skipped="0">
+<testsuite tests="8" failures="0" name="tests.CoachProfileTests" time="278.647" errors="3" skipped="0">
   <properties>
+    <property name="platform" value="ios"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
     <property name="java.vm.version" value="25.261-b12"/>
@@ -15,7 +16,7 @@
     <property name="user.country" value="RU"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
-    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
+    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.ExploreTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
     <property name="java.runtime.version" value="1.8.0_261-b12"/>
@@ -35,8 +36,8 @@
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="os.version" value="26.5.2"/>
-    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="user.home" value="/Users/deedles"/>
     <property name="user.timezone" value="Europe/Samara"/>
     <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
@@ -47,7 +48,7 @@
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean test -Dplatform=ios -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.ExploreTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="ru"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -65,12 +66,12 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.CoachProfileTests" name="test05ProfileAccountSettingsOpensAndReturns" time="51.181"/>
-  <testcase classname="tests.CoachProfileTests" name="test03DeleteAccountConfirmationCanBeCancelled" time="19.916"/>
-  <testcase classname="tests.CoachProfileTests" name="test01ProfileScreenShowsProgressAndSettings" time="20.986"/>
-  <testcase classname="tests.CoachProfileTests" name="test04AuthorizedUserCanLogOut" time="26.404"/>
-  <testcase classname="tests.CoachProfileTests" name="test02ProfileCanBeOpenedFromMainTabs" time="55.246"/>
-  <testcase classname="tests.CoachProfileTests" name="test07ProfileFaqOpensAndCloses" time="38.322">
+  <testcase classname="tests.CoachProfileTests" name="test05ProfileAccountSettingsOpensAndReturns" time="49.666"/>
+  <testcase classname="tests.CoachProfileTests" name="test03DeleteAccountConfirmationCanBeCancelled" time="19.881"/>
+  <testcase classname="tests.CoachProfileTests" name="test01ProfileScreenShowsProgressAndSettings" time="21.015"/>
+  <testcase classname="tests.CoachProfileTests" name="test04AuthorizedUserCanLogOut" time="27.052"/>
+  <testcase classname="tests.CoachProfileTests" name="test02ProfileCanBeOpenedFromMainTabs" time="55.123"/>
+  <testcase classname="tests.CoachProfileTests" name="test07ProfileFaqOpensAndCloses" time="38.421">
     <error message="Expected condition failed: FAQ browser did not open/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: FAQ browser did not open/n (tried for 20 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -121,9 +122,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [6cccfc1f-271d-416e-84ac-37460a3b7a1c, findElement {using=id, value=How to use the app?}]
+Command: [aa064281-5421-41de-b581-f617613d8c1f, findElement {using=id, value=How to use the app?}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: 6cccfc1f-271d-416e-84ac-37460a3b7a1c
+Session ID: aa064281-5421-41de-b581-f617613d8c1f
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -142,20 +143,20 @@ Session ID: 6cccfc1f-271d-416e-84ac-37460a3b7a1c
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 42 more
 </error>
-    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xd1aa, NSUnderlyingError=0x1616fd830 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x85d, NSUnderlyingError=0x169670780 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [6cccfc1f-271d-416e-84ac-37460a3b7a1c, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Command: [aa064281-5421-41de-b581-f617613d8c1f, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: 6cccfc1f-271d-416e-84ac-37460a3b7a1c
+Session ID: aa064281-5421-41de-b581-f617613d8c1f
 PDF guide upsell was not shown; continuing.
 Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
 </system-out>
   </testcase>
-  <testcase classname="tests.CoachProfileTests" name="test08ProfileTermsOpensAndCloses" time="36.013">
+  <testcase classname="tests.CoachProfileTests" name="test08ProfileTermsOpensAndCloses" time="36.112">
     <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -216,9 +217,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [feb43ad7-9568-4e42-8835-d603359a8df4, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Command: [de6c10f4-dadc-4618-8d80-987087f496d6, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
+Session ID: de6c10f4-dadc-4618-8d80-987087f496d6
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -237,49 +238,39 @@ Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 52 more
 </error>
-    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x31e, NSUnderlyingError=0x1615fb540 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x3cc, NSUnderlyingError=0x16979e160 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [feb43ad7-9568-4e42-8835-d603359a8df4, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Command: [de6c10f4-dadc-4618-8d80-987087f496d6, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
+Session ID: de6c10f4-dadc-4618-8d80-987087f496d6
 PDF guide upsell was not shown; continuing.
 Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
-App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xf59, NSUnderlyingError=0x1618825e0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xb38c, NSUnderlyingError=0x16955d9e0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [feb43ad7-9568-4e42-8835-d603359a8df4, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Command: [de6c10f4-dadc-4618-8d80-987087f496d6, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
+Session ID: de6c10f4-dadc-4618-8d80-987087f496d6
 PDF guide upsell was not shown; continuing.
 Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
 </system-out>
   </testcase>
-  <testcase classname="tests.CoachProfileTests" name="test06ProfileSupportOpensAndReturns" time="35.82">
-    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+  <testcase classname="tests.CoachProfileTests" name="test06ProfileSupportOpensAndReturns" time="31.377">
+    <error message="Expected condition failed: Support screen did not open/n (tried for 15 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Support screen did not open/n (tried for 15 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
 	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
-	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
-	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at lib.ui.CoachFlowPageObject.openSupportFromProfile_aroundBody28(CoachFlowPageObject.java:274)
+	at lib.ui.CoachFlowPageObject$AjcClosure29.run(CoachFlowPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
-	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
-	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
-	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
-	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
-	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
-	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
-	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
-	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
-	at tests.CoachProfileTests.test06ProfileSupportOpensAndReturns_aroundBody10(CoachProfileTests.java:133)
+	at lib.ui.CoachFlowPageObject.openSupportFromProfile(CoachFlowPageObject.java:273)
+	at tests.CoachProfileTests.test06ProfileSupportOpensAndReturns_aroundBody10(CoachProfileTests.java:135)
 	at tests.CoachProfileTests$AjcClosure11.run(CoachProfileTests.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
@@ -320,9 +311,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [bedf9909-9aa9-400e-8420-f63ae937f1ac, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Command: [ad006c31-c13c-4290-8250-8e1adc175c18, findElement {using=xpath, value=//XCUIElementTypeStaticText[@name=&apos;Hello!&apos;]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
+Session ID: ad006c31-c13c-4290-8250-8e1adc175c18
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -339,27 +330,18 @@ Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
-	... 52 more
+	... 42 more
 </error>
-    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xd619, NSUnderlyingError=0x161880e70 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xed74, NSUnderlyingError=0x16979dbc0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [bedf9909-9aa9-400e-8420-f63ae937f1ac, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Command: [ad006c31-c13c-4290-8250-8e1adc175c18, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
+Session ID: ad006c31-c13c-4290-8250-8e1adc175c18
 PDF guide upsell was not shown; continuing.
 Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
-App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x8d7d, NSUnderlyingError=0x161757480 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
-Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
-System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
-Driver info: io.appium.java_client.ios.IOSDriver
-Command: [bedf9909-9aa9-400e-8420-f63ae937f1ac, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
-Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
-PDF guide upsell was not shown; continuing.
-Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
 </system-out>
   </testcase>

@@ -76,7 +76,7 @@ public class Platform {
         capabilities.setCapability("deviceName", this.getConfig("ios.deviceName", "IOS_DEVICE_NAME", DEFAULT_IOS_DEVICE_NAME));
         capabilities.setCapability("platformVersion", this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
         capabilities.setCapability("automationName","XCUITest");
-        capabilities.setCapability("bundleId", this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", DEFAULT_IOS_BUNDLE_ID));
+        capabilities.setCapability("bundleId", this.getIOSBundleId());
         capabilities.setCapability("udid", this.getConfig("ios.udid", "IOS_UDID", DEFAULT_IOS_UDID));
         capabilities.setCapability("noReset", this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true));
         this.setCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
@@ -108,6 +108,11 @@ public class Platform {
     public String getPlatformVar()
     {
         return this.getConfig("platform", "PLATFORM", DEFAULT_PLATFORM);
+    }
+
+    public String getIOSBundleId()
+    {
+        return this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", DEFAULT_IOS_BUNDLE_ID);
     }
 
     private String getAppiumUrl()

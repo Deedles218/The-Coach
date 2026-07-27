@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: tests.HW.HomeworkEx18
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.072 sec <<< FAILURE!
-testCheckArticlesByTitleAndDescription(tests.HW.HomeworkEx18)  Time elapsed: 6.07 sec  <<< ERROR!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 5.873 sec <<< FAILURE!
+testCheckArticlesByTitleAndDescription(tests.HW.HomeworkEx18)  Time elapsed: 5.869 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and click search init element/n (tried for 5 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -50,9 +50,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [f0667511-2c50-4e1e-b37f-c86df1b83eed, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
+Command: [5247d2d6-b1a7-416b-80b3-50f6a3cd1c33, findElement {using=xpath, value=//XCUIElementTypeButton[@name='ic search']}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: f0667511-2c50-4e1e-b37f-c86df1b83eed
+Session ID: 5247d2d6-b1a7-416b-80b3-50f6a3cd1c33
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)

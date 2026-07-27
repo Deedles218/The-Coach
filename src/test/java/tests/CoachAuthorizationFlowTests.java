@@ -13,9 +13,11 @@ import lib.Platform;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @Epic(value = "The Coach current iOS flow")
+@Ignore("Outdated authorization flow test: the legacy Feed tab no longer exists")
 public class CoachAuthorizationFlowTests extends CoreTestCase {
     @Test
     @Features(value = {@Feature(value = "Feed"), @Feature(value = "Profile"), @Feature(value = "Start screen")})

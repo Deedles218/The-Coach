@@ -7,8 +7,10 @@ import lib.ui.ProfilePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ProfilePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 @Epic(value = "Profile")
+@Ignore("Outdated profile tests: the legacy Program tab no longer exists")
 public class ProfileTests extends CoreTestCase {
     @Test
 

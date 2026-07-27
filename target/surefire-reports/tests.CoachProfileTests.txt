@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: tests.CoachProfileTests
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 283.929 sec <<< FAILURE!
-test07ProfileFaqOpensAndCloses(tests.CoachProfileTests)  Time elapsed: 38.322 sec  <<< ERROR!
+Tests run: 8, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 278.691 sec <<< FAILURE!
+test07ProfileFaqOpensAndCloses(tests.CoachProfileTests)  Time elapsed: 38.421 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: FAQ browser did not open/n (tried for 20 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -53,9 +53,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [6cccfc1f-271d-416e-84ac-37460a3b7a1c, findElement {using=id, value=How to use the app?}]
+Command: [aa064281-5421-41de-b581-f617613d8c1f, findElement {using=id, value=How to use the app?}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: 6cccfc1f-271d-416e-84ac-37460a3b7a1c
+Session ID: aa064281-5421-41de-b581-f617613d8c1f
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -74,7 +74,7 @@ Session ID: 6cccfc1f-271d-416e-84ac-37460a3b7a1c
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 42 more
 
-test08ProfileTermsOpensAndCloses(tests.CoachProfileTests)  Time elapsed: 36.013 sec  <<< ERROR!
+test08ProfileTermsOpensAndCloses(tests.CoachProfileTests)  Time elapsed: 36.112 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -135,9 +135,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [feb43ad7-9568-4e42-8835-d603359a8df4, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, 'Feel the new level') or contains(@name, 'FEEL THE NEW LEVEL')]}]
+Command: [de6c10f4-dadc-4618-8d80-987087f496d6, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, 'Feel the new level') or contains(@name, 'FEEL THE NEW LEVEL')]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
+Session ID: de6c10f4-dadc-4618-8d80-987087f496d6
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -156,27 +156,17 @@ Session ID: feb43ad7-9568-4e42-8835-d603359a8df4
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 52 more
 
-test06ProfileSupportOpensAndReturns(tests.CoachProfileTests)  Time elapsed: 35.82 sec  <<< ERROR!
-org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+test06ProfileSupportOpensAndReturns(tests.CoachProfileTests)  Time elapsed: 31.377 sec  <<< ERROR!
+org.openqa.selenium.TimeoutException: Expected condition failed: Support screen did not open/n (tried for 15 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
 	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
-	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
-	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at lib.ui.CoachFlowPageObject.openSupportFromProfile_aroundBody28(CoachFlowPageObject.java:274)
+	at lib.ui.CoachFlowPageObject$AjcClosure29.run(CoachFlowPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
-	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
-	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
-	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
-	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
-	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
-	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
-	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
-	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
-	at tests.CoachProfileTests.test06ProfileSupportOpensAndReturns_aroundBody10(CoachProfileTests.java:133)
+	at lib.ui.CoachFlowPageObject.openSupportFromProfile(CoachFlowPageObject.java:273)
+	at tests.CoachProfileTests.test06ProfileSupportOpensAndReturns_aroundBody10(CoachProfileTests.java:135)
 	at tests.CoachProfileTests$AjcClosure11.run(CoachProfileTests.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
@@ -217,9 +207,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [bedf9909-9aa9-400e-8420-f63ae937f1ac, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, 'Feel the new level') or contains(@name, 'FEEL THE NEW LEVEL')]}]
+Command: [ad006c31-c13c-4290-8250-8e1adc175c18, findElement {using=xpath, value=//XCUIElementTypeStaticText[@name='Hello!']}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
+Session ID: ad006c31-c13c-4290-8250-8e1adc175c18
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -236,5 +226,5 @@ Session ID: bedf9909-9aa9-400e-8420-f63ae937f1ac
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
-	... 52 more
+	... 42 more
 

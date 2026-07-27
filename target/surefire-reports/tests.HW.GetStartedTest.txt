@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: tests.HW.GetStartedTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 10.857 sec <<< FAILURE!
-testPassThroughWelcome(tests.HW.GetStartedTest)  Time elapsed: 10.855 sec  <<< ERROR!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 11.004 sec <<< FAILURE!
+testPassThroughWelcome(tests.HW.GetStartedTest)  Time elapsed: 11.002 sec  <<< ERROR!
 org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find Learn More Link/n (tried for 10 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -45,9 +45,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
 System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [f59fcb16-b2e6-4f29-92e8-e44cc2f7fb2e, findElement {using=id, value=Learn more about Wikipedia}]
+Command: [af7f7f7f-e02b-4200-af10-16ac19a4f278, findElement {using=id, value=Learn more about Wikipedia}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: f59fcb16-b2e6-4f29-92e8-e44cc2f7fb2e
+Session ID: af7f7f7f-e02b-4200-af10-16ac19a4f278
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)

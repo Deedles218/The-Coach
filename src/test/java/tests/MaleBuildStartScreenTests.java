@@ -27,7 +27,6 @@ import java.util.Map;
 public class MaleBuildStartScreenTests extends CoreTestCase {
     private static final String MALE_LOGIN_EMAIL = "ds@vamapps.com";
     private static final String OTP_CODE = "8654";
-    private static final String BUNDLE_ID = "com.vamapps.preprod.The-Coach";
 
     private static final String START_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'FEEL THE NEW LEVEL') or contains(@name, 'Feel the new level')]";
     private static final String START_BUTTON = "id:START NOW";
@@ -202,7 +201,7 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
     private void reactivateApp() {
         try {
             Map<String, Object> args = new HashMap<String, Object>();
-            args.put("bundleId", BUNDLE_ID);
+            args.put("bundleId", Platform.getInstance().getIOSBundleId());
             ((JavascriptExecutor) driver).executeScript("mobile: activateApp", args);
         } catch (Exception e) {
             System.out.println("App reactivation was not needed or failed: " + e.getMessage());

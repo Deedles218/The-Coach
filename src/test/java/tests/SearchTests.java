@@ -7,9 +7,11 @@ import lib.ui.HWPageObject.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @Epic(value = "Tests For Search Articles in Feed")
+@Ignore("Outdated search tests: the legacy Feed tab no longer exists")
 public class SearchTests extends CoreTestCase
 {
     @Test

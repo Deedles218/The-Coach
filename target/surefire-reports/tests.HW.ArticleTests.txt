@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: tests.HW.ArticleTests
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.019 sec
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.016 sec

@@ -5,8 +5,10 @@ import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 @Epic(value = "Chat")
+@Ignore("Outdated chat tests: the legacy Type Something input no longer exists")
 public class ChatTests extends CoreTestCase {
 
     @Test
@@ -195,4 +197,3 @@ public class ChatTests extends CoreTestCase {
         //дописать тап на картинку или проверку что картинка пришла
     }
 }
-

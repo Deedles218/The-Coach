@@ -601,16 +601,6 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     }
 
     private String getIOSBundleId() {
-        String propertyBundleId = System.getProperty("ios.bundleId");
-        if (propertyBundleId != null && !propertyBundleId.trim().isEmpty()) {
-            return propertyBundleId;
-        }
-
-        String envBundleId = System.getenv("IOS_BUNDLE_ID");
-        if (envBundleId != null && !envBundleId.trim().isEmpty()) {
-            return envBundleId;
-        }
-
-        return "com.vamapps.The-Coach";
+        return Platform.getInstance().getIOSBundleId();
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="tests.PdfGuideTests" time="36.475" errors="1" skipped="0">
+<testsuite tests="1" failures="0" name="tests.PdfGuideTests" time="35.29" errors="1" skipped="0">
   <properties>
+    <property name="platform" value="ios"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
     <property name="java.vm.version" value="25.261-b12"/>
@@ -15,7 +16,7 @@
     <property name="user.country" value="RU"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
-    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
+    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.ExploreTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
     <property name="java.runtime.version" value="1.8.0_261-b12"/>
@@ -35,8 +36,8 @@
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="os.version" value="26.5.2"/>
-    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="user.home" value="/Users/deedles"/>
     <property name="user.timezone" value="Europe/Samara"/>
     <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
@@ -47,7 +48,7 @@
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean test -Dplatform=ios -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.ExploreTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="ru"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -65,7 +66,7 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.PdfGuideTests" name="testPdfGuideUpsellOpensFromMyWorkbook" time="36.475">
+  <testcase classname="tests.PdfGuideTests" name="testPdfGuideUpsellOpensFromMyWorkbook" time="35.29">
     <error message="Expected condition failed: Profile screen did not open/n (tried for 10 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Profile screen did not open/n (tried for 10 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
@@ -116,9 +117,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [1cfd1a83-2b42-48cf-a4aa-e00c13e9baac, findElement {using=xpath, value=//XCUIElementTypeNavigationBar[contains(@name, &apos;UserProfileView&apos;)] | //XCUIElementTypeStaticText[@name=&apos;Account Settings&apos;]}]
+Command: [dc55c30d-d293-4a9b-a516-5a1a7e8633fa, findElement {using=xpath, value=//XCUIElementTypeNavigationBar[contains(@name, &apos;UserProfileView&apos;)] | //XCUIElementTypeStaticText[@name=&apos;Account Settings&apos;]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: 1cfd1a83-2b42-48cf-a4aa-e00c13e9baac
+Session ID: dc55c30d-d293-4a9b-a516-5a1a7e8633fa
 	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
@@ -137,13 +138,13 @@ Session ID: 1cfd1a83-2b42-48cf-a4aa-e00c13e9baac
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 42 more
 </error>
-    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xcd44, NSUnderlyingError=0x1602ce0d0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x48a0, NSUnderlyingError=0x16819f0f0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [1cfd1a83-2b42-48cf-a4aa-e00c13e9baac, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Command: [dc55c30d-d293-4a9b-a516-5a1a7e8633fa, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
 Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
-Session ID: 1cfd1a83-2b42-48cf-a4aa-e00c13e9baac
+Session ID: dc55c30d-d293-4a9b-a516-5a1a7e8633fa
 PDF guide upsell was not shown; continuing.
 Notification prompt was not shown; continuing.
 Connect Email prompt was not shown; continuing.
