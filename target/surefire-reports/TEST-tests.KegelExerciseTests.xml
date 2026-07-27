@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="tests.KegelExerciseTests" time="80.554" errors="0" skipped="0">
+<testsuite tests="5" failures="0" name="tests.KegelExerciseTests" time="187.853" errors="5" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="RU"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
-    <property name="test" value="KegelExerciseTests#test01KegelExercisePlayerFlow"/>
+    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
     <property name="java.runtime.version" value="1.8.0_261-b12"/>
@@ -26,7 +26,6 @@
     <property name="line.separator" value="
 "/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="ios.deviceName" value="iPhone 17 Pro Max"/>
     <property name="os.name" value="Mac OS X"/>
     <property name="classworlds.conf" value="/usr/local/Cellar/maven/3.9.1/libexec/bin/m2.conf"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -35,9 +34,9 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="os.version" value="26.5.1"/>
-    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="os.version" value="26.5.2"/>
     <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="user.home" value="/Users/deedles"/>
     <property name="user.timezone" value="Europe/Samara"/>
     <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
@@ -45,12 +44,10 @@
     <property name="file.encoding" value="UTF-8"/>
     <property name="user.name" value="deedles"/>
     <property name="java.class.path" value="/usr/local/Cellar/maven/3.9.1/libexec/boot/plexus-classworlds-2.6.0.jar"/>
-    <property name="ios.bundleId" value="com.vamapps.The-Coach"/>
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=KegelExerciseTests#test01KegelExercisePlayerFlow -Dios.bundleId=com.vamapps.The-Coach -Dios.deviceName=iPhone 17 Pro Max -Dios.xcodeOrgId=3RZUQ28RXP -Dios.xcodeSigningId=Apple Development test"/>
-    <property name="ios.xcodeSigningId" value="Apple Development"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests test"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="ru"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -66,8 +63,534 @@
     <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
-    <property name="ios.xcodeOrgId" value="3RZUQ28RXP"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.KegelExerciseTests" name="test01KegelExercisePlayerFlow" time="80.554"/>
+  <testcase classname="tests.KegelExerciseTests" name="test03KegelStartPageExerciseInformation" time="38.082">
+    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
+	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
+	at tests.KegelExerciseTests.openDailyPlan(KegelExerciseTests.java:175)
+	at tests.KegelExerciseTests.openKegelStartScreen(KegelExerciseTests.java:154)
+	at tests.KegelExerciseTests.test03KegelStartPageExerciseInformation_aroundBody4(KegelExerciseTests.java:97)
+	at tests.KegelExerciseTests$AjcClosure5.run(KegelExerciseTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.KegelExerciseTests.test03KegelStartPageExerciseInformation(KegelExerciseTests.java:97)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [b75c8864-837c-4fae-aa3e-8fda1dbd5727, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: b75c8864-837c-4fae-aa3e-8fda1dbd5727
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 54 more
+</error>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xe540, NSUnderlyingError=0x1615fbab0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [b75c8864-837c-4fae-aa3e-8fda1dbd5727, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: b75c8864-837c-4fae-aa3e-8fda1dbd5727
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xafb4, NSUnderlyingError=0x1615fb000 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [b75c8864-837c-4fae-aa3e-8fda1dbd5727, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: b75c8864-837c-4fae-aa3e-8fda1dbd5727
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+</system-out>
+  </testcase>
+  <testcase classname="tests.KegelExerciseTests" name="test05KegelExerciseInstructionPages" time="38.106">
+    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
+	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
+	at tests.KegelExerciseTests.openDailyPlan(KegelExerciseTests.java:175)
+	at tests.KegelExerciseTests.openKegelStartScreen(KegelExerciseTests.java:154)
+	at tests.KegelExerciseTests.test05KegelExerciseInstructionPages_aroundBody8(KegelExerciseTests.java:135)
+	at tests.KegelExerciseTests$AjcClosure9.run(KegelExerciseTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.KegelExerciseTests.test05KegelExerciseInstructionPages(KegelExerciseTests.java:135)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 54 more
+</error>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x13a4, NSUnderlyingError=0x1618836f0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x23f4, NSUnderlyingError=0x161754ff0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: adb68f53-c3ac-4bc5-8ee7-d9ddbbbb98cc
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+</system-out>
+  </testcase>
+  <testcase classname="tests.KegelExerciseTests" name="test02KegelSoundAndVibrationConfigurations" time="37.82">
+    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
+	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
+	at tests.KegelExerciseTests.openDailyPlan(KegelExerciseTests.java:175)
+	at tests.KegelExerciseTests.openKegelStartScreen(KegelExerciseTests.java:154)
+	at tests.KegelExerciseTests.openKegelPlayer(KegelExerciseTests.java:147)
+	at tests.KegelExerciseTests.test02KegelSoundAndVibrationConfigurations_aroundBody2(KegelExerciseTests.java:68)
+	at tests.KegelExerciseTests$AjcClosure3.run(KegelExerciseTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.KegelExerciseTests.test02KegelSoundAndVibrationConfigurations(KegelExerciseTests.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [ba6e3233-a2ee-46e5-9ce4-92d7c05648fa, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: ba6e3233-a2ee-46e5-9ce4-92d7c05648fa
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 55 more
+</error>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x44b0, NSUnderlyingError=0x1617558c0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [ba6e3233-a2ee-46e5-9ce4-92d7c05648fa, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: ba6e3233-a2ee-46e5-9ce4-92d7c05648fa
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x26ef, NSUnderlyingError=0x161883e40 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [ba6e3233-a2ee-46e5-9ce4-92d7c05648fa, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: ba6e3233-a2ee-46e5-9ce4-92d7c05648fa
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+</system-out>
+  </testcase>
+  <testcase classname="tests.KegelExerciseTests" name="test04KegelCompletionIntensityCanBeChanged" time="37.702">
+    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
+	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
+	at tests.KegelExerciseTests.openDailyPlan(KegelExerciseTests.java:175)
+	at tests.KegelExerciseTests.test04KegelCompletionIntensityCanBeChanged_aroundBody6(KegelExerciseTests.java:114)
+	at tests.KegelExerciseTests$AjcClosure7.run(KegelExerciseTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.KegelExerciseTests.test04KegelCompletionIntensityCanBeChanged(KegelExerciseTests.java:114)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [02e73efb-df09-4c48-93b4-8719387a6ca3, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 02e73efb-df09-4c48-93b4-8719387a6ca3
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 53 more
+</error>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xd1f4, NSUnderlyingError=0x161881080 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [02e73efb-df09-4c48-93b4-8719387a6ca3, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 02e73efb-df09-4c48-93b4-8719387a6ca3
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xbb31, NSUnderlyingError=0x1615f9050 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [02e73efb-df09-4c48-93b4-8719387a6ca3, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 02e73efb-df09-4c48-93b4-8719387a6ca3
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+</system-out>
+  </testcase>
+  <testcase classname="tests.KegelExerciseTests" name="test01KegelExercisePlayerFlow" time="36.143">
+    <error message="Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: Start screen title is not displayed/n (tried for 20 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen_aroundBody52(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject$AjcClosure53.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.waitForStartScreen(CoachFlowPageObject.java:362)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen_aroundBody0(CoachFlowPageObject.java:123)
+	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureLoggedOutOnStartScreen(CoachFlowPageObject.java:87)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn_aroundBody2(CoachFlowPageObject.java:144)
+	at lib.ui.CoachFlowPageObject$AjcClosure3.run(CoachFlowPageObject.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at lib.ui.CoachFlowPageObject.ensureExistingProgressUserIsLoggedIn(CoachFlowPageObject.java:128)
+	at tests.KegelExerciseTests.test01KegelExercisePlayerFlow_aroundBody0(KegelExerciseTests.java:47)
+	at tests.KegelExerciseTests$AjcClosure1.run(KegelExerciseTests.java:1)
+	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
+	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
+	at tests.KegelExerciseTests.test01KegelExercisePlayerFlow(KegelExerciseTests.java:37)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [92a8c976-498b-43b9-a915-54832d71ccb8, findElement {using=xpath, value=//XCUIElementTypeStaticText[contains(@name, &apos;Feel the new level&apos;) or contains(@name, &apos;FEEL THE NEW LEVEL&apos;)]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 92a8c976-498b-43b9-a915-54832d71ccb8
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
+	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:191)
+	at io.appium.java_client.remote.AppiumCommandExecutor.execute(AppiumCommandExecutor.java:250)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:602)
+	at org.openqa.selenium.remote.ElementLocation$ElementFinder$2.findElement(ElementLocation.java:165)
+	at org.openqa.selenium.remote.ElementLocation.findElement(ElementLocation.java:59)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:359)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:353)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
+	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
+	... 52 more
+</error>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x7861, NSUnderlyingError=0x161883330 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [92a8c976-498b-43b9-a915-54832d71ccb8, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 92a8c976-498b-43b9-a915-54832d71ccb8
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0x8f84, NSUnderlyingError=0x1615f9650 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [92a8c976-498b-43b9-a915-54832d71ccb8, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 92a8c976-498b-43b9-a915-54832d71ccb8
+PDF guide upsell was not shown; continuing.
+Notification prompt was not shown; continuing.
+Connect Email prompt was not shown; continuing.
+</system-out>
+  </testcase>
 </testsuite>

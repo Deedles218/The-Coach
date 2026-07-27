@@ -48,8 +48,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         LOG_OUT_CONFIRM_BUTTON = "id:YES";
 
         START_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Feel the new level') or contains(@name, 'FEEL THE NEW LEVEL')]";
-        START_BUTTON = "id:GET STARTED";
-        LOGIN_BUTTON = "id:LOG IN";
+        START_BUTTON = "id:START NOW";
+        LOGIN_BUTTON = "id:I'VE ALREADY PURCHASED";
 
         LOGIN_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Enter the mail that is linked to your account') or contains(@name, 'ENTER THE MAIL THAT IS LINKED')]";
         LOGIN_EMAIL_INPUT = "xpath://XCUIElementTypeTextField";
