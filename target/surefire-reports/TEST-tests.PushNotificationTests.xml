@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="tests.PushNotificationTests" time="3.495" errors="0" skipped="1">
+<testsuite tests="1" failures="0" name="tests.PushNotificationTests" time="0.618" errors="0" skipped="1">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre/lib"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="RU"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
-    <property name="test" value="PushNotificationTests"/>
+    <property name="test" value="tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/Users/deedles/IdeaProjects/The-Coach"/>
     <property name="java.runtime.version" value="1.8.0_261-b12"/>
@@ -34,7 +34,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="os.version" value="26.5"/>
+    <property name="os.version" value="26.5.2"/>
     <property name="library.jansi.path" value="/usr/local/Cellar/maven/3.9.1/libexec/lib/jansi-native"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="user.home" value="/Users/deedles"/>
@@ -44,11 +44,10 @@
     <property name="file.encoding" value="UTF-8"/>
     <property name="user.name" value="deedles"/>
     <property name="java.class.path" value="/usr/local/Cellar/maven/3.9.1/libexec/boot/plexus-classworlds-2.6.0.jar"/>
-    <property name="ios.bundleId" value="com.vamapps.The-Coach"/>
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=PushNotificationTests -Dios.bundleId=com.vamapps.The-Coach test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=tests.ChatTests,tests.CoachAuthorizationFlowTests,tests.CoachAuthorizationTests,tests.CoachProfileTests,tests.DailyPlanTests,tests.HW.ArticleTests,tests.HW.ChangeAppCondition,tests.HW.GetStartedTest,tests.HW.HomeworkEx12,tests.HW.HomeworkEx17,tests.HW.HomeworkEx18,tests.HW.MyListsTests,tests.KegelExerciseTests,tests.MaleBuildStartScreenTests,tests.PdfGuideTests,tests.ProfileTests,tests.PushNotificationTests,tests.SearchTests test"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="ru"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -66,11 +65,15 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="tests.PushNotificationTests" name="testNotificationPromptCanBeClosed" time="3.495">
+  <testcase classname="tests.PushNotificationTests" name="testNotificationPromptCanBeClosed" time="0.618">
     <skipped/>
-    <system-err>log4j:WARN No appenders could be found for logger (io.netty.util.internal.logging.InternalLoggerFactory).
-log4j:WARN Please initialize the log4j system properly.
-log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
-</system-err>
+    <system-out>App activation was not needed or failed: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 &quot;The request to open &quot;com.vamapps.The-Coach&quot; failed.&quot; UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open &quot;com.vamapps.The-Coach&quot; failed., FBSOpenApplicationRequestID=0xcdd4, NSUnderlyingError=0x1603d98c0 {Error Domain=FBSOpenApplicationErrorDomain Code=4 &quot;Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;&quot; UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for &quot;com.vamapps.The-Coach&quot;}}}
+Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
+System info: os.name: &apos;Mac OS X&apos;, os.arch: &apos;x86_64&apos;, os.version: &apos;26.5.2&apos;, java.version: &apos;1.8.0_261&apos;
+Driver info: io.appium.java_client.ios.IOSDriver
+Command: [90817b1b-9b55-48f1-9971-ccbe109949b6, executeScript {script=mobile: activateApp, args=[{bundleId=com.vamapps.The-Coach}]}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 90817b1b-9b55-48f1-9971-ccbe109949b6
+</system-out>
   </testcase>
 </testsuite>

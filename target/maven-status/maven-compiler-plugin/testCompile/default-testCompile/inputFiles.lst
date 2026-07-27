@@ -16,6 +16,7 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/NavigationUIFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/HWPageObject/WelcomePageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/NavigationUI.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/AndroidTestCase.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/MaleBuildSuite.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/MaleBuildStartScreenTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSArticlePageObject.java
@@ -26,10 +27,13 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachProfileTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSSearchPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSProfilePageObject.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/IOSPageObjectFactory.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/factories/ExplorePageObjectFactory.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/CoachFlowPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/HWPageObject/MyListsPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/AutoSuite.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/DailyPlanTests.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ExplorePageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/ProfileTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/PushNotificationTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx17.java
@@ -38,9 +42,11 @@
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/KegelExerciseTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/MyListsTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/TestSuite.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/ExploreTests.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/suites/TestSuiteIOS.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/HW/HomeworkEx12.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSMyListsPageObject.java
+/Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/ios/iOSExplorePageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/ui/DailyPlanPageObject.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/lib/CoreTestCase.java
 /Users/deedles/IdeaProjects/The-Coach/src/test/java/tests/CoachAuthorizationFlowTests.java

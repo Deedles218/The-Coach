@@ -1,18 +1,19 @@
 -------------------------------------------------------------------------------
 Test set: tests.CoachAuthorizationFlowTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 19.139 sec <<< FAILURE!
-testFeedPopupLogoutAndStartScreenButtons(tests.CoachAuthorizationFlowTests)  Time elapsed: 18.819 sec  <<< ERROR!
-org.openqa.selenium.TimeoutException: Expected condition failed: Expected authorized The Coach dashboard before starting Feed/logout flow/n (tried for 15 second(s) with 500 milliseconds interval)
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 11.906 sec <<< FAILURE!
+testFeedPopupLogoutAndStartScreenButtons(tests.CoachAuthorizationFlowTests)  Time elapsed: 11.903 sec  <<< ERROR!
+org.openqa.selenium.TimeoutException: Expected condition failed: Cannot find and tap Feed tab/n (tried for 10 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:37)
-	at lib.ui.CoachFlowPageObject.assertAuthorizedDashboardIsDisplayed_aroundBody0(CoachFlowPageObject.java:33)
-	at lib.ui.CoachFlowPageObject$AjcClosure1.run(CoachFlowPageObject.java:1)
+	at lib.ui.MainPageObject.waitForElementPresent(MainPageObject.java:39)
+	at lib.ui.MainPageObject.waitForElementAndClick(MainPageObject.java:49)
+	at lib.ui.CoachFlowPageObject.openFeed_aroundBody16(CoachFlowPageObject.java:201)
+	at lib.ui.CoachFlowPageObject$AjcClosure17.run(CoachFlowPageObject.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
-	at lib.ui.CoachFlowPageObject.assertAuthorizedDashboardIsDisplayed(CoachFlowPageObject.java:33)
-	at tests.CoachAuthorizationFlowTests.testFeedPopupLogoutAndStartScreenButtons_aroundBody0(CoachAuthorizationFlowTests.java:34)
+	at lib.ui.CoachFlowPageObject.openFeed(CoachFlowPageObject.java:201)
+	at tests.CoachAuthorizationFlowTests.testFeedPopupLogoutAndStartScreenButtons_aroundBody0(CoachAuthorizationFlowTests.java:35)
 	at tests.CoachAuthorizationFlowTests$AjcClosure1.run(CoachAuthorizationFlowTests.java:1)
 	at org.aspectj.runtime.reflect.JoinPointImpl.proceed(JoinPointImpl.java:149)
 	at io.qameta.allure.aspects.StepsAspects.step(StepsAspects.java:50)
@@ -51,12 +52,12 @@ org.openqa.selenium.TimeoutException: Expected condition failed: Expected author
 Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
 For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
 Build info: version: '4.13.0', revision: 'ba948ece5b*'
-System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5', java.version: '1.8.0_261'
+System info: os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '26.5.2', java.version: '1.8.0_261'
 Driver info: io.appium.java_client.ios.IOSDriver
-Command: [0375ab30-3a28-4c15-8942-c068373ba5b5, findElement {using=id, value=WomanProfileImage}]
-Capabilities {appium:automationName: XCuiTest, appium:bundleId: com.vamapps.The-Coach-for-her, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:newCommandTimeout: 600, appium:noReset: true, appium:platformVersion: 26.5, appium:showXcodeLog: false, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:updatedWDABundleId: com.vamapps.WebDriverAgentR..., appium:wdaLocalPort: 8101, appium:webStorageEnabled: false, appium:xcodeOrgId: QS3D868T5W, appium:xcodeSigningId: Apple Development, platformName: IOS}
-Session ID: 0375ab30-3a28-4c15-8942-c068373ba5b5
-	at sun.reflect.GeneratedConstructorAccessor13.newInstance(Unknown Source)
+Command: [69e6a37a-0edc-4350-a1fb-0dce49a0bd45, findElement {using=id, value=Feed}]
+Capabilities {appium:automationName: XCUITest, appium:bundleId: com.vamapps.preprod.The-Coach, appium:databaseEnabled: false, appium:deviceName: iPhone Daria, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: false, appium:noReset: true, appium:platformVersion: 26.5, appium:takesScreenshot: true, appium:udid: 00008150-00084CDE0CF0401C, appium:webStorageEnabled: false, platformName: IOS}
+Session ID: 69e6a37a-0edc-4350-a1fb-0dce49a0bd45
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
 	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
@@ -72,5 +73,5 @@ Session ID: 0375ab30-3a28-4c15-8942-c068373ba5b5
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:171)
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
-	... 42 more
+	... 43 more
 
