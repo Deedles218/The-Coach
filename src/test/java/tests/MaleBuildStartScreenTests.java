@@ -30,8 +30,8 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
     private static final String BUNDLE_ID = "com.vamapps.preprod.The-Coach";
 
     private static final String START_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'FEEL THE NEW LEVEL') or contains(@name, 'Feel the new level')]";
-    private static final String START_BUTTON = "id:GET STARTED";
-    private static final String LOGIN_BUTTON = "id:LOG IN";
+    private static final String START_BUTTON = "id:START NOW";
+    private static final String LOGIN_BUTTON = "id:I'VE ALREADY PURCHASED";
     private static final String TERMS_LINK = "id:TERMS";
     private static final String PRIVACY_LINK = "id:PRIVACY";
     private static final String TERMS_SCREEN = "xpath://XCUIElementTypeButton[@name='BackButton'] | //XCUIElementTypeButton[@name='PageFormatMenuButton'] | //XCUIElementTypeStaticText[contains(@name, 'TERMS') or contains(@name, 'Terms')]";
