@@ -5,6 +5,7 @@ lib/ui/HWPageObject/ArticlePageObject.class
 suites/TestSuite.class
 lib/ui/NavigationUI.class
 lib/ui/ProfilePageObject.class
+lib/CoreTestCase$1$1.class
 lib/ui/SearchPageObject.class
 lib/ui/ios/iOSSearchPageObject.class
 tests/ChatTests.class
@@ -39,6 +40,7 @@ tests/HW/HomeworkEx8.class
 tests/KegelExerciseTests.class
 tests/PdfGuideTests.class
 lib/ui/DailyPlanPageObject.class
+lib/TestData$Fixture.class
 tests/CoachAuthorizationTests.class
 lib/ui/factories/SearchPageObjectFactory.class
 suites/AutoSuite.class

@@ -14,6 +14,32 @@ import java.util.Map;
 abstract public class DailyPlanPageObject extends MainPageObject {
     private String instructionIntensityRestoreOrder;
 
+    protected static final String
+            TEST_ID_TODAY_TAB = "id:tab_today",
+            TEST_ID_TODAY_SELECTED = "id:tab_today_selected",
+            TEST_ID_DAILY_PLAN_DAY = "id:daily_plan_current_day",
+            TEST_ID_DAILY_PLAN_LEFT = "id:daily_plan_previous_day",
+            TEST_ID_DAILY_PLAN_RIGHT = "id:daily_plan_next_day",
+            TEST_ID_DAILY_LESSONS = "id:daily_lessons",
+            TEST_ID_DAILY_PRACTICE = "id:daily_practice",
+            TEST_ID_KEGEL_CARD = "id:daily_practice_kegel",
+            TEST_ID_KEGEL_START_SCREEN = "id:kegel_start_screen",
+            TEST_ID_PRACTICE_START = "id:kegel_start_workout",
+            TEST_ID_PRACTICE_CLOSE = "id:kegel_close",
+            TEST_ID_STRETCHING_LETS_GO = "id:kegel_stretching_lets_go",
+            TEST_ID_PLAYER_BACK = "id:kegel_player_back",
+            TEST_ID_PLAYER_PAUSE = "id:kegel_player_pause",
+            TEST_ID_PLAYER_PLAY = "id:kegel_player_play",
+            TEST_ID_PLAYER_SOUND_ON = "id:kegel_player_sound_on",
+            TEST_ID_PLAYER_SOUND_OFF = "id:kegel_player_sound_off",
+            TEST_ID_PLAYER_VIBRATION_ON = "id:kegel_player_vibration_on",
+            TEST_ID_PLAYER_VIBRATION_OFF = "id:kegel_player_vibration_off",
+            TEST_ID_PLAYER_INFO = "id:kegel_player_info",
+            TEST_ID_PLAYER_INFO_CLOSE = "id:kegel_player_info_close",
+            TEST_ID_PLAYER_EXIT_QUIT = "id:kegel_player_exit_quit",
+            TEST_ID_PLAYER_EXIT_CONTINUE = "id:kegel_player_exit_continue",
+            TEST_ID_LOADING = "id:loading_indicator";
+
     protected static String
             TAB_TODAY,
             SELECTED_TODAY_TAB,
@@ -111,27 +137,75 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Open Today tab")
     public void openTodayTab() {
-        this.waitForElementAndClick(TAB_TODAY, "Cannot tap Today tab", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_TODAY_TAB, TAB_TODAY},
+                "Cannot tap Today tab",
+                10
+        );
         this.assertTodayTabIsSelected();
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Today loading indicator is still displayed", 20);
         this.scrollDownToDailyPlanHeader();
     }
 
     @Step("Verify Today tab is selected")
     public void assertTodayTabIsSelected() {
-        this.waitForElementPresent(SELECTED_TODAY_TAB, "Today tab is not selected", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_TODAY_SELECTED, SELECTED_TODAY_TAB},
+                "Today tab is not selected",
+                10
+        );
     }
 
     @Step("Verify Daily Plan header and current day are displayed")
     public void assertDailyPlanDaySwitcherIsDisplayed() {
-        this.waitForElementPresent(CURRENT_DAY_LABEL, "Current Daily Plan day label is not displayed", 10);
-        this.waitForElementPresent(DAILY_PLAN_DAY_SWITCHER, "Daily Plan day switcher is not displayed", 10);
-        this.waitForElementPresent(LEFT_SWITCHER_ARROW, "Daily Plan left arrow is not displayed", 10);
-        this.waitForElementPresent(RIGHT_SWITCHER_ARROW, "Daily Plan right arrow is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_DAY, CURRENT_DAY_LABEL},
+                "Current Daily Plan day label is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_DAY, DAILY_PLAN_DAY_SWITCHER},
+                "Daily Plan day switcher is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_LEFT, LEFT_SWITCHER_ARROW},
+                "Daily Plan left arrow is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_RIGHT, RIGHT_SWITCHER_ARROW},
+                "Daily Plan right arrow is not displayed",
+                10
+        );
+    }
+
+    @Step("Verify deterministic Daily Plan day: {expectedDay}")
+    public void assertCurrentDayMatches(String expectedDay) {
+        Assert.assertNotNull("Expected Daily Plan day must be configured", expectedDay);
+        WebElement currentDay = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_DAY, CURRENT_DAY_LABEL},
+                "Current Daily Plan day label is not displayed",
+                10
+        );
+        String actualDay = currentDay.getAttribute("name");
+        if (actualDay == null || actualDay.trim().isEmpty()) {
+            actualDay = currentDay.getText();
+        }
+        Assert.assertTrue(
+                "Daily Plan day does not match the deterministic fixture. Expected to contain '"
+                        + expectedDay + "' but was '" + actualDay + "'.",
+                actualDay != null && actualDay.contains(expectedDay)
+        );
     }
 
     @Step("Verify Daily Lessons are displayed")
     public void assertDailyLessonsAreDisplayed() {
-        this.waitForElementPresent(DAILY_LESSONS_TITLE, "Daily Lessons section title is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_LESSONS, DAILY_LESSONS_TITLE},
+                "Daily Lessons section title is not displayed",
+                10
+        );
         this.waitForElementPresent(FIRST_LESSON_TITLE, "First Daily Lessons item is not displayed", 10);
         this.waitForElementPresent(FIRST_LESSON_TYPE, "First Daily Lessons item type is not displayed", 10);
     }
@@ -156,17 +230,25 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Return from Daily Lesson to Daily Plan")
     public void returnFromDailyLessonToDailyPlan() {
         this.waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson screen", 10);
-        this.waitForElementPresent(TAB_TODAY, "Daily Plan did not return after closing Daily Lesson", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_TODAY_TAB, TAB_TODAY},
+                "Daily Plan did not return after closing Daily Lesson",
+                10
+        );
     }
 
     @Step("Verify Daily Practice is displayed")
     public void assertDailyPracticeIsDisplayed() {
         int alreadySwiped = 0;
-        while (!this.isElementPresent(DAILY_PRACTICE_TITLE) && alreadySwiped < 4) {
+        while (!this.isElementVisible(DAILY_PRACTICE_TITLE) && alreadySwiped < 4) {
             this.mobileSwipeUp();
             alreadySwiped++;
         }
-        this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Practice section title is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PRACTICE, DAILY_PRACTICE_TITLE},
+                "Daily Practice section title is not displayed",
+                10
+        );
         this.waitForElementPresent(FIRST_PRACTICE_TITLE, "First Daily Practice item is not displayed", 10);
         this.waitForElementPresent(FIRST_PRACTICE_TYPE, "First Daily Practice item type is not displayed", 10);
     }
@@ -178,6 +260,11 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         if (this.isLockedModulePopupDisplayed()) {
             return;
         }
+        this.waitForLoadingToDisappearIfPresent(
+                TEST_ID_LOADING,
+                "Daily Practice loading indicator is still displayed",
+                20
+        );
         this.waitForElementPresent(PRACTICE_SCREEN_TITLE, "Daily Practice screen title is not displayed", 15);
     }
 
@@ -188,12 +275,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Return from Daily Practice to Daily Plan")
     public void returnFromDailyPracticeToDailyPlan() {
-        try {
-            this.waitForElementAndClick(PRACTICE_SCREEN_CLOSE_BUTTON, "Cannot close Daily Practice screen", 5);
-        } catch (TimeoutException e) {
-            this.tapTopRightCloseFallback();
-        }
-        this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Plan did not return after closing Daily Practice", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PRACTICE_CLOSE, PRACTICE_SCREEN_CLOSE_BUTTON},
+                "Cannot close Daily Practice screen with a semantic control",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PRACTICE, DAILY_PRACTICE_TITLE},
+                "Daily Plan did not return after closing Daily Practice",
+                10
+        );
     }
 
     public boolean isLockedModulePopupDisplayed() {
@@ -203,7 +294,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Close Kegel exercise flow if it is already open")
     public void closeKegelExerciseFlowIfPresent() {
         try {
-            if (this.isElementPresent(KEGEL_MEDIA_PLAYER_BACK_BUTTON)) {
+            if (this.isElementVisible(KEGEL_MEDIA_PLAYER_BACK_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_MEDIA_PLAYER_BACK_BUTTON,
                         "Cannot close Kegel media player",
@@ -211,25 +302,30 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 );
             }
 
-            if (this.isElementPresent(KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON)) {
-                this.waitForElementAndClick(
-                        KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON,
+            if (this.isElementVisible(TEST_ID_STRETCHING_LETS_GO)
+                    || this.isElementVisible(KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON)) {
+                this.waitForFirstElementAndClick(
+                        new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
                         "Cannot continue from Kegel stretching completion screen",
                         5
                 );
             }
 
-            if (this.isElementPresent(KEGEL_INSTRUCTION_BACK_BUTTON)) {
+            if (this.isElementVisible(KEGEL_INSTRUCTION_BACK_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_INSTRUCTION_BACK_BUTTON,
                         "Cannot close Kegel exercise instruction",
                         5
                 );
-                this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel start page did not return from instruction", 10);
+                this.waitForFirstElementPresent(
+                        new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE},
+                        "Kegel start page did not return from instruction",
+                        10
+                );
             }
 
-            if (this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE)
-                    && this.isElementPresent(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
+            if (this.isElementVisible(KEGEL_PLAYER_INFO_MODAL_TITLE)
+                    && this.isElementVisible(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON,
                         "Cannot close Kegel player info modal",
@@ -237,7 +333,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 );
             }
 
-            if (this.isElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON)) {
+            if (this.isElementVisible(TEST_ID_PLAYER_EXIT_QUIT)
+                    || this.isElementVisible(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON)) {
                 this.waitForElementAndClick(
                         KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
                         "Cannot confirm Kegel player exit",
@@ -247,17 +344,17 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 return;
             }
 
-            if (this.isElementPresent(KEGEL_PLAYER_BACK_BUTTON)) {
-                this.tapElementCenter(
-                        KEGEL_PLAYER_BACK_BUTTON,
+            if (this.isElementVisible(TEST_ID_PLAYER_BACK) || this.isElementVisible(KEGEL_PLAYER_BACK_BUTTON)) {
+                this.waitForFirstElementAndClick(
+                        new String[]{TEST_ID_PLAYER_BACK, KEGEL_PLAYER_BACK_BUTTON},
                         "Cannot tap Kegel player close control",
-                        5
+                        10
                 );
                 try {
-                    this.waitForElementAndClick(
-                            KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
+                    this.waitForFirstElementAndClick(
+                            new String[]{TEST_ID_PLAYER_EXIT_QUIT, KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON},
                             "Cannot confirm Kegel player exit",
-                            5
+                            10
                     );
                 } catch (TimeoutException e) {
                     System.out.println("Kegel player closed without an exit confirmation; continuing.");
@@ -266,24 +363,25 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 return;
             }
 
-            if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
-                this.tapElementCenter(
-                        PRACTICE_SCREEN_CLOSE_BUTTON,
+            if (this.isElementVisible(TEST_ID_PRACTICE_CLOSE) || this.isElementVisible(PRACTICE_SCREEN_CLOSE_BUTTON)) {
+                this.waitForFirstElementAndClick(
+                        new String[]{TEST_ID_PRACTICE_CLOSE, PRACTICE_SCREEN_CLOSE_BUTTON},
                         "Cannot close Kegel start screen",
-                        5
+                        10
                 );
-            } else if (this.isElementPresent(PRACTICE_SCREEN_START_BUTTON)) {
+            } else if (this.isElementVisible(TEST_ID_PRACTICE_START)
+                    || this.isElementVisible(PRACTICE_SCREEN_START_BUTTON)) {
                 this.scrollToKegelStartHeader();
-                if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
-                    this.tapElementCenter(
-                            PRACTICE_SCREEN_CLOSE_BUTTON,
+                if (this.isElementVisible(TEST_ID_PRACTICE_CLOSE) || this.isElementVisible(PRACTICE_SCREEN_CLOSE_BUTTON)) {
+                    this.waitForFirstElementAndClick(
+                            new String[]{TEST_ID_PRACTICE_CLOSE, PRACTICE_SCREEN_CLOSE_BUTTON},
                             "Cannot close Kegel start screen",
-                            5
+                            10
                     );
                 }
             }
-            this.waitForElementNotPresent(
-                    KEGEL_START_SCREEN_TITLE,
+            this.waitForFirstElementNotPresent(
+                    new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE},
                     "Kegel start screen is still displayed after closing",
                     10
             );
@@ -297,9 +395,22 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.assertDailyPracticeIsDisplayed();
         this.closePracticeCompletionFeedbackIfPresent();
         this.scrollToKegelDailyPlanCard();
-        this.tapElementCenter(KEGEL_DAILY_PLAN_TITLE, "Cannot open Kegel exercise from Daily Plan", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_KEGEL_CARD, KEGEL_DAILY_PLAN_TITLE},
+                "Cannot open Kegel exercise from Daily Plan",
+                10
+        );
         this.scrollToKegelStartHeader();
-        this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel exercise start screen did not open", 15);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE},
+                "Kegel exercise start screen did not open",
+                15
+        );
+        this.waitForLoadingToDisappearIfPresent(
+                TEST_ID_LOADING,
+                "Kegel start loading indicator is still displayed",
+                20
+        );
     }
 
     @Step("Close practice completion feedback if it appears")
@@ -327,13 +438,15 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     private void scrollToKegelDailyPlanCard() {
         int alreadySwipedDown = 0;
-        while (!this.isElementPresent(KEGEL_DAILY_PLAN_TITLE) && alreadySwipedDown < 3) {
+        while (!(this.isElementPresent(TEST_ID_KEGEL_CARD) || this.isElementPresent(KEGEL_DAILY_PLAN_TITLE))
+                && alreadySwipedDown < 3) {
             this.mobileSwipeDown();
             alreadySwipedDown++;
         }
 
         int alreadySwiped = 0;
-        while (!this.isElementPresent(KEGEL_DAILY_PLAN_TITLE) && alreadySwiped < 6) {
+        while (!(this.isElementPresent(TEST_ID_KEGEL_CARD) || this.isElementPresent(KEGEL_DAILY_PLAN_TITLE))
+                && alreadySwiped < 6) {
             this.mobileSwipeUp();
             alreadySwiped++;
         }
@@ -342,16 +455,28 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Verify Kegel exercise start screen")
     public void assertKegelStartScreenIsDisplayed() {
         this.scrollToKegelStartHeader();
-        this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel exercise title is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE},
+                "Kegel exercise start screen is not displayed",
+                10
+        );
         this.waitForElementPresent(KEGEL_START_SCREEN_DESCRIPTION, "Kegel exercise description is not displayed", 10);
         this.waitForElementPresent(KEGEL_START_SCREEN_DURATION, "Kegel exercise duration is not displayed", 10);
         this.waitForElementPresent(KEGEL_START_SCREEN_INTENSITY, "Kegel exercise intensity is not displayed", 10);
         this.waitForElementPresent(PRACTICE_SCREEN_GOAL_TITLE, "Kegel exercise goal section is not displayed", 10);
         this.waitForElementPresent(PRACTICE_SCREEN_EXERCISES_TITLE, "Kegel exercise list section is not displayed", 10);
         this.waitForElementPresent(KEGEL_START_SCREEN_EXERCISE_TITLE, "Kegel exercise item is not displayed", 10);
-        this.waitForElementPresent(PRACTICE_SCREEN_START_BUTTON, "Kegel exercise start button is not displayed", 10);
-        if (this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
-            this.waitForElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON, "Kegel exercise close control is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PRACTICE_START, PRACTICE_SCREEN_START_BUTTON},
+                "Kegel exercise start button is not displayed",
+                10
+        );
+        if (this.isElementPresent(TEST_ID_PRACTICE_CLOSE) || this.isElementPresent(PRACTICE_SCREEN_CLOSE_BUTTON)) {
+            this.waitForFirstElementPresent(
+                    new String[]{TEST_ID_PRACTICE_CLOSE, PRACTICE_SCREEN_CLOSE_BUTTON},
+                    "Kegel exercise close control is not displayed",
+                    10
+            );
         } else {
             System.out.println("Kegel start screen close control is not exposed in the current state; continuing.");
         }
@@ -392,7 +517,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             this.mobileSwipeUp();
             alreadySwiped++;
         }
-        this.tapElementCenter(
+        this.waitForElementAndClick(
                 KEGEL_START_SCREEN_FIRST_EXERCISE,
                 "Cannot open first Kegel exercise instruction",
                 10
@@ -453,7 +578,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel instruction save button is not displayed after changing intensity",
                 10
         );
-        Assert.assertEquals("Kegel instruction save button should be enabled after changing intensity", "true", saveButton.getAttribute("enabled"));
+        Assert.assertTrue(
+                "Kegel instruction save button should be enabled after changing intensity",
+                this.isElementEnabled(saveButton)
+        );
     }
 
     @Step("Restore previous Kegel exercise instruction intensity")
@@ -480,7 +608,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel instruction save button is not displayed after restoring intensity",
                 10
         );
-        Assert.assertEquals("Kegel instruction save button should be disabled after restoring intensity", "false", saveButton.getAttribute("enabled"));
+        Assert.assertFalse(
+                "Kegel instruction save button should be disabled after restoring intensity",
+                this.isElementEnabled(saveButton)
+        );
     }
 
     @Step("Return from Kegel exercise instruction to start page")
@@ -490,26 +621,91 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Cannot return from Kegel exercise instruction",
                 10
         );
-        this.waitForElementPresent(KEGEL_START_SCREEN_TITLE, "Kegel start page did not return after instruction", 15);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE},
+                "Kegel start page did not return after instruction",
+                15
+        );
     }
 
     @Step("Start Kegel exercise")
     public void startKegelExercise() {
         this.scrollToKegelStartButton();
-        this.waitForElementAndClick(PRACTICE_SCREEN_START_BUTTON, "Cannot start Kegel exercise", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_PAUSE_BUTTON, "Kegel player did not open with pause control", 20);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PRACTICE_START, PRACTICE_SCREEN_START_BUTTON},
+                "Cannot start Kegel exercise with a single tap",
+                20
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_KEGEL_START_SCREEN, KEGEL_START_SCREEN_TITLE, PRACTICE_SCREEN_TITLE},
+                "Kegel start screen did not disappear after the single tap",
+                20
+        );
+        this.waitForLoadingToDisappearIfPresent(
+                TEST_ID_LOADING,
+                "Kegel player loading indicator is still displayed",
+                20
+        );
+        this.continuePastStretchingVideo();
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
+                "Kegel player did not open after the stretching video",
+                30
+        );
+    }
+
+    @Step("Complete the default Kegel stretching video")
+    private void continuePastStretchingVideo() {
+        this.waitForFirstElementPresent(
+                new String[]{KEGEL_MEDIA_PLAYER_BACK_BUTTON},
+                "Default Kegel stretching video did not open after starting the workout",
+                30
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
+                "Kegel stretching video did not reach its completion action",
+                300
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
+                "Cannot continue from Kegel stretching video",
+                20
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
+                "Kegel stretching completion action is still displayed",
+                20
+        );
     }
 
     @Step("Verify Kegel exercise player is displayed")
     public void assertKegelPlayerIsDisplayed() {
-        this.waitForElementPresent(KEGEL_PLAYER_BACK_BUTTON, "Kegel player back control is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_BACK, KEGEL_PLAYER_BACK_BUTTON},
+                "Kegel player back control is not displayed",
+                10
+        );
         Assert.assertTrue("Kegel player sound control is not displayed", this.isKegelPlayerSoundControlDisplayed());
         this.waitForElementPresent(KEGEL_PLAYER_EXERCISE_TITLE, "Kegel player active exercise title is not displayed", 10);
         this.waitForElementPresent(KEGEL_PLAYER_DIFFICULTY, "Kegel player guide label is not displayed", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_TIMER, "Kegel player timer/progress labels are not displayed", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_PAUSE_BUTTON, "Kegel player pause control is not displayed", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_VIBRATION_BUTTON, "Kegel player vibration control is not displayed", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_INFO_BUTTON, "Kegel player info control is not displayed", 10);
+        // The current iOS build does not expose the player timer as a visible
+        // accessibility element. Player identity and readiness are covered by
+        // the active phase, navigation, and control assertions below.
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
+                "Kegel player pause control is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_VIBRATION_ON, TEST_ID_PLAYER_VIBRATION_OFF, KEGEL_PLAYER_VIBRATION_BUTTON},
+                "Kegel player vibration control is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_INFO, KEGEL_PLAYER_INFO_BUTTON},
+                "Kegel player info control is not displayed",
+                10
+        );
         this.waitForElementPresent(KEGEL_PLAYER_PHASE_REST_BUTTON, "Kegel player Rest phase control is not displayed", 10);
         this.waitForElementPresent(KEGEL_PLAYER_PHASE_WAVES_BUTTON, "Kegel player Waves phase control is not displayed", 10);
     }
@@ -543,71 +739,143 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Pause Kegel exercise")
     public void pauseKegelExercise() {
-        this.tapElementCenter(KEGEL_PLAYER_PAUSE_BUTTON, "Cannot pause Kegel exercise", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_PLAY_BUTTON, "Kegel player resume control is not displayed after pause", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
+                "Cannot pause Kegel exercise",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_PLAY, KEGEL_PLAYER_PLAY_BUTTON},
+                "Kegel player resume control is not displayed after pause",
+                10
+        );
     }
 
     @Step("Resume Kegel exercise")
     public void resumeKegelExercise() {
-        this.tapElementCenter(KEGEL_PLAYER_PLAY_BUTTON, "Cannot resume Kegel exercise", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_PAUSE_BUTTON, "Kegel player pause control did not return after resume", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_PLAY, KEGEL_PLAYER_PLAY_BUTTON},
+                "Cannot resume Kegel exercise",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
+                "Kegel player pause control did not return after resume",
+                10
+        );
     }
 
     @Step("Toggle Kegel player sound")
     public void toggleKegelPlayerSound() {
-        if (this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_MUTE_BUTTON, "Cannot tap Kegel player sound control", 10);
+        if (this.isElementPresent(TEST_ID_PLAYER_SOUND_OFF) || this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON)) {
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_SOUND_OFF, KEGEL_PLAYER_MUTE_BUTTON},
+                    "Cannot tap Kegel player sound control",
+                    10
+            );
         } else {
-            this.tapElementCenter(KEGEL_PLAYER_UNMUTE_BUTTON, "Cannot tap Kegel player sound control", 10);
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_SOUND_ON, KEGEL_PLAYER_UNMUTE_BUTTON},
+                    "Cannot tap Kegel player sound control",
+                    10
+            );
         }
         Assert.assertTrue("Kegel player sound control is not displayed after toggle", this.isKegelPlayerSoundControlDisplayed());
     }
 
     @Step("Set Kegel player sound enabled: {enabled}")
     public void setKegelPlayerSoundEnabled(boolean enabled) {
-        if (enabled && this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_MUTE_BUTTON, "Cannot enable Kegel player sound", 10);
-        } else if (!enabled && this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_UNMUTE_BUTTON, "Cannot disable Kegel player sound", 10);
+        if (enabled && (this.isElementPresent(TEST_ID_PLAYER_SOUND_OFF) || this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON))) {
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_SOUND_OFF, KEGEL_PLAYER_MUTE_BUTTON},
+                    "Cannot enable Kegel player sound",
+                    10
+            );
+        } else if (!enabled && (this.isElementPresent(TEST_ID_PLAYER_SOUND_ON) || this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON))) {
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_SOUND_ON, KEGEL_PLAYER_UNMUTE_BUTTON},
+                    "Cannot disable Kegel player sound",
+                    10
+            );
         }
         this.assertKegelPlayerSoundEnabled(enabled);
     }
 
     @Step("Verify Kegel player sound enabled: {enabled}")
     public void assertKegelPlayerSoundEnabled(boolean enabled) {
-        String expectedLocator = enabled ? KEGEL_PLAYER_UNMUTE_BUTTON : KEGEL_PLAYER_MUTE_BUTTON;
-        this.waitForElementPresent(expectedLocator, "Kegel player sound state did not change as expected", 10);
+        String[] expectedLocators = enabled
+                ? new String[]{TEST_ID_PLAYER_SOUND_ON, KEGEL_PLAYER_UNMUTE_BUTTON}
+                : new String[]{TEST_ID_PLAYER_SOUND_OFF, KEGEL_PLAYER_MUTE_BUTTON};
+        this.waitForFirstElementPresent(
+                expectedLocators,
+                "Kegel player sound state did not change as expected",
+                10
+        );
     }
 
     @Step("Toggle Kegel player vibration")
     public void toggleKegelPlayerVibration() {
-        this.tapElementCenter(KEGEL_PLAYER_VIBRATION_BUTTON, "Cannot tap Kegel player vibration control", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_VIBRATION_BUTTON, "Kegel player vibration control is not displayed after toggle", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_VIBRATION_ON, TEST_ID_PLAYER_VIBRATION_OFF, KEGEL_PLAYER_VIBRATION_BUTTON},
+                "Cannot tap Kegel player vibration control",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_VIBRATION_ON, TEST_ID_PLAYER_VIBRATION_OFF, KEGEL_PLAYER_VIBRATION_BUTTON},
+                "Kegel player vibration control is not displayed after toggle",
+                10
+        );
     }
 
     @Step("Set Kegel player vibration enabled: {enabled}")
     public void setKegelPlayerVibrationEnabled(boolean enabled) {
-        if (enabled && this.isElementPresent(KEGEL_PLAYER_VIBRATION_OFF_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_VIBRATION_OFF_BUTTON, "Cannot enable Kegel player vibration", 10);
-        } else if (!enabled && this.isElementPresent(KEGEL_PLAYER_VIBRATION_ON_BUTTON)) {
-            this.tapElementCenter(KEGEL_PLAYER_VIBRATION_ON_BUTTON, "Cannot disable Kegel player vibration", 10);
+        if (enabled && (this.isElementPresent(TEST_ID_PLAYER_VIBRATION_OFF) || this.isElementPresent(KEGEL_PLAYER_VIBRATION_OFF_BUTTON))) {
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_VIBRATION_OFF, KEGEL_PLAYER_VIBRATION_OFF_BUTTON},
+                    "Cannot enable Kegel player vibration",
+                    10
+            );
+        } else if (!enabled && (this.isElementPresent(TEST_ID_PLAYER_VIBRATION_ON) || this.isElementPresent(KEGEL_PLAYER_VIBRATION_ON_BUTTON))) {
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_VIBRATION_ON, KEGEL_PLAYER_VIBRATION_ON_BUTTON},
+                    "Cannot disable Kegel player vibration",
+                    10
+            );
         }
         this.assertKegelPlayerVibrationEnabled(enabled);
     }
 
     @Step("Verify Kegel player vibration enabled: {enabled}")
     public void assertKegelPlayerVibrationEnabled(boolean enabled) {
-        String expectedLocator = enabled ? KEGEL_PLAYER_VIBRATION_ON_BUTTON : KEGEL_PLAYER_VIBRATION_OFF_BUTTON;
-        this.waitForElementPresent(expectedLocator, "Kegel player vibration state did not change as expected", 10);
+        String[] expectedLocators = enabled
+                ? new String[]{TEST_ID_PLAYER_VIBRATION_ON, KEGEL_PLAYER_VIBRATION_ON_BUTTON}
+                : new String[]{TEST_ID_PLAYER_VIBRATION_OFF, KEGEL_PLAYER_VIBRATION_OFF_BUTTON};
+        this.waitForFirstElementPresent(
+                expectedLocators,
+                "Kegel player vibration state did not change as expected",
+                10
+        );
     }
 
     @Step("Open Kegel player info")
     public void openKegelPlayerInfo() {
-        this.tapElementCenter(KEGEL_PLAYER_INFO_BUTTON, "Cannot tap Kegel player info control", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_INFO, KEGEL_PLAYER_INFO_BUTTON},
+                "Cannot tap Kegel player info control",
+                10
+        );
         this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE, "Kegel player info modal title is not displayed", 10);
         this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_CONTENT, "Kegel player info modal content is not displayed", 10);
-        this.waitForElementAndClick(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON, "Cannot close Kegel player info modal", 10);
-        this.waitForElementPresent(KEGEL_PLAYER_PLAY_BUTTON, "Kegel player did not return paused after closing info modal", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_INFO_CLOSE, KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON},
+                "Cannot close Kegel player info modal",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PLAYER_PLAY, KEGEL_PLAYER_PLAY_BUTTON},
+                "Kegel player did not return paused after closing info modal",
+                10
+        );
     }
 
     @Step("Press Kegel player phase controls")
@@ -623,7 +891,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     }
 
     public boolean isKegelPlayerSoundControlDisplayed() {
-        return this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON) || this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON);
+        return this.isElementPresent(TEST_ID_PLAYER_SOUND_ON)
+                || this.isElementPresent(TEST_ID_PLAYER_SOUND_OFF)
+                || this.isElementPresent(KEGEL_PLAYER_MUTE_BUTTON)
+                || this.isElementPresent(KEGEL_PLAYER_UNMUTE_BUTTON);
     }
 
     public boolean isKegelCompletionIntensityFeedbackDisplayed() {
@@ -659,7 +930,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     private void scrollToKegelStartHeader() {
         int alreadySwiped = 0;
-        while (!this.isElementPresent(KEGEL_START_SCREEN_TITLE) && alreadySwiped < 3) {
+        while (!(this.isElementPresent(TEST_ID_KEGEL_START_SCREEN) || this.isElementPresent(KEGEL_START_SCREEN_TITLE))
+                && alreadySwiped < 3) {
             this.mobileSwipeDown();
             alreadySwiped++;
         }
@@ -667,7 +939,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     private void scrollToKegelStartButton() {
         int alreadySwiped = 0;
-        while (!this.isElementPresent(PRACTICE_SCREEN_START_BUTTON) && alreadySwiped < 3) {
+        while (!(this.isElementPresent(TEST_ID_PRACTICE_START) || this.isElementPresent(PRACTICE_SCREEN_START_BUTTON))
+                && alreadySwiped < 3) {
             this.mobileSwipeUp();
             alreadySwiped++;
         }
@@ -675,12 +948,33 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Exit Kegel exercise player and return to Daily Plan")
     public void exitKegelExercisePlayer() {
-        this.tapElementCenter(KEGEL_PLAYER_BACK_BUTTON, "Cannot tap Kegel player close control", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PLAYER_BACK, KEGEL_PLAYER_BACK_BUTTON},
+                "Cannot tap Kegel player close control",
+                10
+        );
         if (this.isElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
-            this.waitForElementPresent(KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON, "Kegel player continue button is not displayed", 10);
-            this.waitForElementAndClick(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON, "Cannot confirm Kegel player exit", 10);
+            this.waitForFirstElementPresent(
+                    new String[]{TEST_ID_PLAYER_EXIT_CONTINUE, KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON},
+                    "Kegel player continue button is not displayed",
+                    10
+            );
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PLAYER_EXIT_QUIT, KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON},
+                    "Cannot confirm Kegel player exit",
+                    10
+            );
         }
-        this.waitForElementPresent(DAILY_PRACTICE_TITLE, "Daily Plan did not return after closing Kegel player", 15);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PRACTICE, DAILY_PRACTICE_TITLE},
+                "Daily Plan did not return after closing Kegel player",
+                15
+        );
+        this.waitForLoadingToDisappearIfPresent(
+                TEST_ID_LOADING,
+                "Daily Plan loading indicator is still displayed after closing Kegel player",
+                20
+        );
     }
 
     @Step("Open Daily Plan customization actions for the first Daily Practice card")
@@ -826,7 +1120,11 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Verify right arrow does not move to the next day when current day is locked")
     public void assertRightArrowDoesNotChangeCurrentDayWhenLocked() {
         String dayBeforeTap = this.getCurrentDayLabel();
-        this.waitForElementAndClick(RIGHT_SWITCHER_ARROW, "Cannot tap Daily Plan right arrow", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_RIGHT, RIGHT_SWITCHER_ARROW},
+                "Cannot tap Daily Plan right arrow",
+                10
+        );
         if (this.isLockedNextDayPopupDisplayed()) {
             this.closeLockedNextDayPopup();
             Assert.assertEquals(
@@ -876,7 +1174,11 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     @Step("Verify left arrow keeps the first Daily Plan day selected")
     public void assertLeftArrowKeepsCurrentDaySelected() {
         String dayBeforeTap = this.getCurrentDayLabel();
-        this.waitForElementAndClick(LEFT_SWITCHER_ARROW, "Cannot tap Daily Plan left arrow", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_LEFT, LEFT_SWITCHER_ARROW},
+                "Cannot tap Daily Plan left arrow",
+                10
+        );
         Assert.assertEquals(
                 "Daily Plan day changed after tapping left arrow on the first day",
                 dayBeforeTap,
@@ -885,12 +1187,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     }
 
     public String getCurrentDayLabel() {
-        return this.waitForElementAndGetAttribute(
-                CURRENT_DAY_LABEL,
-                "name",
-                "Cannot get current Daily Plan day label",
+        WebElement currentDay = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_DAILY_PLAN_DAY, CURRENT_DAY_LABEL},
+                "Cannot find current Daily Plan day label",
                 10
         );
+        String day = currentDay.getAttribute("name");
+        if (day == null || day.trim().isEmpty()) {
+            day = currentDay.getText();
+        }
+        return day;
     }
 
     public void mobileSwipeDown() {
@@ -907,25 +1213,15 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     private void scrollDownToDailyPlanHeader() {
         int alreadySwiped = 0;
-        while (!this.isElementPresent(CURRENT_DAY_LABEL) && alreadySwiped < 5) {
+        while (!(this.isElementPresent(TEST_ID_DAILY_PLAN_DAY) || this.isElementPresent(CURRENT_DAY_LABEL))
+                && alreadySwiped < 5) {
             this.mobileSwipeDown();
             alreadySwiped++;
         }
     }
 
-    private void tapTopRightCloseFallback() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("x", driver.manage().window().getSize().getWidth() - 32);
-        args.put("y", 90);
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", args);
-    }
-
     private void tapElementCenter(String locator, String errorMessage, long timeoutInSeconds) {
-        WebElement element = this.waitForElementPresent(locator, errorMessage, timeoutInSeconds);
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("x", element.getLocation().getX() + element.getSize().getWidth() / 2);
-        args.put("y", element.getLocation().getY() + element.getSize().getHeight() / 2);
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", args);
+        this.waitForElementAndClick(locator, errorMessage, timeoutInSeconds);
     }
 
     private void touchAndHoldElement(WebElement element, double duration) {

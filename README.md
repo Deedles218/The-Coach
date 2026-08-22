@@ -23,3 +23,66 @@ Known bundle IDs:
 - `com.vamapps.The-Coach-for-her`
 
 If neither option is supplied, `com.vamapps.preprod.The-Coach` is used.
+
+## Smoke and isolated integration suites
+
+The P0 smoke contract is implemented by `suites.SmokeSuite` and covers
+clean-install onboarding, Welcome/Login, Today/Daily Plan, Kegel and Profile
+with Logout. Explore, Shop and update coverage are implemented by the P1
+`suites.ReleaseSmokeSuite`. The
+one-time push permission flow and StoreKit flows are intentionally separate:
+
+```bash
+mvn test -Dtest=suites.SmokeSuite -Dplatform=ios \
+  -Dios.app=/path/to/The-Coach.app \
+  -Dios.fullReset=true -Dios.noReset=false \
+  -Dios.onboarding.steps=id:<step1>,id:<step2>
+```
+
+```bash
+mvn test -Dtest=suites.PushPermissionSuite -Dplatform=ios \
+  -Dios.app=/path/to/The-Coach.app \
+  -Dios.fullReset=true -Dios.noReset=false \
+  -Dios.onboarding.steps=id:<step1>,id:<step2>
+```
+
+```bash
+mvn test -Dtest=suites.StoreKitPurchaseSuite -Dplatform=ios \
+  -Dstorekit.sandbox=true -Dstorekit.allowPurchases=true \
+  -Dios.onboarding.steps=id:<step1>,id:<step2>
+```
+
+```bash
+mvn test -Dtest=suites.ReleaseSmokeSuite -Dplatform=ios \
+  -Dios.app=/path/to/old/The-Coach.app \
+  -Dios.update.app=/path/to/new/The-Coach.app \
+  -Dios.noReset=true -Dios.fullReset=false
+```
+
+The release suite needs two builds with the same bundle ID for the update
+scenario. Credentials should be injected through the environment variables in
+`docs/smoke-environment.md`; they are intentionally absent from the command
+line.
+
+Firebase launch configuration is read-only for test analysis. The app-side
+accessibility/test-id contract and the expected smoke cases are documented in
+`docs/smoke-automation-matrix.md`.
+
+Before running Smoke or Release Smoke, validate the secret-backed accounts and
+deterministic fixture metadata without printing credential values:
+
+```bash
+./scripts/validate_smoke_test_data.sh
+```
+
+Run `./scripts/prepare_smoke_fixture.sh` before the suite when the environment
+provides the configured fixture reset hook. It fails closed for
+`COACH_FIXTURE_RESET_MODE=backend_api` unless that hook is available.
+
+`TEST_ISOLATION_MODE=logout` is the default. Set it to `reinstall` only when
+`IOS_APP`/`-Dios.app` is available and each test must reinstall the app. The
+fixture reset/seed operation is external to this repository; its contract is
+described in `docs/smoke-environment.md`. For the quick P0 path, inject the
+approved existing-progress account into `COACH_EXISTING_PROGRESS_EMAIL` and
+omit the optional Kegel account variables to reuse that account. The P1 PDF
+paywall test remains blocked until the no-PDF account is provisioned.

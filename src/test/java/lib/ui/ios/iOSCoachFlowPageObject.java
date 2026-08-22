@@ -6,14 +6,26 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     static {
         TAB_TODAY = "id:Today";
+        TAB_TODAY_SELECTED = "xpath://XCUIElementTypeButton[@name='Today' and @value='1']";
         TAB_EXPLORE = "id:Explore";
+        TAB_EXPLORE_SELECTED = "xpath://XCUIElementTypeButton[@name='Explore' and @value='1']";
         TAB_SHOP = "id:Shop";
+        TAB_SHOP_SELECTED = "xpath://XCUIElementTypeButton[@name='Shop' and @value='1']";
+        SHOP_CONTENT_MARKER = "id:shop_screen";
+        // Do not use the tab itself as a content assertion. The app must ship
+        // the shop_screen root id so a successful tab tap cannot mask a blank
+        // or still-loading Shop screen.
+        SHOP_CONTENT_FALLBACK = null;
         TAB_FEED = "id:Feed";
         FEED_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Feed']";
         FEED_DEPRECATION_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Feed will be removed')]";
         FEED_DEPRECATION_POPUP_CONFIRM_BUTTON = "id:Got it";
 
-        PROFILE_BUTTON = "xpath://XCUIElementTypeButton[@name='UserProfileImage' or @name='WomanProfileImage']";
+        // Preferred app-side contract: profile_button. Existing accessibility
+        // names remain temporary fallbacks until the app ships that id.
+        PROFILE_BUTTON = "id:profile_button";
+        PROFILE_BUTTON_FEMALE = "id:WomanProfileImage";
+        PROFILE_BUTTON_LEGACY = "id:UserProfileImage";
         PROFILE_SCREEN = "xpath://XCUIElementTypeNavigationBar[contains(@name, 'UserProfileView')] | //XCUIElementTypeStaticText[@name='Account Settings']";
         PROFILE_PREMIUM_BADGE = "id:PREMIUM SUBSCRIBER";
         PROFILE_PROGRESS_EXERCISES = "xpath://XCUIElementTypeStaticText[contains(@name, 'Exercise') and contains(@name, 'completed')]";
@@ -62,7 +74,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         POST_AUTH_ONBOARDING_MARKER = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?']";
         CLOSE_LOGIN_BUTTON = "id:CloseRoundBlack";
         NOTIFICATION_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']";
+        NOTIFICATION_PROMPT_ALLOW_BUTTON = "id:push_permission_allow";
         NOTIFICATION_PROMPT_CLOSE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']/../XCUIElementTypeButton[1]";
+        SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON = "id:Allow";
+        SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON_FALLBACK = "xpath://XCUIElementTypeAlert//XCUIElementTypeButton[@name='Allow']";
         CONNECT_EMAIL_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Connect you email to save the progress.' or @name='Connect your email to save the progress.']";
         CONNECT_EMAIL_PROMPT_LATER_BUTTON = "id:LATER";
         PDF_GUIDE_UPSELL_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'ADD THE WORKBOOK')]";

@@ -10,6 +10,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.MainPageObject;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -25,9 +26,6 @@ import java.util.Map;
 @Epic(value = "The Coach male build")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MaleBuildStartScreenTests extends CoreTestCase {
-    private static final String MALE_LOGIN_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-
     private static final String START_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'FEEL THE NEW LEVEL') or contains(@name, 'Feel the new level')]";
     private static final String START_BUTTON = "id:START NOW";
     private static final String LOGIN_BUTTON = "id:I'VE ALREADY PURCHASED";
@@ -84,7 +82,7 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
     @Test
     @Features(value = {@Feature(value = "Male start screen"), @Feature(value = "Authorization")})
     @DisplayName("Male build login with ds account and OTP")
-    @Description("Logs in on the male build using ds@vamapps.com and OTP 8654, then verifies the authorized dashboard.")
+    @Description("Logs in on the male build using the secret-backed test account and verifies the authorized dashboard.")
     @Step("Start test test02MaleBuildLoginWithDsAccountAndOtp")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test02MaleBuildLoginWithDsAccountAndOtp() {
@@ -97,11 +95,12 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
 
         page.waitForElementAndClick(LOGIN_BUTTON, "Cannot tap Login on male start screen", 10);
         page.waitForElementPresent(LOGIN_SCREEN_TITLE, "Male login screen did not open", 10);
-        page.waitForElementAndSendKeys(LOGIN_EMAIL_INPUT, MALE_LOGIN_EMAIL, "Cannot type male build login email", 10);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        page.waitForElementAndSendKeys(LOGIN_EMAIL_INPUT, account.getEmail(), "Cannot type male build login email", 10);
         hideKeyboardIfPossible();
         page.waitForElementAndClick(LOGIN_CONTINUE_BUTTON, "Cannot submit male build login email", 10);
         page.waitForElementPresent(OTP_SCREEN_TITLE, "Male build OTP screen did not open", 20);
-        typeOtpCode(OTP_CODE);
+        typeOtpCode(account.getOtp());
         page.waitForElementPresent(AUTHORIZED_DASHBOARD_MARKER, "Male build did not open authorized dashboard after OTP", 30);
     }
 

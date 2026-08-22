@@ -14,9 +14,11 @@ import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @Epic(value = "The Coach Push notifications")
+@Ignore("Legacy state-dependent check. Run suites.PushPermissionSuite with clean-install capabilities for COA-7918.")
 public class PushNotificationTests extends CoreTestCase {
     @Test
     @Features(value = {@Feature(value = "Push"), @Feature(value = "Permissions")})

@@ -2951,7 +2951,7 @@
       },
       {
         "id": "21d50cc6-15e5-4513-a8ba-cd2fe1546d76",
-        "action": "Авторизоваться под тестовым акком: гугл почта, добавить акк, [test1@vamapps.com|mailto:test1@vamapps.com] Test0sterone",
+        "action": "Авторизоваться под тестовым акком: гугл почта, добавить акк, [<redacted-email>|mailto:<redacted-email>] Test0sterone",
         "data": "",
         "result": ""
       },
@@ -2973,7 +2973,7 @@
     "jira": {
       "key": "COA-4801",
       "summary": "Общий флоу по WEB",
-      "description": "Специальный акк для тестирования, используем именно для веба. После теста  стираем его, чтобы можно было потестить его же в сл раз как нового\n\n*Почта гугл:*\n\n[test1@vamapps.com|mailto:test1@vamapps.com] Test0sterone\n\n*Фейсбук:*\n\nIvan Ivanovich fb [https://www.facebook.com/profile.php?id=100073853928914|https://www.facebook.com/profile.php?id=100073853928914]\n\n [test1@vamapps.com|mailto:test1@vamapps.com]\n\neN*uqpaEWFRS8'u\n\n",
+      "description": "Специальный акк для тестирования, используем именно для веба. После теста  стираем его, чтобы можно было потестить его же в сл раз как нового\n\n*Почта гугл:*\n\n[<redacted-email>|mailto:<redacted-email>] Test0sterone\n\n*Фейсбук:*\n\nIvan Ivanovich fb [https://www.facebook.com/profile.php?id=100073853928914|https://www.facebook.com/profile.php?id=100073853928914]\n\n [<redacted-email>|mailto:<redacted-email>]\n\neN*uqpaEWFRS8'u\n\n",
       "components": [
         {
           "self": "https://the-coach.atlassian.net/rest/api/2/component/10013",
@@ -10278,7 +10278,7 @@
     "jira": {
       "key": "COA-8051",
       "summary": "Проверка отмены веб подписок в разных статусах через флоу отмены внутри МП",
-      "description": "[~accountid:712020:dacbb139-36b4-463b-ac19-59b2df048a1d] вот тут почты для проверки того что подписку можно отменить в любом статусе, их не отменяем а просто проверяем что кнопка отмены активна и происходит переход на флоу отмены:\n\n*BT dev for her:*\n\n[active@devforher.com|mailto:active@devforher.com] - Active\n\n[cancel@devforher.com|mailto:cancel@devforher.com] - Cancel\n\n[pending@devforher.com|mailto:pending@devforher.com] - Pending\n\n[pastdue@devforher.com|mailto:pastdue@devforher.com] - Past Due\n\n[activepending@devforher.com|mailto:activepending@devforher.com] - Active+Pending одновременно\n\n[activepastdue@devforher.com|mailto:activepastdue@devforher.com] - Active+Past Due одновременно\n\n\n\n\n\n\n\n*БТ Дев:*\n\n[active@devtest.com|mailto:active@devtest.com] - Active\n\n[cancel@devtest.com|mailto:cancel@devtest.com] - Cancel\n\n[pending@devtest.com|mailto:pending@devtest.com] - Pending\n\n[pastdue@devtest.com|mailto:pastdue@devtest.com] - Past Due\n\n[activepending@devtest.com|mailto:activepending@devtest.com] - Active+Pending одновременно\n\n[activepastdue@devtest.com|mailto:activepastdue@devtest.com] - Active+Past Due одновременно\n\n\n\n*БТ Прод:*\n\n[pending@prodtest.com|mailto:pending@prodtest.com] - Pending (тестовый юзер)\n\n[yl.lowcool@gmail.com|mailto:yl.lowcool@gmail.com] - Past Due (реальный юзер, может сломаться в какой то момент)\n\n[cancel@proddest.com|mailto:cancel@proddest.com] - Cancel (тестовый юзер)",
+      "description": "[~accountid:712020:dacbb139-36b4-463b-ac19-59b2df048a1d] вот тут почты для проверки того что подписку можно отменить в любом статусе, их не отменяем а просто проверяем что кнопка отмены активна и происходит переход на флоу отмены:\n\n*BT dev for her:*\n\n[<redacted-email>|mailto:<redacted-email>] - Active\n\n[<redacted-email>|mailto:<redacted-email>] - Cancel\n\n[<redacted-email>|mailto:<redacted-email>] - Pending\n\n[<redacted-email>|mailto:<redacted-email>] - Past Due\n\n[<redacted-email>|mailto:<redacted-email>] - Active+Pending одновременно\n\n[<redacted-email>|mailto:<redacted-email>] - Active+Past Due одновременно\n\n\n\n\n\n\n\n*БТ Дев:*\n\n[<redacted-email>|mailto:<redacted-email>] - Active\n\n[<redacted-email>|mailto:<redacted-email>] - Cancel\n\n[<redacted-email>|mailto:<redacted-email>] - Pending\n\n[<redacted-email>|mailto:<redacted-email>] - Past Due\n\n[<redacted-email>|mailto:<redacted-email>] - Active+Pending одновременно\n\n[<redacted-email>|mailto:<redacted-email>] - Active+Past Due одновременно\n\n\n\n*БТ Прод:*\n\n[<redacted-email>|mailto:<redacted-email>] - Pending (тестовый юзер)\n\n[<redacted-email>|mailto:<redacted-email>] - Past Due (реальный юзер, может сломаться в какой то момент)\n\n[<redacted-email>|mailto:<redacted-email>] - Cancel (тестовый юзер)",
       "components": [],
       "priority": {
         "self": "https://the-coach.atlassian.net/rest/api/2/priority/3",
@@ -22078,7 +22078,7 @@
         "result": "Покупка PDF-гайда прошла успешно. Появилось всплывающее окно с подтверждением покупки."
       },
       {
-        "id": "8a1449d0-fc46-4ada-9146-9738654b27b7",
+        "id": "8a1449d0-fc46-4ada-9146-973<redacted-otp>b27b7",
         "action": "Закрыть всплывающее окно с подтверждением покупки.",
         "data": "",
         "result": "Всплывающее окно закрыто."

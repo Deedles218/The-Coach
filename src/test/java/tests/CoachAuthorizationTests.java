@@ -10,6 +10,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
@@ -17,11 +18,6 @@ import org.junit.Test;
 
 @Epic(value = "The Coach authorization")
 public class CoachAuthorizationTests extends CoreTestCase {
-    private static final String EXISTING_PROGRESS_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-    private static final String VALID_EMAIL_WITHOUT_PROGRESS = "test1@vamapps.com";
-    private static final String INVALID_EMAIL = "not-an-email";
-
     @Test
     @Features(value = {@Feature(value = "Start screen"), @Feature(value = "Authorization")})
     @DisplayName("COA-7954 COA-7948 Login entry opens email form and empty email keeps Continue disabled")
@@ -58,7 +54,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
 
         coachFlow.ensureLoggedOutOnStartScreen();
         coachFlow.openLoginFlow();
-        coachFlow.typeLoginEmail(INVALID_EMAIL);
+        coachFlow.typeLoginEmail(TestData.invalidEmail());
         coachFlow.assertLoginContinueButtonIsDisabled();
         coachFlow.returnFromLoginFlowToStartScreen();
     }
@@ -79,10 +75,11 @@ public class CoachAuthorizationTests extends CoreTestCase {
 
         coachFlow.ensureLoggedOutOnStartScreen();
         coachFlow.openLoginFlow();
-        coachFlow.typeLoginEmail(VALID_EMAIL_WITHOUT_PROGRESS);
+        String validEmail = TestData.validEmailWithoutProgress();
+        coachFlow.typeLoginEmail(validEmail);
         coachFlow.assertLoginContinueButtonIsEnabled();
         coachFlow.submitLoginEmail();
-        coachFlow.assertOtpScreenIsDisplayedForEmail(VALID_EMAIL_WITHOUT_PROGRESS);
+        coachFlow.assertOtpScreenIsDisplayedForEmail(validEmail);
         coachFlow.returnFromOtpFlowToStartScreen();
     }
 
@@ -102,9 +99,10 @@ public class CoachAuthorizationTests extends CoreTestCase {
 
         coachFlow.ensureLoggedOutOnStartScreen();
         coachFlow.openLoginFlow();
-        coachFlow.typeLoginEmail(VALID_EMAIL_WITHOUT_PROGRESS);
+        String validEmail = TestData.validEmailWithoutProgress();
+        coachFlow.typeLoginEmail(validEmail);
         coachFlow.submitLoginEmail();
-        coachFlow.assertOtpScreenIsDisplayedForEmail(VALID_EMAIL_WITHOUT_PROGRESS);
+        coachFlow.assertOtpScreenIsDisplayedForEmail(validEmail);
         coachFlow.resendSecurityCode();
         coachFlow.returnFromOtpFlowToStartScreen();
     }
@@ -112,7 +110,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Test
     @Features(value = {@Feature(value = "Authorization"), @Feature(value = "Existing user progress")})
     @DisplayName("COA-7935 Existing-progress user logs in with email and OTP")
-    @Description("Logs in with ds@vamapps.com and OTP 8654, then verifies the authorized dashboard is displayed.")
+    @Description("Logs in with the secret-backed existing-progress test account and verifies the authorized dashboard is displayed.")
     @Step("Start test test05ExistingProgressUserLoginWithEmailAndOtp")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test05ExistingProgressUserLoginWithEmailAndOtp() {
@@ -123,7 +121,8 @@ public class CoachAuthorizationTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
+        TestData.TestAccount account = TestData.existingProgressAccount();
         coachFlow.ensureLoggedOutOnStartScreen();
-        coachFlow.loginWithEmailAndOtp(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        coachFlow.loginWithEmailAndOtp(account.getEmail(), account.getOtp());
     }
 }

@@ -10,6 +10,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.ExplorePageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
@@ -20,9 +21,6 @@ import org.junit.Test;
 
 @Epic(value = "The Coach Explore")
 public class ExploreTests extends CoreTestCase {
-    private static final String EXISTING_PROGRESS_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-
     private ExplorePageObject explore;
 
     @Before
@@ -36,7 +34,8 @@ public class ExploreTests extends CoreTestCase {
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
         Assert.assertNotNull("Explore page object is not available for current platform", explore);
         if (!explore.isExploreContextAvailable()) {
-            coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+            TestData.TestAccount account = TestData.existingProgressAccount();
+            coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         }
         explore.openExploreTab();
     }

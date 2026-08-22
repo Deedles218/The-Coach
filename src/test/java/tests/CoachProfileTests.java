@@ -10,6 +10,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
@@ -17,9 +18,6 @@ import org.junit.Test;
 
 @Epic(value = "The Coach Profile")
 public class CoachProfileTests extends CoreTestCase {
-    private static final String EXISTING_PROGRESS_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-
     @Test
     @Features(value = {@Feature(value = "Profile"), @Feature(value = "Authorization")})
     @DisplayName("COA-7205 Profile screen shows progress and settings blocks")
@@ -34,7 +32,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.assertProfileScreenIsDisplayed();
     }
@@ -53,7 +52,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.assertProfileCanBeOpenedFromMainTabs();
     }
 
@@ -71,7 +71,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.verifyDeleteAccountDialogAndCancel();
     }
@@ -90,7 +91,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.logOut();
         coachFlow.waitForStartScreen();
@@ -110,7 +112,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.openAccountSettingsFromProfile();
         coachFlow.returnToProfileFromSubscreen();
@@ -130,7 +133,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.openSupportFromProfile();
         coachFlow.returnToProfileFromSubscreen();
@@ -150,7 +154,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.openFaqFromProfile();
         coachFlow.closeProfileBrowser();
@@ -170,7 +175,8 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coachFlow.openProfile();
         coachFlow.openTermsFromProfile();
         coachFlow.closeProfileBrowser();
