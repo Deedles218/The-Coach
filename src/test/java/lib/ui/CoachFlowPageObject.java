@@ -2,26 +2,65 @@ package lib.ui;
 
 import io.qameta.allure.Step;
 import lib.Platform;
+import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
 abstract public class CoachFlowPageObject extends MainPageObject {
+    protected static final String
+            TEST_ID_TODAY_TAB = "id:tab_today",
+            TEST_ID_TODAY_SELECTED = "id:tab_today_selected",
+            TEST_ID_EXPLORE_TAB = "id:tab_explore",
+            TEST_ID_EXPLORE_SELECTED = "id:tab_explore_selected",
+            TEST_ID_SHOP_TAB = "id:tab_shop",
+            TEST_ID_SHOP_SELECTED = "id:tab_shop_selected",
+            TEST_ID_PROFILE_SCREEN = "id:profile_screen",
+            TEST_ID_PROFILE_ACCOUNT_SETTINGS = "id:profile_account_settings",
+            TEST_ID_PROFILE_SUPPORT = "id:profile_support",
+            TEST_ID_PROFILE_WORKBOOK = "id:profile_my_workbook",
+            TEST_ID_PROFILE_FAQ = "id:profile_faq",
+            TEST_ID_PROFILE_TERMS = "id:profile_terms",
+            TEST_ID_PROFILE_LOGOUT = "id:profile_logout",
+            TEST_ID_PROFILE_LOGOUT_CONFIRM = "id:profile_logout_confirm",
+            TEST_ID_PROFILE_BROWSER_CLOSE = "id:profile_browser_close",
+            TEST_ID_START_SCREEN = "id:start_screen",
+            TEST_ID_START_BUTTON = "id:start_button",
+            TEST_ID_LOGIN_BUTTON = "id:login_button",
+            TEST_ID_LOGIN_SCREEN = "id:login_screen",
+            TEST_ID_LOGIN_EMAIL = "id:login_email",
+            TEST_ID_LOGIN_CONTINUE = "id:login_continue",
+            TEST_ID_OTP_SCREEN = "id:otp_screen",
+            TEST_ID_OTP_RESEND = "id:otp_resend",
+            TEST_ID_NOTIFICATION_CLOSE = "id:push_permission_close",
+            TEST_ID_CONNECT_EMAIL_LATER = "id:connect_email_later",
+            TEST_ID_LOADING = "id:loading_indicator";
+
     protected static String
             TAB_TODAY,
+            TAB_TODAY_SELECTED,
             TAB_EXPLORE,
+            TAB_EXPLORE_SELECTED,
             TAB_SHOP,
+            TAB_SHOP_SELECTED,
+            SHOP_CONTENT_MARKER,
+            SHOP_CONTENT_FALLBACK,
             TAB_FEED,
             FEED_SCREEN_TITLE,
             FEED_DEPRECATION_POPUP_TITLE,
             FEED_DEPRECATION_POPUP_CONFIRM_BUTTON,
             PROFILE_BUTTON,
+            PROFILE_BUTTON_FEMALE,
+            PROFILE_BUTTON_LEGACY,
             PROFILE_SCREEN,
             PROFILE_PREMIUM_BADGE,
             PROFILE_PROGRESS_EXERCISES,
@@ -67,7 +106,10 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             POST_AUTH_ONBOARDING_MARKER,
             CLOSE_LOGIN_BUTTON,
             NOTIFICATION_PROMPT_TITLE,
+            NOTIFICATION_PROMPT_ALLOW_BUTTON,
             NOTIFICATION_PROMPT_CLOSE_BUTTON,
+            SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON,
+            SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON_FALLBACK,
             CONNECT_EMAIL_PROMPT_TITLE,
             CONNECT_EMAIL_PROMPT_LATER_BUTTON,
             PDF_GUIDE_UPSELL_TITLE,
@@ -88,8 +130,9 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.closePdfGuideUpsellIfPresent();
         this.closeNotificationPromptIfPresent();
         this.closeConnectEmailPromptIfPresent();
+        this.closeKegelExerciseFlowIfPresent();
 
-        if (this.isElementPresent(START_SCREEN_TITLE)) {
+        if (this.isElementPresent(TEST_ID_START_SCREEN) || this.isElementPresent(START_SCREEN_TITLE)) {
             this.waitForStartScreen();
             return;
         }
@@ -109,12 +152,14 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             return;
         }
 
-        if (this.isElementPresent(PROFILE_SCREEN)) {
+        if (this.isElementPresent(TEST_ID_PROFILE_SCREEN) || this.isElementPresent(PROFILE_SCREEN)) {
             this.logOut();
             return;
         }
 
-        if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)) {
+        if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
+                || this.isElementPresent(TEST_ID_TODAY_TAB)
+                || this.isElementPresent(TAB_TODAY)) {
             this.openProfile();
             this.logOut();
             return;
@@ -123,29 +168,13 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.waitForStartScreen();
     }
 
-    @Step("Ensure existing-progress user is authorized")
+    // Do not annotate methods that receive credentials: Allure records method
+    // arguments automatically, which would put the email/OTP into the report.
     public void ensureExistingProgressUserIsLoggedIn(String email, String otpCode) {
-        this.activateAppIfPossible();
-        this.closePdfGuideUpsellIfPresent();
-        this.closeNotificationPromptIfPresent();
-        this.closeConnectEmailPromptIfPresent();
-
-        if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)) {
-            this.assertAuthorizedDashboardIsDisplayed();
-            this.openToday();
-            return;
-        }
-
-        if (this.isElementPresent(TAB_TODAY)) {
-            this.openToday();
-            return;
-        }
-
         this.ensureLoggedOutOnStartScreen();
         this.loginWithEmailAndOtp(email, otpCode);
     }
 
-    @Step("Log in with email and OTP")
     public void loginWithEmailAndOtp(String email, String otpCode) {
         this.openLoginFlow();
         this.typeLoginEmail(email);
@@ -154,6 +183,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.assertOtpScreenIsDisplayedForEmail(email);
         this.typeSecurityCode(otpCode);
         this.waitForAuthorizedDashboard();
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Authorization loading indicator is still displayed", 30);
         this.closePdfGuideUpsellIfPresent();
         this.closeNotificationPromptIfPresent();
         this.openToday();
@@ -161,8 +191,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Verify that the authorized dashboard is displayed")
     public void assertAuthorizedDashboardIsDisplayed() {
-        this.waitForElementPresent(
-                AUTHORIZED_DASHBOARD_MARKER,
+        this.waitForFirstElementPresent(
+                new String[]{AUTHORIZED_DASHBOARD_MARKER, TEST_ID_TODAY_TAB, TAB_TODAY},
                 "Expected authorized The Coach dashboard before starting Feed/logout flow",
                 15
         );
@@ -170,8 +200,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Wait for authorized dashboard")
     public void waitForAuthorizedDashboard() {
-        this.waitForElementPresent(
-                AUTHORIZED_DASHBOARD_MARKER,
+        this.waitForFirstElementPresent(
+                new String[]{AUTHORIZED_DASHBOARD_MARKER, TEST_ID_TODAY_TAB, TAB_TODAY},
                 "Authorized dashboard did not open",
                 30
         );
@@ -179,21 +209,63 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open Today screen")
     public void openToday() {
-        this.waitForElementAndClick(TAB_TODAY, "Cannot find and tap Today tab", 10);
-        this.waitForElementPresent(TAB_TODAY, "Today tab is not displayed", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_TODAY_TAB, TAB_TODAY},
+                "Cannot find and tap Today tab",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_TODAY_SELECTED, TAB_TODAY_SELECTED},
+                "Today tab is not selected",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Today loading indicator is still displayed", 20);
         this.closeConnectEmailPromptIfPresent();
     }
 
     @Step("Open Explore screen")
     public void openExplore() {
-        this.waitForElementAndClick(TAB_EXPLORE, "Cannot find and tap Explore tab", 10);
-        this.waitForElementPresent(TAB_EXPLORE, "Explore tab is not displayed", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_EXPLORE_TAB, TAB_EXPLORE},
+                "Cannot find and tap Explore tab",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_EXPLORE_SELECTED, TAB_EXPLORE_SELECTED},
+                "Explore tab is not selected",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Explore loading indicator is still displayed", 20);
     }
 
     @Step("Open Shop screen")
     public void openShop() {
-        this.waitForElementAndClick(TAB_SHOP, "Cannot find and tap Shop tab", 10);
-        this.waitForElementPresent(TAB_SHOP, "Shop tab is not displayed", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_SHOP_TAB, TAB_SHOP},
+                "Cannot find and tap Shop tab",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_SHOP_SELECTED, TAB_SHOP_SELECTED},
+                "Shop tab is not selected",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{SHOP_CONTENT_MARKER, SHOP_CONTENT_FALLBACK},
+                "Shop content did not become visible after opening Shop",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Shop loading indicator is still displayed", 20);
+    }
+
+    @Step("Verify the current three-tab navigation")
+    public void assertMainTabsAreDisplayed() {
+        this.waitForFirstElementPresent(new String[]{TEST_ID_TODAY_TAB, TAB_TODAY}, "Today tab is not displayed", 10);
+        this.waitForFirstElementPresent(new String[]{TEST_ID_EXPLORE_TAB, TAB_EXPLORE}, "Explore tab is not displayed", 10);
+        this.waitForFirstElementPresent(new String[]{TEST_ID_SHOP_TAB, TAB_SHOP}, "Shop tab is not displayed", 10);
+        if (TAB_FEED != null) {
+            this.assertElementNotPresent(TAB_FEED, "Feed is retired and must not be displayed in the current three-tab UI");
+        }
     }
 
     @Step("Open Feed screen")
@@ -227,34 +299,27 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open Profile screen")
     public void openProfile() {
-        try {
-            this.waitForElementAndClick(PROFILE_BUTTON, "Cannot find and tap profile button", 10);
-        } catch (WebDriverException e) {
-            this.tapProfileButtonByScreenPosition();
-        }
-        try {
-            this.waitForElementPresent(PROFILE_SCREEN, "Profile screen did not open", 10);
-        } catch (TimeoutException e) {
-            this.tapProfileButtonByScreenPosition();
-            this.waitForElementPresent(PROFILE_SCREEN, "Profile screen did not open", 10);
-        }
+        this.waitForFirstElementAndClick(
+                new String[]{PROFILE_BUTTON, PROFILE_BUTTON_FEMALE, PROFILE_BUTTON_LEGACY},
+                "Cannot find and tap profile button by accessibility id",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_SCREEN, PROFILE_SCREEN},
+                "Profile screen did not open",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Profile loading indicator is still displayed", 20);
     }
 
     @Step("Verify Profile screen content")
     public void assertProfileScreenIsDisplayed() {
-        this.waitForElementPresent(PROFILE_SCREEN, "Profile navigation bar is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PROGRESS_EXERCISES, "Exercise Completed profile metric is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PROGRESS_LESSONS, "Lessons Finished profile metric is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PROGRESS_STREAK, "Longest Streak Days profile metric is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
-        this.waitForElementPresent(PROFILE_ACCOUNT_SETTINGS_BUTTON, "Account Settings item is not displayed", 10);
-        this.waitForElementPresent(PROFILE_BACKED_BY_SCIENCE_BUTTON, "Backed By Science item is not displayed", 10);
-        this.waitForElementPresent(PROFILE_SUPPORT_BUTTON, "Support item is not displayed", 10);
-        this.waitForElementPresent(PROFILE_MY_WORKBOOK_BUTTON, "My workbook item is not displayed", 10);
-        this.waitForElementPresent(PROFILE_FAQ_BUTTON, "FAQ item is not displayed", 10);
-        this.swipeUpToFindElement(PROFILE_TERMS_BUTTON, "Cannot find Terms & privacy policy item on Profile screen", 2);
-        this.waitForElementPresent(PROFILE_TERMS_BUTTON, "Terms & privacy policy item is not displayed", 10);
+        this.assertProfileSmokeContentIsDisplayed();
+        this.swipeUpToFindFirstElement(
+                new String[]{TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON},
+                "Cannot find Terms & privacy policy item on Profile screen",
+                2
+        );
         this.swipeUpToFindElement(DELETE_ACCOUNT_BUTTON, "Cannot find Delete my account item on Profile screen", 2);
         this.waitForElementPresent(DELETE_ACCOUNT_BUTTON, "Delete my data/account item is not displayed", 10);
         if (this.isElementPresent(PROFILE_PREMIUM_BADGE)) {
@@ -262,22 +327,69 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         }
     }
 
+    @Step("Verify Profile Smoke content")
+    public void assertProfileSmokeContentIsDisplayed() {
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_SCREEN, PROFILE_SCREEN},
+                "Profile navigation bar is not displayed",
+                10
+        );
+        this.waitForElementPresent(PROFILE_PROGRESS_EXERCISES, "Exercise Completed profile metric is not displayed", 10);
+        this.waitForElementPresent(PROFILE_PROGRESS_LESSONS, "Lessons Finished profile metric is not displayed", 10);
+        this.waitForElementPresent(PROFILE_PROGRESS_STREAK, "Longest Streak Days profile metric is not displayed", 10);
+        this.waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
+        this.waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_ACCOUNT_SETTINGS, PROFILE_ACCOUNT_SETTINGS_BUTTON},
+                "Account Settings item is not displayed",
+                10
+        );
+        this.waitForElementPresent(PROFILE_BACKED_BY_SCIENCE_BUTTON, "Backed By Science item is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_SUPPORT, PROFILE_SUPPORT_BUTTON},
+                "Support item is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_WORKBOOK, PROFILE_MY_WORKBOOK_BUTTON},
+                "My workbook item is not displayed",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
+                "FAQ item is not displayed",
+                10
+        );
+    }
+
     @Step("Open Account Settings from Profile")
     public void openAccountSettingsFromProfile() {
-        this.waitForElementAndClick(PROFILE_ACCOUNT_SETTINGS_BUTTON, "Cannot tap Account Settings", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_ACCOUNT_SETTINGS, PROFILE_ACCOUNT_SETTINGS_BUTTON},
+                "Cannot tap Account Settings",
+                10
+        );
         this.waitForElementPresent(PROFILE_ACCOUNT_SETTINGS_SCREEN, "Account Settings screen did not open", 15);
     }
 
     @Step("Open Support from Profile")
     public void openSupportFromProfile() {
-        this.waitForElementAndClick(PROFILE_SUPPORT_BUTTON, "Cannot tap Support", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_SUPPORT, PROFILE_SUPPORT_BUTTON},
+                "Cannot tap Support",
+                10
+        );
         this.waitForElementPresent(PROFILE_SUPPORT_SCREEN, "Support screen did not open", 15);
         this.waitForElementPresent(PROFILE_SUPPORT_FAQ_BUTTON, "Support FAQ entry is not visible", 10);
     }
 
     @Step("Open My workbook from Profile")
     public void openMyWorkbookFromProfile() {
-        this.waitForElementAndClick(PROFILE_MY_WORKBOOK_BUTTON, "Cannot tap My workbook", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_WORKBOOK, PROFILE_MY_WORKBOOK_BUTTON},
+                "Cannot tap My workbook",
+                10
+        );
         this.waitForElementPresent(PROFILE_MY_WORKBOOK_SCREEN, "My workbook screen did not open", 15);
     }
 
@@ -303,13 +415,21 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open FAQ from Profile")
     public void openFaqFromProfile() {
-        this.waitForElementAndClick(PROFILE_FAQ_BUTTON, "Cannot tap FAQ", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
+                "Cannot tap FAQ",
+                10
+        );
         this.waitForElementPresent(PROFILE_FAQ_SCREEN, "FAQ browser did not open", 20);
     }
 
     @Step("Open Terms and privacy policy from Profile")
     public void openTermsFromProfile() {
-        this.waitForElementAndClick(PROFILE_TERMS_BUTTON, "Cannot tap Terms & privacy policy", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON},
+                "Cannot tap Terms & privacy policy",
+                10
+        );
         this.waitForElementPresent(PROFILE_TERMS_SCREEN, "Terms browser did not open", 20);
     }
 
@@ -321,7 +441,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Close Profile browser screen")
     public void closeProfileBrowser() {
-        this.waitForElementAndTapNearLeftEdge(PROFILE_BROWSER_CLOSE_BUTTON, "Cannot close browser screen", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_BROWSER_CLOSE, PROFILE_BROWSER_CLOSE_BUTTON},
+                "Cannot close browser screen",
+                10
+        );
         this.assertProfileScreenIsDisplayed();
     }
 
@@ -337,8 +461,16 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Log out from Profile screen")
     public void logOut() {
-        this.swipeUpToFindElement(LOG_OUT_BUTTON, "Cannot find Log Out button on Profile screen", 4);
-        this.waitForElementAndClick(LOG_OUT_BUTTON, "Cannot tap Log Out button", 10);
+        this.swipeUpToFindFirstElement(
+                new String[]{TEST_ID_PROFILE_LOGOUT, LOG_OUT_BUTTON},
+                "Cannot find Log Out button on Profile screen",
+                4
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROFILE_LOGOUT, LOG_OUT_BUTTON},
+                "Cannot tap Log Out button",
+                10
+        );
         this.confirmLogoutIfNeeded();
         this.waitForStartScreen();
     }
@@ -346,11 +478,24 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     @Step("Confirm logout if confirmation dialog appears")
     public void confirmLogoutIfNeeded() {
         try {
-            this.waitForElementPresent(LOG_OUT_CONFIRM_TITLE, "Logout confirmation dialog did not appear", 3);
-            this.waitForElementAndClick(LOG_OUT_CONFIRM_BUTTON, "Cannot confirm logout", 10);
+            this.waitForFirstElementPresent(
+                    new String[]{TEST_ID_PROFILE_LOGOUT_CONFIRM, LOG_OUT_CONFIRM_TITLE},
+                    "Logout confirmation dialog did not appear",
+                    3
+            );
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_PROFILE_LOGOUT_CONFIRM, LOG_OUT_CONFIRM_BUTTON},
+                    "Cannot confirm logout",
+                    10
+            );
         } catch (TimeoutException e) {
-            if (this.isElementPresent(LOG_OUT_CONFIRM_BUTTON)) {
-                this.waitForElementAndClick(LOG_OUT_CONFIRM_BUTTON, "Cannot confirm logout", 10);
+            if (this.isElementPresent(TEST_ID_PROFILE_LOGOUT_CONFIRM)
+                    || this.isElementPresent(LOG_OUT_CONFIRM_BUTTON)) {
+                this.waitForFirstElementAndClick(
+                        new String[]{TEST_ID_PROFILE_LOGOUT_CONFIRM, LOG_OUT_CONFIRM_BUTTON},
+                        "Cannot confirm logout",
+                        10
+                );
             } else {
                 System.out.println("Logout confirmation dialog was not shown; continuing.");
             }
@@ -359,74 +504,129 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Verify start screen is displayed")
     public void waitForStartScreen() {
-        this.waitForElementPresent(START_SCREEN_TITLE, "Start screen title is not displayed", 20);
-        this.waitForElementPresent(LOGIN_BUTTON, "Login button is not displayed on start screen", 10);
-        this.waitForElementPresent(START_BUTTON, "Start button is not displayed on start screen", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_START_SCREEN, START_SCREEN_TITLE},
+                "Start screen title is not displayed",
+                20
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_LOGIN_BUTTON, LOGIN_BUTTON},
+                "Login button is not displayed on start screen",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_START_BUTTON, START_BUTTON},
+                "Start button is not displayed on start screen",
+                10
+        );
     }
 
     @Step("Open login flow from start screen")
     public void openLoginFlow() {
-        this.waitForElementAndClick(LOGIN_BUTTON, "Cannot tap Login button on start screen", 10);
-        this.waitForElementPresent(LOGIN_SCREEN_TITLE, "Login flow did not open after tapping Login", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_LOGIN_BUTTON, LOGIN_BUTTON},
+                "Cannot tap Login button on start screen",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
+                "Login flow did not open after tapping Login",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Login loading indicator is still displayed", 20);
     }
 
-    @Step("Type email into login flow")
     public void typeLoginEmail(String email) {
-        this.waitForElementAndSendKeys(
-                LOGIN_EMAIL_INPUT,
-                email,
+        WebElement emailInput = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_LOGIN_EMAIL, LOGIN_EMAIL_INPUT},
                 "Cannot find email input on login screen",
                 10
         );
+        emailInput.sendKeys(email);
         this.hideKeyboardIfPossible();
     }
 
     @Step("Verify Continue button is disabled on login screen")
     public void assertLoginContinueButtonIsDisabled() {
-        WebElement continueButton = this.waitForElementPresent(
-                LOGIN_CONTINUE_BUTTON,
+        WebElement continueButton = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
                 "Continue button is not displayed on login screen",
                 10
         );
-        Assert.assertEquals("Login Continue button should be disabled", "false", continueButton.getAttribute("enabled"));
+        Assert.assertFalse("Login Continue button should be disabled", this.isElementEnabled(continueButton));
+    }
+
+    @Step("Verify disabled Login Continue is a no-op")
+    public void assertDisabledLoginContinueIsNoOp() {
+        this.tapDisabledAndAssertNoTransition(
+                new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
+                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "Disabled Login Continue button",
+                10
+        );
     }
 
     @Step("Verify Continue button is enabled on login screen")
     public void assertLoginContinueButtonIsEnabled() {
-        WebElement continueButton = this.waitForElementPresent(
-                LOGIN_CONTINUE_BUTTON,
+        WebElement continueButton = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
                 "Continue button is not displayed on login screen",
                 10
         );
-        Assert.assertEquals("Login Continue button should be enabled", "true", continueButton.getAttribute("enabled"));
+        Assert.assertTrue("Login Continue button should be enabled", this.isElementEnabled(continueButton));
     }
 
     @Step("Submit email in login flow")
     public void submitLoginEmail() {
-        this.waitForElementAndClick(LOGIN_CONTINUE_BUTTON, "Cannot tap Continue on login screen", 10);
-        this.waitForElementPresent(OTP_SCREEN_TITLE, "Security code screen did not open after submitting email", 20);
+        this.clickOnceAndWaitForTransition(
+                new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
+                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "Cannot submit email with a single tap",
+                20
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "OTP loading indicator is still displayed", 20);
     }
 
-    @Step("Verify OTP screen for email")
     public void assertOtpScreenIsDisplayedForEmail(String email) {
-        this.waitForElementPresent(OTP_SCREEN_TITLE, "Security code screen is not displayed", 10);
-        this.waitForElementPresent(
-                OTP_EMAIL_SENT_TEXT.replace("{EMAIL}", email),
-                "OTP email confirmation text is not displayed for " + email,
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "Security code screen is not displayed",
                 10
         );
-        this.waitForElementPresent(OTP_RESEND_CODE_BUTTON, "Resend code button is not displayed", 10);
+        this.waitForElementPresent(
+                OTP_EMAIL_SENT_TEXT.replace("{EMAIL}", email),
+                "OTP email confirmation text is not displayed for the requested account",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_RESEND, OTP_RESEND_CODE_BUTTON},
+                "Resend code button is not displayed",
+                10
+        );
     }
 
     @Step("Tap Resend code")
     public void resendSecurityCode() {
-        this.waitForElementAndClick(OTP_RESEND_CODE_BUTTON, "Cannot tap Resend code", 10);
-        this.waitForElementPresent(OTP_SCREEN_TITLE, "OTP screen disappeared after tapping Resend code", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_OTP_RESEND, OTP_RESEND_CODE_BUTTON},
+                "Cannot tap Resend code",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "OTP screen disappeared after tapping Resend code",
+                10
+        );
     }
 
-    @Step("Type security code")
     public void typeSecurityCode(String code) {
-        this.waitForElementPresent(OTP_SCREEN_TITLE, "Security code screen is not displayed", 10);
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "Security code screen is not displayed",
+                10
+        );
         for (int i = 0; i < code.length(); i++) {
             String digit = String.valueOf(code.charAt(i));
             this.waitForElementAndClick(
@@ -466,12 +666,45 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open onboarding flow from start screen")
     public void openStartFlow() {
-        this.waitForElementAndClick(START_BUTTON, "Cannot tap Start button on start screen", 10);
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_START_BUTTON, START_BUTTON},
+                "Cannot tap Start button on start screen",
+                10
+        );
         this.waitForElementPresent(
                 ONBOARDING_GOALS_TITLE,
                 "Onboarding goals screen did not open after tapping Start",
                 10
         );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Onboarding loading indicator is still displayed", 20);
+    }
+
+    @Step("Complete onboarding using configured accessibility ids")
+    public void completeOnboardingUsingConfiguredSteps(String[] stepLocators) {
+        this.runConfiguredOnboardingSteps(stepLocators);
+
+        this.waitForFirstElementPresent(
+                new String[]{AUTHORIZED_DASHBOARD_MARKER, TEST_ID_TODAY_TAB, TAB_TODAY},
+                "Configured onboarding steps did not lead to the authorized Daily Plan",
+                30
+        );
+    }
+
+    @Step("Run configured onboarding actions")
+    public void runConfiguredOnboardingSteps(String[] stepLocators) {
+        Assert.assertNotNull("Onboarding locator list must not be null", stepLocators);
+        Assert.assertTrue(
+                "Onboarding accessibility ids are not configured. Set -Dios.onboarding.steps=id:...,... for the selected Firebase onboarding variant.",
+                stepLocators.length > 0
+        );
+
+        for (String stepLocator : stepLocators) {
+            this.waitForElementAndClick(
+                    stepLocator,
+                    "Cannot advance onboarding using configured locator " + stepLocator,
+                    20
+            );
+        }
     }
 
     @Step("Return from onboarding flow to start screen")
@@ -494,7 +727,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     @Step("Return from Profile to main screen")
     public void returnToMainScreenFromProfile() {
         this.waitForElementAndClick(PROFILE_SUBSCREEN_BACK_BUTTON, "Cannot close Profile screen", 10);
-        this.waitForElementNotPresent(PROFILE_SCREEN, "Profile screen is still displayed after closing", 10);
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_PROFILE_SCREEN, PROFILE_SCREEN},
+                "Profile screen is still displayed after closing",
+                10
+        );
         this.waitForElementPresent(AUTHORIZED_DASHBOARD_MARKER, "Main screen did not open after closing Profile", 10);
     }
 
@@ -527,8 +764,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     public void closeNotificationPromptIfPresent() {
         try {
             this.waitForElementPresent(NOTIFICATION_PROMPT_TITLE, "Notification prompt is not displayed", 2);
-            this.waitForElementAndClick(
-                    NOTIFICATION_PROMPT_CLOSE_BUTTON,
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_NOTIFICATION_CLOSE, NOTIFICATION_PROMPT_CLOSE_BUTTON},
                     "Cannot close notification prompt",
                     10
             );
@@ -540,6 +777,55 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         } catch (Exception e) {
             System.out.println("Notification prompt was not shown; continuing.");
         }
+    }
+
+    @Step("Normalize Coach session for the next test")
+    public void cleanupForNextTest() {
+        this.activateAppIfPossible();
+        this.closePdfGuideUpsellIfPresent();
+        this.closeNotificationPromptIfPresent();
+        this.closeConnectEmailPromptIfPresent();
+        this.closeKegelExerciseFlowIfPresent();
+
+        if (this.isElementPresent(CLOSE_LOGIN_BUTTON)) {
+            this.closeVisibleAuthFlow();
+            return;
+        }
+
+        if (this.isElementPresent(TEST_ID_PROFILE_SCREEN) || this.isElementPresent(PROFILE_SCREEN)) {
+            this.logOut();
+            return;
+        }
+
+        if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
+                || this.isElementPresent(TEST_ID_TODAY_TAB)
+                || this.isElementPresent(TAB_TODAY)) {
+            this.openProfile();
+            this.logOut();
+        }
+    }
+
+    private void closeKegelExerciseFlowIfPresent() {
+        try {
+            DailyPlanPageObjectFactory.get(driver).closeKegelExerciseFlowIfPresent();
+        } catch (Exception e) {
+            System.out.println("Kegel flow was not open during Coach session normalization; continuing.");
+        }
+    }
+
+    @Step("Allow push notifications in the in-app permission screen")
+    public void allowNotificationPrompt() {
+        this.assertNotificationPromptIsDisplayed();
+        this.waitForElementAndClick(
+                NOTIFICATION_PROMPT_ALLOW_BUTTON,
+                "Cannot allow push notifications from the in-app permission screen; app-side allow test id is required",
+                10
+        );
+        this.waitForElementNotPresent(
+                NOTIFICATION_PROMPT_TITLE,
+                "In-app push permission screen is still displayed after allowing notifications",
+                10
+        );
     }
 
     @Step("Close PDF guide upsell if it is displayed")
@@ -556,8 +842,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     public void closeConnectEmailPromptIfPresent() {
         try {
             this.waitForElementPresent(CONNECT_EMAIL_PROMPT_TITLE, "Connect Email prompt is not displayed", 2);
-            this.waitForElementAndClick(
-                    CONNECT_EMAIL_PROMPT_LATER_BUTTON,
+            this.waitForFirstElementAndClick(
+                    new String[]{TEST_ID_CONNECT_EMAIL_LATER, CONNECT_EMAIL_PROMPT_LATER_BUTTON},
                     "Cannot close Connect Email prompt",
                     10
             );
@@ -578,9 +864,9 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 "Notification prompt title is not displayed",
                 10
         );
-        this.waitForElementPresent(
-                NOTIFICATION_PROMPT_CLOSE_BUTTON,
-                "Notification prompt close button is not displayed",
+        this.waitForFirstElementPresent(
+                new String[]{NOTIFICATION_PROMPT_ALLOW_BUTTON, NOTIFICATION_PROMPT_CLOSE_BUTTON},
+                "Notification prompt action is not displayed",
                 10
         );
     }
@@ -589,15 +875,31 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         return this.isElementPresent(NOTIFICATION_PROMPT_TITLE);
     }
 
-    private void closeVisibleAuthFlow() {
-        this.waitForElementAndClick(CLOSE_LOGIN_BUTTON, "Cannot close login or OTP flow", 10);
+    @Step("Allow the iOS system push permission dialog")
+    public String allowSystemNotificationPermission() {
+        try {
+            WebDriverWait alertWait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            Alert alert = alertWait.until(ExpectedConditions.alertIsPresent());
+            String alertText = alert.getText();
+            alert.accept();
+            return alertText;
+        } catch (TimeoutException webDriverAlertNotExposed) {
+            WebElement systemAlertButton = this.waitForFirstElementPresent(
+                    new String[]{SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON, SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON_FALLBACK},
+                    "iOS system notification permission dialog did not appear",
+                    15
+            );
+            String alertText = systemAlertButton.getAttribute("label");
+            if (alertText == null || alertText.trim().isEmpty()) {
+                alertText = systemAlertButton.getAttribute("name");
+            }
+            systemAlertButton.click();
+            return alertText;
+        }
     }
 
-    private void tapProfileButtonByScreenPosition() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("x", driver.manage().window().getSize().getWidth() - 32);
-        args.put("y", 80);
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", args);
+    private void closeVisibleAuthFlow() {
+        this.waitForElementAndClick(CLOSE_LOGIN_BUTTON, "Cannot close login or OTP flow", 10);
     }
 
     private String getIOSBundleId() {

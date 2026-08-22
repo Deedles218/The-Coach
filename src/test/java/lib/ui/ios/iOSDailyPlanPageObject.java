@@ -13,14 +13,14 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
 
         DAILY_LESSONS_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY LESSONS']";
-        FIRST_LESSON_TITLE = "xpath://XCUIElementTypeStaticText[@name='Getting started']";
+        FIRST_LESSON_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started']";
         FIRST_LESSON_TYPE = "xpath://XCUIElementTypeStaticText[@name='Lesson 1']";
-        LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Getting started']";
+        LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started']";
         LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20]";
         LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back']";
 
         DAILY_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY PRACTICE']";
-        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Finding Pelvic Floor' or @name='Morning Kegel Workout']";
+        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout']";
         FIRST_PRACTICE_TYPE = "xpath://XCUIElementTypeStaticText[@name='Guide' or contains(@name, 'days in total')]";
         PRACTICE_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[(contains(@name, 'Kegel') or @name='Finding Pelvic Floor') and @visible='true']";
         PRACTICE_SCREEN_GOAL_TITLE = "xpath://XCUIElementTypeStaticText[@label='GOAL' or @name='GOAL' or @name='Duration:' or @name='Intensity:']";
@@ -60,7 +60,11 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_PLAYER_UNMUTE_BUTTON = "xpath://XCUIElementTypeButton[contains(@name, 'sound on')]";
         KEGEL_PLAYER_EXERCISE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Contract' or @name='Rest' or @name='Waves' or @name='Squeeze']";
         KEGEL_PLAYER_DIFFICULTY = "xpath://XCUIElementTypeStaticText[@name='GUIDE' or contains(@name, 'How to find pelvic floor')]";
-        KEGEL_PLAYER_TIMER = "xpath://XCUIElementTypeStaticText[string-length(@name) <= 2 and translate(@name, '0123456789', '') = '']";
+        // Keep a future-compatible fallback for builds that expose progress as a
+        // clock-like accessibility label (for example "00:12/03:52"). The current
+        // iOS build does not expose this label, so the smoke assertion uses the
+        // player controls as its readiness signal.
+        KEGEL_PLAYER_TIMER = "xpath://XCUIElementTypeStaticText[(contains(@name, ':' ) or contains(@label, ':' )) and @visible='true']";
         KEGEL_PLAYER_PAUSE_BUTTON = "id:PlayerPauseIcon";
         KEGEL_PLAYER_PLAY_BUTTON = "id:PlayerPlayIcon";
         KEGEL_PLAYER_REWIND_BUTTON = "id:RewindButtonMain";

@@ -29,7 +29,7 @@ p.s. на рисунке изображен лайк, дизлайк и возм
 * Время прочтения
 * Сам контент
 * Ссылку на источник (опционально)
-* Три рекомендации (возможно, вам понравится еще вот это): рекомендации формируются по принципу ""совпадает как можно больше сабтегов"". 
+* Три рекомендации (возможно, вам понравится еще вот это): рекомендации формируются по принципу ""совпадает как можно больше сабтегов"".
 Совпадение сабтегов проверяется от первого в CMS, то есть, первые сабтеги считаются более важными.
 * Кнопку ""крестик"" в правом верхнем углу, нажатие на который инициирует возврат в эту же часть ленты, с которой пользователь ушел
 * иконки лайк\дизлайк";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Функционал ленты(неактуально?);;
@@ -44,15 +44,15 @@ p.s. на рисунке изображен лайк, дизлайк и возм
 В Sandbox покупках данный линк проверяет протухла подписка или нет, и чаще всего он отвечает что прописка истекла.";COA;📱 👨 МП The Coach for Him/In-app подписки, пэйволы, офферы;;
 4;COA-2355;test;Manual;Трек Sport: настройки трека;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 4;;;Manual;;;;;Testing;"Тап на your workout
 Тап на edit Plan";;"Экран settings с настройками трека спорт:
@@ -98,15 +98,15 @@ minAppVersion ставим 1.0.16";;COA;📱 👨 МП The Coach for Him/Обн�
 Тренировка считается не выполненной
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;sport";Testing;"Тап на трек Sport
 
 Тап на  Your Sport Program";;открывается программа тренировок пользователя;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
@@ -139,21 +139,21 @@ minAppVersion ставим 1.0.16";;COA;📱 👨 МП The Coach for Him/Обн�
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
-";"Test;Tracks;sport";Testing;Пользователь зашел в профиль;;"Отображена главная страница профиля, на ней есть Перечень треков: тех, которые есть и тех, которые будут. Обязательно присутствуют треки sport, Nutrition, sleep, sport, hormones. sex 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
+";"Test;Tracks;sport";Testing;Пользователь зашел в профиль;;"Отображена главная страница профиля, на ней есть Перечень треков: тех, которые есть и тех, которые будут. Обязательно присутствуют треки sport, Nutrition, sleep, sport, hormones. sex
 
  и другие треки";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 9;;;Manual;;;;;Testing;Тап на квадрат с надписью Sport;;"открывается главная страница  трека Sport:
 
-* Your Sport Program 
+* Your Sport Program
 * Custom Workout
 see all
 * Раздел You may also need
@@ -162,7 +162,7 @@ Recovery Tips
 workout tips";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 9;;;Manual;;;;;Testing;"При тапе:
 
-* Your Sport Program 
+* Your Sport Program
 * Custom Workout
 see all
 * Раздел You may also need
@@ -189,15 +189,15 @@ workout tips";;"* открывается страница c  программо�
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;"*Для тренировок дома (без гантелей):*
 
 Для каждой тренировки мы даем рандомный набор из 6 упражнений из общего списка упражнений для тренировки дома без гантелей";"запрос для тренировок дома без гантелей
@@ -360,8 +360,8 @@ workout tips";;"* открывается страница c  программо�
 * Время прочтения
 * Сам контент
 * Ссылку на источник (опционально)
-* Три рекомендации (возможно, вам понравится еще вот это): рекомендации формируются по принципу ""совпадает как можно больше сабтегов"". 
-Совпадение сабтегов проверяется от первого в CMS, то есть, первые сабтеги считаются более важными. 
+* Три рекомендации (возможно, вам понравится еще вот это): рекомендации формируются по принципу ""совпадает как можно больше сабтегов"".
+Совпадение сабтегов проверяется от первого в CMS, то есть, первые сабтеги считаются более важными.
 * Кнопку ""крестик"" в правом верхнем углу, нажатие на который инициирует возврат в эту же часть ленты, с которой пользователь ушел
 * иконки лайк\дизлайк";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Функционал ленты(неактуально?);;
 14;COA-788;test;Manual;Трек Sport: Скрыть приложение во время тренировки;Low;"Если пользователь скрывает приложение во время тренировки:
@@ -370,15 +370,15 @@ workout tips";;"* открывается страница c  программо�
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;sport";Testing;"Тап на трек Sport
 тап на Your Sport Program";;открывается страница c программой тренировок;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 14;;;Manual;;;;;Testing;Запустить тренировку и свернуть приложение;;Тренировка продолжается (время идет в фоновом режиме), приложение открывается обратно там же, где пользователь его закрыл);COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
@@ -399,7 +399,7 @@ workout tips";;"* открывается страница c  программо�
 * Картинку";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Функционал ленты(неактуально?);;
 16;;;Manual;;;;;Testing;Выбрать в ленте текстовый контент для просмотра;;"Страница текстового контента содержит ссылку на источник.
 Ее может и не быть\!
-Ссылка на источник может быть двух видов: 
+Ссылка на источник может быть двух видов:
 Подробная. Содержит:
 
 * Фото
@@ -588,7 +588,7 @@ user";;;COA;📱 👨 МП The Coach for Him/In-app подписки, пэйво
 Картинку";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз.;;
 25;COA-655;test;Manual;Платный контент в ленте (контент система);High;"*UPD*
 Сейчас весь контент в ленте бесплатный и его могут просматривать все пользователи (~ c января 2021)";"Feed;Test";Testing;Загрузить приложение;;Открыта лента с контентом;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз.;;
-25;;;Manual;;;;;Testing;Выбрать любой контент;;"Каждый материал на беке должен помечаться, платный она или бесплатный. 
+25;;;Manual;;;;;Testing;Выбрать любой контент;;"Каждый материал на беке должен помечаться, платный она или бесплатный.
 Внешне он никак не различается.";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз.;;
 26;COA-2667;test;Manual;Тренировки Gym;Medium;"[https://the-coach.atlassian.net/l/c/5HVsa1Vj|https://the-coach.atlassian.net/l/c/5HVsa1Vj]
 Макеты - [https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/The-Coach-App?node-id=682%3A0|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/The-Coach-App?node-id=682%3A0]
@@ -597,15 +597,15 @@ user";;;COA;📱 👨 МП The Coach for Him/In-app подписки, пэйво
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;"# *Для тренировок в зале (алгоритм одинаковый для тренировок legs, back, chest):*
 
 
@@ -622,12 +622,12 @@ user";;;COA;📱 👨 МП The Coach for Him/In-app подписки, пэйво
 
 
 
-К следующей тренировке одно из изолированных упражнений меняется на любое другое изолированное, подходящее пользователю. И так каждую тренировку.";[http://content-service-dev22.us-west-2.elasticbeanstalk.com/api/v1/sport/workouts/?type=group&body_part=legs|http://content-service-dev22.us-west-2.elasticbeanstalk.com/api/v1/sport/workouts/?type=group&body_part=legs];"в ответе есть 
+К следующей тренировке одно из изолированных упражнений меняется на любое другое изолированное, подходящее пользователю. И так каждую тренировку.";[http://content-service-dev22.us-west-2.elasticbeanstalk.com/api/v1/sport/workouts/?type=group&body_part=legs|http://content-service-dev22.us-west-2.elasticbeanstalk.com/api/v1/sport/workouts/?type=group&body_part=legs];"в ответе есть
 название тренировки
 картинка в соответствии с типом трени
 1 разминка
 1 заминка
-5 упражнений 
+5 упражнений
 сначала базовые
 потом изолированные
 
@@ -921,15 +921,15 @@ Suspended приложения не получают уведомления о �
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;"# *Для тренировок дома (с гантелями):*
 
 а) Разминка (одно конкретное упражнение, оно не меняется)
@@ -1168,7 +1168,7 @@ Suspended приложения не получают уведомления о �
 ниже блог с описанием Equipment
 
 Далее идёт перечень упражнений в тренировке:
-warm-up блока,  
+warm-up блока,
 Workout блок,
 cooldown блок.
 последние два чередуются, упражнения берутся из таблицы - это три- пять упражнений на разогрев чередуются с кулдаун, либо классический либо динамический в блог воркаут входит шесть упражнений на разные группы мышц посмотреть можно в таблице.
@@ -1230,7 +1230,7 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Te
 Она содержит некоторое количество табов (для каждой диеты оно может быть разным), каждый таб содержит какую-то теоретическую (текстовую + картинки) инфу.
 
 Контент мы точно должны задавать с веба, а табы менеджить в конфиге, потому что на входе сложно предсказать, где и какие они будут.";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
-41;COA-3406;test;Manual;Смена типа тренировки;Medium;"[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|smart-link] 
+41;COA-3406;test;Manual;Смена типа тренировки;Medium;"[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|smart-link]
 *Пользователь меняет место всех тренировок.*
 
 Напомню, что пользователь не может поменять место одной тренировки, он может поменять только для всех (мы упрощаем логику для удобства).
@@ -1293,13 +1293,13 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Te
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
 42;COA-3766;test;Manual;Карточка Кастомной тренировки;Medium;[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1281884386|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1281884386] ;"Athlete;Test;Tracks;Workout;sport";Testing;"зайти в спорт
 тап на athlete workout
@@ -1338,15 +1338,15 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Te
 * Кол-во повторений = \[CustomerTraining.custom_training_exercises_text_1]|";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировки атлетов;;
 43;COA-3410;test;Manual;Редактирование количества тренировок;Highest;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Workout;sport";Testing;"Открыть трэк спорт
 
 Открыть Your SPort Program
@@ -1362,7 +1362,7 @@ How many
 Days and time
 First workout
 Second workout";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
-43;;;Manual;;;;;Testing;тап на  how many;;"поверх экрана отображается датапикер 
+43;;;Manual;;;;;Testing;тап на  how many;;"поверх экрана отображается датапикер
 на нем есть название how many
 X
 блок выбора 2/3
@@ -1382,7 +1382,7 @@ Time строка выбора времени
 44;;;Manual;;;;;Testing;"название вкладки выделено черным
 остальные вкладки цвета мельхиор 10
 на открытой вкладке отображен список тренировок по заданной тематике
-список состоит из картинки с превью 
+список состоит из картинки с превью
 названия тренировки
 ниже время выполнения- уровень сложности-оборудование
 оранжевым имя атлета
@@ -1433,7 +1433,7 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 
 Блог что поесть
 
-План питания на день 
+План питания на день
 
 Продукты
 
@@ -1497,15 +1497,15 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781
 fasting start time, кнопка закрытия X,  колонки с часами/минутами/AM/PM  (в зависимости от формата времени на устройстве) и кнопка save";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
 49;COA-3408;test;Manual;Открытие расписания;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"зайти в трек спорт
 тапнуть на your sport program";;"экран Program
 кнопка Edit Plan
@@ -1518,7 +1518,7 @@ fasting start time, кнопка закрытия X,  колонки с часа
 справа блоки дней
 есть блок с тренировкой, на нем изображено:
 оранжевым - статус тренировки- missed красным - если тренировка пропущена. по времени
-если тренировка планируется оранжевым показано время проведения- по дефолку сейчас 45 минут с момента установки тренировки в расписсании +45 минут 
+если тренировка планируется оранжевым показано время проведения- по дефолку сейчас 45 минут с момента установки тренировки в расписсании +45 минут
 
 название тренировки
 тип тренировки
@@ -1544,8 +1544,8 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 Задача - https://miro.com/app/board/o9J_lfJk4uQ=/
 https://the-coach.atlassian.net/browse/COA-3062
 https://the-coach.atlassian.net/wiki/spaces/TES/pages/1025310721
-https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Chat;Fasting;Test";Testing;"новый пользователь проходит интро опрос 
-в интро опросе его спрашивают про фастинг 
+https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Chat;Fasting;Test";Testing;"новый пользователь проходит интро опрос
+в интро опросе его спрашивают про фастинг
 предлагают запускать его или нет
 предлагают схему
 и время запуска";[https://miro.com/app/board/o9J_klBm-Gg=/?moveToWidget=3074457350080778529&cot=14|https://miro.com/app/board/o9J_klBm-Gg=/?moveToWidget=3074457350080778529&cot=14];после прохождения опроса пользователь может в блоке фастинга запустить его если выбирал схему и время и включить - если ответил в опросе что не фастит;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
@@ -1568,9 +1568,9 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 * включен если пользователь в интро опросе выбрал схему фастинга- Показан экран старта фастинга, на нём есть: Upcoming Fast, схемы фастинга 12/12, 14/10, 16/8,  оранжевая цифра == время фастинга. Пикер с выбором времени начала фастинга, кнопка начала фастинга
 
 Экран содержит картинку, название, тогл включения/выключения, три таба: таймер, теория, настройки";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
-53;COA-3389;test;Manual;Отображение сториз для юзера в ленте;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161] 
-[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338] 
-[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789] 
+53;COA-3389;test;Manual;Отображение сториз для юзера в ленте;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161]
+[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338]
+[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789]
 
 *Лента сториз* - состоит из нескольких *Групп Сториз*, отображается в Feed. Показываем всем пользователям.
 
@@ -1592,7 +1592,7 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 53;;;Manual;;;;;Testing;"* сториз по авторам
 * сториз по темам";;"* сториз по авторам отображаются вверху ленты под названием, скроллятся горизонтально, при скролле  ленты скрываются
 состоят из квадратных превью с картинкой автора, подписью с именем автора, и рамки- цвет рамки меняется в зависимости от статуса просмотра сториз
-* Сториз по темам отображаются при скролле ленты - после 3 статьи  
+* Сториз по темам отображаются при скролле ленты - после 3 статьи
 выглядят как прямоугольные блоки отделенные от статей разделителями, есть название TIPS, картинка и на картинке название темы типсов, рамки- цвет рамки меняется в зависимости от статуса просмотра сториз";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
 54;COA-3435;test;Manual;Запуск фастинга;Medium;"Дизайн - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=2751%3A15575
 
@@ -1606,15 +1606,15 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 Нажать на кнопку старт Фаст";;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
 55;COA-3420;test;Manual;Текущая тренировка (над расписанием);Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"зайти в трек спорт
 тапнуть на your sport program";;"экран Program
 кнопка Edit Plan
@@ -1627,7 +1627,7 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 справа блоки дней
 есть блок с тренировкой, на нем изображено:
 оранжевым - статус тренировки- missed красным - если тренировка пропущена. по времени
-если тренировка планируется оранжевым показано время проведения- по дефолку сейчас 45 минут с момента установки тренировки в расписсании +45 минут 
+если тренировка планируется оранжевым показано время проведения- по дефолку сейчас 45 минут с момента установки тренировки в расписсании +45 минут
 
 название тренировки
 тип тренировки
@@ -1651,33 +1651,33 @@ check recovery tips
 
 *Почта гугл:*
 
-[test1@vamapps.com|mailto:test1@vamapps.com] Test0sterone
+[<redacted-email>|mailto:<redacted-email>] Test0sterone
 
 *Фейсбук:*
 
 Ivan Ivanovich fb [https://www.facebook.com/profile.php?id=100073853928914|https://www.facebook.com/profile.php?id=100073853928914]
 
- [test1@vamapps.com|mailto:test1@vamapps.com]
+ [<redacted-email>|mailto:<redacted-email>]
 
 eN*uqpaEWFRS8'u
 
 ";"Test;Web";Testing;Зайти по ссылке join.the.coach/?rbbt=plns,apple&pw=test (ссылка может меняться);;;COA;🌐 Web/Опросники;;
 56;;;Manual;;;;;Testing;Сделать разлогин и localStorage.clear() если уже авторизована была, перегрузить страничку;;;COA;🌐 Web/Опросники;;
 56;;;Manual;;;;;Testing;Пройти опрос;;;COA;🌐 Web/Опросники;;
-56;;;Manual;;;;;Testing;Авторизоваться под тестовым акком: гугл почта, добавить акк, [test1@vamapps.com|mailto:test1@vamapps.com] Test0sterone;;;COA;🌐 Web/Опросники;;
+56;;;Manual;;;;;Testing;Авторизоваться под тестовым акком: гугл почта, добавить акк, [<redacted-email>|mailto:<redacted-email>] Test0sterone;;;COA;🌐 Web/Опросники;;
 56;;;Manual;;;;;Testing;Купить подписку оплатив через эпл пэй/пэй пол/карту;;;COA;🌐 Web/Опросники;;
 56;;;Manual;;;;;Testing;Зайти в сборку под этим акком;;бот доспрашивает только те вопросы которых не было в опроснике на вебе, прога доступна пользователю, у него установлены диеты, тренировки и все его данные отображены в профиле;COA;🌐 Web/Опросники;;
 57;COA-3421;test;Manual;Изменение уже запланированных тренировок;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"Открыть трэк спорт
 
 Открыть Your sport program
@@ -1693,7 +1693,7 @@ How many
 Days and time
 First workout
 Second workout";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
-57;;;Manual;;;;;Testing;тап на  how many;;"поверх экрана отображается датапикер 
+57;;;Manual;;;;;Testing;тап на  how many;;"поверх экрана отображается датапикер
 на нем есть название how many
 X
 блок выбора 2/3
@@ -1706,7 +1706,7 @@ Time строка выбора времени
 кнопка save changes";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 57;;;Manual;;;;;Testing;"при тапе на строку открывается пикер с аналогичным названием
 пользователь может выбрать день
-может выбрать время 
+может выбрать время
 тап на кнопки select day/time - сохраняют выбор";;после редактирования мы видим экран Edit workout с активной кнопкой save changes - черного цвета;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 57;;;Manual;;;;;Testing;"тап назад
 тап на  save changes";;"* переходим на экран Workouts per week - на котором тоже есть активная кнопка save changes
@@ -1724,33 +1724,33 @@ stay- остаться редактировать
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
 59;COA-3418;test;Manual;Пропуск запущенной тренировки;High;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
 
 
 [https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/]
 
- 
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
+
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"любым способом запустить тренировку
-нажать кнопку назад";;"пользователь увидит поп -ап с предупреждением 
+нажать кнопку назад";;"пользователь увидит поп -ап с предупреждением
 End Workout
 Do you really want to end the workout
-кнопки 
+кнопки
 Leave/stay
 при тапе на leave тренировка закрывается
 stay - продолжается";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
@@ -1825,39 +1825,39 @@ https://the-coach.atlassian.net/browse/COA-3062
 https://the-coach.atlassian.net/wiki/spaces/TES/pages/1025310721
 https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Chat;Fasting;Test";Testing;Открыть программу;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
 63;;;Manual;;;;;Testing;Зайти в трэк питания;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
-63;;;Manual;;;;;Testing;"Открыть фастинг. 
+63;;;Manual;;;;;Testing;"Открыть фастинг.
 Запустить фастинг
 Тапнуть на чат";;"В чате на месте плашки плана на день появляется плашка фастинга.
 
-На плашке отображаются процесс фастинга. 
-На плашке есть надпись you are fasting\!. Есть обратный таймер.  Есть стрелочка в правом углу. 
-При окончании фастинга надпись меняется на and фастинг. Таймер равен нулю. 
+На плашке отображаются процесс фастинга.
+На плашке есть надпись you are fasting\!. Есть обратный таймер.  Есть стрелочка в правом углу.
+При окончании фастинга надпись меняется на and фастинг. Таймер равен нулю.
 При тапе на плашку происходит переход на главную страницу фастинга в треке нутришн";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
 64;COA-3422;test;Manual;Экран before start;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"Зайти в раздел спорт
-Открыть Your Workout 
+Открыть Your Workout
 тапнуть на тренировку";;При первом запуске тренировки пользователь видит экран информации перед тренировкой, экран называется Before your start, на экране есть список  с описаниями  весов и кнопка Ok let’s go, при нажатии на которую экран закрывается. Также на экран можно попасть с экрана старта тренировки нажав на hint с вопросом.;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировка;;
 65;COA-3417;test;Manual;Оценка тренировки после завершения;Highest;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 
 После окончания тренировки пользователь получает вот такой экран.
 
@@ -1912,11 +1912,11 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Chat;Fasting;
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировка;;
 67;COA-3456;test;Manual;Продукты в Meal plan;Medium;"Макеты - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=1%3A2
 Контент - Структура контента для трека ""питание"" 
@@ -1949,24 +1949,24 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 Список с продуктами разделенный по группам
 см таблицу [https://docs.google.com/spreadsheets/d/1UL9LAIxDXzPOyAMCVz0VayrPgTdxPliuG6aMPq9L1eA/edit#gid=1254329822|https://docs.google.com/spreadsheets/d/1UL9LAIxDXzPOyAMCVz0VayrPgTdxPliuG6aMPq9L1eA/edit#gid=1254329822]";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
 67;;;Manual;;;;;Testing;тап на группу продуктов;;"открываетс экран
-картинка 
-перечень продуктов 
+картинка
+перечень продуктов
 линк more под каждым";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
 67;;;Manual;;;;;Testing;тап на more;;"раскрывает доп инфу о продукте
 показывает линк less(сворачивает доп инфу";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
-68;COA-3405;test;Manual;Построение расписания на 2 недели;Medium;"После того как пользователь отвечает на интро опрос и указывает время своих тренировок, на бэке ему генерится план тренировок на две недели вперёд. 
+68;COA-3405;test;Manual;Построение расписания на 2 недели;Medium;"После того как пользователь отвечает на интро опрос и указывает время своих тренировок, на бэке ему генерится план тренировок на две недели вперёд.
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"DailyPlan;Test;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
 69;COA-3448;test;Manual;Изменение диеты;Highest;"Макеты - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=1%3A2
 Контент - Структура контента для трека ""питание"" 
@@ -2046,9 +2046,9 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 ** Avg. time = CustomerTraining.custom_training_cell_1_text
 * Рейтинг по пользователям:
 ** Иконка график
-** Complexity 
+** Complexity
 * Калории:
-** Иконка огонька 
+** Иконка огонька
 ** Burn|
 |Опрос сложности тренировки
 * Легко
@@ -2066,7 +2066,7 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 |Кнопка Continue|";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировки атлетов;;
 72;COA-3460;test;Manual;Установка диеты в интро опроснике;Medium;"Макеты - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=1%3A2
 Контент - Структура контента для трека ""питание"" 
-https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Test";Testing;пользователь запустил интро опрос;"/clear 
+https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Test";Testing;пользователь запустил интро опрос;"/clear
 +hi";"в опросе выбрал диету
 [https://miro.com/app/board/o9J_klBm-Gg=/?moveToWidget=3074457350080777936&cot=14|https://miro.com/app/board/o9J_klBm-Gg=/?moveToWidget=3074457350080777936&cot=14]";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
 72;;;Manual;;;;;Testing;"если ответил no
@@ -2076,15 +2076,15 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/860389377/1";"Nutrition;Te
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 74;COA-3432;test;Manual;Пуши для фастинга(не доделаны);Medium;"Дизайн - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=2751%3A15575
 
@@ -2097,29 +2097,29 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 Сейчас файер base просто сохраняется а тот факт что пользователь включил Push уведомления";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Fasting tracker. Трекер фастинга;;
 75;COA-3414;test;Manual;Запуск тренировки из чата;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;написать в чате/нажать в кнопке wcyd/ тап на напоминалку о тренировке;"next workout
 my next training
 my next workout";в чате получен проброс в профиль при тапе на который открывается модалка с тренировкой (в соответствии с расписанием);COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 76;COA-3409;test;Manual;Редактирование типа тренировок;High;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"Открыть трэк спорт
 
 Открыть Your Sport Program
@@ -2128,12 +2128,12 @@ my next workout";в чате получен проброс в профиль п�
 
 Workout per week
 Avaliable Types";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
-76;;;Manual;;;;;Testing;тап на avaliable types;;"открыт экран  avaliable types 
+76;;;Manual;;;;;Testing;тап на avaliable types;;"открыт экран  avaliable types
 на нем есть кнопка back
 название экрана
 перечень типов
 
-gym 
+gym
 home,dumbbells
 home, no dumbbells
 с чекбоксами
@@ -2163,13 +2163,13 @@ home, no dumbbells
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
 78;COA-2668;test;Manual;Адаптация тренировок для конкретного пользователя;Highest;"{code:java}https://the-coach.atlassian.net/l/c/5HVsa1Vj
 Макеты - https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/The-Coach-App?node-id=682%3A0
@@ -2178,55 +2178,55 @@ https://docs.google.com/spreadsheets/d/1sRnEfCCbuZwTG10HRV7ZJfPMigrQb0kerSHcPhrj
 
 *Коррекция тренировок*
 
-В конце любой тренировки пользователь может сказать “it was okay”, “it was too hard”, “it was too easy” 
+В конце любой тренировки пользователь может сказать “it was okay”, “it was too hard”, “it was too easy”
 
-Если он говорит “ит воз окей” - ничего не меняется. 
+Если он говорит “ит воз окей” - ничего не меняется.
 
-Если выбирает “ит воз ту хард”, то структура следующей аналогичной тренировки поменяется. Я имею в виду, что, если пользователь сказал, что тренировка дома с гантелями была слишком тяжелой - то поменяется именно она. Если тренировка в зале была слишком тяжелой - то меняется она. И так далее. 
+Если выбирает “ит воз ту хард”, то структура следующей аналогичной тренировки поменяется. Я имею в виду, что, если пользователь сказал, что тренировка дома с гантелями была слишком тяжелой - то поменяется именно она. Если тренировка в зале была слишком тяжелой - то меняется она. И так далее.
 
 *Как поменяется структура тренировки:*
-После каждой тренировки, в конце которой пользователь отметил “it was too hard”, для следующих тренировок уменьшается кол-во повторов во всех упражнениях. Если это тренировка в зале или дома с гантелями, то кол-во повторов во всех упражнениях уменьшается на 2, если тренировка дома - на 5. 
+После каждой тренировки, в конце которой пользователь отметил “it was too hard”, для следующих тренировок уменьшается кол-во повторов во всех упражнениях. Если это тренировка в зале или дома с гантелями, то кол-во повторов во всех упражнениях уменьшается на 2, если тренировка дома - на 5.
 При этом, минимальное количество повторов для любого упражнения в рамках тренировки в зале или дома с гантелями - 6, для тренировки дома без гантелей - 15. Если пользователь опять после тренировки отмечает “it was too hard”, но мы понимаем, что еще одно изменение приведет к тому, что хотя бы в одном из упражнений следующей тренировки останется меньше 6 (или 15, соответственно) повторений, тогда мы меняем не кол-во повторов, а время отдыха между сетами:
 Итак, если мы уже не можем менять кол-во повторов, мы меняем время отдыха. После каждого отмечания пользователем, что тренировка была слишком сложной, время отдыха увеличивается на 10 секунд (для любой тренировки). Максимально время отдыха может увеличиться на 30 секунд.
 Если мы максимально уменьшили кол-во повторов и увеличили время отдыха, то, сколько бы пользователей не отмечал too hard, мы больше ничего не меняем.
 
-Если пользователь говорит “it was too easy” - тренировка, соответственно, усложняется ровно по тому же принципу. Опять же, изменения всегда распространяются на тренировки такого же типа - дома без гантелей, дома с гантелями, в зале. 
+Если пользователь говорит “it was too easy” - тренировка, соответственно, усложняется ровно по тому же принципу. Опять же, изменения всегда распространяются на тренировки такого же типа - дома без гантелей, дома с гантелями, в зале.
 
 *Итак:*
-Если это тренировка в зале или дома с гантелми, кол-во повторов увеличиваем на 2, если дома без всего - на 5. Максимальное количество повторов 20 (и 45 соответственно). 
+Если это тренировка в зале или дома с гантелми, кол-во повторов увеличиваем на 2, если дома без всего - на 5. Максимальное количество повторов 20 (и 45 соответственно).
 Когда достигаем максимума - начинаем уменьшать время с шагом по 10 секунд. Максимум время отдыха в зале или дома с гантелями может уменьшиться на 30 секунд, дома - на 10 секунд.
-Обязательно нужно учесть, что время может уменьшиться максимум на 10 секунд не от текущего, а от начального. Начальное время отдыха зависит от возраста и типа тренировки (в задаче указала все варианты). 
+Обязательно нужно учесть, что время может уменьшиться максимум на 10 секунд не от текущего, а от начального. Начальное время отдыха зависит от возраста и типа тренировки (в задаче указала все варианты).
 
 *Для тестирования изменения тренировок:*
 
 *Кейсы, которые надо проверить:*
 
-Говорю, что тренировка в зале была слишком сложной - все упражнения в следующей тренировке в зале содержат на 2 повтора меньше 
-Говорю, что тренировка дома с гантелями была слишком сложной - все упражнения в следующей тренировке дома с гантелями содержат на 2 повтора меньше 
-Говорю, что тренировка дома без гантелей была слишком сложной - все упражнения в следующей тренировке дома без гантелей содержат на 5 повторов меньше 
-Сколько бы раз я ни указывал, что тренировка слишком сложная - минимальное количество повторов для тренировки дома с гантелями или в зале - 8, для тренировки дома без гантелей - 15 
+Говорю, что тренировка в зале была слишком сложной - все упражнения в следующей тренировке в зале содержат на 2 повтора меньше
+Говорю, что тренировка дома с гантелями была слишком сложной - все упражнения в следующей тренировке дома с гантелями содержат на 2 повтора меньше
+Говорю, что тренировка дома без гантелей была слишком сложной - все упражнения в следующей тренировке дома без гантелей содержат на 5 повторов меньше
+Сколько бы раз я ни указывал, что тренировка слишком сложная - минимальное количество повторов для тренировки дома с гантелями или в зале - 8, для тренировки дома без гантелей - 15
 Если я указываю, что тренировка слишком сложная, и уже достигла минимума по кол-ву повторов, начинает уменьшаться время отдыха
 Время отдыха для любой тренировки никогда не увеличивается сильнее, чем на 30 секунд от начального
-Если я говорю, что какая-то тренировка была слишком сложной, а после нее у меня идет тренировка другого типа, то тренировка другого типа не меняется, а следующая тренировка этого типа меняется 
-Если я говорю, что какая-то тренировка была окей, то следующая тренировка этого типа не меняется 
-И аналогично для кейса “тренировка была слишком легкой” 
+Если я говорю, что какая-то тренировка была слишком сложной, а после нее у меня идет тренировка другого типа, то тренировка другого типа не меняется, а следующая тренировка этого типа меняется
+Если я говорю, что какая-то тренировка была окей, то следующая тренировка этого типа не меняется
+И аналогично для кейса “тренировка была слишком легкой”
 
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
-79;COA-3394;test;Manual; Просмотр профиля автора;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161] 
-[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338] 
-[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789] 
+79;COA-3394;test;Manual; Просмотр профиля автора;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161]
+[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338]
+[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789]
 
 инфо об авторе написано подробно в тест кейсе [https://the-coach.atlassian.net/browse/COA-3765|https://the-coach.atlassian.net/browse/COA-3765] ";"Feed;Story;Test";Testing;"открыть  сториз
 тап на круглую иконку с картинкой автора";;"открывается модалка с картинкой
@@ -2234,7 +2234,7 @@ https://docs.google.com/spreadsheets/d/1sRnEfCCbuZwTG10HRV7ZJfPMigrQb0kerSHcPhrj
 именем автора
 описанием
 ссылками на его соцсети";COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
-80;COA-3768;test;Manual;Плеер кастомной тренировки;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1272119417|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1272119417] 
+80;COA-3768;test;Manual;Плеер кастомной тренировки;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1272119417|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1272119417]
 [https://the-coach.atlassian.net/wiki/spaces/TES/pages/1281884386|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1281884386] ";"Athlete;Test;Tracks;Workout;sport";Testing;"зайти в спорт
 тап на athlete workout
 запустить тренировку";;"на экране старта кастомной тренировки есть :
@@ -2278,10 +2278,10 @@ https://docs.google.com/spreadsheets/d/1sRnEfCCbuZwTG10HRV7ZJfPMigrQb0kerSHcPhrj
 кнопка паузы ||
 при тапе - блок закрывается
 по окончании тренировки пользователь видит результирующий экран";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировки атлетов;;
-81;COA-3765;test;Manual;Экран об Авторе;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1271955526|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1271955526] 
+81;COA-3765;test;Manual;Экран об Авторе;Medium;"[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1271955526|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1271955526]
 [https://the-coach.atlassian.net/wiki/spaces/TES/pages/1243906214|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1243906214] ";"Athlete;Test;Tracks;Workout;sport";Testing;"закйти в спорт
 тап на athlete workout
-запустить тренировку";;"на экране старта кастомной тренировки есть в разделе Athlete 
+запустить тренировку";;"на экране старта кастомной тренировки есть в разделе Athlete
 написано имя автора и есть стрелочка";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировки атлетов;;
 81;;;Manual;;;;;Testing;тап на имя автора;;"открывается экран модалка который содержит:
 фото автора с затемнением
@@ -2291,9 +2291,9 @@ https://docs.google.com/spreadsheets/d/1sRnEfCCbuZwTG10HRV7ZJfPMigrQb0kerSHcPhrj
 иконки с соцсетями автора
 кнопка Х";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировки атлетов;;
 82;COA-3398;test;Manual;Проверка смены статусов сториз;High;"(появление новой сториз и рамки на ней/пропадание рамки на просмотренной сториз)
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161] 
-[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338] 
-[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161]
+[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338]
+[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789]
 ";"Feed;Story;Test";Testing;открыть группу сториз с оранжевой рамкой;;группа открывается с непросмотренной сториз, после просмотра сториз рамка меняет цвет на серую;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
 82;;;Manual;;;;;Testing;при всех просмотренные сториз, опубликовать новую и обновить ленту;;цвет рамки сториз станет оранжевым;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
 83;COA-3461;test;Manual;Новый Экран push уведомлений, и его логика;Medium;https://the-coach.atlassian.net/wiki/spaces/TES/pages/1163558932/Push;"Push;Test";Testing;пользователь установил сборку первый раз;;при открытии  он увидит онбординг, онбординг пройден;COA;📱 👨 МП The Coach for Him/Пуши;;
@@ -2376,15 +2376,15 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781";"Fasting;Nutri
 
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;back;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Workouts Backend;;
 88;COA-3457;test;Manual;Продукты на главном экране трека питание;Medium;"Макеты - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=1%3A2
 Контент - Структура контента для трека ""питание"" 
@@ -2410,8 +2410,8 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 Список с продуктами разделенный по группам
 см таблицу [https://docs.google.com/spreadsheets/d/1UL9LAIxDXzPOyAMCVz0VayrPgTdxPliuG6aMPq9L1eA/edit#gid=1254329822|https://docs.google.com/spreadsheets/d/1UL9LAIxDXzPOyAMCVz0VayrPgTdxPliuG6aMPq9L1eA/edit#gid=1254329822]";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
 88;;;Manual;;;;;Testing;тап на группу продуктов;;"открываетс экран
-картинка 
-перечень продуктов 
+картинка
+перечень продуктов
 линк more под каждым";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
 88;;;Manual;;;;;Testing;тап на more;;"раскрывает доп инфу о продукте
 показывает линк less(сворачивает доп инфу";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Nutrition. План питания, рецепты, диеты;;
@@ -2421,13 +2421,13 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 *Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;;;;COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок;;
 90;COA-3453;test;Manual;Просмотр рецепта;High;"Макеты - https://www.figma.com/file/96Jaw7qTeFv76lFF53K9fQ/Tracks?node-id=1%3A2
 Контент - Структура контента для трека ""питание"" 
@@ -2477,9 +2477,9 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 Взаимодействие сториз в ленте при скролле статей/ при переключении табов в приложении
 Действия внутри группы сториз
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161] 
-[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338] 
-[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1199047161]
+[https://the-coach.atlassian.net/browse/COA-3338|https://the-coach.atlassian.net/browse/COA-3338]
+[https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=9740%3A27789]
 ";"Feed;Story;Test";Testing;открыть сториз;;;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
 91;;;Manual;;;;;Testing;"закрыть сториз по свайпу
 по тапу на х";;;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
@@ -2498,15 +2498,15 @@ Ask a Question";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) се
 открытие статей и сториз";;;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./Stories in Feed;;
 92;COA-3415;test;Manual;Пауза тренировки;Medium;"*Новые тренировки*
 [*https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934*|https://docs.google.com/spreadsheets/u/1/d/1ydOAenywqNGuLXUoOSn3cCU2QqwGlP12yFmiIbAl5ek/edit#gid=1916960934]
-[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit] 
+[https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit|https://docs.google.com/document/d/1iaHp02KlT7B2dy3JzJjgNMMbIf5gbWFE61tN02uqC1I/edit]
 
-[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/] 
+[https://miro.com/app/board/o9J_kp8vYxs=/|https://miro.com/app/board/o9J_kp8vYxs=/]
 
-[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link] 
+[https://miro.com/app/board/o9J_lfc38y0=/|https://miro.com/app/board/o9J_lfc38y0=/|smart-link]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279|https://the-coach.atlassian.net/wiki/spaces/TES/pages/717750279]
 
-[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967] 
+[https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967|https://the-coach.atlassian.net/wiki/spaces/TES/pages/958332967]
 ";"Test;Tracks;Workout;sport";Testing;"запустить тренировку
 нажать паузу";;"кнопка плэй в тренировке меняется на || видео и отсчет секунд ставится на паузу,
 осзвучка тоже ставится на паузу";COA;📱 👨 МП The Coach for Him/Explore (aka Programs) сейчас тестируется его отключение/Sport. Обычные воркауты, воркауты с атлетами, расписание тренировок/Тренировка;;
@@ -2526,14 +2526,14 @@ https://the-coach.atlassian.net/wiki/spaces/TES/pages/1115979781
 95;;;Manual;;;;;;Выбрать Books;;;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./новый фид;;
 96;COA-7903;test;Manual;Кроссбраузерное и кроссплатформенное тестирование опросника;Medium;"DEV Male опросник EN
 
-[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link] 
+[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link]
 
 DEV Male опросник ES
 
 [https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|smart-link] ";Test;;Открытие и прохождение опросников EN и ES в разных браузерах и на разных устройствах;"Браузеры: Chrome, Safari, внтуренние браузеры Instagram, FaceBook и TikTok
 
-Устройства: iOS 15-18, Android 13-16";"# Опросник открывается без ошибок во всех браузерах и на всех устройствах 
-# UI отображается правильно(без сдвигов, артефактов, наложений) 
+Устройства: iOS 15-18, Android 13-16";"# Опросник открывается без ошибок во всех браузерах и на всех устройствах
+# UI отображается правильно(без сдвигов, артефактов, наложений)
 # Навигация и ответы работают одинаково
 # После прохождения опросника и  написания актуальной почты - редирект на пейвол
 # Прогресс-бар и анимации не зависают
@@ -2599,7 +2599,7 @@ DEV Male опросник ES
 106;;;Manual;;;;;;После просмотра;;;COA;📱 👨 МП The Coach for Him/Feed. Лента статей и сториз./новый фид;;
 107;COA-7905;test;Manual;Тестирование опросника по сломанной или неполной ссылке;Medium;"DEV Male опросник EN
 
-[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link] 
+[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link]
 
 DEV Male опросник ES
 
@@ -2715,16 +2715,16 @@ DEV Male опросник ES
 134;;;Manual;;;;;;Пройти встроенный опросник;;Пользователь отвечает на два вопроса о целях;COA;📱 👨 МП The Coach for Him/Авторизация и Аутентификация;;
 134;;;Manual;;;;;;Завершить опрос;;Пользователь попадает в аккаунт с активной подпиской;COA;📱 👨 МП The Coach for Him/Авторизация и Аутентификация;;
 135;COA-7906;test;Manual;Тестирование опросника при замедленном интернете;Medium;;Test;;Прохождение опроса при замедленном интернете;DevTools или Browserstack;"# Страница опроса прогружается медленнее, без критических ошибок
-# Все действия происходят правильно, но медленнее 
+# Все действия происходят правильно, но медленнее
 # Прогресс-бар не зависает, не отображается зависшим
 # После восстановления соединения пользователь может продолжить с того же места
 # Не сбрасывается и не начинается заново при временной потери связи";COA;🌐 Web/Опросники;;
 136;COA-7825;test;Manual;Опросник;Medium;"DEV Male опросник EN
-[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link] 
+[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|smart-link]
 
 DEV Male опросник ES
 
-[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|smart-link] ";Test;;"Открыть опросник по ссылке 
+[https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|smart-link] ";Test;;"Открыть опросник по ссылке
 DEV Male опросник EN
 [https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?pw=health_disc_cel&add=pdf1]";;Загружается без ошибок, заголовок и подзаголовки отображается верно;COA;🌐 Web/Опросники;;
 136;;;Manual;;;;;;Пройти опрос до конца в любом из флоу;;"# Кнопки ответов кликабельны
@@ -2737,7 +2737,7 @@ DEV Male опросник EN
 # Нет возможности выбрать сразу несколько
 # Не возникает дублирование
 # Не происходит сбой при быстром клике на ответы
-# На каждом вопросе доступны все варианты ответов 
+# На каждом вопросе доступны все варианты ответов
 # Выбор одного ответа ведет к следующему шагу
 # Нельзя пройти вперед без выбора
 # Прогресс-бар обновляется с каждым шагом
@@ -2772,7 +2772,7 @@ DEV Male опросник EN
 136;;;Manual;;;;;;Вовзрат на предыдущие шаги по UI-кнопке, не в браузере;;"# Отображается предыдущий экран
 # Ответ остается заполненным
 # Можно продолжить без ошибок";COA;🌐 Web/Опросники;;
-136;;;Manual;;;;;;"Открыть опросник 
+136;;;Manual;;;;;;"Открыть опросник
 DEV Male опросник ES
 
 [https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel|https://get-liga-acda77ee76eb.herokuapp.com/questionnaire?lng=es&pw=health_disc_cel]";;Повторить шаги 2-12 на ES опроснике;COA;🌐 Web/Опросники;;
@@ -3067,8 +3067,8 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 # Таймер скидки начинается сразу при открытии страницы
 # Секунды и минуты обновляются без залипаний";COA;🌐 Web/Пейволы;;
 165;;;Manual;;;;;;"Нажатие на кнопку ""Get My Plan"" и прохождение флоу выбора и оплаты";;"# При нажатии на ""Get My Plan"" открывается платежное окно
-# Отображаются все доступные платежные методы - PayPal, Apple Pay/Google Pay, банковская карта 
-# При выборе банковской карты форма отображается полностью, с полями: ""Card Number"", ""Expiration Date"", ""Email"" 
+# Отображаются все доступные платежные методы - PayPal, Apple Pay/Google Pay, банковская карта
+# При выборе банковской карты форма отображается полностью, с полями: ""Card Number"", ""Expiration Date"", ""Email""
 # Нельзя отправить пустые или невалидные данные";COA;🌐 Web/Пейволы;;
 165;;;Manual;;;;;;Успешная оплата;;"# Происходит редирект на success-экран
 # Показывается подтверждение";COA;🌐 Web/Пейволы;;
@@ -3105,7 +3105,7 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 * план питания
 На этапе 1 тестируется размещение кнопки шеринга на разных экранах приложения для приоритезации дальнейшей разработки функционала шеринга
 
-ТЗ: [https://the-coach.atlassian.net/wiki/spaces/TES/pages/1616248833|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1616248833] 
+ТЗ: [https://the-coach.atlassian.net/wiki/spaces/TES/pages/1616248833|https://the-coach.atlassian.net/wiki/spaces/TES/pages/1616248833]
 
 Дизайн: [https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=11998%3A0|https://www.figma.com/file/ZElaAVuVDEvi9vukgpn7PQ/Main?node-id=11998%3A0] ";"General;Test";Testing;;;;COA;📱 👨 МП The Coach for Him/Другое;;
 168;COA-7944;test;Manual;Проверка активности кнопки 'Start now';Medium;;Test;;1;1) Открыть приложение;;COA;📱 👨 МП The Coach for Him/Авторизация и Аутентификация;;
@@ -3168,17 +3168,17 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 
 *BT dev for her:*
 
-[active@devforher.com|mailto:active@devforher.com] - Active
+[<redacted-email>|mailto:<redacted-email>] - Active
 
-[cancel@devforher.com|mailto:cancel@devforher.com] - Cancel
+[<redacted-email>|mailto:<redacted-email>] - Cancel
 
-[pending@devforher.com|mailto:pending@devforher.com] - Pending
+[<redacted-email>|mailto:<redacted-email>] - Pending
 
-[pastdue@devforher.com|mailto:pastdue@devforher.com] - Past Due
+[<redacted-email>|mailto:<redacted-email>] - Past Due
 
-[activepending@devforher.com|mailto:activepending@devforher.com] - Active+Pending одновременно
+[<redacted-email>|mailto:<redacted-email>] - Active+Pending одновременно
 
-[activepastdue@devforher.com|mailto:activepastdue@devforher.com] - Active+Past Due одновременно
+[<redacted-email>|mailto:<redacted-email>] - Active+Past Due одновременно
 
 
 
@@ -3188,27 +3188,27 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 
 *БТ Дев:*
 
-[active@devtest.com|mailto:active@devtest.com] - Active
+[<redacted-email>|mailto:<redacted-email>] - Active
 
-[cancel@devtest.com|mailto:cancel@devtest.com] - Cancel
+[<redacted-email>|mailto:<redacted-email>] - Cancel
 
-[pending@devtest.com|mailto:pending@devtest.com] - Pending
+[<redacted-email>|mailto:<redacted-email>] - Pending
 
-[pastdue@devtest.com|mailto:pastdue@devtest.com] - Past Due
+[<redacted-email>|mailto:<redacted-email>] - Past Due
 
-[activepending@devtest.com|mailto:activepending@devtest.com] - Active+Pending одновременно
+[<redacted-email>|mailto:<redacted-email>] - Active+Pending одновременно
 
-[activepastdue@devtest.com|mailto:activepastdue@devtest.com] - Active+Past Due одновременно
+[<redacted-email>|mailto:<redacted-email>] - Active+Past Due одновременно
 
 
 
 *БТ Прод:*
 
-[pending@prodtest.com|mailto:pending@prodtest.com] - Pending (тестовый юзер)
+[<redacted-email>|mailto:<redacted-email>] - Pending (тестовый юзер)
 
-[yl.lowcool@gmail.com|mailto:yl.lowcool@gmail.com] - Past Due (реальный юзер, может сломаться в какой то момент)
+[<redacted-email>|mailto:<redacted-email>] - Past Due (реальный юзер, может сломаться в какой то момент)
 
-[cancel@proddest.com|mailto:cancel@proddest.com] - Cancel (тестовый юзер)";Test;;;;;COA;🌐 Web/Флоу отмены подписки/Тестирование отмены подписок в разных статусах;;
+[<redacted-email>|mailto:<redacted-email>] - Cancel (тестовый юзер)";Test;;;;;COA;🌐 Web/Флоу отмены подписки/Тестирование отмены подписок в разных статусах;;
 210;COA-8011;test;Manual;Вибрация во время замера;Medium;;"DemoKegel;Demo_kegel;Test;only_ios";;1;Удерживать палец на круге;;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Кегель, демо кегель, кастомный кегель/Demo kegel, замер;;
 211;COA-8028;test;Manual;Проверка отображения названия упражнения;High;;"Kegel+Sport;Kegel_Sport;Test";;1;Нажать на тренировку Kegel + Sport;;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Кегель, демо кегель, кастомный кегель/Кегель+Спорт;;
 211;;;Manual;;;;;;2;Проверить отображение заголовка;;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Кегель, демо кегель, кастомный кегель/Кегель+Спорт;;
@@ -3264,7 +3264,7 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 # Перейти по женской диплинке в апп стор
 # Проверить корректность отображения страницы приложения в сторе - должны быть женские скрины и женское описание (в тч проверить видны ли мужские отзывы)
 # Скачать приложение
-# Запустить и увидеть стартовый экран с женским описанием 
+# Запустить и увидеть стартовый экран с женским описанием
 # Ответить на 2 вопроса про цель с женскими вариантами ответов
 # Попасть в дейли план, в котором будет включена женская программа, доступная для прохождения
 # Пройти несколько уроков и упражнений, попереключать дни
@@ -3282,7 +3282,7 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 *Feed*:
 
 # Должны показываться только статьи из списка [https://docs.google.com/spreadsheets/d/16fB2ZQjo5jFXW4NYcQmcMcNTLz7gfyoWkmTYUEceSgs/edit?usp=sharing|https://docs.google.com/spreadsheets/d/16fB2ZQjo5jFXW4NYcQmcMcNTLz7gfyoWkmTYUEceSgs/edit?usp=sharing] . Показываются по логике Today’s picks.
-# Категории статей и сторисы скрыты. 
+# Категории статей и сторисы скрыты.
 
 
 
@@ -3297,8 +3297,8 @@ h4. 3. Блок ""Guaranteed Safe Checkout""
 # Скачать по женской диплинке
 # Авторизоваться по почте (кейсы со скачиванием напрямую из стора и логин по женской почте + другие кейсы из саппорта)
 # Сменить устройство (прогресс проверить)
-# Скачать приложение напрямую из App Store 
-# Залогинеться с той же почтой, которая привязана к женскому аккаунту 
+# Скачать приложение напрямую из App Store
+# Залогинеться с той же почтой, которая привязана к женскому аккаунту
 # Убедиться, что попадаешь в свой женский аккаунт с женской программой
 
 
@@ -3586,7 +3586,7 @@ Email is already linked to another ID. Continue with progress transfer?
 393;;;Manual;;;;;;2. Проверить блоки Main и For you;;;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Модалка Daily для смены программ;;
 394;COA-8390;test;Manual;Кроссбраузерное и кроссплатформенное тестирование флоу допродажи PDF;Medium;;Test;;;;;COA;;;
 395;COA-8228;test;Manual;Закрытие модалки свайпом вниз;Medium;;"Test;program_modal";;1. Свайпнуть модалку вниз;;Модалка закрывается с анимацией;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Модалка Daily для смены программ;;
-396;COA-8271;test;Manual;Кроссплатформенное тестирование AI;Medium;;Test;;Тестирование AI компаньонов на разных платформах;"iOS 15-18 
+396;COA-8271;test;Manual;Кроссплатформенное тестирование AI;Medium;;Test;;Тестирование AI компаньонов на разных платформах;"iOS 15-18
 
 Android 13-16";AI отрабатывает стабильно на всех платформах;COA;📱 👨 МП The Coach for Him/AI;;
 397;COA-8266;test;Manual;Тестирование опросника по сломанной или неполной ссылке;Medium;;Test;;Переход по сломанной или неполной ссылке;;Пользователь видит сообщение об ошибке;COA;🌐 Web/Опросники/Женский опросник;;
@@ -3616,7 +3616,7 @@ Android 13-16";AI отрабатывает стабильно на всех пл
 406;COA-8387;test;Manual;Допродажи PDF;Medium;;Test;;"Нажатие кнопки ""Add To My Program""";;PDF-гайд добавляется к программе, пользователь переходит на success-страницу;COA;🌐 Web/Флоу допродажи после пейвола;;
 406;;;Manual;;;;;;"Нажатие кнопок ""Add To My Program"", ""Add To My Plan For Only"", ""Add To My Program With A 70% Discount""";;Происходит оплата по ранее привязанной карте на пейволе, далее пользователя редиректит на success-страницу;COA;🌐 Web/Флоу допродажи после пейвола;;
 406;;;Manual;;;;;;Проверка, что все заголовки, текста и изображения отображаются верно;;"# Все отображается верно и без искажений
-# Структура соблюдена, контент не пропадает 
+# Структура соблюдена, контент не пропадает
 # Все изображения четкие и без размытия
 # Баннер ""Before/After"" работает плавно, без дерганий и визуал отображается правильно";COA;🌐 Web/Флоу допродажи после пейвола;;
 406;;;Manual;;;;;;Проверка верного отображения цен;;"# Старая цена зачеркнута, новая выделена
@@ -3690,7 +3690,7 @@ Android 13-16";AI отрабатывает стабильно на всех пл
 # При выборе способа оплаты Pay with Card - ввести данные карты и акутальный email и нажать кнопку ""Pay""
 # При выборе способа оплаты Apple Pay/Google Pay убедиться, что карта привязана и оплатить";;При успешной покупке, в TikTok Helper Pixel отображается ивент CompletePayment;COA;🌐 Web/Пейволы;;
 415;COA-8267;test;Manual;Тестирование опросника при замедленном интернете;Medium;;Test;;Прохождение опросника при замедленном интернете;DevTools или BrowserStack;"# Страница опроса прогружается медленнее, без критических ошибок
-# Все действия происходят правильно, но медленнее 
+# Все действия происходят правильно, но медленнее
 # Прогресс-бар не зависает, не отображается зависшим
 # После восстановления соединения пользователь может продолжить с того же места
 # Не сбрасывается и не начинается заново при временной потери связи";COA;🌐 Web/Опросники/Женский опросник;;
@@ -3705,8 +3705,8 @@ Android 13-16";AI отрабатывает стабильно на всех пл
 # Поведение флоу допродажи PDF в режиме инкогнито не отличается от обычного режима";COA;🌐 Web/Флоу допродажи после пейвола;;
 420;COA-8268;test;Manual;Кроссбраузерное и кроссплатформенное тестирование опросника;Medium;;Test;;Открытие и прохождение опросников EN и ES в разных браузерах и на разных устройствах;"Браузеры: Chrome, Safari, внтуренние браузеры Instagram, FaceBook и TikTok
 
-Устройства: iOS 15-18, Android 13-16";"# Опросник открывается без ошибок во всех браузерах и на всех устройствах 
-# UI отображается правильно(без сдвигов, артефактов, наложений) 
+Устройства: iOS 15-18, Android 13-16";"# Опросник открывается без ошибок во всех браузерах и на всех устройствах
+# UI отображается правильно(без сдвигов, артефактов, наложений)
 # Навигация и ответы работают одинаково
 # После прохождения опросника - редирект на пейвол
 # Прогресс-бар и анимации не зависают
@@ -3824,7 +3824,7 @@ Android 13-16";AI отрабатывает стабильно на всех пл
 
 
 
-Результат: 
+Результат:
 Откроется   веб интерфейс PlayWright, в котором откроется ссылка и можно будет выбирать варианты проверок, прокликать опросник например:
 проверить текстовку
 проверить видимость элемента
@@ -3862,7 +3862,7 @@ Supplement reminder: it's time";Test;Testing;;;;COA;📱 👨 МП The Coach for
 469;COA-8505;test;Manual;Плашка об отсутсвии интернета;Medium;;Test;;;;;COA;📱 👨 МП The Coach for Him/Другое;;
 470;COA-8207;test;Manual;Окончание квиза показом формулы;Medium;;Test;;1. Пройти квиз (Typeform);;Отображается результат квиза с формулой и кнопкой 'Купить сейчас';COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Трекер supplement(убрано из прилы)/Трекер с квизом;;
 470;;;Manual;;;;;;2. Дождаться финального экрана;;;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Трекер supplement(убрано из прилы)/Трекер с квизом;;
-471;COA-8284;test;Manual;Кроссплатформенное тестирование AI;Medium;"AI у нас есть только на iOS: 
+471;COA-8284;test;Manual;Кроссплатформенное тестирование AI;Medium;"AI у нас есть только на iOS:
 
 # В Daily Plan
 # В уроках
@@ -3986,7 +3986,7 @@ Supplement reminder: it's time";Test;Testing;;;;COA;📱 👨 МП The Coach for
 497;;;Manual;;;;;;Нажать на плашку 'My Workbook'.;;Открывается веб-вью с PDF-гайдом.;COA;Генеративные ТК/PDF-Guides/Функциональность плашки 'My Workbook' для пользователя с PDF-гайдом;;
 497;;;Manual;;;;;;Проверить наличие и работоспособность кнопки 'Сохранить'.;;Кнопка 'Сохранить' отображается и работает корректно. При нажатии PDF-гайд успешно сохраняется на устройстве.;COA;Генеративные ТК/PDF-Guides/Функциональность плашки 'My Workbook' для пользователя с PDF-гайдом;;
 497;;;Manual;;;;;;Проверить наличие и работоспособность кнопки 'Отправить' (поделиться).;;Кнопка 'Отправить' отображается и работает корректно. При нажатии открывается меню для отправки PDF-гайда (например, через email, мессенджеры).;COA;Генеративные ТК/PDF-Guides/Функциональность плашки 'My Workbook' для пользователя с PDF-гайдом;;
-498;COA-8724;test;Manual;Отображение тултипа;Medium;"Если отображение тултипа совпадает с другим поп-апом, то приоритет отдается поп-апам. 
+498;COA-8724;test;Manual;Отображение тултипа;Medium;"Если отображение тултипа совпадает с другим поп-апом, то приоритет отдается поп-апам.
 Тултип показывается в последнюю очередь.";Test;;Завершить первый пункт в Daily Plan;;"Появляется тултип с подсказкой и отправляется ивент - {{ToolTipProgramSelectorShown}}
 Клик по кнопке ОК - {{ToolTipProgramSelector + clicked}}";COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Tooltip;;
 498;;;Manual;;;;;;Завершить первый пункт, если одновременно должен появиться другой поп-ап;;Отображается поп-ап, тултип не показывается;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Tooltip;;
@@ -4135,7 +4135,7 @@ Supplement reminder: it's time";Test;Testing;;;;COA;📱 👨 МП The Coach for
 528;COA-8986;test;Manual;Обработка диплинка с отсутствующим параметром 'day';Medium;Проверить, что при открытии диплинка с отсутствующим параметром `day` приложение открывается, но урок не открывается. Убедиться, что не происходит падения приложения.;AI;;Запустить приложение.;;Приложение успешно запущено и отображает главный экран.;COA;Генеративные ТК/Обработка диплинков;;
 528;;;Manual;;;;;;Сгенерировать диплинк с отсутствующим параметром 'day'. Например: `myapp://lesson?month=10&year=2024`.;myapp://lesson?month=10&year=2024;Диплинк корректно сгенерирован.;COA;Генеративные ТК/Обработка диплинков;;
 528;;;Manual;;;;;;Открыть сгенерированный диплинк.;;Приложение открывается (или переходит на главный экран, если уже было открыто). Урок не открывается. Приложение не падает и продолжает работать корректно.;COA;Генеративные ТК/Обработка диплинков;;
-529;COA-8954;test;Manual;Проверка отображения track-ивентов purchase upsell ;Medium;;test;;Покупка любого upsell(pdf/supp);;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+529;COA-8954;test;Manual;Проверка отображения track-ивентов purchase upsell ;Medium;;test;;Покупка любого upsell(pdf/supp);;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
 + дополнительные поля:
@@ -4198,7 +4198,7 @@ user_age";COA;🌐 Web/Аналитика;;
 544;;;Manual;;;;;;Повторить шаги 3 для различных диплинков, если применимо.;Различные диплинки;Приложение открывается и переходит на соответствующие экраны, указанные в диплинках. Данные, необходимые для работы диплинков, корректно инициализированы.;COA;Генеративные ТК/Проверка диплинков;;
 545;COA-9055;test;Manual;Проверка автоперехода на следующий день при смене календарного дня;Medium;;test;;Выполнить упражнение или урок и дождаться следующего календарного дня;;Открывается следующий день в программе;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
 546;COA-9054;test;Manual;Следующий модуль разблокируется после завершения предыдущего;Medium;;test;;Завершить текущий модуль и перейти на следующий;;Следующий модуль доступен;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
-547;COA-8961;test;Manual;Проверка отображения track-ивента survey_answer;Medium;;test;;Нажатие на любой ответ из опросника с выбором одного ответа из нескольких;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+547;COA-8961;test;Manual;Проверка отображения track-ивента survey_answer;Medium;;test;;Нажатие на любой ответ из опросника с выбором одного ответа из нескольких;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
 + дополнительные поля:
@@ -4246,7 +4246,7 @@ answer_label";COA;🌐 Web/Аналитика;;
 557;;;Manual;;;;;;Проверить UI элементы пейволла.;;Отображаются все необходимые элементы: заголовок, описание, кнопка покупки, цена, иконка гайда.;COA;Генеративные ТК/PDF-Guides/Функциональность;;
 558;COA-9056;test;Manual;Проверка, что нет автоперехода, если урок или практика не выполнены;Medium;;test;;Не выполнять урок или упражнение и дождаться следующего дня;;Открывается тот же день;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
 559;COA-9015;test;Manual;Проверка отображения модуля;Medium;;test;;Открыть Daily Plan;;Название модуля отображается правильно(см. Airtable);COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
-560;COA-8952;test;Manual;Проверка отображения track-ивента checkout_open;Medium;;test;;Нажатие на кнопку Get My Plan;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+560;COA-8952;test;Manual;Проверка отображения track-ивента checkout_open;Medium;;test;;Нажатие на кнопку Get My Plan;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
 + дополнительное поле plan_id";COA;🌐 Web/Аналитика;;
@@ -4278,7 +4278,7 @@ answer_label";COA;🌐 Web/Аналитика;;
 567;;;Manual;;;;;;Проверить отображение интерфейса приложения.;;Отображается сообщение об ошибке, информирующее пользователя об отсутствии подключения к сети. Приложение предлагает повторить попытку подключения при появлении сети (например, кнопка 'Повторить').;COA;Генеративные ТК/Проверка диплинков;;
 567;;;Manual;;;;;;Включить интернет на устройстве.;;;COA;Генеративные ТК/Проверка диплинков;;
 567;;;Manual;;;;;;Нажать кнопку 'Повторить' (если она есть).;;Приложение пытается обработать диплинк. Приложение успешно обрабатывает диплинк и переходит к соответствующему экрану (если диплинк валиден). Если диплинк не валиден, отображается соответствующее сообщение об ошибке.;COA;Генеративные ТК/Проверка диплинков;;
-568;COA-8959;test;Manual;Проверка отображения track-ивентов button_click;Medium;;test;;Нажатие на кнопку Continue в опроснике;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+568;COA-8959;test;Manual;Проверка отображения track-ивентов button_click;Medium;;test;;Нажатие на кнопку Continue в опроснике;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
 + дополнительные поля:
@@ -4317,7 +4317,7 @@ button_label";COA;🌐 Web/Аналитика;;
 581;;;Manual;;;;;;Найти email с диплинком thecoach://paywall?type=invalid_type.;;Email с диплинком найден.;COA;Генеративные ТК/Обработка диплинков;;
 581;;;Manual;;;;;;Нажать на диплинк thecoach://paywall?type=invalid_type в email.;;Приложение The Coach открывается. Пейволл не отображается. Отображается текущий экран приложения.;COA;Генеративные ТК/Обработка диплинков;;
 582;COA-9019;test;Manual;Проверка отображения RoadMap;Medium;;test;;Клик по иконке;;Отображается RoadMap в зависимости от выбранной программы в модалке;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
-583;COA-8953;test;Manual;Проверка отображения track-ивента purchase основной подписки;Medium;;test;;Покупка основной подписки;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+583;COA-8953;test;Manual;Проверка отображения track-ивента purchase основной подписки;Medium;;test;;Покупка основной подписки;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
 + дополнительные поля:
@@ -4331,7 +4331,7 @@ payment_instrument_type
 subscription_id
 plan_id";COA;🌐 Web/Аналитика;;
 584;COA-9053;test;Manual;Проверка, что модуль считается выполненным при выполнении условия;Medium;;test;;;;;COA;;;
-585;COA-8951;test;Manual;Проверка отображение track-ивента paywall_open;Medium;;test;;Открытие пейвола;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+585;COA-8951;test;Manual;Проверка отображение track-ивента paywall_open;Medium;;test;;Открытие пейвола;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]";COA;🌐 Web/Аналитика;;
 586;COA-9047;test;Manual;Листание назад с последнего дня;Medium;;test;;Находясь с последнего дне в модуле листать назад;;Отображается предыдущий день;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
@@ -4348,7 +4348,7 @@ plan_id";COA;🌐 Web/Аналитика;;
 589;;;Manual;;;;;;Проверить отображаемый видеоурок.;;Отображается видеоурок с id=quick_wins_pe_video, day=1, program_id=last_longer. Видеоурок отображается в полноэкранном режиме (если это предусмотрено).;COA;Генеративные ТК/Обработка диплинков;;
 589;;;Manual;;;;;;Проверить статус видеоурока.;;Видеоурок отмечен как пройденный (например, галочкой или другим индикатором).;COA;Генеративные ТК/Обработка диплинков;;
 590;COA-9061;test;Manual;Проверка, что последний день модуля не выполнен и сменить календарный день;Medium;;test;;Не выполнять урок или упражнение в последнем дне модуля и сменить календарный день;;Юзер остается в текущем дне;COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
-591;COA-9049;test;Manual;Проверка popup_locked_module;Medium;;test;;Вызвать поп-ап заблокированного модуля;;"отображается гифка и текст: 
+591;COA-9049;test;Manual;Проверка popup_locked_module;Medium;;test;;Вызвать поп-ап заблокированного модуля;;"отображается гифка и текст:
 *Complete current module to unlock the next one*
 Daily Plan is designed in a step-by-step manner.
 Надпись на кнопке: GOT IT";COA;📱 👨 МП The Coach for Him/Today (aka Daily Plan)/Программы/Модули;;
@@ -4377,10 +4377,10 @@ Daily Plan is designed in a step-by-step manner.
 598;;;Manual;;;;;;Убедиться, что текст под кнопкой отображается.;;Текст под кнопкой отображается под кнопкой покупки PDF-гида.;COA;Генеративные ТК/PDF-Guides/UI Отображение;;
 598;;;Manual;;;;;;Проверить текст под кнопкой.;;Текст соответствует требованиям (например, 'One-time purchase. No recurring payments' или 'Compra única. Sin pagos recurrentes').;COA;Генеративные ТК/PDF-Guides/UI Отображение;;
 598;;;Manual;;;;;;Проверить стиль текста (шрифт, размер, цвет).;;Стиль текста соответствует требованиям дизайна (шрифт, размер, цвет).;COA;Генеративные ТК/PDF-Guides/UI Отображение;;
-599;COA-8957;test;Manual;Проверка отображения track-ивента survey_step_view;Medium;;test;;Переход на следующий экран в опроснике;;"Track-ивент отображается со всеми обязательными полями из доки в payload: 
+599;COA-8957;test;Manual;Проверка отображения track-ивента survey_step_view;Medium;;test;;Переход на следующий экран в опроснике;;"Track-ивент отображается со всеми обязательными полями из доки в payload:
 
 [https://the-coach.atlassian.net/wiki/x/A4Bb3|https://the-coach.atlassian.net/wiki/x/A4Bb3]
-+ дополнительные поля: 
++ дополнительные поля:
 step_index
 step_code
 step_title

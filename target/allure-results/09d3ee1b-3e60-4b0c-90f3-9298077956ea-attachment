@@ -1,0 +1,5 @@
+java.lang.AssertionError: P0 clean-install smoke requires -Dios.fullReset=true and -Dios.noReset=false
+[log type: syslog]
+org.openqa.selenium.logging.LogEntries@62de20d3
+[log type: crashlog]
+Driver log collection unavailable: WebDriverException

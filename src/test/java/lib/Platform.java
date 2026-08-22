@@ -8,7 +8,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Platform {
@@ -79,6 +81,10 @@ public class Platform {
         capabilities.setCapability("bundleId", this.getIOSBundleId());
         capabilities.setCapability("udid", this.getConfig("ios.udid", "IOS_UDID", DEFAULT_IOS_UDID));
         capabilities.setCapability("noReset", this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true));
+        capabilities.setCapability("fullReset", this.getBooleanConfig("ios.fullReset", "IOS_FULL_RESET", false));
+        this.setCapabilityIfPresent(capabilities, "app", this.getConfig("ios.app", "IOS_APP", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "autoAcceptAlerts", this.getConfig("ios.autoAcceptAlerts", "IOS_AUTO_ACCEPT_ALERTS", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "autoDismissAlerts", this.getConfig("ios.autoDismissAlerts", "IOS_AUTO_DISMISS_ALERTS", null));
         this.setCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
         this.setCapabilityIfPresent(capabilities, "xcodeOrgId", this.getConfig("ios.xcodeOrgId", "IOS_XCODE_ORG_ID", null));
         this.setCapabilityIfPresent(capabilities, "xcodeSigningId", this.getConfig("ios.xcodeSigningId", "IOS_XCODE_SIGNING_ID", null));
@@ -115,6 +121,63 @@ public class Platform {
         return this.getConfig("ios.bundleId", "IOS_BUNDLE_ID", DEFAULT_IOS_BUNDLE_ID);
     }
 
+    public String getIOSAppPath()
+    {
+        return this.getConfig("ios.app", "IOS_APP", null);
+    }
+
+    public String getIOSUpdateAppPath()
+    {
+        return this.getConfig("ios.update.app", "IOS_UPDATE_APP", null);
+    }
+
+    public boolean isUpdateTestConfigured()
+    {
+        return !this.getBooleanConfig("ios.fullReset", "IOS_FULL_RESET", false)
+                && this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true)
+                && this.getIOSAppPath() != null
+                && !this.getIOSAppPath().trim().isEmpty()
+                && this.getIOSUpdateAppPath() != null
+                && !this.getIOSUpdateAppPath().trim().isEmpty();
+    }
+
+    public boolean isCleanInstallConfigured()
+    {
+        return this.getBooleanConfig("ios.fullReset", "IOS_FULL_RESET", false)
+                && !this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true);
+    }
+
+    public boolean isStoreKitSandboxEnabled()
+    {
+        return this.getBooleanConfig("storekit.sandbox", "STOREKIT_SANDBOX", false);
+    }
+
+    public boolean isStoreKitPurchaseAllowed()
+    {
+        return this.getBooleanConfig("storekit.allowPurchases", "STOREKIT_ALLOW_PURCHASES", false);
+    }
+
+    /**
+     * The questionnaire is product-owned and its number of screens varies by
+     * Firebase configuration. The purchase and clean-install suites therefore
+     * receive the exact accessibility ids from CI instead of guessing XPath.
+     */
+    public String[] getIOSOnboardingStepLocators()
+    {
+        String configuredSteps = this.getConfig("ios.onboarding.steps", "IOS_ONBOARDING_STEPS", "");
+        if (configuredSteps == null || configuredSteps.trim().isEmpty()) {
+            return new String[0];
+        }
+
+        List<String> locators = new ArrayList<String>();
+        for (String locator : configuredSteps.split(",")) {
+            if (locator != null && !locator.trim().isEmpty()) {
+                locators.add(locator.trim());
+            }
+        }
+        return locators.toArray(new String[locators.size()]);
+    }
+
     private String getAppiumUrl()
     {
         return this.getConfig("appium.url", "APPIUM_URL", DEFAULT_APPIUM_URL);
@@ -149,6 +212,13 @@ public class Platform {
     {
         if (value != null && !value.trim().isEmpty()) {
             capabilities.setCapability(capabilityName, value);
+        }
+    }
+
+    private void setBooleanCapabilityIfPresent(DesiredCapabilities capabilities, String capabilityName, String value)
+    {
+        if (value != null && !value.trim().isEmpty()) {
+            capabilities.setCapability(capabilityName, Boolean.parseBoolean(value));
         }
     }
 

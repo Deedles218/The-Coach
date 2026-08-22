@@ -31,39 +31,384 @@ public class MainPageObject {
     }
 
     public WebElement waitForElementPresent(String locator, String error_message, long timeoutInSeconds) {
+        return waitForElementVisible(locator, error_message, timeoutInSeconds);
+    }
 
+    public WebElement waitForElementVisible(String locator, String error_message, long timeoutInSeconds) {
         By by = this.getLocatorByString(locator);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+        WebDriverWait wait = createWait(timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+    }
 
-        wait.withMessage(error_message + "/n");
-        return wait.until(
-                ExpectedConditions.presenceOfElementLocated(by)
+    public WebElement waitForElementEnabled(String locator, String error_message, long timeoutInSeconds) {
+        By by = this.getLocatorByString(locator);
+        WebDriverWait wait = createWait(timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(webDriver -> {
+            try {
+                WebElement element = ExpectedConditions.visibilityOfElementLocated(by).apply(webDriver);
+                if (element != null && isElementEnabled(element)) {
+                    return element;
+                }
+            } catch (NoSuchElementException | StaleElementReferenceException ignored) {
+                // The explicit wait polls until the control is visible and enabled.
+            }
+            return null;
+        });
+    }
+
+    public void assertElementVisible(String locator, String error_message, long timeoutInSeconds) {
+        waitForElementVisible(locator, error_message, timeoutInSeconds);
+    }
+
+    public void assertElementEnabled(String locator, String error_message, long timeoutInSeconds) {
+        waitForElementEnabled(locator, error_message, timeoutInSeconds);
+    }
+
+    public void assertElementDisabled(String locator, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementVisible(locator, error_message, timeoutInSeconds);
+        Assert.assertFalse(error_message, isElementEnabled(element));
+    }
+
+    public boolean isElementEnabled(WebElement element) {
+        if (element == null) {
+            return false;
+        }
+
+        String enabledAttribute = element.getAttribute("enabled");
+        if (enabledAttribute != null
+                && ("false".equalsIgnoreCase(enabledAttribute) || "0".equals(enabledAttribute))) {
+            return false;
+        }
+        return element.isEnabled();
+    }
+
+    public boolean isElementVisible(String locator) {
+        By by = this.getLocatorByString(locator);
+        for (WebElement element : driver.findElements(by)) {
+            try {
+                if (element.isDisplayed()) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // A re-rendered element will be evaluated on the next call.
+            }
+        }
+        return false;
+    }
+
+    public void waitForElementNotVisible(String locator, String error_message, long timeoutInSeconds) {
+        waitForElementNotPresent(locator, error_message, timeoutInSeconds);
+    }
+
+    public void waitForLoadingToDisappearIfPresent(
+            String loadingLocator,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        if (loadingLocator == null || loadingLocator.trim().isEmpty()) {
+            return;
+        }
+        if (isElementPresent(loadingLocator)) {
+            waitForElementNotPresent(loadingLocator, error_message, timeoutInSeconds);
+        }
+    }
+
+    public void clickOnceAndWaitForTransition(
+            String buttonLocator,
+            String sourceScreenLocator,
+            String destinationScreenLocator,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        waitForElementAndClick(buttonLocator, error_message, timeoutInSeconds);
+        if (sourceScreenLocator != null && !sourceScreenLocator.trim().isEmpty()) {
+            waitForElementNotPresent(
+                    sourceScreenLocator,
+                    error_message + ": source screen did not disappear after the single tap",
+                    timeoutInSeconds
+            );
+        }
+        waitForElementVisible(
+                destinationScreenLocator,
+                error_message + ": destination screen did not open after the single tap",
+                timeoutInSeconds
         );
+    }
+
+    public void clickOnceAndWaitForTransition(
+            String[] buttonLocators,
+            String[] sourceScreenLocators,
+            String[] destinationScreenLocators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        waitForFirstElementAndClick(buttonLocators, error_message, timeoutInSeconds);
+        if (sourceScreenLocators != null && sourceScreenLocators.length > 0) {
+            waitForFirstElementNotPresent(
+                    sourceScreenLocators,
+                    error_message + ": source screen did not disappear after the single tap",
+                    timeoutInSeconds
+            );
+        }
+        waitForFirstElementPresent(
+                destinationScreenLocators,
+                error_message + ": destination screen did not open after the single tap",
+                timeoutInSeconds
+        );
+    }
+
+    public void tapDisabledAndAssertNoTransition(
+            String disabledButtonLocator,
+            String protectedScreenLocator,
+            String transitionScreenLocator,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        WebElement disabledButton = waitForElementVisible(
+                disabledButtonLocator,
+                error_message + ": disabled control is not visible",
+                timeoutInSeconds
+        );
+        Assert.assertFalse(
+                error_message + ": control must be disabled before the no-op tap",
+                isElementEnabled(disabledButton)
+        );
+
+        try {
+            disabledButton.click();
+        } catch (WebDriverException ignored) {
+            // A native driver may reject a click on a disabled control; that is a valid no-op.
+        }
+
+        waitForElementVisible(
+                protectedScreenLocator,
+                error_message + ": protected screen disappeared after tapping a disabled control",
+                timeoutInSeconds
+        );
+        if (transitionScreenLocator != null && !transitionScreenLocator.trim().isEmpty()) {
+            Assert.assertFalse(
+                    error_message + ": disabled control triggered an unexpected transition",
+                    isElementVisible(transitionScreenLocator)
+            );
+        }
+    }
+
+    public void tapDisabledAndAssertNoTransition(
+            String[] disabledButtonLocators,
+            String protectedScreenLocator,
+            String transitionScreenLocator,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        WebElement disabledButton = waitForFirstElementPresent(
+                disabledButtonLocators,
+                error_message + ": disabled control is not visible",
+                timeoutInSeconds
+        );
+        Assert.assertFalse(
+                error_message + ": control must be disabled before the no-op tap",
+                isElementEnabled(disabledButton)
+        );
+
+        try {
+            disabledButton.click();
+        } catch (WebDriverException ignored) {
+            // A native driver may reject a click on a disabled control; that is a valid no-op.
+        }
+
+        waitForElementVisible(
+                protectedScreenLocator,
+                error_message + ": protected screen disappeared after tapping a disabled control",
+                timeoutInSeconds
+        );
+        if (transitionScreenLocator != null && !transitionScreenLocator.trim().isEmpty()) {
+            Assert.assertFalse(
+                    error_message + ": disabled control triggered an unexpected transition",
+                    isElementVisible(transitionScreenLocator)
+            );
+        }
+    }
+
+    public void tapDisabledAndAssertNoTransition(
+            String[] disabledButtonLocators,
+            String[] protectedScreenLocators,
+            String[] transitionScreenLocators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        WebElement disabledButton = waitForFirstElementPresent(
+                disabledButtonLocators,
+                error_message + ": disabled control is not visible",
+                timeoutInSeconds
+        );
+        Assert.assertFalse(
+                error_message + ": control must be disabled before the no-op tap",
+                isElementEnabled(disabledButton)
+        );
+
+        try {
+            disabledButton.click();
+        } catch (WebDriverException ignored) {
+            // A native driver may reject a click on a disabled control; that is a valid no-op.
+        }
+
+        waitForFirstElementPresent(
+                protectedScreenLocators,
+                error_message + ": protected screen disappeared after tapping a disabled control",
+                timeoutInSeconds
+        );
+        if (transitionScreenLocators != null) {
+            for (String transitionScreenLocator : transitionScreenLocators) {
+                if (transitionScreenLocator != null
+                        && !transitionScreenLocator.trim().isEmpty()
+                        && isElementVisible(transitionScreenLocator)) {
+                    Assert.fail(error_message + ": disabled control triggered an unexpected transition");
+                }
+            }
+        }
+    }
+
+    public WebDriverWait createWait(long timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+        wait.pollingEvery(Duration.ofMillis(250));
+        return wait;
     }
 
     public WebElement waitForElementPresent(String locator, String error_message) {
         return waitForElementPresent(locator, error_message, 5);
     }
 
+    public WebElement waitForFirstElementPresent(
+            String[] locators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
+        }
+
+        WebDriverWait wait = createWait(timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(webDriver -> {
+            for (String locator : locators) {
+                if (locator == null || locator.trim().isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    WebElement element = ExpectedConditions.visibilityOfElementLocated(
+                            getLocatorByString(locator)
+                    ).apply(webDriver);
+                    if (element != null) {
+                        return element;
+                    }
+                } catch (NoSuchElementException | StaleElementReferenceException ignored) {
+                    // Try the next locator during the same polling cycle.
+                }
+            }
+            return null;
+        });
+    }
+
     public WebElement waitForElementAndClick(String locator, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
+        WebElement element = waitForElementEnabled(locator, error_message, timeoutInSeconds);
         element.click();
         return element;
     }
 
-    public WebElement waitForElementAndTapNearLeftEdge(String locator, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
-        int x = element.getLocation().getX() + Math.min(24, element.getSize().getWidth() / 2);
-        int y = element.getLocation().getY() + (element.getSize().getHeight() / 2);
-        try {
-            Map<String, Object> tapArgs = new HashMap<String, Object>();
-            tapArgs.put("x", x);
-            tapArgs.put("y", y);
-            ((JavascriptExecutor) driver).executeScript("mobile: tap", tapArgs);
-        } catch (WebDriverException e) {
-            element.click();
+    public WebElement waitForFirstElementEnabled(
+            String[] locators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
         }
+
+        WebDriverWait wait = createWait(timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(webDriver -> {
+            for (String locator : locators) {
+                if (locator == null || locator.trim().isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    WebElement element = ExpectedConditions.visibilityOfElementLocated(
+                            getLocatorByString(locator)
+                    ).apply(webDriver);
+                    if (element != null && isElementEnabled(element)) {
+                        return element;
+                    }
+                } catch (NoSuchElementException | StaleElementReferenceException ignored) {
+                    // Try the next locator during the same polling cycle.
+                }
+            }
+            return null;
+        });
+    }
+
+    /**
+     * Click the first available locator in priority order. This is intended for
+     * accessibility-id migrations: the new test id is tried first, while an
+     * existing stable accessibility name can remain as a temporary fallback.
+     */
+    public WebElement waitForFirstElementAndClick(
+            String[] locators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
+        }
+
+        WebElement element = waitForFirstElementEnabled(locators, error_message, timeoutInSeconds);
+        element.click();
         return element;
+    }
+
+    public boolean waitForFirstElementNotPresent(
+            String[] locators,
+            String error_message,
+            long timeoutInSeconds
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
+        }
+
+        WebDriverWait wait = createWait(timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(webDriver -> {
+            boolean hasUsableLocator = false;
+            for (String locator : locators) {
+                if (locator == null || locator.trim().isEmpty()) {
+                    continue;
+                }
+                hasUsableLocator = true;
+                try {
+                    if (!ExpectedConditions.invisibilityOfElementLocated(
+                            getLocatorByString(locator)
+                    ).apply(webDriver)) {
+                        return false;
+                    }
+                } catch (NoSuchElementException | StaleElementReferenceException ignored) {
+                    // An absent/stale locator is already not present.
+                }
+            }
+            return hasUsableLocator;
+        });
+    }
+
+    /**
+     * Kept as a source-compatible alias for legacy page objects. The old
+     * coordinate tap was removed because it could hit a neighboring control;
+     * all callers now use the element's semantic click target.
+     */
+    @Deprecated
+    public WebElement waitForElementAndTapNearLeftEdge(String locator, String error_message, long timeoutInSeconds) {
+        return waitForElementAndClick(locator, error_message, timeoutInSeconds);
     }
 
     public WebElement waitForElementAndSendKeys(String locator, String value, String error_message, long timeoutInSeconds) {
@@ -74,7 +419,7 @@ public class MainPageObject {
 
     public boolean waitForElementNotPresent(String locator, String error_message, long timeoutInSeconds) {
         By by = this.getLocatorByString(locator);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+        WebDriverWait wait = createWait(timeoutInSeconds);
         wait.withMessage(error_message + "\n");
         return wait.until(
                 ExpectedConditions.invisibilityOfElementLocated(by)
@@ -146,6 +491,36 @@ public class MainPageObject {
             swipeUpQuick();
             ++already_swiped;
         }
+    }
+
+    public void swipeUpToFindFirstElement(
+            String[] locators,
+            String error_message,
+            int max_swipes
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
+        }
+
+        int alreadySwiped = 0;
+        while (!hasAnyElement(locators) && alreadySwiped <= max_swipes) {
+            swipeUpQuick();
+            alreadySwiped++;
+        }
+        waitForFirstElementPresent(
+                locators,
+                "Cannot find element by swiping up.\n" + error_message,
+                5
+        );
+    }
+
+    private boolean hasAnyElement(String[] locators) {
+        for (String locator : locators) {
+            if (locator != null && !locator.trim().isEmpty() && isElementPresent(locator)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void swipeUpTillElementAppear(String locator, String error_message, int max_swipes) {
@@ -229,22 +604,13 @@ public class MainPageObject {
         return getAmountElements(locator) > 0;
     }
 
+    /**
+     * Kept for legacy non-Coach flows. The action is deliberately executed
+     * once; retrying a tap can submit a form or navigate twice.
+     */
+    @Deprecated
     public void tryClickElementWithFewAttempts(String locator, String error_message, int among_of_attempts) {
-        int current_attempts = 0;
-        boolean need_more_attempts = true;
-        while (need_more_attempts) {
-            try {
-                this.waitForElementAndClick(locator, error_message, 1);
-                need_more_attempts = false;
-            } catch (Exception e) {
-                if (current_attempts > among_of_attempts) {
-                    this.waitForElementAndClick(locator, error_message, 1);
-                }
-            }
-            ++current_attempts;
-        }
-
-
+        this.waitForElementAndClick(locator, error_message, Math.max(1, among_of_attempts));
     }
 
     public void assertElementNotPresent(String locator, String error_message) {

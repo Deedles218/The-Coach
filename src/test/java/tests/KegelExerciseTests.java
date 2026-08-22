@@ -10,19 +10,16 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 
 @Epic(value = "The Coach Kegel exercises")
 public class KegelExerciseTests extends CoreTestCase {
-    private static final String EXISTING_PROGRESS_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-
     @Test
     @Features(value = {
             @Feature(value = "Daily Plan"),
@@ -44,7 +41,9 @@ public class KegelExerciseTests extends CoreTestCase {
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
 
         dailyPlan.closeKegelExerciseFlowIfPresent();
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.deterministicFixture();
+        TestData.TestAccount account = TestData.dedicatedKegelPlayerAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         dailyPlan.openTodayTab();
         dailyPlan.openKegelExerciseFromDailyPlan();
         dailyPlan.assertKegelStartScreenIsDisplayed();
@@ -113,7 +112,7 @@ public class KegelExerciseTests extends CoreTestCase {
     public void test04KegelCompletionIntensityCanBeChanged() {
         DailyPlanPageObject dailyPlan = openDailyPlan();
 
-        Assume.assumeTrue(
+        Assert.assertTrue(
                 "Kegel completion intensity feedback is not available for the current progress-account state.",
                 dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()
         );
@@ -160,7 +159,7 @@ public class KegelExerciseTests extends CoreTestCase {
 
     private DailyPlanPageObject openDailyPlan() {
         if (!Platform.getInstance().isIOS()) {
-            Assume.assumeTrue("Kegel exercise coverage is iOS-only.", false);
+            Assert.fail("Kegel exercise coverage is iOS-only.");
         }
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
@@ -172,7 +171,9 @@ public class KegelExerciseTests extends CoreTestCase {
         if (dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
             return dailyPlan;
         }
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.deterministicFixture();
+        TestData.TestAccount account = TestData.dedicatedKegelPlayerAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
             dailyPlan.openTodayTab();
         }

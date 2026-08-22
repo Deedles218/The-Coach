@@ -10,12 +10,12 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -26,9 +26,6 @@ import java.io.File;
 @Epic(value = "The Coach Daily Plan")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DailyPlanTests extends CoreTestCase {
-    private static final String EXISTING_PROGRESS_EMAIL = "ds@vamapps.com";
-    private static final String OTP_CODE = "8654";
-
     @BeforeClass
     public static void deleteScreenshotsBeforeRun() {
         deleteScreenshotFiles(new File(System.getProperty("user.dir")));
@@ -100,7 +97,7 @@ public class DailyPlanTests extends CoreTestCase {
 
         ensureExistingProgressDailyPlanState();
         dailyPlan.openTodayTab();
-        Assume.assumeTrue(
+        Assert.assertTrue(
                 "Current existing-progress Daily Plan state does not expose Daily Lessons; lesson-opening coverage needs a day/program fixture with a visible lesson.",
                 dailyPlan.hasDailyLessonsAvailable()
         );
@@ -132,10 +129,7 @@ public class DailyPlanTests extends CoreTestCase {
         dailyPlan.openFirstDailyPractice();
         if (dailyPlan.isLockedModulePopupDisplayed()) {
             dailyPlan.closeLockedModulePopup();
-            Assume.assumeTrue(
-                    "Current existing-progress Daily Plan state shows a locked-module popup instead of opening the practice player.",
-                    false
-            );
+            Assert.fail("Current existing-progress Daily Plan state shows a locked-module popup instead of opening the practice player.");
         }
         dailyPlan.assertDailyPracticeScreenIsDisplayed();
         dailyPlan.returnFromDailyPracticeToDailyPlan();
@@ -160,7 +154,7 @@ public class DailyPlanTests extends CoreTestCase {
 
         ensureExistingProgressDailyPlanState();
         dailyPlan.openTodayTab();
-        Assume.assumeTrue(
+        Assert.assertTrue(
                 "Current existing-progress Daily Plan state does not expose customization actions; COA-8506/8513/8514 need a fixture with a removable Daily Plan card.",
                 dailyPlan.tryOpenCustomizationActionsForFirstDailyPractice()
         );
@@ -171,9 +165,11 @@ public class DailyPlanTests extends CoreTestCase {
     }
 
     private void ensureExistingProgressDailyPlanState() {
+        TestData.deterministicFixture();
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
-        coachFlow.ensureExistingProgressUserIsLoggedIn(EXISTING_PROGRESS_EMAIL, OTP_CODE);
+        TestData.TestAccount account = TestData.existingProgressAccount();
+        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
     }
 
     private static void deleteScreenshotFiles(File directory) {

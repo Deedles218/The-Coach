@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract public class ExplorePageObject extends MainPageObject {
+    protected static final String
+            TEST_ID_EXPLORE_TAB = "id:tab_explore",
+            TEST_ID_EXPLORE_SELECTED = "id:tab_explore_selected",
+            TEST_ID_LOADING = "id:loading_indicator";
+
     protected static String
             TAB_EXPLORE,
             SELECTED_EXPLORE_TAB,
@@ -80,19 +85,27 @@ abstract public class ExplorePageObject extends MainPageObject {
 
     @Step("Open Explore tab")
     public void openExploreTab() {
-        this.waitForElementPresent(
-                EXPLORE_ENTRY_POINT,
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_EXPLORE_TAB, EXPLORE_ENTRY_POINT},
                 "Neither Explore navigation nor a closable Explore detail screen became available",
                 20
         );
         closeExploreDetailIfPresent();
-        this.waitForElementAndClick(TAB_EXPLORE, "Cannot tap Explore tab", 10);
-        try {
-            this.waitForElementPresent(SELECTED_EXPLORE_TAB, "Explore tab is not selected", 5);
-        } catch (TimeoutException firstTapDidNotSelectTab) {
-            this.waitForElementAndClick(TAB_EXPLORE, "Cannot retry tapping Explore tab", 10);
-            this.waitForElementPresent(SELECTED_EXPLORE_TAB, "Explore tab is not selected after retry", 10);
-        }
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_EXPLORE_TAB, TAB_EXPLORE},
+                "Cannot tap Explore tab",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_EXPLORE_SELECTED, SELECTED_EXPLORE_TAB},
+                "Explore tab is not selected after a single tap",
+                10
+        );
+        this.waitForLoadingToDisappearIfPresent(
+                TEST_ID_LOADING,
+                "Explore loading indicator is still displayed",
+                20
+        );
         this.waitForElementPresent(RECOMMENDED_SECTION, "Explore content did not load", 15);
     }
 
@@ -154,7 +167,7 @@ abstract public class ExplorePageObject extends MainPageObject {
                 LAST_RECOMMENDED_PROGRAM_CARD,
                 "last Recommended for you program"
         );
-        this.waitForElementAndTapNearLeftEdge(
+        this.waitForElementAndClick(
                 LAST_RECOMMENDED_PROGRAM_TITLE,
                 "Cannot open the last Recommended for you program",
                 10
@@ -171,7 +184,7 @@ abstract public class ExplorePageObject extends MainPageObject {
                 LAST_COURSE_CARD,
                 "last course"
         );
-        this.waitForElementAndTapNearLeftEdge(LAST_COURSE_TITLE, "Cannot open the last course", 10);
+        this.waitForElementAndClick(LAST_COURSE_TITLE, "Cannot open the last course", 10);
         this.waitForElementPresent(COURSE_DETAIL_TITLE, "Last course detail screen did not open", 15);
         this.waitForElementPresent(COURSE_DETAIL_TYPE, "Last course type is not displayed", 10);
         this.waitForElementPresent(COURSE_DETAIL_CONTENT, "Last course content is not displayed", 10);
@@ -185,7 +198,7 @@ abstract public class ExplorePageObject extends MainPageObject {
                 LAST_BODY_PRACTICE_CARD,
                 "last Body Practices card"
         );
-        this.waitForElementAndTapNearLeftEdge(
+        this.waitForElementAndClick(
                 LAST_BODY_PRACTICE_TITLE,
                 "Cannot open the last Body Practices card",
                 10
@@ -202,7 +215,7 @@ abstract public class ExplorePageObject extends MainPageObject {
                 LAST_MIND_PRACTICE_CARD,
                 "last Mind Practices card"
         );
-        this.waitForElementAndTapNearLeftEdge(
+        this.waitForElementAndClick(
                 LAST_MIND_PRACTICE_TITLE,
                 "Cannot open the last Mind Practices card",
                 10
@@ -232,7 +245,7 @@ abstract public class ExplorePageObject extends MainPageObject {
         WebElement image = this.waitForElementPresent(FIRST_PROGRAM_CARD_IMAGE, "Recommended program card has no background image", 10);
         Assert.assertTrue("Recommended program card must have a visible image area", image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0);
 
-        this.waitForElementAndTapNearLeftEdge(FIRST_PROGRAM_TITLE, "Cannot open first recommended program", 10);
+        this.waitForElementAndClick(FIRST_PROGRAM_TITLE, "Cannot open first recommended program", 10);
         this.waitForElementPresent(PROGRAM_DETAIL_TITLE, "Program detail screen did not open", 15);
         this.waitForElementPresent(PROGRAM_DETAIL_CONTENT, "Program detail content is not displayed", 10);
         Assert.assertTrue("Recommended program card must be tappable over a meaningful area", card.getSize().getWidth() > 100 && card.getSize().getHeight() > 100);
@@ -255,7 +268,7 @@ abstract public class ExplorePageObject extends MainPageObject {
         Assert.assertTrue("Course card must be shorter than a program card", courseCard.getSize().getHeight() < programCard.getSize().getHeight());
         Assert.assertTrue("Course card image must have a visible area", courseImage.getSize().getWidth() > 0 && courseImage.getSize().getHeight() > 0);
 
-        this.waitForElementAndTapNearLeftEdge(FIRST_COURSE_TITLE, "Cannot open first course", 10);
+        this.waitForElementAndClick(FIRST_COURSE_TITLE, "Cannot open first course", 10);
         this.waitForElementPresent(COURSE_DETAIL_TITLE, "Course detail title is not displayed", 15);
         this.waitForElementPresent(COURSE_DETAIL_TYPE, "Course detail type is not displayed", 10);
         this.waitForElementPresent(COURSE_DETAIL_CONTENT, "Course detail content is not displayed", 10);
