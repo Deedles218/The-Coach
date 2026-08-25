@@ -45,8 +45,10 @@ tests/CoachAuthorizationTests.class
 lib/ui/factories/SearchPageObjectFactory.class
 suites/AutoSuite.class
 tests/ProfileTests.class
+tests/AndroidSmokeTests.class
 tests/HW/HomeworkEx12.class
 tests/MaleBuildStartScreenTests.class
+lib/ui/android/AndroidDailyPlanPageObject.class
 tests/CoachProfileTests.class
 tests/HW/ChangeAppCondition.class
 lib/ui/HWPageObject/AuthorizationPageObject.class

@@ -87,7 +87,7 @@ approved existing-progress account into `COACH_EXISTING_PROGRESS_EMAIL` and
 omit the optional Kegel account variables to reuse that account. The P1 PDF
 paywall test remains blocked until the no-PDF account is provisioned.
 
-## Android Explore 1.40.2
+## Android Explore 1.40.3
 
 The configurable Explore contract is covered by
 `tests.AndroidExploreTests`. Appium 2 is expected at the root path (`/`), and
@@ -101,7 +101,7 @@ place credentials in source files or command history:
 COACH_EXISTING_PROGRESS_EMAIL="..." \
 COACH_EXISTING_PROGRESS_OTP="..." \
 mvn test -Dtest=tests.AndroidExploreTests -Dplatform=android \
-  -Dandroid.app=/path/to/app-1.40.2-manProd-release.apk \
+  -Dandroid.app=/path/to/app-1.40.3-manProd-release.apk \
   -Dandroid.deviceName=TheCoach_API_30_ARM \
   -Dandroid.udid=emulator-5554 \
   -Dandroid.noReset=true -Dandroid.fullReset=false
@@ -109,5 +109,6 @@ mvn test -Dtest=tests.AndroidExploreTests -Dplatform=android \
 
 The tests validate the configured section titles, removal of the legacy
 programs/Courses blocks, the three card templates, card title availability
-for the `title` analytics property, and navigation to lesson/practice or
-WebView destinations.
+for the `title` analytics property, navigation to lesson/practice or WebView
+destinations, and the Quick Tips `coach_video` redirect into the native video
+player.
