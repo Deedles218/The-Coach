@@ -15,12 +15,26 @@ import lib.ui.android.AndroidExplorePageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.ExplorePageObjectFactory;
 import org.junit.Assume;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 @Epic(value = "The Coach Android Explore")
 public class AndroidExploreTests extends CoreTestCase {
     private AndroidExplorePageObject explore;
+
+    @After
+    public void closeAndroidExploreDestinationAfterTest() {
+        if (explore == null) {
+            return;
+        }
+        try {
+            explore.closeTransientDetailIfPresent();
+        } catch (RuntimeException ignored) {
+            // Preserve the original assertion while allowing the next test
+            // to collect its own setup diagnostics.
+        }
+    }
 
     @Before
     public void openAndroidExploreForTest() {
@@ -79,11 +93,11 @@ public class AndroidExploreTests extends CoreTestCase {
 
     @Test
     @Features({@Feature("Explore navigation"), @Feature("Lessons and practices")})
-    @DisplayName("Quick Tips card opens a lesson or practice")
-    @Description("A square configured card must leave Explore and open a native lesson/practice or WebView destination after one tap.")
+    @DisplayName("Quick Tips video card opens the Android video player")
+    @Description("The v7 coach_video redirect must leave Explore and expose the native Android video player controls after one tap.")
     @Severity(SeverityLevel.CRITICAL)
-    public void testQuickTipCardOpensLessonOrPractice() {
-        explore.openQuickTipAndVerifyDestination();
+    public void testQuickTipVideoCardOpensVideoPlayer() {
+        explore.openQuickTipVideoAndVerifyPlayer();
     }
 
     @Test

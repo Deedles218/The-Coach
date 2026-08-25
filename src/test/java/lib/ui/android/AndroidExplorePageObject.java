@@ -52,6 +52,9 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     private static final String CARD_TITLE_NODES =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_title']";
     private static final String EXPLORE_WEBVIEW = "xpath://android.webkit.WebView";
+    private static final String VIDEO_PLAYER = "id:" + ID_PREFIX + "viewPlayer";
+    private static final String VIDEO_PLAY_PAUSE_BUTTON = "id:" + ID_PREFIX + "exo_play_pause";
+    private static final String TODAY_TAB = "id:" + ID_PREFIX + "nav_graph_daily";
     private static final String PRIVATE_COACHING_WEBVIEW =
             "xpath://android.webkit.WebView[contains(@text,'Part of a Last Longer')]";
     private static final String PRIVATE_COACHING_BOOK_BUTTON =
@@ -59,6 +62,8 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     private static final String DETAIL_CLOSE_BUTTON = "id:" + ID_PREFIX + "btnClose";
     private static final String DETAIL_NAVIGATE_UP_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
     private static final String DETAIL_ACTION_BUTTON = "id:" + ID_PREFIX + "btnAction";
+    private static final String EXIT_ACTIVITY_DIALOG = "id:" + ID_PREFIX + "tvDialogtitle";
+    private static final String EXIT_ACTIVITY_CONFIRM_BUTTON = "id:" + ID_PREFIX + "btnYes";
 
     static {
         TAB_EXPLORE = "id:" + ID_PREFIX + "nav_graph_explore";
@@ -160,6 +165,11 @@ public class AndroidExplorePageObject extends ExplorePageObject {
             return;
         }
 
+        if (isElementPresent(VIDEO_PLAYER)) {
+            closeVideoPlayer();
+            return;
+        }
+
         if (isElementPresent(DETAIL_CLOSE_BUTTON)) {
             waitForElementAndClick(
                     DETAIL_CLOSE_BUTTON,
@@ -178,7 +188,14 @@ public class AndroidExplorePageObject extends ExplorePageObject {
             return;
         }
 
-        if (isElementPresent(DETAIL_ACTION_BUTTON)) {
+        // The Today screen also exposes btnAction, but there it is the
+        // Profile button. Only use this legacy detail action when the bottom
+        // navigation is absent, which is how the Android detail screen is
+        // exposed in the current accessibility tree.
+        if (isElementPresent(DETAIL_ACTION_BUTTON)
+                && !isElementPresent("id:" + ID_PREFIX + "nav_graph_daily")
+                && !isElementPresent("id:" + ID_PREFIX + "nav_graph_explore")
+                && !isElementPresent("id:" + ID_PREFIX + "nav_graph_shop")) {
             waitForElementAndClick(
                     DETAIL_ACTION_BUTTON,
                     "Cannot close the previous Android Explore detail",
@@ -247,14 +264,34 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         }
     }
 
-    @Step("Open a Quick Tips card and verify lesson/practice navigation")
-    public void openQuickTipAndVerifyDestination() {
+    @Step("Open the Quick Tips video card and verify the Android video player")
+    public void openQuickTipVideoAndVerifyPlayer() {
         scrollUpToTop();
         WebElement card = waitForElementPresent(FIRST_QUICK_TIP_CARD, "Quick Tips card is not displayed", 10);
         card.click();
-        waitForExploreDestinationAfterCardTap(
-                "Quick Tips card must open a lesson, practice, or WebView after one tap"
+        waitForElementPresent(VIDEO_PLAYER, "Quick Tips video card did not open the Android video player", 20);
+        assertVideoPlayerControlsAreDisplayed();
+    }
+
+    @Step("Verify Android video player controls")
+    public void assertVideoPlayerControlsAreDisplayed() {
+        WebElement playPause = waitForElementPresent(
+                VIDEO_PLAY_PAUSE_BUTTON,
+                "Android video player play/pause control is not displayed",
+                10
         );
+        Assert.assertTrue("Android video player play/pause control must be enabled", playPause.isEnabled());
+        Assert.assertTrue(
+                "Android video player play/pause control must expose an accessibility label",
+                playPause.getAttribute("contentDescription") != null
+                        && !playPause.getAttribute("contentDescription").trim().isEmpty()
+        );
+        WebElement navigateUp = waitForElementPresent(
+                DETAIL_NAVIGATE_UP_BUTTON,
+                "Android video player back control is not displayed",
+                10
+        );
+        Assert.assertTrue("Android video player back control must be enabled", navigateUp.isEnabled());
     }
 
     @Step("Open a Master Class card and verify lesson/WebView navigation")
@@ -300,6 +337,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         waitForFirstElementPresent(
                 new String[]{
                         EXPLORE_WEBVIEW,
+                        VIDEO_PLAYER,
                         "xpath://android.widget.TextView[contains(@text,'START EXERCISE')]",
                         "xpath://android.widget.TextView[contains(@text,'START PRACTICE')]",
                         "id:" + ID_PREFIX + "lesson_screen",
@@ -345,6 +383,26 @@ public class AndroidExplorePageObject extends ExplorePageObject {
             }
         }
         return false;
+    }
+
+    private void closeVideoPlayer() {
+        waitForElementAndClick(
+                DETAIL_NAVIGATE_UP_BUTTON,
+                "Cannot navigate back from the Android video player",
+                10
+        );
+        if (isElementPresent(EXIT_ACTIVITY_DIALOG)) {
+            waitForElementAndClick(
+                    EXIT_ACTIVITY_CONFIRM_BUTTON,
+                    "Cannot confirm closing the unfinished Android video activity",
+                    10
+            );
+        }
+        waitForFirstElementPresent(
+                new String[]{EXPLORE_TITLE, TAB_EXPLORE, TODAY_TAB},
+                "Android video player did not close",
+                15
+        );
     }
 
     private static String sectionTitle(String title) {
