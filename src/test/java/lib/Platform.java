@@ -18,7 +18,13 @@ public class Platform {
     private static final String PLATFORM_ANDROID = "android";
     private static final String PLATFORM_MOBILE_WEB = "mobile_web";
     private static final String DEFAULT_PLATFORM = PLATFORM_IOS;
-    private static final String DEFAULT_APPIUM_URL = "http://127.0.0.1:4723/wd/hub";
+    // Appium 2 is started by ci-scripts/appium.sh with --base-path /.
+    // Keep the URL configurable for older Appium 1/iOS environments.
+    private static final String DEFAULT_APPIUM_URL = "http://127.0.0.1:4723/";
+    private static final String DEFAULT_ANDROID_DEVICE_NAME = "TheCoach_API_30_ARM";
+    private static final String DEFAULT_ANDROID_PLATFORM_VERSION = "11";
+    private static final String DEFAULT_ANDROID_APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String DEFAULT_ANDROID_APP_ACTIVITY = "com.vamapps.thecoach.MainActivity";
     private static final String DEFAULT_IOS_DEVICE_NAME = "iPhone Daria";
     private static final String DEFAULT_IOS_PLATFORM_VERSION = "26.5";
     private static final String DEFAULT_IOS_BUNDLE_ID = "com.vamapps.preprod.The-Coach";
@@ -63,12 +69,29 @@ public class Platform {
     {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", "AndroidTestDevice"));
-        capabilities.setCapability("platformVersion", this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", "8.0"));
-        capabilities.setCapability("automationName", "Appium");
-        capabilities.setCapability("appPackage", this.getConfig("android.appPackage", "ANDROID_APP_PACKAGE", "org.wikipedia"));
-        capabilities.setCapability("appActivity", this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", ".main.MainActivity"));
-        this.setCapabilityIfPresent(capabilities, "app", this.getConfig("android.app", "ANDROID_APP", "/Users/deedles/Desktop/JavaAppiumAutomation/apks/org.wikipedia.apk"));
+        capabilities.setCapability("deviceName", this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", DEFAULT_ANDROID_DEVICE_NAME));
+        capabilities.setCapability("platformVersion", this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", DEFAULT_ANDROID_PLATFORM_VERSION));
+        capabilities.setCapability("automationName", "UiAutomator2");
+        this.setCapabilityIfPresent(
+                capabilities,
+                "udid",
+                this.getConfig("android.udid", "ANDROID_UDID", null)
+        );
+        capabilities.setCapability("appPackage", this.getAndroidAppPackage());
+        capabilities.setCapability("appActivity", this.getAndroidAppActivity());
+        this.setCapabilityIfPresent(capabilities, "app", this.getAndroidAppPath());
+        capabilities.setCapability(
+                "autoGrantPermissions",
+                this.getBooleanConfig("android.autoGrantPermissions", "ANDROID_AUTO_GRANT_PERMISSIONS", true)
+        );
+        capabilities.setCapability(
+                "noReset",
+                this.getBooleanConfig("android.noReset", "ANDROID_NO_RESET", true)
+        );
+        capabilities.setCapability(
+                "fullReset",
+                this.getBooleanConfig("android.fullReset", "ANDROID_FULL_RESET", false)
+        );
         return capabilities;
     }
     private DesiredCapabilities getIOSDesiredCapabilities()
@@ -124,6 +147,21 @@ public class Platform {
     public String getIOSAppPath()
     {
         return this.getConfig("ios.app", "IOS_APP", null);
+    }
+
+    public String getAndroidAppPath()
+    {
+        return this.getConfig("android.app", "ANDROID_APP", null);
+    }
+
+    public String getAndroidAppPackage()
+    {
+        return this.getConfig("android.appPackage", "ANDROID_APP_PACKAGE", DEFAULT_ANDROID_APP_PACKAGE);
+    }
+
+    public String getAndroidAppActivity()
+    {
+        return this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", DEFAULT_ANDROID_APP_ACTIVITY);
     }
 
     public String getIOSUpdateAppPath()

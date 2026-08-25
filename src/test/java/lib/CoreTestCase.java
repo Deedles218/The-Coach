@@ -246,6 +246,14 @@ public class CoreTestCase {
         try {
             Set<String> logTypes = driver.manage().logs().getAvailableLogTypes();
             for (String logType : logTypes) {
+                // UiAutomator2 exposes a very large bugreport stream. On the
+                // local Android emulator it can remain open indefinitely after
+                // a failed command, preventing Surefire from finishing. The
+                // useful failure context is already covered by logcat/server;
+                // keep bugreport collection for the existing non-Android flow.
+                if (Platform.getInstance().isAndroid() && "bugreport".equalsIgnoreCase(logType)) {
+                    continue;
+                }
                 logs.append("[log type: ").append(logType).append("]\n");
                 logs.append(driver.manage().logs().get(logType).toString()).append("\n");
             }
