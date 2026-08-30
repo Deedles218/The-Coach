@@ -17,6 +17,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     protected static final String
             TEST_ID_TODAY_TAB = "id:tab_today",
             TEST_ID_TODAY_SELECTED = "id:tab_today_selected",
+            TEST_ID_ACTIVE_PROGRAM = "id:active_program_name",
             TEST_ID_DAILY_PLAN_DAY = "id:daily_plan_current_day",
             TEST_ID_DAILY_PLAN_LEFT = "id:daily_plan_previous_day",
             TEST_ID_DAILY_PLAN_RIGHT = "id:daily_plan_next_day",
@@ -43,6 +44,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     protected static String
             TAB_TODAY,
             SELECTED_TODAY_TAB,
+            ACTIVE_PROGRAM_TITLE,
             DAILY_PLAN_DAY_SWITCHER,
             CURRENT_DAY_LABEL,
             LEFT_SWITCHER_ARROW,
@@ -154,6 +156,65 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Today tab is not selected",
                 10
         );
+    }
+
+    @Step("Read the active program shown on Today")
+    public String getActiveProgramName() {
+        WebElement program = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_ACTIVE_PROGRAM, ACTIVE_PROGRAM_TITLE},
+                "Active program name is not displayed on Today",
+                20
+        );
+        String[] attributes = new String[]{"text", "name", "label", "value"};
+        for (String attribute : attributes) {
+            try {
+                String value = program.getAttribute(attribute);
+                if (value != null && !value.trim().isEmpty()) {
+                    return value.trim();
+                }
+            } catch (Exception ignored) {
+                // Attribute availability differs between UiAutomator2/XCUITest.
+            }
+        }
+        String text = program.getText();
+        return text == null ? "" : text.trim();
+    }
+
+    @Step("Verify Today program matches onboarding: {expectedProgram}")
+    public void assertActiveProgramMatches(String expectedProgram) {
+        Assert.assertNotNull("Expected Today program must be configured", expectedProgram);
+        String actualProgram = getActiveProgramName();
+        String actualUpper = actualProgram.toUpperCase(java.util.Locale.US);
+        String expectedUpper = expectedProgram.trim().toUpperCase(java.util.Locale.US);
+        boolean abbreviationMatches = java.util.regex.Pattern.compile(
+                "(^|[^A-Z0-9])" + java.util.regex.Pattern.quote(expectedUpper) + "([^A-Z0-9]|$)"
+        ).matcher(actualUpper).find();
+        String canonicalActual = canonicalProgramCode(actualUpper);
+        boolean matches = abbreviationMatches || expectedUpper.equals(canonicalActual);
+        Assert.assertTrue(
+                "Onboarding goal maps to program '" + expectedProgram
+                        + "', but Today displays '" + actualProgram + "'",
+                matches
+        );
+    }
+
+    private String canonicalProgramCode(String visibleProgramName) {
+        if (visibleProgramName.contains("LAST LONGER")) {
+            return "LL";
+        }
+        if (visibleProgramName.contains("KEEP IT HARD")) {
+            return "KIH";
+        }
+        if (visibleProgramName.contains("OVERALL HEALTH")) {
+            return "OH";
+        }
+        if (visibleProgramName.contains("SEX IS A SKILL")) {
+            return "SIAS";
+        }
+        if (visibleProgramName.contains("UNHOOKED")) {
+            return "UNHOOKED";
+        }
+        return visibleProgramName.trim();
     }
 
     @Step("Verify Daily Plan header and current day are displayed")

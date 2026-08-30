@@ -11,7 +11,23 @@
 | Default device | `iPhone Daria`, iOS `26.6` | Override with `IOS_DEVICE_NAME`, `IOS_PLATFORM_VERSION`, `IOS_UDID`. |
 | App artifact | unknown until CI supplies it | Required for real clean install: `-Dios.app=/path/to/The-Coach.app` or `IOS_APP`. |
 | Build number | unknown | Must be recorded by CI as `BUILD_NUMBER`/Allure environment metadata. |
-| Appium URL | `http://127.0.0.1:4723/wd/hub` | Override with `APPIUM_URL`. |
+| Appium URL | `http://127.0.0.1:4723/` | Appium 2 root path; override with `APPIUM_URL`. |
+
+The local IPA `/Users/deedles/Downloads/The Coach.ipa` is a real-device-only
+`arm64` build with Bundle ID `com.vamapps.The-Coach`. It must not be sent to an
+iOS Simulator; a Simulator run requires a separate `.app` built for
+`iphonesimulator`. The project keeps the existing real-device UDID/signing
+overrides (`IOS_UDID`, `IOS_XCODE_ORG_ID`, `IOS_XCODE_SIGNING_ID`) intact.
+
+For local Simulator execution, the configured default is `iPhone 17 Pro` on
+iOS `26.5`, UDID `00CA21E8-4A92-4607-A941-E5FD2E29DAC5`. Use
+`ci-scripts/run-ios-simulator.sh` with `IOS_SIMULATOR_APP` pointing to the
+separate Simulator `.app`; this launcher passes Simulator-specific
+`ios.deviceName`, `ios.platformVersion` and `ios.udid` overrides, so it does
+not select `iPhone Daria` and does not change the real-device defaults.
+The configured local path is `/Users/deedles/Downloads/The Coach.app`, but the
+current artifact at that path is marked `iphoneos` and must be replaced with a
+build marked `iphonesimulator` before a Simulator session can start.
 
 ## Secret-backed test data
 

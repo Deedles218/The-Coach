@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits=""/>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="1" traits=""/>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="2" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                  <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                    <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="48" width="414" height="896" index="0" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="48" width="414" height="814" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" value="4" name="HOW OLD ARE YOU?" label="HOW OLD ARE YOU?" enabled="true" visible="true" accessible="false" x="29" y="108" width="356" height="47" index="0" traits="Header">
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="HOW OLD ARE YOU?" name="HOW OLD ARE YOU?" label="HOW OLD ARE YOU?" enabled="true" visible="true" accessible="true" x="51" y="116" width="312" height="39" index="0" traits="Header, StaticText"/>
+                              </XCUIElementTypeOther>
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="29" y="170" width="356" height="57" index="1" traits="">
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="EVERY AGE NEEDS A DIFFERENT APPROACH" name="EVERY AGE NEEDS A DIFFERENT APPROACH" label="EVERY AGE NEEDS A DIFFERENT APPROACH" enabled="true" visible="true" accessible="true" x="37" y="187" width="340" height="22" index="0" traits="StaticText"/>
+                              </XCUIElementTypeOther>
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="29" y="244" width="356" height="57" index="2" traits="">
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="1-MINUTE QUIZ" name="1-MINUTE QUIZ" label="1-MINUTE QUIZ" enabled="true" visible="true" accessible="true" x="147" y="261" width="120" height="22" index="0" traits="StaticText"/>
+                              </XCUIElementTypeOther>
+                              <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="true" accessible="true" x="29" y="318" width="176" height="140" index="3" traits="Image"/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Age: 18-29" name="Age: 18-29" label="Age: 18-29" enabled="true" visible="true" accessible="true" x="49" y="463" width="89" height="24" index="4" traits="StaticText"/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Age: 30-39" name="Age: 30-39" label="Age: 30-39" enabled="true" visible="true" accessible="true" x="229" y="463" width="92" height="24" index="5" traits="StaticText"/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Age: 40-49" name="Age: 40-49" label="Age: 40-49" enabled="true" visible="true" accessible="true" x="49" y="683" width="93" height="24" index="6" traits="StaticText"/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Age: 50+" name="Age: 50+" label="Age: 50+" enabled="true" visible="true" accessible="true" x="229" y="683" width="74" height="24" index="7" traits="StaticText"/>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeOther>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeWebView>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="381" y="34" width="30" height="827" index="1" traits="Adjustable">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="408" y="37" width="3" height="759" index="0" traits=""/>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="35" y="863" width="344" height="30" index="2" traits="Adjustable">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="287" y="890" width="89" height="3" index="0" traits=""/>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="381" y="34" width="30" height="827" index="3" traits="Adjustable">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="408" y="37" width="3" height="759" index="0" traits=""/>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="35" y="863" width="344" height="30" index="4" traits="Adjustable">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="287" y="890" width="89" height="3" index="0" traits=""/>
+                    </XCUIElementTypeOther>
+                  </XCUIElementTypeWebView>
+                </XCUIElementTypeWebView>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

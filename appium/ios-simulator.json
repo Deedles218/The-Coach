@@ -1,0 +1,11 @@
+{
+  "platformName": "iOS",
+  "appium:automationName": "XCUITest",
+  "appium:deviceName": "iPhone 17 Pro",
+  "appium:platformVersion": "26.5",
+  "appium:udid": "00CA21E8-4A92-4607-A941-E5FD2E29DAC5",
+  "appium:app": "/Users/deedles/Downloads/The Coach.app",
+  "appium:bundleId": "com.vamapps.The-Coach",
+  "appium:noReset": true,
+  "appium:fullReset": false
+}

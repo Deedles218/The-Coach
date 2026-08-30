@@ -164,6 +164,24 @@ public class Platform {
         return this.getConfig("android.appActivity", "ANDROID_APP_ACTIVITY", DEFAULT_ANDROID_APP_ACTIVITY);
     }
 
+    public String getOnboardingGoal()
+    {
+        return this.getConfig(
+                "onboarding.goal",
+                "ONBOARDING_GOAL",
+                "Boost overall health"
+        );
+    }
+
+    public boolean isFreshAndroidInstallConfigured()
+    {
+        return this.isAndroid()
+                && this.getBooleanConfig("android.fullReset", "ANDROID_FULL_RESET", false)
+                && !this.getBooleanConfig("android.noReset", "ANDROID_NO_RESET", true)
+                && this.getAndroidAppPath() != null
+                && !this.getAndroidAppPath().trim().isEmpty();
+    }
+
     public String getIOSUpdateAppPath()
     {
         return this.getConfig("ios.update.app", "IOS_UPDATE_APP", null);

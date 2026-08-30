@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits=""/>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="1" traits=""/>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="2" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="414" height="687" index="0" traits="">
+            <XCUIElementTypeScrollView type="XCUIElementTypeScrollView" enabled="true" visible="true" accessible="false" x="0" y="62" width="414" height="687" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="414" height="687" index="0" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="414" height="687" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="414" height="687" index="0" traits="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Enhance your results with products from the Shop" name="Enhance your results with products from the Shop" label="Enhance your results with products from the Shop" enabled="true" visible="true" accessible="true" x="25" y="62" width="379" height="63" index="0" traits="StaticText"/>
+                    <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="true" accessible="false" x="16" y="134" width="382" height="615" index="1" traits="Image"/>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="15" y="202" width="384" height="547" index="2" traits=""/>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeScrollView>
+          </XCUIElementTypeOther>
+          <XCUIElementTypePageIndicator type="XCUIElementTypePageIndicator" value="page 5 of 5" enabled="true" visible="true" accessible="true" x="78" y="757" width="258" height="38" index="1" traits="Adjustable, UpdatesFrequently"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="LET'S START" label="LET'S START" enabled="true" visible="true" accessible="true" x="33" y="796" width="348" height="56" index="2" traits="Button">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="LET'S START" name="LET'S START" label="LET'S START" enabled="true" visible="true" accessible="false" x="154" y="813" width="106" height="22" index="0" traits="StaticText"/>
+          </XCUIElementTypeButton>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

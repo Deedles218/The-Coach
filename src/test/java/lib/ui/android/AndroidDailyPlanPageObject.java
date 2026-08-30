@@ -41,6 +41,7 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         TAB_TODAY = "id:" + ID_PREFIX + "nav_graph_daily";
         SELECTED_TODAY_TAB =
                 "xpath://android.widget.FrameLayout[@resource-id='" + ID_PREFIX + "nav_graph_daily' and @selected='true']";
+        ACTIVE_PROGRAM_TITLE = "id:" + ID_PREFIX + "tvProgramName";
         CURRENT_DAY_LABEL = "id:" + ID_PREFIX + "tvDaysNumber";
         DAILY_PLAN_DAY_SWITCHER = CURRENT_DAY_LABEL;
         LEFT_SWITCHER_ARROW = "id:" + ID_PREFIX + "ivBack";

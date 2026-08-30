@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="The Coach" label="The Coach" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="813" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="113" index="0" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="48" index="0" traits=""/>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="48" width="414" height="65" index="1" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="48" width="302" height="65" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="56" width="183" height="24" index="0" traits="">
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Overall Health" name="Overall Health" label="Overall Health" enabled="true" visible="false" accessible="true" x="16" y="56" width="151" height="24" index="0" traits="StaticText"/>
+                                <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="175" y="56" width="24" height="24" index="1" traits="Image"/>
+                              </XCUIElementTypeOther>
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="84" width="79" height="15" index="1" traits="">
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="89" width="50" height="5" index="0" traits=""/>
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="0%" name="0%" label="0%" enabled="true" visible="false" accessible="true" x="74" y="84" width="21" height="15" index="1" traits="StaticText"/>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" enabled="true" visible="false" accessible="true" x="318" y="64" width="32" height="33" index="1" traits="Button">
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" enabled="true" visible="false" accessible="false" x="318" y="64" width="0" height="1" index="0" traits="StaticText"/>
+                            </XCUIElementTypeButton>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="UserProfileImage" label="UserProfileImage" enabled="true" visible="false" accessible="true" x="366" y="64" width="32" height="33" index="2" traits="Button">
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" enabled="true" visible="false" accessible="false" x="366" y="64" width="0" height="1" index="0" traits="StaticText"/>
+                            </XCUIElementTypeButton>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeOther>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="414" height="813" index="1" traits=""/>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="40" y="86" width="232" height="65" index="2" traits="">
+                          <XCUIElementTypeImage type="XCUIElementTypeImage" name="tooltipTop" enabled="true" visible="false" accessible="false" x="147" y="86" width="18" height="14" index="0" traits="Image"/>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="40" y="97" width="232" height="54" index="1" traits="">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Tap to explore more programs" name="Tap to explore more programs" label="Tap to explore more programs" enabled="true" visible="false" accessible="true" x="56" y="107" width="119" height="34" index="0" traits="StaticText"/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="OK" label="OK" enabled="true" visible="false" accessible="true" x="185" y="108" width="71" height="33" index="1" traits="Button">
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="OK" name="OK" label="OK" enabled="true" visible="false" accessible="false" x="209" y="116" width="23" height="17" index="0" traits="StaticText"/>
+                            </XCUIElementTypeButton>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeOther>
+                        <XCUIElementTypeCollectionView type="XCUIElementTypeCollectionView" enabled="true" visible="false" accessible="false" x="0" y="100" width="414" height="713" index="3" traits="">
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="115" width="414" height="92" index="0" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="115" width="414" height="92" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="DailyDaySwitcherView" enabled="true" visible="false" accessible="false" x="0" y="115" width="414" height="92" index="0" traits="">
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Module 1: Hormone Basics" name="Module 1: Hormone Basics" label="Module 1: Hormone Basics" enabled="true" visible="false" accessible="true" x="13" y="128" width="388" height="35" index="0" traits="StaticText"/>
+                                <XCUIElementTypeButton type="XCUIElementTypeButton" enabled="true" visible="false" accessible="true" x="371" y="128" width="30" height="35" index="1" traits="Button">
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" enabled="true" visible="false" accessible="false" x="371" y="128" width="0" height="1" index="0" traits="StaticText"/>
+                                </XCUIElementTypeButton>
+                                <XCUIElementTypeButton type="XCUIElementTypeButton" name="leftSwitcherArrow" label="leftSwitcherArrow" enabled="true" visible="false" accessible="true" x="13" y="174" width="16" height="23" index="2" traits="Button">
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" enabled="true" visible="false" accessible="false" x="13" y="174" width="0" height="1" index="0" traits="StaticText"/>
+                                </XCUIElementTypeButton>
+                                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Stage 1 of 2" name="Stage 1 of 2" label="Stage 1 of 2" enabled="true" visible="false" accessible="true" x="173" y="177" width="68" height="17" index="3" traits="StaticText"/>
+                                <XCUIElementTypeButton type="XCUIElementTypeButton" name="rightSwitcherArrow" label="rightSwitcherArrow" enabled="true" visible="false" accessible="true" x="385" y="174" width="16" height="23" index="4" traits="Button">
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" enabled="true" visible="false" accessible="false" x="385" y="174" width="1" height="1" index="0" traits="StaticText"/>
+                                </XCUIElementTypeButton>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="206" width="414" height="40" index="1" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="206" width="414" height="40" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="SubtitleData" enabled="true" visible="false" accessible="false" x="0" y="206" width="414" height="40" index="0" traits="">
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" name="TitleBlock.StackView" enabled="true" visible="false" accessible="false" x="16" y="214" width="382" height="16" index="0" traits="">
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="DAILY LESSONS" name="TitleBlock.Title" label="DAILY LESSONS" enabled="true" visible="false" accessible="true" x="16" y="214" width="108" height="16" index="0" traits="StaticText"/>
+                                </XCUIElementTypeOther>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="245" width="414" height="113" index="2" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="245" width="414" height="113" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="DailyPlanItem" enabled="true" visible="false" accessible="false" x="0" y="245" width="414" height="113" index="0" traits="">
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="245" width="382" height="105" index="0" traits="">
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="32" y="261" width="72" height="73" index="0" traits="Image"/>
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="What is male hormonal balance?" name="What is male hormonal balance?" label="What is male hormonal balance?" enabled="true" visible="false" accessible="true" x="116" y="261" width="222" height="34" index="1" traits="StaticText"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="350" y="257" width="36" height="37" index="2" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="116" y="317" width="266" height="17" index="3" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Lesson 1" name="Lesson 1" label="Lesson 1" enabled="true" visible="false" accessible="true" x="116" y="317" width="48" height="17" index="0" traits="StaticText"/>
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="167" y="317" width="21" height="17" index="1" traits="Image"/>
+                                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="199" y="317" width="139" height="17" index="2" traits=""/>
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="2 MIN" name="2 MIN" label="2 MIN" enabled="true" visible="false" accessible="true" x="350" y="317" width="32" height="17" index="3" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                </XCUIElementTypeOther>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="357" width="414" height="113" index="3" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="357" width="414" height="113" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="DailyPlanItem" enabled="true" visible="false" accessible="false" x="0" y="357" width="414" height="113" index="0" traits="">
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="357" width="382" height="105" index="0" traits="">
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="32" y="373" width="72" height="73" index="0" traits="Image"/>
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="How this program works?" name="How this program works?" label="How this program works?" enabled="true" visible="false" accessible="true" x="116" y="373" width="222" height="18" index="1" traits="StaticText"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="350" y="369" width="36" height="37" index="2" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="116" y="429" width="266" height="17" index="3" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Lesson 2" name="Lesson 2" label="Lesson 2" enabled="true" visible="false" accessible="true" x="116" y="429" width="49" height="17" index="0" traits="StaticText"/>
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="169" y="429" width="20" height="17" index="1" traits="Image"/>
+                                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="201" y="429" width="137" height="17" index="2" traits=""/>
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="2 MIN" name="2 MIN" label="2 MIN" enabled="true" visible="false" accessible="true" x="350" y="429" width="32" height="17" index="3" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                </XCUIElementTypeOther>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="469" width="414" height="113" index="4" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="469" width="414" height="113" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="DailyPlanItem" enabled="true" visible="false" accessible="false" x="0" y="469" width="414" height="113" index="0" traits="">
+                                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="16" y="469" width="382" height="105" index="0" traits="">
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="32" y="485" width="72" height="73" index="0" traits="Image"/>
+                                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Ultimate Guide to Fat Loss" name="Ultimate Guide to Fat Loss" label="Ultimate Guide to Fat Loss" enabled="true" visible="false" accessible="true" x="116" y="485" width="222" height="18" index="1" traits="StaticText"/>
+                                  <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="350" y="481" width="36" height="37" index="2" traits="Image"/>
+                                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="116" y="541" width="266" height="17" index="3" traits="">
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Lesson 3" name="Lesson 3" label="Lesson 3" enabled="true" visible="false" accessible="true" x="116" y="541" width="50" height="17" index="0" traits="StaticText"/>
+                                    <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="false" accessible="false" x="169" y="541" width="21" height="17" index="1" traits="Image"/>
+                                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="201" y="541" width="137" height="17" index="2" traits=""/>
+                                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="4 MIN" name="4 MIN" label="4 MIN" enabled="true" visible="false" accessible="true" x="349" y="541" width="33" height="17" index="3" traits="StaticText"/>
+                                  </XCUIElementTypeOther>
+                                </XCUIElementTypeOther>
+                              </XCUIElementTypeOther>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="false" accessible="false" x="381" y="100" width="30" height="713" index="5" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="408" y="814" width="3" height="8" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="false" accessible="false" x="0" y="780" width="414" height="30" index="6" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="404" y="807" width="7" height="3" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="false" accessible="false" x="381" y="100" width="30" height="713" index="7" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="408" y="814" width="3" height="8" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0 %" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="false" accessible="false" x="0" y="780" width="414" height="30" index="8" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="404" y="807" width="7" height="3" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeCollectionView>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+            <XCUIElementTypeTabBar type="XCUIElementTypeTabBar" name="Tab Bar" label="Tab Bar" enabled="true" visible="false" accessible="false" x="0" y="813" width="414" height="83" index="1" traits="">
+              <XCUIElementTypeButton type="XCUIElementTypeButton" value="1" name="Today" label="Today" enabled="true" visible="false" accessible="true" x="2" y="814" width="134" height="48" index="0" traits="Selected, Button">
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_glyph_checklist" enabled="true" visible="false" accessible="false" x="57" y="818" width="24" height="25" index="0" traits="Image"/>
+              </XCUIElementTypeButton>
+              <XCUIElementTypeButton type="XCUIElementTypeButton" name="Explore" label="Explore" enabled="true" visible="false" accessible="true" x="140" y="814" width="134" height="48" index="1" traits="Button">
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_Glyph_Program_New_Tab" enabled="true" visible="false" accessible="false" x="195" y="818" width="24" height="25" index="0" traits="Image"/>
+              </XCUIElementTypeButton>
+              <XCUIElementTypeButton type="XCUIElementTypeButton" name="Shop" label="Shop" enabled="true" visible="false" accessible="true" x="278" y="814" width="134" height="48" index="2" traits="Button">
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="ic_glyph_shop" enabled="true" visible="false" accessible="false" x="333" y="818" width="24" height="25" index="0" traits="Image"/>
+              </XCUIElementTypeButton>
+            </XCUIElementTypeTabBar>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="1" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="414" height="896" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="16" y="220" width="382" height="456" index="0" traits="">
+              <XCUIElementTypeImage type="XCUIElementTypeImage" enabled="true" visible="true" accessible="false" x="16" y="220" width="382" height="226" index="0" traits="Image"/>
+              <XCUIElementTypeButton type="XCUIElementTypeButton" enabled="true" visible="true" accessible="true" x="358" y="236" width="24" height="25" index="1" traits="Button"/>
+              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Allow notifications to stay on track" name="Allow notifications to stay on track" label="Allow notifications to stay on track" enabled="true" visible="true" accessible="true" x="40" y="466" width="334" height="63" index="2" traits="StaticText"/>
+              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Users with notifications enabled report 80% more effective results." name="Users with notifications enabled report 80% more effective results." label="Users with notifications enabled report 80% more effective results." enabled="true" visible="true" accessible="true" x="40" y="540" width="334" height="42" index="3" traits="StaticText"/>
+              <XCUIElementTypeButton type="XCUIElementTypeButton" name="Allow" label="Allow" enabled="true" visible="true" accessible="true" x="40" y="601" width="334" height="51" index="4" traits="Button">
+                <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Allow" name="Allow" label="Allow" enabled="true" visible="true" accessible="false" x="185" y="618" width="44" height="17" index="0" traits="StaticText"/>
+              </XCUIElementTypeButton>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

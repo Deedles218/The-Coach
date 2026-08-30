@@ -7,6 +7,15 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     static {
         TAB_TODAY = "id:Today";
         SELECTED_TODAY_TAB = "xpath://XCUIElementTypeButton[@name='Today' and @value='1']";
+        ACTIVE_PROGRAM_TITLE = "xpath://XCUIElementTypeStaticText[@visible='true' and ("
+                + "@name='LL' or @label='LL' or @name='KIH' or @label='KIH' "
+                + "or @name='OH' or @label='OH' or @name='SIAS' or @label='SIAS' "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'LAST LONGER') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'KEEP IT HARD') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'OVERALL HEALTH') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
+                + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
         CURRENT_DAY_LABEL = "xpath://XCUIElementTypeStaticText[(starts-with(@name, 'Day ') or starts-with(@name, 'Stage ')) and contains(@name, ' of ')]";
         DAILY_PLAN_DAY_SWITCHER = CURRENT_DAY_LABEL;
         LEFT_SWITCHER_ARROW = "id:leftSwitcherArrow";

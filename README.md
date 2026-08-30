@@ -87,6 +87,89 @@ approved existing-progress account into `COACH_EXISTING_PROGRESS_EMAIL` and
 omit the optional Kegel account variables to reuse that account. The P1 PDF
 paywall test remains blocked until the no-PDF account is provisioned.
 
+## iOS IPA on a real device
+
+`/Users/deedles/Downloads/The Coach.ipa` is a device-only `arm64` build:
+`CFBundleIdentifier=com.vamapps.The-Coach`, `DTPlatformName=iphoneos`, minimum
+iOS `15.0`. It cannot be installed in an iOS Simulator. The real-device
+profile is kept separate from the Android profile and from the existing
+pre-production iOS bundle defaults.
+
+Start Appium 2 with the root path used by this project:
+
+```bash
+appium --base-path /
+```
+
+Run a minimal iOS connection check against the IPA:
+
+```bash
+IOS_UDID=00008150-00084CDE0CF0401C \
+./ci-scripts/run-ios-ipa.sh \
+  -Dtest=tests.SmokeTests#testLoginWithEmptyEmailKeepsContinueDisabled \
+  -Dios.deviceName="iPhone Daria" \
+  -Dios.platformVersion=26.6 \
+  -Dios.noReset=true -Dios.fullReset=false
+```
+
+The launcher validates the IPA and passes its actual Bundle ID to Maven. To
+use another build, set `IOS_APP=/path/to/build.ipa`; to use another phone,
+override `IOS_UDID`, `IOS_DEVICE_NAME` and `-Dios.platformVersion`. The
+existing real-device signing overrides remain available:
+`-Dios.xcodeOrgId=...`, `-Dios.xcodeSigningId=...` and
+`-Dios.useNewWDA=false`.
+
+The same capabilities are stored in
+[`appium/ios-ipa-real-device.json`](/Users/deedles/IdeaProjects/The-Coach/appium/ios-ipa-real-device.json)
+and in Appium Inspector as `The Coach iOS IPA`. In Inspector use Remote Host
+`127.0.0.1`, port `4723`, path `/`, and keep `appium:noReset=true` for a
+non-destructive first connection. Set `appium:fullReset=true` and
+`appium:noReset=false` only for an intentional clean install.
+
+This particular IPA contains an App Store/distribution provisioning profile
+without a `ProvisionedDevices` list. If Appium reports an installation or
+verification error, request an Ad Hoc/development/enterprise IPA for the
+phone, or install the exact signed build on the phone first and attach by
+Bundle ID without the `appium:app` capability.
+
+## iOS Simulator (like an Android emulator)
+
+The iOS equivalent of an Android emulator is an Xcode **Simulator**. It does
+not accept the device IPA above: the Simulator requires a separate `.app`
+bundle built for `iphonesimulator`. The local machine has an `iPhone 17 Pro`
+Simulator on iOS `26.5` with UDID
+`00CA21E8-4A92-4607-A941-E5FD2E29DAC5`; no `iPhone Daria` is used by this
+profile.
+
+Start Appium and run a Simulator build like this:
+
+```bash
+appium --base-path /
+```
+
+```bash
+IOS_SIMULATOR_APP="/Users/deedles/Downloads/The Coach.app" \
+./ci-scripts/run-ios-simulator.sh \
+  -Dtest=tests.SmokeTests#testLoginWithEmptyEmailKeepsContinueDisabled
+```
+
+The launcher boots the selected Simulator, validates that the app is really
+compiled for `iphonesimulator`, and passes its Bundle ID and Simulator UDID to
+Maven. Override `IOS_SIMULATOR_APP`, `IOS_SIMULATOR_UDID`,
+`IOS_SIMULATOR_DEVICE_NAME` or `IOS_SIMULATOR_PLATFORM_VERSION` when using a
+different Simulator. The ready-to-copy capabilities are in
+[`appium/ios-simulator.json`](/Users/deedles/IdeaProjects/The-Coach/appium/ios-simulator.json)
+and are saved in Appium Inspector as `The Coach iOS Simulator`.
+
+The current `/Users/deedles/Downloads/The Coach.app` was inspected locally and
+is marked `DTPlatformName=iphoneos`/`iPhoneOS`, so it is still a real-device
+build despite the `.app` extension. The launcher will reject it until a
+separate `.app` compiled for `iphonesimulator` is placed at this path (or
+provided through `IOS_SIMULATOR_APP`).
+
+The real-device IPA launcher and `The Coach iOS IPA` Inspector profile remain
+available separately.
+
 ## Android Explore 1.40.3
 
 The configurable Explore contract is covered by
