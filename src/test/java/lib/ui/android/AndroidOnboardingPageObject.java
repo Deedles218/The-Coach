@@ -45,6 +45,16 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     }
 
     @Override
+    @Step("Verify Android fresh Start screen")
+    public void assertFreshStartIsDisplayed() {
+        waitForElementPresent(
+                START_BUTTON,
+                "Android is not on the fresh new-user Start screen. Run with fullReset=true and noReset=false.",
+                20
+        );
+    }
+
+    @Override
     @Step("Open Android Start now")
     public void openStartFlow() {
         waitForElementAndClick(START_BUTTON, "Cannot tap the first Android Start now button", 20);
@@ -106,13 +116,23 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Step("Complete Android runtime questionnaire")
     public void completeQuestionnaire() {
         for (int actionNumber = 1; actionNumber <= MAX_QUESTIONNAIRE_ACTIONS; actionNumber++) {
-            if (isElementPresent(PAYWALL_ROOT) || isElementPresent(TODAY_TAB)) {
+            if (questionnaireDestinationIsVisible()) {
                 return;
             }
 
             WebElement action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
             if (action == null) {
                 action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
+            }
+            if (action == null) {
+                waitForQuestionnaireActionOrDestination(20);
+                if (questionnaireDestinationIsVisible()) {
+                    return;
+                }
+                action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
+                if (action == null) {
+                    action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
+                }
             }
             Assert.assertNotNull(
                     "Android questionnaire is blocked at action " + actionNumber
@@ -126,6 +146,24 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 "Android questionnaire exceeded " + MAX_QUESTIONNAIRE_ACTIONS
                         + " actions without reaching a paywall or Today"
         );
+    }
+
+    private boolean questionnaireDestinationIsVisible() {
+        return isElementPresent(PAYWALL_ROOT) || isElementPresent(TODAY_TAB);
+    }
+
+    private void waitForQuestionnaireActionOrDestination(long timeoutInSeconds) {
+        try {
+            createWait(timeoutInSeconds).until(webDriver ->
+                    questionnaireDestinationIsVisible()
+                            || firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION) != null
+                            || firstDisplayedEnabled(QUESTIONNAIRE_ANSWER) != null
+            );
+        } catch (Exception ignored) {
+            // The assertion in completeQuestionnaire reports the blocked state
+            // after the bounded wait. This specifically covers the animated
+            // "Analyzing the answers" transition before the paywall is ready.
+        }
     }
 
     @Override

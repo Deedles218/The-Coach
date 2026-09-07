@@ -1,5 +1,6 @@
 package lib.ui;
 
+import io.appium.java_client.HidesKeyboard;
 import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.factories.DailyPlanPageObjectFactory;
@@ -41,6 +42,9 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             TEST_ID_LOGIN_CONTINUE = "id:login_continue",
             TEST_ID_OTP_SCREEN = "id:otp_screen",
             TEST_ID_OTP_RESEND = "id:otp_resend",
+            TEST_ID_EXISTING_ACCOUNT_LOGIN = "id:auth_existing_account_login",
+            TEST_ID_SEND_SECURITY_CODE = "id:auth_send_security_code",
+            TEST_ID_LOGIN_VALIDATION_ERROR = "id:login_email_error",
             TEST_ID_NOTIFICATION_CLOSE = "id:push_permission_close",
             TEST_ID_CONNECT_EMAIL_LATER = "id:connect_email_later",
             TEST_ID_LOADING = "id:loading_indicator";
@@ -105,6 +109,9 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             OTP_EMAIL_SENT_TEXT,
             OTP_RESEND_CODE_BUTTON,
             OTP_CODE_INPUT,
+            EXISTING_ACCOUNT_LOGIN_BUTTON,
+            SEND_SECURITY_CODE_BUTTON,
+            LOGIN_VALIDATION_ERROR,
             OTP_CONFIRMATION_TITLE,
             OTP_CONFIRMATION_CLOSE_BUTTON,
             POST_AUTH_ONBOARDING_MARKER,
@@ -186,6 +193,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.submitLoginEmail();
         this.assertOtpScreenIsDisplayedForEmail(email);
         this.typeSecurityCode(otpCode);
+        this.completeAuthorizationAfterSecurityCode();
+    }
+
+    @Step("Complete authorization after entering the security code")
+    public void completeAuthorizationAfterSecurityCode() {
         this.waitForAuthorizedDashboard();
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Authorization loading indicator is still displayed", 30);
         this.closePdfGuideUpsellIfPresent();
@@ -593,6 +605,72 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "OTP loading indicator is still displayed", 20);
     }
 
+    /**
+     * Follow the CONNECT-mail flow from Xray, not the Welcome login form.
+     * COA-7949 requires the existing-account prompt and the Send code step;
+     * a direct transition to OTP cannot satisfy either required intermediate step.
+     */
+    @Step("Submit email and open existing-account login step")
+    public void submitEmailAndOpenExistingAccountLoginStep() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
+                "Cannot submit email with a single tap",
+                20
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
+                "Mail form did not close after submitting a valid email",
+                20
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_EXISTING_ACCOUNT_LOGIN, EXISTING_ACCOUNT_LOGIN_BUTTON},
+                "Existing-account Login step did not open after Continue",
+                20
+        );
+    }
+
+    @Step("Open security-code request step for an existing account")
+    public void openSecurityCodeRequestStep() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_EXISTING_ACCOUNT_LOGIN, EXISTING_ACCOUNT_LOGIN_BUTTON},
+                "Cannot tap Login on the existing-account step",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_SEND_SECURITY_CODE, SEND_SECURITY_CODE_BUTTON, TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "Security-code request step did not open after tapping Login",
+                20
+        );
+        Assert.assertTrue("Required Send code step is absent: LOGIN opened OTP directly; this does not satisfy COA-7949",
+                this.isElementVisible(TEST_ID_SEND_SECURITY_CODE) || this.isElementVisible(SEND_SECURITY_CODE_BUTTON));
+    }
+
+    @Step("Request security code")
+    public void requestSecurityCode() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_SEND_SECURITY_CODE, SEND_SECURITY_CODE_BUTTON},
+                "Cannot tap Send code",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
+                "OTP screen did not open after tapping Send code",
+                20
+        );
+        this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "OTP loading indicator is still displayed", 20);
+    }
+
+    @Step("Verify invalid-email validation error is displayed")
+    public void assertLoginValidationErrorIsDisplayed() {
+        try {
+            this.waitForFirstElementPresent(
+                    new String[]{TEST_ID_LOGIN_VALIDATION_ERROR, LOGIN_VALIDATION_ERROR},
+                    "Invalid-email validation error is not displayed", 10);
+        } catch (TimeoutException missingValidation) {
+            throw new AssertionError("Invalid email was entered but the required validation error is not displayed", missingValidation);
+        }
+    }
+
     public void assertOtpScreenIsDisplayedForEmail(String email) {
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
@@ -742,8 +820,12 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     @Step("Hide keyboard if it is visible")
     public void hideKeyboardIfPossible() {
         try {
-            Map<String, Object> args = new HashMap<String, Object>();
-            ((JavascriptExecutor) driver).executeScript("mobile: hideKeyboard", args);
+            if (driver instanceof HidesKeyboard) {
+                ((HidesKeyboard) driver).hideKeyboard();
+            } else {
+                Map<String, Object> args = new HashMap<String, Object>();
+                ((JavascriptExecutor) driver).executeScript("mobile: hideKeyboard", args);
+            }
         } catch (Exception e) {
             System.out.println("Keyboard was not hidden automatically; continuing.");
         }

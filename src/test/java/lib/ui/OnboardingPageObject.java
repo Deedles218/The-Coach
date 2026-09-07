@@ -17,14 +17,23 @@ abstract public class OnboardingPageObject extends MainPageObject {
 
     @Step("Complete new-user onboarding for goal: {goal.displayName}")
     public int completeNewUserJourney(OnboardingGoal goal) {
-        Assert.assertNotNull("Onboarding goal must be configured", goal);
-        openStartFlow();
-        selectGoal(goal);
-        completeQuestionnaire();
+        completeNewUserJourneyToPaywall(goal);
         int paywallsClosed = closePaywallsAndPopups();
         waitForToday();
         return paywallsClosed;
     }
+
+    @Step("Complete new-user onboarding up to the paywall for goal: {goal.displayName}")
+    public void completeNewUserJourneyToPaywall(OnboardingGoal goal) {
+        Assert.assertNotNull("Onboarding goal must be configured", goal);
+        assertFreshStartIsDisplayed();
+        openStartFlow();
+        selectGoal(goal);
+        completeQuestionnaire();
+    }
+
+    @Step("Verify the app is on a fresh new-user Start screen")
+    public abstract void assertFreshStartIsDisplayed();
 
     @Step("Open the first Start now action")
     public abstract void openStartFlow();

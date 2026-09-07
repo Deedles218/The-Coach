@@ -24,6 +24,26 @@ Known bundle IDs:
 
 If neither option is supplied, `com.vamapps.preprod.The-Coach` is used.
 
+## New-user onboarding paywall suite (Android and iOS)
+
+`tests.OnboardingPaywallTests` implements the five onboarding/paywall cases:
+top-plan purchase, bottom-plan purchase, Terms & Privacy, the exact renewal
+disclosure, and Restore. Android uses a clean install of 1.40.8 on Android 16;
+iOS attaches to the TestFlight app by bundle ID.
+
+Purchase confirmation fails closed. For iOS, pass both
+`-Dstorekit.sandbox=true` and `-Dpurchase.allow=true`. For Android, use a
+Google Play license-tester account on a Google Play system image and pass both
+`-Dgoogleplay.licenseTester=true` and `-Dpurchase.allow=true`. Android also
+checks that the Play dialog is visibly marked as a test purchase/order/card
+before it can tap Subscribe.
+
+Exact commands, environment limitations and the accessibility contract are
+documented in
+[`docs/onboarding-paywall-e2e.md`](docs/onboarding-paywall-e2e.md).
+The latest device-run matrix and risk-based QA backlog are in
+[`docs/onboarding-paywall-test-report-2026-08-30.md`](docs/onboarding-paywall-test-report-2026-08-30.md).
+
 ## Smoke and isolated integration suites
 
 The P0 smoke contract is implemented by `suites.SmokeSuite` and covers
@@ -63,6 +83,74 @@ The release suite needs two builds with the same bundle ID for the update
 scenario. Credentials should be injected through the environment variables in
 `docs/smoke-environment.md`; they are intentionally absent from the command
 line.
+
+## Reviewed Jira/Xray test-model suite
+
+`suites.TestModelAutomationSuite` is the dedicated entry point for the original eight
+reviewed cases: COA-7947, COA-7949, COA-7950, COA-8235, COA-8511, COA-8512,
+COA-8517 and COA-8518, plus the iOS selector cases COA-8228, COA-8230, COA-8227,
+COA-8232 and COA-8231.
+Each test keeps its Jira key in Allure via `@Issue` and its test name.
+COA-8518 is currently deferred by the user: it applies only to Coach for Her.
+It is ignored by JUnit, and the local runner refuses to run/provision it.
+
+```bash
+./scripts/validate_test_model_data.sh
+mvn test -Dtest=suites.TestModelAutomationSuite -Dplatform=ios
+```
+
+For local runs, the explicit-case runner reads the approved account registry
+from macOS Keychain and supplies credentials through the child environment:
+
+```bash
+python3 scripts/run_test_model_local.py --status
+python3 scripts/run_test_model_local.py COA-8517 --provision
+python3 scripts/run_test_model_local.py COA-8235 COA-8517 --maven=-q
+python3 scripts/run_test_model_local.py COA-8230 COA-8228 COA-8227 --maven=-q
+python3 scripts/run_test_model_local.py COA-8232 COA-8231 --provision --maven=-q
+python3 scripts/run_test_model_local.py COA-8232 COA-8231 --maven=-q
+python3 scripts/run_test_model_local.py COA-8511 --inspect-premium --maven=-q
+python3 scripts/run_test_model_local.py COA-8512 --inspect-premium --inspect-programs --maven=-q
+python3 scripts/run_test_model_local.py COA-8511 COA-8512 --maven=-q
+```
+
+Read-only selector cases reuse the COA-8235 returning-user fixture and run sequentially.
+COA-8232/8231 use separate provisioned accounts, verify the UID before switching
+Last Longer to Keep It Hard, and restore the original program, day and progress
+in `finally`, including on failure. They never change the shared COA-8235 account.
+Motion checks require `ffmpeg` and `xcrun` in PATH. COA-8229's outside-tap
+animation is checked within COA-8227. See [selector coverage and evidence](docs/today-program-selector-automation.md).
+
+Provisioning preserves confirmed accounts and verifies email confirmation and
+re-login before recording success. It does not delete accounts or buy subscriptions.
+COA-8235 needs no nonzero-progress fixture. COA-8517 prepares its own removed-card
+state through the documented preprod API, restores through the UI, verifies
+the rendered day-2 card and every applicable program day, then returns the
+fixture to day 2. COA-8518 requires fresh simulator
+analytics evidence; an old log file can no longer make it pass or be skipped.
+
+COA-8511/8512 now use the user-approved Kegel Challenge shared Premium fixture:
+UI Restart Program, API preparation of the first move, and the tested second
+move through UI on day 2. COA-8512 additionally requires exactly one pending task.
+The original selected program/day/progress are checked during restoration.
+Run these cases sequentially with the explicit local command above. See
+[the Kegel execution report](docs/test-model-kegel-2026-09-07.md) and
+[the five-case completion audit](docs/test-model-completion-audit-2026-09-07.md).
+The [7 September follow-up](docs/test-model-follow-up-2026-09-07.md) records the
+confirmed CONNECT authorization flow, current validation mismatches, anonymous
+fixture ownership guard, and fresh entitlement checks for the remaining cases.
+The approved shared Premium account is stored separately in Keychain. The
+`--inspect-premium` mode verifies its identity/access without resetting or
+mutating program state; this inspection is not an end-to-end case result.
+Adding `--inspect-programs` temporarily views Overall Health/Kegel and requires
+restoration of the original program, day and progress. Normal COA-8511/8512
+runs require the separate `kegelMutationScope` approval and cannot silently use old aliases.
+COA-8512 may use any suitable practice, but still requires exactly one pending
+task and unchanged observed progress throughout the scenario. The user clarified
+that the module-specific baseline replaces literal 2%. Overall Health variant,
+day and progress reset are explicitly allowed on the approved shared account;
+Kegel Challenge preparation was subsequently approved too, in a separate scope.
+Other programs and account deletion remain outside fixture scope.
 
 Firebase launch configuration is read-only for test analysis. The app-side
 accessibility/test-id contract and the expected smoke cases are documented in

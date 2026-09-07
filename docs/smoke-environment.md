@@ -45,6 +45,22 @@ from Maven properties or the CI secret store; Maven properties take precedence:
 | Account without PDF entitlement email (P1 only) | `coach.noPdfEntitlement.email` | `COACH_NO_PDF_ENTITLEMENT_EMAIL` |
 | Account without PDF entitlement OTP (P1 only) | `coach.noPdfEntitlement.otp` | `COACH_NO_PDF_ENTITLEMENT_OTP` |
 
+COA-8511/8512 use the explicitly approved **Kegel Challenge** shared Premium
+fixture. The local runner reads `the-coach-test-model-premium` from macOS Keychain;
+it requires `kegelMutationScope` approval and passes per-case EMAIL/OTP/UID in the
+child environment. Old sourceDay/targetDay/program overrides are not used by
+these tests. Source day 2 and target day 3 are verified against backend module
+metadata. UI Restart Program prepares each run; API seeds the first move and
+completes the other tasks. The tested second move remains a UI action.
+
+COA-8512 preserves the **observed pre-action progress** after postponing and after
+restarting the app. The user approved this module-specific invariant on 2026-09-07;
+literal 2% is no longer required. Missing/malformed progress cannot pass. The
+former `coach.testModel.customization.expectedProgress` /
+`COACH_TEST_MODEL_CUSTOMIZATION_EXPECTED_PROGRESS` setting is no longer read.
+Prepare the fixture to meet the requirement; do not change the oracle to match
+an incorrectly prepared account.
+
 OTP must be obtained only through the approved test-account mailbox/API or a
 secret-backed fixed test OTP configured by the test environment. It must not be
 printed, committed, added to Allure labels, or passed in a public CI command.
@@ -55,6 +71,39 @@ in which case Smoke Kegel deliberately reuses that account.
 The full `KegelExerciseTests` regression class requires the dedicated Kegel
 email/OTP variables and must not fall back to the protected existing-progress
 account.
+
+Validate the reviewed test-model prerequisites without printing credentials:
+
+```bash
+./scripts/validate_test_model_data.sh
+```
+
+Run the dedicated suite with:
+
+```bash
+mvn test -Dtest=suites.TestModelAutomationSuite -Dplatform=ios
+```
+
+COA-8511/8512 intentionally use the same approved Premium identity sequentially,
+without overwriting the older disposable aliases. COA-8517 retains its dedicated
+identity from `the-coach-test-model-accounts`. For the authenticated preprod
+fixture/evidence bridge, also supply `COACH_COA8517_UID` and
+`COACH_COA8518_UID`, plus the explicit iOS Simulator UDID.
+
+COA-8517 has a case-scoped backend setup/reset for the removed meal-plan card;
+the action under test remains UI Restore followed by a rendered day-2 card check.
+The day API also selects the requested day, so cross-day verification is
+sequential and returns the fixture to day 2 even on verification failure.
+It never deletes an account, changes
+global Firebase configuration, or grants/charges a subscription. Other program
+state is not reset by uninstalling the app. Each COA-8511/8512 setup verifies
+identity/Premium and fresh fixture postconditions before the business action.
+
+COA-8518 arms a read-only observer of the current simulator's Amplitude queue
+before the UI action. It checks UID, timestamp and row watermark, writes minimal
+evidence, and fails if the event is absent. The current A/B switch is included
+in diagnostics. The UI animation and analytics payload schema still need a
+successful execution with the feature enabled; see the dated fixture report.
 
 ## Deterministic fixture contract
 

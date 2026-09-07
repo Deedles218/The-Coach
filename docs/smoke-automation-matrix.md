@@ -101,14 +101,39 @@ button must not be mistaken for a successful content/permission action.
 | Login Continue | `login_continue` |
 | OTP screen root | `otp_screen` |
 | OTP Resend | `otp_resend` |
+| Existing-account Login step | `auth_existing_account_login` |
+| Send security code action | `auth_send_security_code` |
+| Invalid-email validation error | `login_email_error` |
 | Push prompt close | `push_permission_close` |
 | Connect email Later | `connect_email_later` |
 | Loading indicator | `loading_indicator` |
 | Shop screen content root | `shop_screen` |
 | In-app push allow action | `push_permission_allow` |
 | Daily Plan current day | `daily_plan_current_day` |
+| Daily Plan program selector | `daily_plan_program_selector` |
+| Program selector modal | `program_selector_modal` |
+| Program selector item | `program_selector_item` |
+| Program selector close | `program_selector_close` |
 | Daily Lessons section | `daily_lessons` |
 | Daily Practice section | `daily_practice` |
+| Explore program item | `explore_program_item` |
+| Daily Plan TO CATCH-UP section | `daily_plan_catch_up` |
+| Daily Plan catch-up card | `daily_plan_catch_up_card` |
+| Postponed clock icon | `daily_plan_postponed_icon` |
+| Single customization task | `daily_plan_customization_task` |
+| Program progress value | `program_progress_percent` |
+| Legacy postpone tooltip | `legacy_postpone_tooltip` |
+| Locked next-day postpone popup GIF | `locked_next_day_popup_gif` |
+| Overall Health program entry | `overall_health_program` |
+| Program Settings action | `program_settings` |
+| Program Settings screen | `program_settings_screen` |
+| Removed exercises entry | `removed_exercises` |
+| Removed exercises screen | `removed_exercises_screen` |
+| Removed exercise card | `removed_exercise_card` |
+| Removed exercise checkbox | `removed_exercise_checkbox` |
+| Recover removed exercise | `recover_removed_exercise` |
+| Program day container | `program_day_container` |
+| Recovered exercise card | `recovered_exercise_card` |
 | Daily Kegel card | `daily_practice_kegel` |
 | Kegel start screen | `kegel_start_screen` |
 | Kegel start | `kegel_start_workout` |
@@ -131,6 +156,34 @@ Avoid replacing these IDs with coordinate taps or long XPath chains. If a
 Firebase onboarding/paywall variant changes the number of questionnaire steps,
 update only the configured accessibility-id sequence; do not change the smoke
 assertions.
+
+The reviewed test-model suite is implemented in
+`tests.TestModelAutomationTests` and runs through
+`suites.TestModelAutomationSuite`. The mutation scenarios use a separate
+resettable fixture. Configure the required non-secret fixture values and run
+`./scripts/validate_test_model_data.sh` before the full suite. For an explicit
+local subset use `scripts/run_test_model_local.py`; see the dated fixture report.
+The COA-8235 and COA-8517 locators have now been verified against the Simulator
+accessibility tree on build 1.13.29. The old proposed customization `test_id`
+values for COA-8511/8512 must not be treated as verified app identifiers.
+The diagnostic COA-8511 fixture confirmed `ItemMovedForward` on Today and
+`TitleBlock.Title` / label `TO CATCH-UP` in Explore; these now replace the
+corresponding iOS placeholders. The exact catch-up card and sole-remaining-task
+assertions on Today still require an entitled fixture and verification.
+
+COA-8518 is implemented against its detailed expected result: the first tap
+on a locked next-day arrow shows the new popup and leaves the current day
+unchanged. The current Xray export has no contradictory expectation that the
+locked day opens. COA-8356 explicitly distinguishes the first popup from the
+legacy tooltip on subsequent taps. On 2026-09-06 the dedicated account received
+a paywall and the active popup feature flag was off, so the popup/analytics
+scenario has not been verified successfully.
+
+On the local Simulator build `1.13.29` checked on 2026-09-02, COA-7950
+exposed a disabled `CONTINUE` control but no validation-error node after
+`not-an-email` was entered. The test intentionally keeps the Xray error
+assertion, so this remains a product/build discrepancy rather than a relaxed
+automation check.
 
 ### Inspector validation gate
 

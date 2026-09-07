@@ -18,11 +18,22 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             TEST_ID_TODAY_TAB = "id:tab_today",
             TEST_ID_TODAY_SELECTED = "id:tab_today_selected",
             TEST_ID_ACTIVE_PROGRAM = "id:active_program_name",
+            TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR = "id:daily_plan_program_selector",
+            TEST_ID_PROGRAM_SELECTOR_MODAL = "id:program_selector_modal",
+            TEST_ID_PROGRAM_SELECTOR_ITEM = "id:program_selector_item",
+            TEST_ID_PROGRAM_SELECTOR_CLOSE = "id:program_selector_close",
             TEST_ID_DAILY_PLAN_DAY = "id:daily_plan_current_day",
             TEST_ID_DAILY_PLAN_LEFT = "id:daily_plan_previous_day",
             TEST_ID_DAILY_PLAN_RIGHT = "id:daily_plan_next_day",
             TEST_ID_DAILY_LESSONS = "id:daily_lessons",
             TEST_ID_DAILY_PRACTICE = "id:daily_practice",
+            TEST_ID_CUSTOMIZATION_CATCH_UP_SECTION = "id:daily_plan_catch_up",
+            TEST_ID_CUSTOMIZATION_CATCH_UP_CARD = "id:daily_plan_catch_up_card",
+            TEST_ID_CUSTOMIZATION_POSTPONED_ICON = "id:daily_plan_postponed_icon",
+            TEST_ID_CUSTOMIZATION_SINGLE_TASK = "id:daily_plan_customization_task",
+            TEST_ID_PROGRAM_PROGRESS = "id:program_progress_percent",
+            TEST_ID_LEGACY_POSTPONE_TOOLTIP = "id:legacy_postpone_tooltip",
+            TEST_ID_LOCKED_NEXT_DAY_POPUP_GIF = "id:locked_next_day_popup_gif",
             TEST_ID_KEGEL_CARD = "id:daily_practice_kegel",
             TEST_ID_KEGEL_START_SCREEN = "id:kegel_start_screen",
             TEST_ID_PRACTICE_START = "id:kegel_start_workout",
@@ -45,6 +56,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             TAB_TODAY,
             SELECTED_TODAY_TAB,
             ACTIVE_PROGRAM_TITLE,
+            PROGRAM_SELECTOR,
+            PROGRAM_SELECTOR_MODAL,
+            PROGRAM_SELECTOR_ITEMS,
+            PROGRAM_SELECTOR_CLOSE,
             DAILY_PLAN_DAY_SWITCHER,
             CURRENT_DAY_LABEL,
             LEFT_SWITCHER_ARROW,
@@ -58,6 +73,12 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             DAILY_PRACTICE_TITLE,
             FIRST_PRACTICE_TITLE,
             FIRST_PRACTICE_TYPE,
+            CUSTOMIZATION_CATCH_UP_SECTION,
+            CUSTOMIZATION_CATCH_UP_CARD,
+            CUSTOMIZATION_POSTPONED_ICON,
+            CUSTOMIZATION_SINGLE_TASK,
+            PROGRAM_PROGRESS_LABEL,
+            LEGACY_POSTPONE_TOOLTIP,
             PRACTICE_SCREEN_TITLE,
             PRACTICE_SCREEN_GOAL_TITLE,
             PRACTICE_SCREEN_EXERCISES_TITLE,
@@ -131,6 +152,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             LOCKED_MODULE_POPUP_BUTTON,
             LOCKED_NEXT_DAY_POPUP_TITLE,
             LOCKED_NEXT_DAY_POPUP_MESSAGE,
+            LOCKED_NEXT_DAY_POPUP_GIF,
             LOCKED_NEXT_DAY_POPUP_BUTTON;
 
     public DailyPlanPageObject(RemoteWebDriver driver) {
@@ -165,19 +187,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Active program name is not displayed on Today",
                 20
         );
-        String[] attributes = new String[]{"text", "name", "label", "value"};
-        for (String attribute : attributes) {
-            try {
-                String value = program.getAttribute(attribute);
-                if (value != null && !value.trim().isEmpty()) {
-                    return value.trim();
-                }
-            } catch (Exception ignored) {
-                // Attribute availability differs between UiAutomator2/XCUITest.
-            }
-        }
-        String text = program.getText();
-        return text == null ? "" : text.trim();
+        return this.getElementAccessibleName(program);
     }
 
     @Step("Verify Today program matches onboarding: {expectedProgram}")
@@ -190,7 +200,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "(^|[^A-Z0-9])" + java.util.regex.Pattern.quote(expectedUpper) + "([^A-Z0-9]|$)"
         ).matcher(actualUpper).find();
         String canonicalActual = canonicalProgramCode(actualUpper);
-        boolean matches = abbreviationMatches || expectedUpper.equals(canonicalActual);
+        String canonicalExpected = canonicalProgramCode(expectedUpper);
+        boolean matches = abbreviationMatches
+                || expectedUpper.equals(canonicalActual)
+                || canonicalExpected.equals(canonicalActual);
         Assert.assertTrue(
                 "Onboarding goal maps to program '" + expectedProgram
                         + "', but Today displays '" + actualProgram + "'",
@@ -215,6 +228,52 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             return "UNHOOKED";
         }
         return visibleProgramName.trim();
+    }
+
+    @Step("Open Daily Plan program selector")
+    public void openProgramSelector() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR, PROGRAM_SELECTOR, TEST_ID_ACTIVE_PROGRAM, ACTIVE_PROGRAM_TITLE},
+                "Cannot open the Daily Plan program selector",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_MODAL, PROGRAM_SELECTOR_MODAL},
+                "Daily Plan program selector modal did not open",
+                15
+        );
+    }
+
+    @Step("Read program names from Daily Plan selector")
+    public java.util.List<String> getProgramNamesFromSelector() {
+        String itemLocator = this.isElementPresent(TEST_ID_PROGRAM_SELECTOR_ITEM)
+                ? TEST_ID_PROGRAM_SELECTOR_ITEM
+                : PROGRAM_SELECTOR_ITEMS;
+        this.waitForElementPresent(
+                itemLocator,
+                "Daily Plan program selector does not expose program items",
+                10
+        );
+        java.util.List<String> names = this.getElementAccessibleNames(itemLocator);
+        Assert.assertFalse(
+                "Daily Plan program selector contains no readable program names",
+                names.isEmpty()
+        );
+        return names;
+    }
+
+    @Step("Close Daily Plan program selector")
+    public void closeProgramSelector() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_CLOSE, PROGRAM_SELECTOR_CLOSE},
+                "Cannot close the Daily Plan program selector",
+                10
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_MODAL, PROGRAM_SELECTOR_MODAL},
+                "Daily Plan program selector modal is still displayed after closing",
+                10
+        );
     }
 
     @Step("Verify Daily Plan header and current day are displayed")
@@ -249,10 +308,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Current Daily Plan day label is not displayed",
                 10
         );
-        String actualDay = currentDay.getAttribute("name");
-        if (actualDay == null || actualDay.trim().isEmpty()) {
-            actualDay = currentDay.getText();
-        }
+        String actualDay = this.getElementAccessibleName(currentDay);
         Assert.assertTrue(
                 "Daily Plan day does not match the deterministic fixture. Expected to contain '"
                         + expectedDay + "' but was '" + actualDay + "'.",
@@ -1098,6 +1154,140 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         }
     }
 
+    @Step("Open customization actions for the Daily Plan catch-up card")
+    public void openCustomizationActionsForCatchUpCard() {
+        int alreadySwiped = 0;
+        while (!this.isElementVisible(TEST_ID_CUSTOMIZATION_CATCH_UP_CARD)
+                && !this.isElementVisible(CUSTOMIZATION_CATCH_UP_CARD)
+                && alreadySwiped < 6) {
+            this.mobileSwipeUp();
+            alreadySwiped++;
+        }
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_CUSTOMIZATION_CATCH_UP_SECTION, CUSTOMIZATION_CATCH_UP_SECTION},
+                "TO CATCH-UP section is not displayed",
+                15
+        );
+        WebElement catchUpCard = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_CUSTOMIZATION_CATCH_UP_CARD, CUSTOMIZATION_CATCH_UP_CARD},
+                "Daily Plan catch-up card is not displayed",
+                15
+        );
+        this.touchAndHoldElement(catchUpCard, 0.8);
+        this.assertCustomizationActionsSheetIsDisplayed();
+    }
+
+    @Step("Verify the Daily Plan fixture contains one customizable task")
+    public void assertSingleCustomizableTaskIsDisplayed() {
+        this.waitForElementPresent(
+                CUSTOMIZATION_SINGLE_TASK,
+                "Daily Plan customization task locator is not exposed",
+                10
+        );
+        Assert.assertEquals(
+                "The COA-8512 fixture must contain exactly one Daily Plan task",
+                1,
+                this.getAmountElements(CUSTOMIZATION_SINGLE_TASK)
+        );
+    }
+
+    @Step("Tap Move to tomorrow for the selected Daily Plan card")
+    public void moveSelectedCardToTomorrow() {
+        this.waitForElementAndClick(
+                CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
+                "Cannot tap Move to tomorrow",
+                10
+        );
+        this.waitForElementNotPresent(
+                CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON,
+                "Daily Plan customization actions sheet is still displayed after moving the card",
+                10
+        );
+    }
+
+    @Step("Verify the postponed clock icon is displayed")
+    public void assertPostponedClockIconIsDisplayed() {
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_CUSTOMIZATION_POSTPONED_ICON, CUSTOMIZATION_POSTPONED_ICON},
+                "Postponed Daily Plan card does not expose the clock icon",
+                10
+        );
+    }
+
+    @Step("Verify the moved card is displayed in TO CATCH-UP")
+    public void assertCatchUpCardIsDisplayed() {
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_CUSTOMIZATION_CATCH_UP_CARD, CUSTOMIZATION_CATCH_UP_CARD},
+                "Daily Plan catch-up card is not displayed",
+                15
+        );
+    }
+
+    @Step("Open the next Daily Plan day and verify it is {expectedDay}")
+    public void openNextDayAndAssert(String expectedDay) {
+        Assert.assertNotNull("Expected target Daily Plan day must be configured", expectedDay);
+        String dayBeforeTap = this.getCurrentDayLabel();
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_RIGHT, RIGHT_SWITCHER_ARROW},
+                "Cannot tap Daily Plan right arrow",
+                10
+        );
+        this.createWait(15).until(webDriver -> {
+            String actualDay = this.getCurrentDayLabel();
+            return !dayBeforeTap.equals(actualDay) && actualDay.contains(expectedDay);
+        });
+    }
+
+    @Step("Read the configured program progress")
+    public String getProgramProgressValue() {
+        WebElement progress = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROGRAM_PROGRESS, PROGRAM_PROGRESS_LABEL},
+                "Program progress value is not displayed",
+                10
+        );
+        return this.getElementAccessibleName(progress);
+    }
+
+    @Step("Verify the next-day postpone popup appears on the first tap")
+    public void assertLockedNextDayPopupOnFirstTap() {
+        String dayBeforeTap = this.getCurrentDayLabel();
+        Assert.assertFalse(
+                "The legacy postpone tooltip must not be visible before the first next-day tap",
+                this.isElementVisible(LEGACY_POSTPONE_TOOLTIP)
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_RIGHT, RIGHT_SWITCHER_ARROW},
+                "Cannot tap Daily Plan right arrow",
+                10
+        );
+        this.waitForElementPresent(
+                LOCKED_NEXT_DAY_POPUP_TITLE,
+                "Locked next-day postpone popup title is not displayed on the first tap",
+                15
+        );
+        this.waitForElementPresent(
+                LOCKED_NEXT_DAY_POPUP_MESSAGE,
+                "Locked next-day postpone popup message is not displayed",
+                10
+        );
+        this.assertLockedNextDayPopupImage();
+        this.waitForFirstElementEnabled(
+                new String[]{LOCKED_NEXT_DAY_POPUP_BUTTON},
+                "Locked next-day popup GOT IT action is not enabled",
+                10
+        );
+        Assert.assertEquals("The old tooltip must not duplicate the popup title", 1,
+                this.getAmountElements(LOCKED_NEXT_DAY_POPUP_TITLE));
+        this.closeLockedNextDayPopup();
+        Assert.assertEquals("Daily Plan day changed after tapping a locked next-day arrow",
+                dayBeforeTap, this.getCurrentDayLabel());
+    }
+
+    protected void assertLockedNextDayPopupImage() {
+        this.waitForElementPresent(LOCKED_NEXT_DAY_POPUP_GIF,
+                "Locked next-day postpone popup GIF is not displayed", 10);
+    }
+
     @Step("Tap Remove from Daily Plan action")
     public void tapRemoveFromDailyPlanAction() {
         this.waitForElementAndClick(
@@ -1253,11 +1443,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Cannot find current Daily Plan day label",
                 10
         );
-        String day = currentDay.getAttribute("name");
-        if (day == null || day.trim().isEmpty()) {
-            day = currentDay.getText();
-        }
-        return day;
+        return this.getElementAccessibleName(currentDay);
     }
 
     public void mobileSwipeDown() {
@@ -1285,7 +1471,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.waitForElementAndClick(locator, errorMessage, timeoutInSeconds);
     }
 
-    private void touchAndHoldElement(WebElement element, double duration) {
+    protected void touchAndHoldElement(WebElement element, double duration) {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("elementId", ((RemoteWebElement) element).getId());
         args.put("duration", duration);

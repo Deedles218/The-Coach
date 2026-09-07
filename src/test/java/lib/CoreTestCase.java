@@ -42,15 +42,22 @@ public class CoreTestCase {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
+                    Throwable primaryFailure = null;
                     try {
                         base.evaluate();
                     } catch (Throwable failure) {
+                        primaryFailure = failure;
                         // Capture before teardown closes the Appium session. The
                         // previous TestWatcher ran after @After and saw driver=null.
                         captureFailureArtifacts(failure, description);
                         throw failure;
                     } finally {
-                        tearDown();
+                        try {
+                            tearDown();
+                        } catch (Throwable teardownFailure) {
+                            if (primaryFailure == null) throw teardownFailure;
+                            primaryFailure.addSuppressed(teardownFailure);
+                        }
                     }
                 }
             };
@@ -176,6 +183,29 @@ public class CoreTestCase {
             System.out.println("Method backgroundApp() does nothing for platform " + Platform.getInstance().getPlatformVar());
         }
     }
+
+    @Step("Close and reopen The Coach application")
+    protected void closeAndReopenCoachApplication() {
+        Assert.assertTrue(
+                "Closing and reopening the application requires an Appium mobile driver",
+                driver instanceof InteractsWithApps
+        );
+
+        String applicationId;
+        if (Platform.getInstance().isIOS()) {
+            applicationId = Platform.getInstance().getIOSBundleId();
+        } else if (Platform.getInstance().isAndroid()) {
+            applicationId = Platform.getInstance().getAndroidAppPackage();
+        } else {
+            Assert.fail("Close/reopen is only supported for a native mobile platform");
+            return;
+        }
+
+        InteractsWithApps apps = (InteractsWithApps) driver;
+        apps.terminateApp(applicationId);
+        apps.activateApp(applicationId);
+    }
+
     protected void openWikiWebPageForMobileWeb() {
         if (Platform.getInstance().isMw()) {
             driver.get("https://en.m.wikipedia.org");
@@ -184,7 +214,7 @@ public class CoreTestCase {
         }
     }
 
-    private void captureFailureArtifacts(Throwable throwable, Description description) {
+    protected final void captureFailureArtifacts(Throwable throwable, Description description) {
         if (driver == null) {
             return;
         }
@@ -198,7 +228,17 @@ public class CoreTestCase {
             Files.createDirectories(pageSourceDirectory);
             Files.createDirectories(logsDirectory);
 
-            if (driver instanceof TakesScreenshot) {
+            String rawPageSource = driver.getPageSource();
+            String pageSource = TestData.sanitizeSensitiveData(rawPageSource);
+            boolean credentialScreen = !rawPageSource.equals(pageSource)
+                    || rawPageSource.contains("ENTER SECURITY CODE");
+            if (rawPageSource.contains("ENTER SECURITY CODE")) {
+                // OTP may be exposed as four independent accessibility nodes.
+                pageSource = pageSource.replaceAll("((?:name|label|value)=\")[0-9](\")", "$1*$2");
+            }
+            pageSource = pageSource.replace("<redacted-email>", "&lt;redacted-email&gt;")
+                    .replace("<redacted-otp>", "&lt;redacted-otp&gt;");
+            if (driver instanceof TakesScreenshot && !credentialScreen) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 Path screenshotPath = screenshotsDirectory.resolve(testName + ".png");
                 Files.copy(screenshot.toPath(), screenshotPath, StandardCopyOption.REPLACE_EXISTING);
@@ -206,7 +246,6 @@ public class CoreTestCase {
                 addAllureAttachment("Failure screenshot", "image/png", screenshotBytes, "png");
             }
 
-            String pageSource = TestData.sanitizeSensitiveData(driver.getPageSource());
             Path pageSourcePath = pageSourceDirectory.resolve(testName + ".xml");
             Files.write(pageSourcePath, pageSource.getBytes(StandardCharsets.UTF_8));
             addAllureAttachment(

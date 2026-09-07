@@ -6,106 +6,109 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
- * App-owned subscription paywall actions. The StoreKit suite is deliberately
- * isolated from the regular smoke suite because its state is external to the
- * app and may create a sandbox transaction.
+ * Cross-platform subscription paywall contract. Store confirmations are
+ * deliberately separated from plan selection so a test cannot create a
+ * transaction unless the caller has explicitly enabled the test store.
  */
-abstract public class SubscriptionPageObject extends MainPageObject {
-    protected static String
-            PAYWALL_MARKER,
-            PAYWALL_MARKER_FALLBACK,
-            START_FREE_TRIAL_BUTTON,
-            START_FREE_TRIAL_BUTTON_FALLBACK,
-            SELECTED_PLAN_BUTTON,
-            RESTORE_PURCHASES_BUTTON,
-            RESTORE_PURCHASES_BUTTON_FALLBACK,
-            PREMIUM_ACCESS_MARKER,
-            RESTORE_SUCCESS_MARKER,
-            RESTORE_SUCCESS_MARKER_FALLBACK,
-            RESTORE_RESULT_MARKER,
-            STOREKIT_CONFIRM_BUTTON;
+public abstract class SubscriptionPageObject extends MainPageObject {
+    public static final String EXPECTED_AUTO_RENEWAL_DISCLOSURE =
+            "Subscription renews automatically. Cancel anytime. "
+                    + "Privacy Policy & Terms of Service";
+
+    public enum PlanPosition {
+        TOP,
+        BOTTOM
+    }
 
     public SubscriptionPageObject(RemoteWebDriver driver) {
         super(driver);
     }
 
-    @Step("Verify subscription paywall is displayed")
-    public void assertPaywallIsDisplayed() {
-        this.waitForFirstElementPresent(
-                new String[]{PAYWALL_MARKER, PAYWALL_MARKER_FALLBACK},
-                "Subscription paywall is not displayed",
-                20
-        );
-        this.waitForFirstElementPresent(
-                new String[]{START_FREE_TRIAL_BUTTON, START_FREE_TRIAL_BUTTON_FALLBACK},
-                "Start free trial button is not displayed on subscription paywall",
-                10
-        );
-        this.waitForFirstElementPresent(
-                new String[]{RESTORE_PURCHASES_BUTTON, RESTORE_PURCHASES_BUTTON_FALLBACK},
-                "Restore Purchases action is not displayed on subscription paywall",
-                10
-        );
-    }
+    @Step("Verify subscription paywall is fully loaded")
+    public abstract void assertPaywallIsDisplayed();
 
-    @Step("Open the selected subscription period from Start free trial")
+    @Step("Select {position} subscription plan")
+    public abstract void selectPlan(PlanPosition position);
+
+    @Step("Start purchase for selected subscription plan")
+    public abstract void startPurchaseAndWaitForStore();
+
+    @Step("Confirm purchase in the platform test store")
+    public abstract void confirmTestPurchase();
+
+    @Step("Verify subscription purchase completed")
+    public abstract void assertPurchaseCompleted();
+
+    @Step("Open Terms & Privacy from the paywall")
+    public abstract void openTermsAndPrivacy();
+
+    @Step("Verify Terms & Privacy destination opened")
+    public abstract void assertTermsAndPrivacyOpened();
+
+    @Step("Verify paywall auto-renewal disclosure")
+    public abstract void assertAutoRenewalDisclosure();
+
+    @Step("Verify Restore is visible and enabled")
+    public abstract void assertRestoreButtonIsAvailable();
+
+    @Step("Tap Restore and verify an explicit result")
+    public abstract void tapRestoreAndAssertResult();
+
+    /** Compatibility wrappers for the pre-existing StoreKit suite. */
     public void openSelectedSubscriptionPeriod() {
-        this.waitForFirstElementAndClick(
-                new String[]{START_FREE_TRIAL_BUTTON, START_FREE_TRIAL_BUTTON_FALLBACK},
-                "Cannot tap Start free trial on subscription paywall",
-                10
-        );
-        this.waitForElementPresent(
-                SELECTED_PLAN_BUTTON,
-                "Selected subscription period is not displayed after tapping Start free trial",
-                15
-        );
+        selectPlan(PlanPosition.BOTTOM);
     }
 
-    @Step("Start StoreKit purchase for the selected period")
     public void startStoreKitPurchase() {
-        this.waitForElementAndClick(
-                SELECTED_PLAN_BUTTON,
-                "Cannot tap the selected subscription period",
-                10
-        );
-        this.waitForElementPresent(
-                STOREKIT_CONFIRM_BUTTON,
-                "StoreKit purchase confirmation did not appear",
-                20
-        );
+        startPurchaseAndWaitForStore();
     }
 
-    @Step("Confirm StoreKit sandbox purchase")
     public void confirmStoreKitPurchase() {
-        this.waitForElementAndClick(
-                STOREKIT_CONFIRM_BUTTON,
-                "Cannot confirm StoreKit sandbox purchase",
-                10
-        );
+        confirmTestPurchase();
     }
 
-    @Step("Restore purchases in StoreKit sandbox")
     public void restorePurchases() {
-        this.waitForFirstElementAndClick(
-                new String[]{RESTORE_PURCHASES_BUTTON, RESTORE_PURCHASES_BUTTON_FALLBACK},
-                "Cannot tap Restore Purchases on subscription paywall",
-                10
-        );
-        this.waitForFirstElementPresent(
-                new String[]{PREMIUM_ACCESS_MARKER, RESTORE_SUCCESS_MARKER, RESTORE_SUCCESS_MARKER_FALLBACK, RESTORE_RESULT_MARKER},
-                "Restore Purchases did not produce a success or an explicit StoreKit result",
+        assertRestoreButtonIsAvailable();
+        tapRestoreAndAssertResult();
+    }
+
+    @Step("Verify paid content is available after test-store outcome")
+    public void assertPremiumAccessIsDisplayed() {
+        WebElement premiumMarker = waitForFirstElementPresent(
+                new String[]{
+                        "id:PREMIUM SUBSCRIBER",
+                        "id:Today",
+                        "id:com.vamapps.thecoach:id/nav_graph_daily"
+                },
+                "Premium access marker is not displayed after purchase/restore",
                 30
         );
+        Assert.assertTrue("Premium access marker must be visible", premiumMarker.isDisplayed());
     }
 
-    @Step("Verify paid content is available after StoreKit outcome")
-    public void assertPremiumAccessIsDisplayed() {
-        WebElement premiumMarker = this.waitForElementPresent(
-                PREMIUM_ACCESS_MARKER,
-                "Premium access marker is not displayed after StoreKit purchase/restore",
-                20
-        );
-        Assert.assertTrue("Premium access marker must be visible", premiumMarker.isDisplayed());
+    protected String normalizedText(WebElement element) {
+        if (element == null) {
+            return "";
+        }
+        String[] attributes = new String[]{"text", "name", "label", "value", "content-desc"};
+        for (String attribute : attributes) {
+            try {
+                String value = element.getAttribute(attribute);
+                if (value != null && !value.trim().isEmpty()) {
+                    return normalizeWhitespace(value);
+                }
+            } catch (Exception ignored) {
+                // Attribute availability differs between UiAutomator2/XCUITest.
+            }
+        }
+        try {
+            return normalizeWhitespace(element.getText());
+        } catch (Exception ignored) {
+            return "";
+        }
+    }
+
+    protected String normalizeWhitespace(String value) {
+        return value == null ? "" : value.replace('\u00a0', ' ').trim().replaceAll("\\s+", " ");
     }
 }

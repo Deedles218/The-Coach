@@ -43,8 +43,12 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                     + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='LET’S GO' "
                     + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')=\"LET'S GO\" "
                     + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='LET’S START' "
-                    + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')=\"LET'S START\" "
-                    + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='ALLOW')]"
+                    + "or translate(normalize-space(@name), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')=\"LET'S START\")]"
+    );
+    private static final By NOTIFICATION_PROMPT_SKIP = By.xpath(
+            "//XCUIElementTypeButton[@visible='true' and @enabled='true' "
+                    + "and translate(normalize-space(@name), "
+                    + "'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='MAYBE LATER']"
     );
     private static final By QUESTIONNAIRE_ANSWER = By.xpath(
             "(//XCUIElementTypeWebView//XCUIElementTypeButton[@visible='true' and @enabled='true' "
@@ -66,6 +70,16 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
 
     public iOSOnboardingPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    @Step("Verify iOS fresh TestFlight Start screen")
+    public void assertFreshStartIsDisplayed() {
+        waitForElementPresent(
+                START_BUTTON,
+                "iOS is not on the fresh new-user Start screen. Reinstall The Coach from TestFlight before this test.",
+                25
+        );
     }
 
     @Override
@@ -126,7 +140,10 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 return;
             }
 
-            WebElement action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
+            WebElement action = firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP);
+            if (action == null) {
+                action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
+            }
             WebElement nativeAnswer = firstDisplayedEnabled(NATIVE_QUESTIONNAIRE_ANSWER);
             boolean continueNeedsAnswer = action != null
                     && "CONTINUE".equals(elementText(action).toUpperCase(Locale.US))
@@ -223,7 +240,16 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Wait for iOS Today")
     public void waitForToday() {
-        waitForElementPresent(TODAY_TAB, "iOS Today tab did not open after onboarding", 30);
+        createWait(30).withMessage("iOS Today tab did not open after onboarding").until(webDriver -> {
+            WebElement notificationClose = firstDisplayedEnabled(By.xpath(
+                    "//XCUIElementTypeStaticText[@name='Allow notifications to stay on track' and @visible='true']"
+                            + "/../XCUIElementTypeButton[1]"));
+            if (notificationClose != null) {
+                notificationClose.click();
+                return false;
+            }
+            return isElementVisible(TODAY_TAB);
+        });
     }
 
     private boolean questionnaireOrDestinationIsVisible() {
@@ -250,14 +276,11 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
-            WebElement allowNotifications = firstDisplayedEnabled(By.xpath(
-                    "//XCUIElementTypeButton[@visible='true' and @enabled='true' "
-                            + "and @name='REMIND ME TO PRACTICE']"
-            ));
-            if (allowNotifications == null) {
+            WebElement skipNotifications = firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP);
+            if (skipNotifications == null) {
                 break;
             }
-            clickAndWaitForStateChange(allowNotifications, 8);
+            clickAndWaitForStateChange(skipNotifications, 8);
         }
         acceptPendingSystemAlerts();
         if (!questionnaireOrDestinationIsVisible() && !isElementVisible(CONTINUE_BUTTON)) {
@@ -312,6 +335,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
 
     private boolean isPaywallVisible() {
         return isElementVisible(PAYWALL_MARKER)
+                || isElementVisible("id:subscription_error_illustration")
                 || isElementVisible(PAYWALL_MARKER_FALLBACK)
                 || isElementVisible(SPECIAL_OFFER_CLOSE)
                 || (isElementVisible(TESTFLIGHT_PAYWALL_CLOSE)

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -514,9 +515,44 @@ public class MainPageObject {
         );
     }
 
+    /**
+     * Scroll until one of the supplied locators is actually visible. Native
+     * accessibility trees may contain off-screen collection cells, so a
+     * presence-only search is not sufficient before a tap.
+     */
+    public void swipeUpToFindFirstVisibleElement(
+            String[] locators,
+            String error_message,
+            int max_swipes
+    ) {
+        if (locators == null || locators.length == 0) {
+            throw new IllegalArgumentException("At least one locator is required");
+        }
+
+        int alreadySwiped = 0;
+        while (!hasAnyVisibleElement(locators) && alreadySwiped <= max_swipes) {
+            swipeUpQuick();
+            alreadySwiped++;
+        }
+        waitForFirstElementPresent(
+                locators,
+                "Cannot find a visible element by swiping up.\n" + error_message,
+                5
+        );
+    }
+
     private boolean hasAnyElement(String[] locators) {
         for (String locator : locators) {
             if (locator != null && !locator.trim().isEmpty() && isElementPresent(locator)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAnyVisibleElement(String[] locators) {
+        for (String locator : locators) {
+            if (locator != null && !locator.trim().isEmpty() && isElementVisible(locator)) {
                 return true;
             }
         }
@@ -600,6 +636,62 @@ public class MainPageObject {
         return elements.size();
     }
 
+    /**
+     * Read accessibility names from all matching elements in tree order. This
+     * is intentionally separate from getAmountElements: program catalog tests
+     * need the complete collection, including items that are outside the
+     * viewport but already present in the native accessibility tree.
+     */
+    public List<String> getElementAccessibleNames(String locator) {
+        if (locator == null || locator.trim().isEmpty()) {
+            throw new IllegalArgumentException("A non-empty locator is required");
+        }
+
+        List<String> names = new ArrayList<String>();
+        By by = this.getLocatorByString(locator);
+        for (WebElement element : driver.findElements(by)) {
+            String name = getElementAccessibleName(element);
+            if (name != null && !name.trim().isEmpty()) {
+                names.add(name.trim());
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Return the most useful native accessibility value for an element across
+     * XCUITest and UiAutomator2. The fallback order avoids using an
+     * implementation-specific text representation when a semantic name exists.
+     */
+    public String getElementAccessibleName(WebElement element) {
+        if (element == null) {
+            return "";
+        }
+
+        // A collection item can expose one shared accessibility identifier in
+        // `name` and its actual program title in `label`. Prefer user-facing
+        // values first so generic item ids do not collapse the whole list to a
+        // single string.
+        String[] attributes = new String[]{"label", "text", "name", "value", "content-desc"};
+        for (String attribute : attributes) {
+            try {
+                String value = element.getAttribute(attribute);
+                if (value != null && !value.trim().isEmpty()) {
+                    return value.trim();
+                }
+            } catch (Exception ignored) {
+                // Attribute availability differs between native drivers.
+            }
+        }
+
+        try {
+            String text = element.getText();
+            return text == null ? "" : text.trim();
+        } catch (Exception ignored) {
+            return "";
+        }
+    }
+
     public boolean isElementPresent(String locator) {
         return getAmountElements(locator) > 0;
     }
@@ -626,7 +718,7 @@ public class MainPageObject {
         return element.getAttribute(attribute);
     }
 
-    private By getLocatorByString(String locator_with_type) {
+    protected By getLocatorByString(String locator_with_type) {
         String[] exploded_locator = locator_with_type.split(Pattern.quote(":"), 2); //записывает в переменную exploded
         String by_type = exploded_locator[0];
         String locator = exploded_locator[1];

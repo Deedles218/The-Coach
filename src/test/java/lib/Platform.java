@@ -213,6 +213,39 @@ public class Platform {
         return this.getBooleanConfig("storekit.allowPurchases", "STOREKIT_ALLOW_PURCHASES", false);
     }
 
+    public boolean isGooglePlayLicenseTesterEnabled()
+    {
+        return this.getBooleanConfig(
+                "googleplay.licenseTester",
+                "GOOGLE_PLAY_LICENSE_TESTER",
+                false
+        );
+    }
+
+    public boolean isTestPurchaseEnvironmentEnabled()
+    {
+        return this.isIOS()
+                ? this.isStoreKitSandboxEnabled()
+                : this.isGooglePlayLicenseTesterEnabled();
+    }
+
+    public boolean isTestPurchaseAllowed()
+    {
+        return this.getBooleanConfig(
+                "purchase.allow",
+                "PURCHASE_ALLOW",
+                this.isStoreKitPurchaseAllowed()
+        );
+    }
+
+    public boolean isTestFlightAttachConfigured()
+    {
+        return this.isIOS()
+                && this.getIOSAppPath() == null
+                && this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true)
+                && !this.getBooleanConfig("ios.fullReset", "IOS_FULL_RESET", false);
+    }
+
     /**
      * The questionnaire is product-owned and its number of screens varies by
      * Firebase configuration. The purchase and clean-install suites therefore

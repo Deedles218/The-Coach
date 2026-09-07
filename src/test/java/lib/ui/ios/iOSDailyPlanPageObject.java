@@ -2,8 +2,25 @@ package lib.ui.ios;
 
 import lib.ui.DailyPlanPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import javax.imageio.ImageIO;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Rectangle;
 
 public class iOSDailyPlanPageObject extends DailyPlanPageObject {
+    private int selectorTop;
+    private static final String SELECTOR_CARDS = "id:ProgramSelectionCardView";
+    private static final String SELECTOR_TITLES = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']//XCUIElementTypeStaticText[@name='TitleBlock.Title']";
+    private static final String SELECTOR_COLLECTION = "xpath:(//XCUIElementTypeScrollView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']] | //XCUIElementTypeCollectionView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']])[last()]";
     static {
         TAB_TODAY = "id:Today";
         SELECTED_TODAY_TAB = "xpath://XCUIElementTypeButton[@name='Today' and @value='1']";
@@ -15,8 +32,16 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'OVERALL HEALTH') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
+                + "or @name='Kegel Challenge' or @label='Kegel Challenge' "
                 + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
-        CURRENT_DAY_LABEL = "xpath://XCUIElementTypeStaticText[(starts-with(@name, 'Day ') or starts-with(@name, 'Stage ')) and contains(@name, ' of ')]";
+        // The program selector is a new app-side contract. The active-program
+        // label remains a stable fallback for builds that have not migrated
+        // the tap target to the dedicated identifier yet.
+        PROGRAM_SELECTOR = "id:daily_plan_program_selector";
+        PROGRAM_SELECTOR_MODAL = SELECTOR_CARDS;
+        PROGRAM_SELECTOR_ITEMS = "id:program_selector_item";
+        PROGRAM_SELECTOR_CLOSE = "xpath://XCUIElementTypeButton[@name='program_selector_close' or @name='CloseRoundBlack']";
+        CURRENT_DAY_LABEL = "xpath://XCUIElementTypeOther[@name='DailyDaySwitcherView']//XCUIElementTypeStaticText[starts-with(@name, 'Day ') or starts-with(@name, 'Stage ')]";
         DAILY_PLAN_DAY_SWITCHER = CURRENT_DAY_LABEL;
         LEFT_SWITCHER_ARROW = "id:leftSwitcherArrow";
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
@@ -31,6 +56,13 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         DAILY_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY PRACTICE']";
         FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout']";
         FIRST_PRACTICE_TYPE = "xpath://XCUIElementTypeStaticText[@name='Guide' or contains(@name, 'days in total')]";
+        CUSTOMIZATION_CATCH_UP_SECTION = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='TO CATCH-UP' and @visible='true']";
+        CUSTOMIZATION_CATCH_UP_CARD = "id:daily_plan_catch_up_card";
+        CUSTOMIZATION_POSTPONED_ICON = "id:ItemMovedForward";
+        CUSTOMIZATION_SINGLE_TASK = "id:daily_plan_customization_task";
+        PROGRAM_PROGRESS_LABEL = "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'%')]";
+        // The old tooltip uses the same title as the new popup; no invented id.
+        LEGACY_POSTPONE_TOOLTIP = "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Finish today') and contains(@name,'unlock the next day')]";
         PRACTICE_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[(contains(@name, 'Kegel') or @name='Finding Pelvic Floor') and @visible='true']";
         PRACTICE_SCREEN_GOAL_TITLE = "xpath://XCUIElementTypeStaticText[@label='GOAL' or @name='GOAL' or @name='Duration:' or @name='Intensity:']";
         PRACTICE_SCREEN_EXERCISES_TITLE = "xpath://XCUIElementTypeStaticText[@label='EXERCISES' or @name='EXERCISES' or contains(@name, 'ADVANCED')]";
@@ -107,12 +139,70 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         LOCKED_MODULE_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Complete current module to unlock the next one')]";
         LOCKED_MODULE_POPUP_BUTTON = "id:GOT IT";
 
-        LOCKED_NEXT_DAY_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Finish today') and contains(@name, 'unlock the next day')]";
+        LOCKED_NEXT_DAY_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name, 'Finish today') and contains(@name, 'unlock the next day')]";
         LOCKED_NEXT_DAY_POPUP_MESSAGE = "xpath://XCUIElementTypeStaticText[contains(@name, 'move it to tomorrow')]";
+        LOCKED_NEXT_DAY_POPUP_GIF = LOCKED_NEXT_DAY_POPUP_TITLE + "/../XCUIElementTypeImage[@visible='true']";
         LOCKED_NEXT_DAY_POPUP_BUTTON = "id:GOT IT";
     }
 
     public iOSDailyPlanPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    protected void assertLockedNextDayPopupImage() {
+        WebElement tutorial = waitForElementPresent(LOCKED_NEXT_DAY_POPUP_GIF,
+                "Postpone tutorial image is missing from the popup", 10);
+        final Rectangle bounds = tutorial.getRect();
+        final int[][] initialFrame = {null};
+        createWait(12).withMessage("Postpone GIF is blank or is not animating").until(webDriver -> {
+            try {
+                BufferedImage screenshot = ImageIO.read(new ByteArrayInputStream(
+                        ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
+                double scale = screenshot.getWidth() / (double) driver.manage().window().getSize().getWidth();
+                int[] pixels = new int[32 * 32];
+                Set<Integer> colors = new HashSet<Integer>();
+                for (int y = 0; y < 32; y++) {
+                    for (int x = 0; x < 32; x++) {
+                        // Ignore borders/the close icon; inspect the image interior.
+                        int sx = (int) ((bounds.getX() + bounds.getWidth() * (.16 + .68 * x / 31)) * scale);
+                        int sy = (int) ((bounds.getY() + bounds.getHeight() * (.16 + .68 * y / 31)) * scale);
+                        int color = screenshot.getRGB(sx, sy) & 0x00F8F8F8;
+                        pixels[y * 32 + x] = color;
+                        colors.add(color);
+                    }
+                }
+                if (colors.size() < 8) return false;
+                if (initialFrame[0] == null) {
+                    initialFrame[0] = pixels;
+                    return false;
+                }
+                int changed = 0;
+                for (int i = 0; i < pixels.length; i++) if (pixels[i] != initialFrame[0][i]) changed++;
+                return changed >= 8;
+            } catch (java.io.IOException error) {
+                throw new IllegalStateException("Cannot inspect the rendered postpone GIF", error);
+            }
+        });
+    }
+
+    @Override
+    public void openProgramSelector() {
+        super.openProgramSelector();
+        selectorTop = waitForElementPresent(SELECTOR_CARDS, "Program selector cards did not appear", 10).getRect().y;
+    }
+
+    @Override
+    public List<String> getProgramNamesFromSelector() {
+        return new iOSProgramListReader(driver).collect(SELECTOR_TITLES, SELECTOR_COLLECTION, false);
+    }
+
+    @Override
+    public void closeProgramSelector() {
+        Map<String,Object> tap = new HashMap<String,Object>();
+        tap.put("x", driver.manage().window().getSize().getWidth() / 2);
+        tap.put("y", Math.max(20, selectorTop - 50));
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        waitForElementNotPresent(SELECTOR_CARDS, "Program selector did not close after tapping outside", 10);
     }
 }
