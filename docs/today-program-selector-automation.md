@@ -8,6 +8,7 @@
 первый этап — три новых кейса и COA-8235 PASS.
 [Отчёт продолжения COA-8232/8231](today-program-selector-phase2-report-2026-09-07.md)
 содержит проверки переключения, регрессии COA-8253 и восстановления после сбоя.
+[Готовое покрытие и результаты](ready-ios-autotests.md) включают оба этапа селектора и проверку восстановления после сбоя.
 
 ## Запуск
 
@@ -17,15 +18,14 @@ COA-8232 и COA-8231 используют отдельные аккаунты. �
 каждый заново авторизует фикстуру. Подписка и flags не изменяются.
 
 ```bash
-python3 scripts/run_test_model_local.py COA-8230 COA-8228 COA-8227 --maven=-q
+python3 scripts/run_test_model_local.py COA-8230 COA-8228 COA-8227 --app "/path/to/The Coach.app" --maven=-q
 # Однократный setup: существующие подтверждённые аккаунты сохраняются.
-python3 scripts/run_test_model_local.py COA-8232 COA-8231 --provision --maven=-q
-python3 scripts/run_test_model_local.py COA-8232 COA-8231 --maven=-q
+python3 scripts/run_test_model_local.py COA-8232 COA-8231 --provision --app "/path/to/The Coach.app" --maven=-q
+python3 scripts/run_test_model_local.py COA-8232 COA-8231 --app "/path/to/The Coach.app" --maven=-q
 ```
 
 Нужны запущенный Appium, iOS Simulator, `xcrun`, `ffmpeg` в PATH и Python 3.
-Стандартная сборка runner: `/Users/deedles/Downloads/The Coach 3.app`.
-Другую сборку можно передать через `--app`.
+Передайте Simulator-сборку через `--app "/path/to/The Coach.app"` во всех командах ниже.
 
 ## Проверки
 
@@ -79,7 +79,7 @@ Keep It Hard в Last Longer только на UID-проверенном выд�
 Для проверки rollback при реальном сбое есть отдельный инфраструктурный сценарий:
 
 ```bash
-python3 scripts/run_test_model_local.py COA-8232 --maven=-q \
+python3 scripts/run_test_model_local.py COA-8232 --app "/path/to/The Coach.app" --maven=-q \
   '--maven=-Dtest=tests.TodayProgramSelectorTests#testProgramChangeFixtureRestoresAfterFailure'
 ```
 

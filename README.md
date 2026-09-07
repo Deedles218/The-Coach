@@ -283,3 +283,34 @@ programs/Courses blocks, the three card templates, card title availability
 for the `title` analytics property, navigation to lesson/practice or WebView
 destinations, and the Quick Tips `coach_video` redirect into the native video
 player.
+
+
+## Previously validated Jira/Xray iOS subset
+
+The earlier ready-only publication validated these eight scenarios:
+COA-7947, COA-8235, COA-8517, COA-8228, COA-8230, COA-8227, COA-8232 and COA-8231.
+COA-8229 is also checked inside COA-8227. All scenarios retain their Jira keys in
+Allure. The full suite now also includes the authorization/customization tests
+described above: COA-7949/7950 retain their failing expectations on the current
+build, COA-8511/8512 passed with Kegel Challenge, and COA-8518 remains deferred.
+The user accepted keeping these tests as-is for inspection in a later run report.
+Use the explicit-case command below to run only the earlier validated subset.
+
+The explicit-case macOS runner reads credentials from Keychain and passes them
+through the child environment. Start Appium and supply a Simulator build:
+
+```bash
+python3 scripts/run_test_model_local.py COA-8232 COA-8231 --provision --app "/path/to/The Coach.app" --maven=-q
+python3 scripts/run_test_model_local.py COA-7947 COA-8235 COA-8517 COA-8228 COA-8230 COA-8227 COA-8232 COA-8231 --app "/path/to/The Coach.app" --maven=-q
+```
+
+Provisioning is explicit and preserves already confirmed accounts. Read-only
+selector tests reuse COA-8235. Program changes use dedicated UID-verified accounts
+and restore the source program, day and progress even on failure. COA-8517 uses
+its own resettable recovery fixture and checks every applicable program day.
+Tests run sequentially against one Simulator; the runner never implicitly starts
+the full suite. Video checks require `ffmpeg`, `xcrun` and Python 3.
+
+See [ready coverage, setup and validation](docs/ready-ios-autotests.md) and
+[Today selector implementation](docs/today-program-selector-automation.md).
+Generated screenshots, recordings, cache evidence and reports stay local under `target/`.

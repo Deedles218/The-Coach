@@ -27,3 +27,6 @@ __pycache__/
 *.pyc
 /target/test-model-fixtures/
 /target/test-model-evidence/
+
+# Local build, simulator recordings and test reports
+/target/
