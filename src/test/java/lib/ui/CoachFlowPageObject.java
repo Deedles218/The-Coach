@@ -1,5 +1,6 @@
 package lib.ui;
 
+import io.appium.java_client.HidesKeyboard;
 import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.factories.DailyPlanPageObjectFactory;
@@ -186,6 +187,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.submitLoginEmail();
         this.assertOtpScreenIsDisplayedForEmail(email);
         this.typeSecurityCode(otpCode);
+        this.completeAuthorizationAfterSecurityCode();
+    }
+
+    @Step("Complete authorization after entering the security code")
+    public void completeAuthorizationAfterSecurityCode() {
         this.waitForAuthorizedDashboard();
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Authorization loading indicator is still displayed", 30);
         this.closePdfGuideUpsellIfPresent();
@@ -742,8 +748,12 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     @Step("Hide keyboard if it is visible")
     public void hideKeyboardIfPossible() {
         try {
-            Map<String, Object> args = new HashMap<String, Object>();
-            ((JavascriptExecutor) driver).executeScript("mobile: hideKeyboard", args);
+            if (driver instanceof HidesKeyboard) {
+                ((HidesKeyboard) driver).hideKeyboard();
+            } else {
+                Map<String, Object> args = new HashMap<String, Object>();
+                ((JavascriptExecutor) driver).executeScript("mobile: hideKeyboard", args);
+            }
         } catch (Exception e) {
             System.out.println("Keyboard was not hidden automatically; continuing.");
         }

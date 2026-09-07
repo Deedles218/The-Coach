@@ -17,6 +17,20 @@ public final class TestData {
         );
     }
 
+    public static TestAccount testModelAccount(String caseKey) {
+        String key = caseKey.replace("-", "").toUpperCase(Locale.ROOT);
+        String email = configured("coach." + key.toLowerCase(Locale.ROOT) + ".email", "COACH_" + key + "_EMAIL");
+        String otp = configured("coach." + key.toLowerCase(Locale.ROOT) + ".otp", "COACH_" + key + "_OTP");
+        if (email == null && otp == null && ("COA8235".equals(key) || "COA7949".equals(key))) {
+            return existingProgressAccount();
+        }
+        if (email == null || otp == null) {
+            throw new IllegalStateException("Dedicated account required for " + caseKey
+                    + ": configure COACH_" + key + "_EMAIL and COACH_" + key + "_OTP");
+        }
+        return new TestAccount(email, otp);
+    }
+
     public static TestAccount kegelPlayerAccount() {
         String configuredEmail = configured("coach.kegelPlayer.email", "COACH_KEGEL_PLAYER_EMAIL");
         String configuredOtp = configured("coach.kegelPlayer.otp", "COACH_KEGEL_PLAYER_OTP");
@@ -101,6 +115,13 @@ public final class TestData {
         }
 
         String sanitized = text;
+        for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518"}) {
+            for (String field : new String[]{"email", "otp"}) {
+                String value = configured("coach." + key.toLowerCase(Locale.ROOT) + "." + field,
+                        "COACH_" + key + "_" + field.toUpperCase(Locale.ROOT));
+                if (value != null) sanitized = sanitized.replace(value, "<redacted-" + field + ">");
+            }
+        }
         String email = configured("coach.existingProgress.email", "COACH_EXISTING_PROGRESS_EMAIL");
         String otp = configured("coach.existingProgress.otp", "COACH_EXISTING_PROGRESS_OTP");
         String noProgressEmail = configured("coach.validEmailWithoutProgress", "COACH_VALID_EMAIL_WITHOUT_PROGRESS");

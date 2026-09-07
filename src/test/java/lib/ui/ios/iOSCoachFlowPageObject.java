@@ -94,4 +94,65 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     public iOSCoachFlowPageObject(RemoteWebDriver driver) {
         super(driver);
     }
+
+    @Override
+    public void ensureLoggedOutOnStartScreen() {
+        activateAppIfPossible();
+        // A cold simulator launch can render the subscription error after the
+        // first optional-popup check. Wait for an actionable entry surface.
+        createWait(30).withMessage("No actionable screen after launching Coach").until(ignored ->
+                isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
+                        || isElementVisible(TAB_TODAY) || isElementVisible(PROFILE_SCREEN)
+                        || isElementVisible(CLOSE_LOGIN_BUTTON) || isElementVisible(ONBOARDING_BACK_BUTTON)
+                        || isElementVisible(PDF_GUIDE_UPSELL_TITLE) || isElementVisible(NOTIFICATION_PROMPT_TITLE)
+                        || isElementVisible(CONNECT_EMAIL_PROMPT_TITLE)
+                        || isElementVisible("id:subscription_error_illustration")
+                        || isElementVisible("id:SpecialOfferClose")
+                        || isElementVisible("id:CoachProgramSettingsIcon")
+                        || isElementVisible("id:navBarRoundBack"));
+        closeProgramScreensIfPresent();
+        super.ensureLoggedOutOnStartScreen();
+    }
+
+    @Override
+    public void cleanupForNextTest() {
+        closeProgramScreensIfPresent();
+        super.cleanupForNextTest();
+    }
+
+    private void closeProgramScreensIfPresent() {
+        if (isElementVisible("id:subscription_error_illustration") || isElementVisible("id:SpecialOfferClose")) {
+            createWait(25).withMessage("Cannot dismiss the optional subscription screens before cleanup").until(webDriver -> {
+                if (isElementVisible("id:subscription_error_illustration")) {
+                    waitForElementAndClick("id:ic_outline_close", "Cannot close unavailable subscription options", 5);
+                    return false;
+                }
+                if (isElementVisible("id:SpecialOfferClose")) {
+                    waitForElementAndClick("id:SpecialOfferClose", "Cannot close the optional special offer", 5);
+                    return false;
+                }
+                if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) {
+                    waitForElementAndClick(NOTIFICATION_PROMPT_CLOSE_BUTTON, "Cannot close the optional notification prompt", 5);
+                    return false;
+                }
+                return isElementVisible("id:Today") || isElementVisible(START_SCREEN_TITLE);
+            });
+        }
+        String settings = "xpath://XCUIElementTypeNavigationBar[@name='Settings' and @visible='true']";
+        if (isElementVisible("id:Restore")
+                && (isElementVisible("id:SettingsCheckBoxInactive") || isElementVisible("id:SettingsCheckBoxActive"))) {
+            // Current removed-exercises header has an unnamed close button.
+            waitForElementAndClick("xpath://XCUIElementTypeButton[not(@name) and @visible='true' and number(@y)<100]",
+                    "Cannot close Removed exercises before session cleanup", 5);
+            waitForElementNotPresent("id:Restore", "Removed exercises did not close", 10);
+        }
+        if (isElementVisible(settings)) {
+            waitForElementAndClick("id:navBarRoundBack", "Cannot leave program Settings", 5);
+            waitForElementPresent("id:CoachProgramSettingsIcon", "Program detail did not reappear", 10);
+        }
+        if (isElementVisible("id:CoachProgramSettingsIcon")) {
+            waitForElementAndClick("id:CloseRoundBlack", "Cannot leave program detail", 5);
+            waitForElementPresent("id:Today", "Main tabs did not reappear", 10);
+        }
+    }
 }

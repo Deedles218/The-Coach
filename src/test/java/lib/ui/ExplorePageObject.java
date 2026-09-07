@@ -10,12 +10,24 @@ import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 abstract public class ExplorePageObject extends MainPageObject {
     protected static final String
             TEST_ID_EXPLORE_TAB = "id:tab_explore",
             TEST_ID_EXPLORE_SELECTED = "id:tab_explore_selected",
+            TEST_ID_EXPLORE_PROGRAM_ITEM = "id:explore_program_item",
+            TEST_ID_OVERALL_HEALTH_PROGRAM = "id:overall_health_program",
+            TEST_ID_PROGRAM_SETTINGS = "id:program_settings",
+            TEST_ID_PROGRAM_SETTINGS_SCREEN = "id:program_settings_screen",
+            TEST_ID_REMOVED_EXERCISES = "id:removed_exercises",
+            TEST_ID_REMOVED_EXERCISES_SCREEN = "id:removed_exercises_screen",
+            TEST_ID_REMOVED_EXERCISE_CARD = "id:removed_exercise_card",
+            TEST_ID_REMOVED_EXERCISE_CHECKBOX = "id:removed_exercise_checkbox",
+            TEST_ID_RECOVER_REMOVED_EXERCISE = "id:recover_removed_exercise",
+            TEST_ID_PROGRAM_DAY_CONTAINER = "id:program_day_container",
+            TEST_ID_RECOVERED_EXERCISE_CARD = "id:recovered_exercise_card",
             TEST_ID_LOADING = "id:loading_indicator";
 
     protected static String
@@ -46,6 +58,7 @@ abstract public class ExplorePageObject extends MainPageObject {
             FIRST_PROGRAM_CARD,
             FIRST_PROGRAM_CARD_IMAGE,
             FIRST_PROGRAM_TITLE,
+            EXPLORE_PROGRAM_ITEMS,
             LAST_RECOMMENDED_PROGRAM_CARD,
             LAST_RECOMMENDED_PROGRAM_TITLE,
             PROGRAM_DETAIL_TITLE,
@@ -73,7 +86,17 @@ abstract public class ExplorePageObject extends MainPageObject {
             PRACTICE_DETAIL_HEADER,
             PRACTICE_DETAIL_GOAL,
             PRACTICE_DETAIL_START_BUTTON,
-            CONCEPT_POPUP_CONFIRM_BUTTON;
+            CONCEPT_POPUP_CONFIRM_BUTTON,
+            OVERALL_HEALTH_PROGRAM,
+            PROGRAM_SETTINGS_BUTTON,
+            PROGRAM_SETTINGS_SCREEN,
+            REMOVED_EXERCISES_BUTTON,
+            REMOVED_EXERCISES_SCREEN,
+            REMOVED_EXERCISE_CARD,
+            REMOVED_EXERCISE_CHECKBOX,
+            RECOVER_REMOVED_EXERCISE_BUTTON,
+            PROGRAM_DAY_CONTAINERS,
+            RECOVERED_EXERCISE_CARDS;
 
     public ExplorePageObject(RemoteWebDriver driver) {
         super(driver);
@@ -106,7 +129,158 @@ abstract public class ExplorePageObject extends MainPageObject {
                 "Explore loading indicator is still displayed",
                 20
         );
-        this.waitForElementPresent(RECOMMENDED_SECTION, "Explore content did not load", 15);
+        this.waitForFirstElementPresent(new String[]{RECOMMENDED_SECTION, EXPLORE_PROGRAM_ITEMS},
+                "Explore content did not load", 15);
+    }
+
+    @Step("Read program names from Explore")
+    public List<String> getProgramNamesFromExplore() {
+        String itemLocator = this.isElementPresent(TEST_ID_EXPLORE_PROGRAM_ITEM)
+                ? TEST_ID_EXPLORE_PROGRAM_ITEM
+                : EXPLORE_PROGRAM_ITEMS;
+        this.waitForElementPresent(
+                itemLocator,
+                "Explore does not expose readable program cards",
+                15
+        );
+        List<String> names = this.getElementAccessibleNames(itemLocator);
+        Assert.assertFalse("Explore contains no readable program names", names.isEmpty());
+        return names;
+    }
+
+    @Step("Open Overall Health program Settings")
+    public void openOverallHealthProgramSettings() {
+        this.swipeUpToFindFirstVisibleElement(
+                new String[]{TEST_ID_OVERALL_HEALTH_PROGRAM, OVERALL_HEALTH_PROGRAM},
+                "Overall Health program is not available in Explore",
+                5
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_OVERALL_HEALTH_PROGRAM, OVERALL_HEALTH_PROGRAM},
+                "Cannot open Overall Health program from Explore",
+                10
+        );
+        this.waitForElementPresent(
+                PROGRAM_DETAIL_TITLE,
+                "Overall Health program details did not open",
+                15
+        );
+        this.swipeUpToFindFirstVisibleElement(
+                new String[]{TEST_ID_PROGRAM_SETTINGS, PROGRAM_SETTINGS_BUTTON},
+                "Settings action is not available for Overall Health",
+                4
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROGRAM_SETTINGS, PROGRAM_SETTINGS_BUTTON},
+                "Cannot open Overall Health Settings",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROGRAM_SETTINGS_SCREEN, PROGRAM_SETTINGS_SCREEN},
+                "Overall Health Settings screen did not open",
+                15
+        );
+    }
+
+    @Step("Open Removed exercises in program Settings")
+    public void openRemovedExercises() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_REMOVED_EXERCISES, REMOVED_EXERCISES_BUTTON},
+                "Cannot open Removed exercises",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_REMOVED_EXERCISES_SCREEN, REMOVED_EXERCISES_SCREEN},
+                "Removed exercises screen did not open",
+                15
+        );
+    }
+
+    @Step("Select a removed exercise and recover it")
+    public void selectRemovedExerciseAndRecover() {
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_REMOVED_EXERCISE_CARD, REMOVED_EXERCISE_CARD},
+                "Removed exercises list is empty",
+                15
+        );
+        WebElement checkbox = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_REMOVED_EXERCISE_CHECKBOX, REMOVED_EXERCISE_CHECKBOX},
+                "Removed exercise checkbox is not displayed",
+                10
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_REMOVED_EXERCISE_CHECKBOX, REMOVED_EXERCISE_CHECKBOX},
+                "Cannot select removed exercise",
+                10
+        );
+        checkbox = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_REMOVED_EXERCISE_CHECKBOX, REMOVED_EXERCISE_CHECKBOX},
+                "Removed exercise checkbox disappeared after selection",
+                10
+        );
+        Assert.assertTrue(
+                "Removed exercise checkbox is not checked after selection",
+                isSelected(checkbox)
+        );
+        this.waitForFirstElementEnabled(
+                new String[]{TEST_ID_RECOVER_REMOVED_EXERCISE, RECOVER_REMOVED_EXERCISE_BUTTON},
+                "RECOVER action is not enabled after selecting a removed exercise",
+                10
+        );
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_RECOVER_REMOVED_EXERCISE, RECOVER_REMOVED_EXERCISE_BUTTON},
+                "Cannot tap RECOVER",
+                10
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_REMOVED_EXERCISES_SCREEN, REMOVED_EXERCISES_SCREEN},
+                "Removed exercises modal is still displayed after recovery",
+                15
+        );
+        this.assertRecoveredExerciseIsPresentInEveryProgramDay();
+    }
+
+    @Step("Verify recovered exercise is present in every program day")
+    public void assertRecoveredExerciseIsPresentInEveryProgramDay() {
+        this.waitForElementPresent(
+                TEST_ID_PROGRAM_DAY_CONTAINER,
+                "Overall Health program days are not displayed after recovery",
+                15
+        );
+        this.waitForElementPresent(
+                TEST_ID_RECOVERED_EXERCISE_CARD,
+                "Recovered exercise is not displayed after recovery",
+                15
+        );
+        int dayCount = this.getAmountElements(TEST_ID_PROGRAM_DAY_CONTAINER);
+        int recoveredCardCount = this.getAmountElements(TEST_ID_RECOVERED_EXERCISE_CARD);
+        Assert.assertTrue(
+                "Recovered exercise must be present in every program day. Days: "
+                        + dayCount + ", recovered cards: " + recoveredCardCount,
+                dayCount > 0 && recoveredCardCount >= dayCount
+        );
+    }
+
+    public void assertRecoveredFixtureCardIsRendered() {
+        throw new UnsupportedOperationException("The reviewed recovery fixture needs platform-specific rendering verification");
+    }
+
+    private boolean isSelected(WebElement element) {
+        String[] attributes = new String[]{"value", "selected", "checked"};
+        for (String attribute : attributes) {
+            try {
+                String value = element.getAttribute(attribute);
+                if ("1".equals(value)
+                        || "true".equalsIgnoreCase(value)
+                        || "yes".equalsIgnoreCase(value)
+                        || "checked".equalsIgnoreCase(value)) {
+                    return true;
+                }
+            } catch (Exception ignored) {
+                // Continue with the next driver-specific state attribute.
+            }
+        }
+        return element.isSelected();
     }
 
     @Step("Verify current Explore sections")

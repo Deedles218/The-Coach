@@ -18,11 +18,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             TEST_ID_TODAY_TAB = "id:tab_today",
             TEST_ID_TODAY_SELECTED = "id:tab_today_selected",
             TEST_ID_ACTIVE_PROGRAM = "id:active_program_name",
+            TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR = "id:daily_plan_program_selector",
+            TEST_ID_PROGRAM_SELECTOR_MODAL = "id:program_selector_modal",
+            TEST_ID_PROGRAM_SELECTOR_ITEM = "id:program_selector_item",
+            TEST_ID_PROGRAM_SELECTOR_CLOSE = "id:program_selector_close",
             TEST_ID_DAILY_PLAN_DAY = "id:daily_plan_current_day",
             TEST_ID_DAILY_PLAN_LEFT = "id:daily_plan_previous_day",
             TEST_ID_DAILY_PLAN_RIGHT = "id:daily_plan_next_day",
             TEST_ID_DAILY_LESSONS = "id:daily_lessons",
             TEST_ID_DAILY_PRACTICE = "id:daily_practice",
+            TEST_ID_PROGRAM_PROGRESS = "id:program_progress_percent",
             TEST_ID_KEGEL_CARD = "id:daily_practice_kegel",
             TEST_ID_KEGEL_START_SCREEN = "id:kegel_start_screen",
             TEST_ID_PRACTICE_START = "id:kegel_start_workout",
@@ -45,6 +50,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             TAB_TODAY,
             SELECTED_TODAY_TAB,
             ACTIVE_PROGRAM_TITLE,
+            PROGRAM_SELECTOR,
+            PROGRAM_SELECTOR_MODAL,
+            PROGRAM_SELECTOR_ITEMS,
+            PROGRAM_SELECTOR_CLOSE,
             DAILY_PLAN_DAY_SWITCHER,
             CURRENT_DAY_LABEL,
             LEFT_SWITCHER_ARROW,
@@ -58,6 +67,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             DAILY_PRACTICE_TITLE,
             FIRST_PRACTICE_TITLE,
             FIRST_PRACTICE_TYPE,
+            PROGRAM_PROGRESS_LABEL,
             PRACTICE_SCREEN_TITLE,
             PRACTICE_SCREEN_GOAL_TITLE,
             PRACTICE_SCREEN_EXERCISES_TITLE,
@@ -165,19 +175,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Active program name is not displayed on Today",
                 20
         );
-        String[] attributes = new String[]{"text", "name", "label", "value"};
-        for (String attribute : attributes) {
-            try {
-                String value = program.getAttribute(attribute);
-                if (value != null && !value.trim().isEmpty()) {
-                    return value.trim();
-                }
-            } catch (Exception ignored) {
-                // Attribute availability differs between UiAutomator2/XCUITest.
-            }
-        }
-        String text = program.getText();
-        return text == null ? "" : text.trim();
+        return this.getElementAccessibleName(program);
     }
 
     @Step("Verify Today program matches onboarding: {expectedProgram}")
@@ -190,7 +188,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "(^|[^A-Z0-9])" + java.util.regex.Pattern.quote(expectedUpper) + "([^A-Z0-9]|$)"
         ).matcher(actualUpper).find();
         String canonicalActual = canonicalProgramCode(actualUpper);
-        boolean matches = abbreviationMatches || expectedUpper.equals(canonicalActual);
+        String canonicalExpected = canonicalProgramCode(expectedUpper);
+        boolean matches = abbreviationMatches
+                || expectedUpper.equals(canonicalActual)
+                || canonicalExpected.equals(canonicalActual);
         Assert.assertTrue(
                 "Onboarding goal maps to program '" + expectedProgram
                         + "', but Today displays '" + actualProgram + "'",
@@ -215,6 +216,52 @@ abstract public class DailyPlanPageObject extends MainPageObject {
             return "UNHOOKED";
         }
         return visibleProgramName.trim();
+    }
+
+    @Step("Open Daily Plan program selector")
+    public void openProgramSelector() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR, PROGRAM_SELECTOR, TEST_ID_ACTIVE_PROGRAM, ACTIVE_PROGRAM_TITLE},
+                "Cannot open the Daily Plan program selector",
+                10
+        );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_MODAL, PROGRAM_SELECTOR_MODAL},
+                "Daily Plan program selector modal did not open",
+                15
+        );
+    }
+
+    @Step("Read program names from Daily Plan selector")
+    public java.util.List<String> getProgramNamesFromSelector() {
+        String itemLocator = this.isElementPresent(TEST_ID_PROGRAM_SELECTOR_ITEM)
+                ? TEST_ID_PROGRAM_SELECTOR_ITEM
+                : PROGRAM_SELECTOR_ITEMS;
+        this.waitForElementPresent(
+                itemLocator,
+                "Daily Plan program selector does not expose program items",
+                10
+        );
+        java.util.List<String> names = this.getElementAccessibleNames(itemLocator);
+        Assert.assertFalse(
+                "Daily Plan program selector contains no readable program names",
+                names.isEmpty()
+        );
+        return names;
+    }
+
+    @Step("Close Daily Plan program selector")
+    public void closeProgramSelector() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_CLOSE, PROGRAM_SELECTOR_CLOSE},
+                "Cannot close the Daily Plan program selector",
+                10
+        );
+        this.waitForFirstElementNotPresent(
+                new String[]{TEST_ID_PROGRAM_SELECTOR_MODAL, PROGRAM_SELECTOR_MODAL},
+                "Daily Plan program selector modal is still displayed after closing",
+                10
+        );
     }
 
     @Step("Verify Daily Plan header and current day are displayed")
@@ -249,10 +296,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Current Daily Plan day label is not displayed",
                 10
         );
-        String actualDay = currentDay.getAttribute("name");
-        if (actualDay == null || actualDay.trim().isEmpty()) {
-            actualDay = currentDay.getText();
-        }
+        String actualDay = this.getElementAccessibleName(currentDay);
         Assert.assertTrue(
                 "Daily Plan day does not match the deterministic fixture. Expected to contain '"
                         + expectedDay + "' but was '" + actualDay + "'.",
@@ -1098,6 +1142,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         }
     }
 
+    @Step("Read the configured program progress")
+    public String getProgramProgressValue() {
+        WebElement progress = this.waitForFirstElementPresent(
+                new String[]{TEST_ID_PROGRAM_PROGRESS, PROGRAM_PROGRESS_LABEL},
+                "Program progress value is not displayed",
+                10
+        );
+        return this.getElementAccessibleName(progress);
+    }
+
     @Step("Tap Remove from Daily Plan action")
     public void tapRemoveFromDailyPlanAction() {
         this.waitForElementAndClick(
@@ -1253,11 +1307,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Cannot find current Daily Plan day label",
                 10
         );
-        String day = currentDay.getAttribute("name");
-        if (day == null || day.trim().isEmpty()) {
-            day = currentDay.getText();
-        }
-        return day;
+        return this.getElementAccessibleName(currentDay);
     }
 
     public void mobileSwipeDown() {
