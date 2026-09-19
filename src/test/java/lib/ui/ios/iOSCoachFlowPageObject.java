@@ -112,6 +112,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || isElementVisible(CONNECT_EMAIL_PROMPT_TITLE)
                         || isElementVisible("id:subscription_error_illustration")
                         || isElementVisible("id:SpecialOfferClose")
+                        || isElementVisible("id:Get an access for your partner")
                         || isElementVisible("id:CoachProgramSettingsIcon")
                         || isElementVisible("id:navBarRoundBack"));
         closeProgramScreensIfPresent();
@@ -125,8 +126,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closePartnerPromoIfPresent();
         if (isElementVisible("id:subscription_error_illustration") || isElementVisible("id:SpecialOfferClose")) {
             createWait(25).withMessage("Cannot dismiss the optional subscription screens before cleanup").until(webDriver -> {
+                closePartnerPromoIfPresent();
                 if (isElementVisible("id:subscription_error_illustration")) {
                     waitForElementAndClick("id:ic_outline_close", "Cannot close unavailable subscription options", 5);
                     return false;
@@ -158,5 +161,28 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             waitForElementAndClick("id:CloseRoundBlack", "Cannot leave program detail", 5);
             waitForElementPresent("id:Today", "Main tabs did not reappear", 10);
         }
+    }
+
+    @Override
+    public void openProfile() {
+        closePartnerPromoIfPresent();
+        super.openProfile();
+    }
+
+    @Override
+    public void openToday() {
+        closePartnerPromoIfPresent();
+        super.openToday();
+    }
+
+    public void closePartnerPromoIfPresent() {
+        String title = "id:Get an access for your partner";
+        if (!isElementVisible(title)) return;
+        // Observed 2026-09-19: the only unnamed button in this modal is its X.
+        // Scope to the promo container rather than clicking an arbitrary close.
+        String close = "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner']"
+                + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
+        waitForElementAndClick(close, "Cannot close optional partner promo", 10);
+        waitForElementNotVisible(title, "Partner promo remains visible", 10);
     }
 }

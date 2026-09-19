@@ -15,10 +15,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE = "the-coach-test-model-accounts"
 PREMIUM_SERVICE = "the-coach-test-model-premium"
+MODULES_PREMIUM_SERVICE = "the-coach-modules-premium"
 OWNER = getpass.getuser()
 READ_ONLY_SELECTOR_CASES = ("COA-8228", "COA-8230", "COA-8227")
 SELECTOR_CASES = READ_ONLY_SELECTOR_CASES + ("COA-8232", "COA-8231")
 METHODS = {
+    "COA-9044": "modules-suite",
     "COA-8232": "testCoa8232SelectingProgramUpdatesToday",
     "COA-8231": "testCoa8231ActiveProgramIsFirstAfterSwitch",
     "COA-8228": "testCoa8228SwipeDownClosesSelector",
@@ -67,7 +69,9 @@ def run(key, record, accounts, args):
     env["COACH_VALID_EMAIL_WITHOUT_PROGRESS"] = local.split("+", 1)[0] + "+validation@" + domain
     cmd = ["bash", str(ROOT / "ci-scripts/run-ios-simulator.sh"),
            "-Dios.noReset=true", "-Dios.fullReset=false"]
-    if getattr(args, "inspect_premium", False):
+    if getattr(args, "modules_inspect_account", False):
+        cmd += ["-Dtest=tests.ModulesAccountInspectionTests", "-Dcoach.modules.inspectAccount=true"]
+    elif getattr(args, "inspect_premium", False):
         cmd += ["-Dtest=tests.TestModelPremiumInspectionTests#inspectApprovedPremiumAccountWithoutReset",
                 "-Dcoach.testModel.inspectPremium=true", "-Dcoach.testModel.case=" + key]
         if getattr(args, "inspect_programs", False):
@@ -75,6 +79,9 @@ def run(key, record, accounts, args):
     elif args.provision:
         cmd += ["-Dtest=tests.TestModelAccountProvisioningTests#testProvisionAndVerifyDedicatedAccount",
                 "-Dcoach.testModel.provision=true", "-Dcoach.testModel.case=" + key]
+    elif key == "COA-9044":
+        cmd += ["-Dtest=suites.ModulesSuite", "-Dcoach.modules.enabled=true",
+                "-Dcoach.modules.programId=" + args.modules_program_id]
     else:
         test_class = "TodayProgramSelectorTests" if key in SELECTOR_CASES else "TestModelAutomationTests"
         cmd += ["-Dtest=tests." + test_class + "#" + METHODS[key]]
@@ -105,7 +112,53 @@ def main():
     parser.add_argument("--inspect-programs", action="store_true", help="Temporarily view Overall Health/Kegel and verify restoration of the original program, day and progress")
     parser.add_argument("--app", default="/Users/deedles/Downloads/The Coach 3.app")
     parser.add_argument("--maven", action="append", default=[])
+    parser.add_argument("--modules-program-id", help="Prepared module program_id; required for the modules suite")
+    parser.add_argument("--modules-premium", action="store_true", help="Use the separately supplied module subscription account")
+    parser.add_argument("--modules-inspect-account", action="store_true", help="Login and inspect that account without changing progress")
     args = parser.parse_args()
+    if "COA-9044" in args.cases:
+        if args.cases != ["COA-9044"]:
+            parser.error("Run the isolated modules suite separately from other accounts")
+        if not args.provision and not args.modules_inspect_account and not args.modules_program_id:
+            parser.error("The modules suite requires --modules-program-id")
+        # Check before even planning/storing a new account. Never accept a
+        # license or create account metadata on behalf of an unavailable device.
+        device_check = subprocess.run(["xcrun", "simctl", "list", "devices", "available"],
+                                      capture_output=True, text=True)
+        if device_check.returncode:
+            raise RuntimeError("iOS Simulator unavailable. Resolve Xcode setup/license before module provisioning or execution")
+    if args.modules_inspect_account and not args.modules_premium:
+        parser.error("Module account inspection requires --modules-premium")
+    if args.modules_premium:
+        if args.cases != ["COA-9044"] or args.provision or args.inspect_premium or args.inspect_programs:
+            parser.error("The supplied modules account is only for module inspection/tests, never provisioning")
+        record = json.loads(keychain(MODULES_PREMIUM_SERVICE))
+        if record.get("allowedCases") != ["COA-9044"]:
+            raise RuntimeError("Supplied modules account has no matching scope")
+        evidence = ROOT / "target/modules-premium-inspection.json"
+        if args.modules_inspect_account:
+            evidence.unlink(missing_ok=True)
+        elif not record.get("uid") or record.get("subscriptionActive") is not True:
+            raise RuntimeError("Inspect the supplied account and verify Premium before module tests")
+        result = run("COA-9044", record, {"COA-9044": record}, args)
+        latest = json.loads(keychain(MODULES_PREMIUM_SERVICE))
+        if latest.get("email") != record.get("email"):
+            raise RuntimeError("Module account changed during execution; stale update refused")
+        if args.modules_inspect_account and result == 0:
+            snapshot = json.loads(evidence.read_text())
+            if snapshot.get("loginVerified") is not True:
+                raise RuntimeError("Module account login was not verified")
+            from test_model_app_api import PreprodAppClient
+            checked = dict(record, uid=snapshot["uid"], status="confirmed")
+            udid = os.environ.get("IOS_SIMULATOR_UDID", "00CA21E8-4A92-4607-A941-E5FD2E29DAC5")
+            client = PreprodAppClient("COA-9044", checked, udid, read_only=True)
+            active = client.get("/api/v1/user/").get("userdata", {}).get("subscription", {}).get("active")
+            latest.update(uid=snapshot["uid"], subscriptionActive=active is True, baseline=snapshot)
+            print("Supplied account identity verified; subscriptionActive=" + str(active))
+            print("Current Today: " + snapshot["program"] + "; " + snapshot["stage"] + "; " + snapshot["progress"])
+        latest["lastInspectionExit" if args.modules_inspect_account else "lastTestExit"] = result
+        save(latest, MODULES_PREMIUM_SERVICE)
+        return result
     accounts = json.loads(keychain(SERVICE, optional=True) or "{}")
     if args.status:
         print(json.dumps({key: {k: v for k, v in data.items() if k not in ("email", "otp")}

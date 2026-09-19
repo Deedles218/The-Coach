@@ -148,7 +148,7 @@ public final class TestData {
         }
 
         String sanitized = text;
-        for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518"}) {
+        for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518", "COA9044"}) {
             for (String field : new String[]{"email", "otp"}) {
                 String value = configured("coach." + key.toLowerCase(Locale.ROOT) + "." + field,
                         "COACH_" + key + "_" + field.toUpperCase(Locale.ROOT));

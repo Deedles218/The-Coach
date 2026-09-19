@@ -15,13 +15,26 @@ public final class SimulatorProgramContent {
 
     public static Map<String,Object> read(String caseKey, String programId, long actionBoundary) throws Exception {
         Assert.assertTrue("Unexpected selector fixture", "COA-8232".equals(caseKey) || "COA-8231".equals(caseKey));
+        return read(caseKey, programId, actionBoundary, false);
+    }
+
+    public static Map<String,Object> readIncompleteModule(String programId, long actionBoundary) throws Exception {
+        return read("COA-9044", programId, actionBoundary, true);
+    }
+
+    private static Map<String,Object> read(String caseKey, String programId, long actionBoundary,
+                                           boolean incompleteModule) throws Exception {
         String uid = System.getenv("COACH_" + caseKey.replace("-", "") + "_UID");
         Assert.assertNotNull("Current program content requires a dedicated fixture UID", uid);
+        Files.createDirectories(Paths.get("target"));
+        String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+        Assert.assertNotNull("Current program content requires an explicit simulator UDID", udid);
         Path folder = Files.createTempDirectory(Paths.get("target"), caseKey + "-content-");
         Path result = folder.resolve("content.json"), log = folder.resolve("reader.log");
         ProcessBuilder builder = new ProcessBuilder("python3", "scripts/read_simulator_program_content.py",
-                "--udid", System.getProperty("ios.udid"), "--program-id", programId,
+                "--udid", udid, "--program-id", programId,
                 "--not-before-ms", Long.toString(actionBoundary), "--output", result.toString());
+        if (incompleteModule) builder.command().add("--require-incomplete-module");
         builder.environment().put("COACH_EXPECTED_PROGRAM_UID", uid);
         Process reader = builder.redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {

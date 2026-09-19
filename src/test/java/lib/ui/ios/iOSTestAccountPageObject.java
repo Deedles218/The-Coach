@@ -84,6 +84,9 @@ public final class iOSTestAccountPageObject extends MainPageObject {
     }
 
     public boolean resumeAnonymousRegistration(TestData.TestAccount account) {
+        if (isElementVisible("id:Today") || isElementVisible("id:Get an access for your partner")) {
+            CoachFlowPageObjectFactory.get(driver).openProfile();
+        }
         String anonymousLogout = "xpath://XCUIElementTypeStaticText[contains(@name, 'Your account is currently anonymous')]";
         if (isElementVisible(anonymousLogout)) {
             waitForElementAndClick("id:CANCEL", "Cannot preserve pending anonymous registration", 5);
@@ -106,8 +109,11 @@ public final class iOSTestAccountPageObject extends MainPageObject {
         coach.typeLoginEmail(account.getEmail());
         waitForElementAndClick("id:CONTINUE", "Account lookup Continue is not enabled", 10);
         String missing = "xpath://XCUIElementTypeStaticText[contains(@name, 'Email not found')]";
-        waitForFirstElementPresent(new String[]{"id:ENTER SECURITY CODE", missing},
+        String lookupError = "xpath://XCUIElementTypeStaticText[@name='An error occured. Try again later.']";
+        waitForFirstElementPresent(new String[]{"id:ENTER SECURITY CODE", missing, lookupError},
                 "Account lookup returned neither OTP nor Email not found", 20);
+        Assert.assertFalse("Preprod account lookup returned 'An error occured. Try again later.'; "
+                + "account existence is unknown, provisioning was stopped", isElementVisible(lookupError));
         if (isElementVisible(missing)) {
             coach.returnFromLoginFlowToStartScreen();
             return false;

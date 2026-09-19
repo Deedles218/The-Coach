@@ -79,6 +79,18 @@ class SimulatorProgramContentTests(unittest.TestCase):
                           "sectionMetadata": {}, "cover": {"program_id": self.PROGRAM},
                           "questions": [{"id": "lesson_health", "headline": "Your Health"}]}, self.read())
 
+    def test_module_mode_reaches_validation_through_cache_reader(self):
+        self.insert()
+        with self.assertRaisesRegex(EvidenceError, "metadata"):
+            self.read(require_incomplete_module=True)
+
+    def test_module_mode_accepts_verified_fresh_incomplete_response(self):
+        self.payload["program_section"].update(module_order=1, module_name="Module 1: Basics",
+            module_current_day=1, module_total_days=2, module_completed=False, last_day_of_module=False)
+        self.payload["program_section"]["questions"][0]["is_moved_forward"] = False
+        self.insert()
+        self.assertEqual(2, self.read(require_incomplete_module=True)["sectionMetadata"]["module_total_days"])
+
     def test_reads_filesystem_body_without_touching_cache_or_body(self):
         self.insert(filesystem=True)
         paths = list(self.database.parent.rglob("*"))

@@ -244,6 +244,20 @@ public class CoreTestCase {
                 Files.copy(screenshot.toPath(), screenshotPath, StandardCopyOption.REPLACE_EXISTING);
                 byte[] screenshotBytes = Files.readAllBytes(screenshotPath);
                 addAllureAttachment("Failure screenshot", "image/png", screenshotBytes, "png");
+            } else if (driver instanceof TakesScreenshot
+                    && (rawPageSource.contains("ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT")
+                        || rawPageSource.contains("ENTER YOUR EMAIL TO SYNC YOUR PROGRESS AND SETTINGS"))
+                    && !rawPageSource.contains("ENTER SECURITY CODE")) {
+                try {
+                    byte[] screenshotBytes = LoginFailureScreenshot.redact(
+                            ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES), rawPageSource);
+                    Path screenshotPath = screenshotsDirectory.resolve(testName + "-redacted.png");
+                    Files.write(screenshotPath, screenshotBytes);
+                    addAllureAttachment("Failure screenshot (email and keyboard masked)", "image/png", screenshotBytes, "png");
+                } catch (Exception redactionFailure) {
+                    // Still save source/log diagnostics; never persist the unmasked image.
+                    System.err.println("Login screenshot redaction unavailable: " + redactionFailure.getClass().getSimpleName());
+                }
             }
 
             Path pageSourcePath = pageSourceDirectory.resolve(testName + ".xml");

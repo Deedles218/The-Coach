@@ -142,7 +142,7 @@ def _body(cache_dir, stored, on_filesystem):
         raise EvidenceError("Cached Today body is not JSON") from None
 
 
-def _oracle(payload, expected_program):
+def _oracle(payload, expected_program, require_incomplete_module=False):
     if not isinstance(payload, dict):
         raise EvidenceError("Cached Today payload is not an object")
     section, cover = payload.get("program_section"), payload.get("program_cover")
@@ -167,6 +167,29 @@ def _oracle(payload, expected_program):
             raise EvidenceError("Cached Today question identity/headline is missing or duplicated")
         seen.add(identifier)
         result.append({"id": identifier, "headline": headline})
+    if require_incomplete_module:
+        # Verify business state from the fresh app response, never from a flag
+        # claiming that a manually prepared account is ready.
+        for question in questions:
+            if question.get("completed") is not False:
+                raise EvidenceError("Module fixture has completed or unknown activity state")
+            # This API omits is_moved_forward for untouched cards (observed
+            # on the new COA-9044 account, including modifiable practices).
+            # Match the existing fixture clients: absent is not postponed;
+            # an explicitly malformed/null/true flag is still rejected.
+            if question.get("is_moved_forward", False) is not False:
+                raise EvidenceError("Module fixture has postponed or unknown activity state")
+        current, count = section.get("module_current_day"), section.get("module_total_days")
+        order = section.get("module_order")
+        if (type(current) is not int or type(count) is not int or type(order) is not int
+                or not 1 <= current <= count or count < 2 or order < 1
+                or not isinstance(section.get("module_name"), str) or not section["module_name"].strip()
+                or section.get("module_completed") is not False
+                or type(section.get("last_day_of_module")) is not bool
+                or section["last_day_of_module"] != (current == count)):
+            raise EvidenceError("Incomplete module fixture metadata is missing or inconsistent")
+        if day - current + count >= total:
+            raise EvidenceError("Module fixture must have a following module")
     headline = section.get("headline")
     if not isinstance(headline, str) or not headline.strip():
         raise EvidenceError("Cached Today program headline is absent")
@@ -192,7 +215,8 @@ def _oracle(payload, expected_program):
                 "program_id", "program_name", "program_text_1", "program_text_2", "program_text_3"))}
 
 
-def read_content(database, expected_uid, expected_program, not_before_ms, now=None):
+def read_content(database, expected_uid, expected_program, not_before_ms, now=None,
+                 require_incomplete_module=False):
     """Return only allowed oracle fields, or fail without an old-cache fallback."""
     now = time.time() if now is None else now
     if not isinstance(expected_uid, str) or not re.fullmatch(r"[A-Za-z0-9_-]{20,128}", expected_uid):
@@ -238,7 +262,8 @@ def read_content(database, expected_uid, expected_program, not_before_ms, now=No
     if len(candidates) > 1 and candidates[1][0] == newest[0]:
         raise EvidenceError("Multiple cached Today responses have the same newest timestamp")
     _verify_request(newest[1], expected_uid, now)
-    return _oracle(_body(database.parent, newest[2], newest[3]), expected_program)
+    return _oracle(_body(database.parent, newest[2], newest[3]), expected_program,
+                   require_incomplete_module=require_incomplete_module)
 
 
 def main():
@@ -247,6 +272,7 @@ def main():
     parser.add_argument("--program-id", required=True)
     parser.add_argument("--not-before-ms", required=True, type=int)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--require-incomplete-module", action="store_true")
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Fa-f0-9-]{36}", args.udid):
         raise EvidenceError("An explicit iOS simulator UDID is required")
@@ -256,7 +282,8 @@ def main():
         raise EvidenceError("Cannot locate the preprod app's simulator data container")
     database = Path(completed.stdout.strip()) / "Library/Caches" / BUNDLE / "Cache.db"
     result = read_content(database, os.environ.get("COACH_EXPECTED_PROGRAM_UID"),
-                          args.program_id, args.not_before_ms)
+                          args.program_id, args.not_before_ms,
+                          require_incomplete_module=args.require_incomplete_module)
     output = Path(args.output).resolve()
     if output == database.resolve() or database.parent.resolve() in output.parents:
         raise EvidenceError("The evidence output must be outside the app URL cache")

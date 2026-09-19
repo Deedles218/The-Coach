@@ -1,14 +1,17 @@
 # Smoke environment contract
 
+For setup on a new computer, start with the [step-by-step local guide](local-setup.md).
+Machine-specific paths and device identifiers below must be overridden locally.
+
 ## Confirmed by the repository
 
 | Parameter | Value | Source / note |
 |---|---|---|
-| Primary platform | iOS | `Platform` creates `IOSDriver`; Android defaults to an unrelated Wikipedia app and is not a Coach target. |
+| Primary platform | iOS; separate Android suites | `Platform` supports Coach on both platforms. Android defaults to `com.vamapps.thecoach`; `suites.SmokeSuite` itself is iOS-only. |
 | Automation | Appium + XCUITest | `pom.xml`, `Platform.java` |
 | Java / test runner | Java 8 / JUnit 4 | `pom.xml` |
 | Default bundle ID | `com.vamapps.preprod.The-Coach` | Override with `-Dios.bundleId` or `IOS_BUNDLE_ID`. |
-| Default device | `iPhone Daria`, iOS `26.6` | Override with `IOS_DEVICE_NAME`, `IOS_PLATFORM_VERSION`, `IOS_UDID`. |
+| Default device | `iPhone Daria`, iOS `26.5` | `Platform.java` defaults; override with `IOS_DEVICE_NAME`, `IOS_PLATFORM_VERSION`, `IOS_UDID`. |
 | App artifact | unknown until CI supplies it | Required for real clean install: `-Dios.app=/path/to/The-Coach.app` or `IOS_APP`. |
 | Build number | unknown | Must be recorded by CI as `BUILD_NUMBER`/Allure environment metadata. |
 | Appium URL | `http://127.0.0.1:4723/` | Appium 2 root path; override with `APPIUM_URL`. |

@@ -30,8 +30,8 @@ class PreprodAppClient:
             from test_model_shared_overall_health import ApprovedOverallHealthFixtures
             ApprovedOverallHealthFixtures(case, account).verify_identity()
         elif read_only:
-            if case not in ("COA-8511", "COA-8512") or account.get("status") != "confirmed":
-                raise RuntimeError("Shared-account inspection is restricted to approved COA-8511/8512 identities")
+            if case not in ("COA-8511", "COA-8512", "COA-9044") or account.get("status") != "confirmed":
+                raise RuntimeError("Shared-account inspection requires a confirmed identity for an explicitly supported case")
             verify_preprod_account_email(account.get("uid", ""), account.get("email", ""))
         else:
             PreprodFixtures(case, account).verify_identity()

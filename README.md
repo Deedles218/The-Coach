@@ -1,6 +1,14 @@
 # The Coach: Men's Health tracker
- The Coach life style app Test Automation Project. Tests for iOS platform. 
+ The Coach life style app Test Automation Project. Tests for iOS and Android.
 Java/Appium/Maven/Jenkins/Allure
+
+## Настройка и первый запуск
+
+**Начните с [пошаговой инструкции для тестировщика](docs/local-setup.md).**
+В ней описаны установка инструментов, настройка iOS Simulator / iPhone / Android,
+подготовка тестовых аккаунтов, первый тест, запуск наборов и просмотр отчётов.
+Пути, UDID и профили ниже содержат примеры с компьютера автора; для нового
+компьютера используйте свои значения по инструкции.
 
 ## Run iOS tests for a specific build
 
@@ -174,6 +182,13 @@ described in `docs/smoke-environment.md`. For the quick P0 path, inject the
 approved existing-progress account into `COACH_EXISTING_PROGRESS_EMAIL` and
 omit the optional Kegel account variables to reuse that account. The P1 PDF
 paywall test remains blocked until the no-PDF account is provisioned.
+
+## Modules (isolated iOS suite)
+
+`suites.ModulesSuite` adds module header, intra-module navigation and locked-next-module
+checks from the September handoff. It uses its own COA-9044 account through the
+existing Keychain runner. See [coverage, fixture requirements and commands](docs/modules-automation.md).
+Completion, calendar transitions and the device matrix remain explicitly uncovered.
 
 ## iOS IPA on a real device
 
