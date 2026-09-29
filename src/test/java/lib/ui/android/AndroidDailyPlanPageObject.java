@@ -37,6 +37,82 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
     private static final String FIRST_PRACTICE_TYPE_IN_SECTION =
             FIRST_PRACTICE_CARD + "//android.widget.TextView[@resource-id='" + ID_PREFIX + "tvTagText']";
 
+    private static String aid(String name) { return "id:" + ID_PREFIX + name; }
+    private static String at(String text) { return "xpath://*[@text='" + text + "']"; }
+    private void scrollList(String id, String direction) {
+        WebElement list = waitForElementVisible(aid(id), "Android scroll container absent: " + id, 10);
+        Map<String,Object> args = new HashMap<String,Object>();
+        args.put("elementId", ((RemoteWebElement)list).getId());
+        args.put("direction", direction); args.put("percent", .8);
+        ((JavascriptExecutor)driver).executeScript("mobile: scrollGesture", args);
+    }
+    private void findInToday(String locator) {
+        for (int i=0; i<8; i++) {
+            if (isElementVisible(locator)) return;
+            scrollList("rvQuestions", "down");
+        }
+        waitForElementVisible(locator, "Required Today fixture card is absent", 1);
+    }
+    @Override public String getActiveProgramName() {
+        scrollQuestionsToTopIfPresent();
+        return waitForElementVisible("xpath://*[@resource-id='" + ID_PREFIX + "headerContainer']//*[@resource-id='" + ID_PREFIX + "tvGroupName']",
+                "Today program name is absent", 10).getText();
+    }
+    @Override public String getProgramProgressValue() {
+        scrollQuestionsToTopIfPresent();
+        return waitForElementVisible(aid("tvPercentages"), "Program progress is absent", 10).getText();
+    }
+    @Override public void assertDailyLessonsAreDisplayed() {
+        findInToday(DAILY_LESSONS_TITLE);
+        super.assertDailyLessonsAreDisplayed();
+    }
+    @Override public void returnFromDailyLessonToDailyPlan() {
+        waitForElementAndClick(aid("ivButtonClose"), "Cannot close Android lesson", 10);
+        if (isElementVisible(aid("tvDialogtitle"))) {
+            waitForElementAndClick(aid("btnYes"), "Cannot quit unfinished lesson", 10);
+        }
+        waitForElementVisible(CURRENT_DAY_LABEL, "Today did not return", 15);
+    }
+    @Override public void openFirstDailyPractice() {
+        assertDailyPracticeIsDisplayed();
+        waitForElementAndClick(FIRST_PRACTICE_CARD, "Cannot open practice", 10);
+        waitForFirstElementPresent(new String[]{aid("tvGoalTitle"),aid("viewPlayer"),aid("tvControlHeader")}, "Practice start or guide video is absent", 20);
+    }
+    @Override public void assertDailyPracticeScreenIsDisplayed() {
+        if(isElementVisible(aid("tvControlHeader"))) {
+            waitForElementVisible(aid("tvTextContent"),"Practice instructions are absent",10);
+            waitForElementEnabled(aid("bContinueLesson"),"Practice Continue is unavailable",10);
+            return;
+        }
+        if(isElementVisible(aid("viewPlayer"))) {
+            new AndroidExplorePageObject(driver).assertVideoPlayerControlsAreDisplayed();
+            return;
+        }
+        waitForElementVisible(aid("tvTitle"), "Practice title absent", 10);
+        waitForElementVisible(aid("tvGoalBody"), "Practice goal absent", 10);
+        waitForElementEnabled(aid("btStartWork"), "Practice start unavailable", 10);
+    }
+    @Override public void returnFromDailyPracticeToDailyPlan() {
+        waitForElementAndClick(isElementVisible(aid("tvControlHeader"))?aid("ivButtonClose"):aid("btnNavigateUp"), "Cannot close practice", 10);
+        waitForFirstElementPresent(new String[]{aid("tvDialogtitle"),aid("rvQuestions")},"Practice did not reach exit confirmation or Today",10);
+        if(isElementVisible(aid("tvDialogtitle")))waitForElementAndClick(aid("btnYes"),"Cannot quit unfinished practice",10);
+        waitForElementVisible(aid("rvQuestions"), "Today did not return", 15);
+    }
+    @Override public void assertRightArrowDoesNotChangeCurrentDayWhenLocked() {
+        // Modules permit navigation inside a module; only the next module is locked.
+        AndroidModulesPageObject modules = new AndroidModulesPageObject(driver);
+        lib.ModuleStage original = modules.position();
+        try {
+            for(int n=original.stage;n<original.total;n++) {
+                modules.next(); modules.waitForPosition(original.at(n+1));
+            }
+            modules.next(); modules.assertBlocked(original.at(original.total));
+        } finally { modules.restore(original); }
+        if (original.stage == 1) assertLeftArrowKeepsCurrentDaySelected();
+    }
+    @Override public void mobileSwipeUp() { scrollList("rvQuestions", "down"); }
+    @Override public void mobileSwipeDown() { scrollList("rvQuestions", "up"); }
+
     static {
         TAB_TODAY = "id:" + ID_PREFIX + "nav_graph_daily";
         SELECTED_TODAY_TAB =
@@ -47,15 +123,13 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         LEFT_SWITCHER_ARROW = "id:" + ID_PREFIX + "ivBack";
         RIGHT_SWITCHER_ARROW = "id:" + ID_PREFIX + "ivNext";
 
-        // Daily Lessons are not exposed by the current Android screen. Keep
-        // these unset because the Android suite has a separate, explicit
-        // Daily Practice assertion rather than a false iOS parity assertion.
-        DAILY_LESSONS_TITLE = null;
-        FIRST_LESSON_TITLE = null;
-        FIRST_LESSON_TYPE = null;
-        LESSON_SCREEN_TITLE = null;
-        LESSON_SCREEN_CONTENT = null;
-        LESSON_SCREEN_BACK_BUTTON = null;
+        // Lesson IDs observed on the Last Longer first-stage fixture.
+        DAILY_LESSONS_TITLE = at("DAILY LESSONS");
+        FIRST_LESSON_TITLE = "xpath:(//*[@resource-id='" + ID_PREFIX + "cvLessonContainer' and .//*[@resource-id='" + ID_PREFIX + "tvTagText' and starts-with(@text,'Lesson ')]])[1]//*[@resource-id='" + ID_PREFIX + "tvLessonName']";
+        FIRST_LESSON_TYPE = "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvTagText' and starts-with(@text,'Lesson ')]";
+        LESSON_SCREEN_TITLE = aid("tvControlHeader");
+        LESSON_SCREEN_CONTENT = aid("tvTextContent");
+        LESSON_SCREEN_BACK_BUTTON = aid("ivButtonClose");
 
         DAILY_PRACTICE_TITLE =
                 "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvGroupName' and @text='DAILY PRACTICE']";
@@ -87,49 +161,16 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_START_SCREEN_EXERCISE_METADATA = "id:" + ID_PREFIX + "tvValue";
         KEGEL_START_SCREEN_FIRST_EXERCISE = "id:" + ID_PREFIX + "rvActions";
 
-        // The current Android smoke path intentionally stops at the start
-        // screen. These fields are initialized to safe locators so inherited
-        // cleanup never dereferences null locators if a test fails there.
-        KEGEL_MEDIA_PLAYER_BACK_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_BACK_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_MUTE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_UNMUTE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_EXERCISE_TITLE = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_DIFFICULTY = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_TIMER = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_PAUSE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_PLAY_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_REWIND_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_REWIND_BACK_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_REWIND_FORWARD_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_VIBRATION_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_VIBRATION_ON_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_VIBRATION_OFF_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_INFO_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_INFO_TOOLTIP = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_INFO_MODAL_TITLE = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_INFO_MODAL_CONTENT = "id:" + ID_PREFIX + "tvTitle";
-        KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_PHASE_SQUEEZE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_PHASE_REST_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_PHASE_WAVES_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        KEGEL_PLAYER_EXIT_CONFIRM_TITLE = "id:" + ID_PREFIX + "tvDialogtitle";
-        KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON = "id:" + ID_PREFIX + "btnYes";
-        KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON = "id:" + ID_PREFIX + "btnNo";
-        PRACTICE_COMPLETION_FEEDBACK_TITLE = "id:" + ID_PREFIX + "tvTitle";
-        PRACTICE_COMPLETION_FEEDBACK_CLOSE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        PRACTICE_COMPLETION_INTENSITY_TOO_EASY = "id:" + ID_PREFIX + "tvTitle";
-        PRACTICE_COMPLETION_INTENSITY_GREAT = "id:" + ID_PREFIX + "tvTitle";
-        PRACTICE_COMPLETION_INTENSITY_TOO_HARD = "id:" + ID_PREFIX + "tvTitle";
-        CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        CUSTOMIZATION_DELETE_CONFIRM_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        CUSTOMIZATION_CANCEL_DELETE_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
-        CORE_EXERCISE_RESTRICTION_POPUP_TITLE = "id:" + ID_PREFIX + "tvDialogtitle";
-        CORE_EXERCISE_RESTRICTION_POPUP_BUTTON = "id:" + ID_PREFIX + "btnNo";
-        LOCKED_MODULE_POPUP_TITLE = "id:" + ID_PREFIX + "tvDialogtitle";
-        LOCKED_MODULE_POPUP_BUTTON = "id:" + ID_PREFIX + "btnNo";
+        // Player operations live in AndroidKegelPageObject. No unrelated button
+        // may act as a fallback for an unimplemented control.
+        CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON = null; // Not implemented in the Android product.
+        CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON = null;
+        CUSTOMIZATION_DELETE_CONFIRM_BUTTON = null;
+        CUSTOMIZATION_CANCEL_DELETE_BUTTON = null;
+        CORE_EXERCISE_RESTRICTION_POPUP_TITLE = aid("tvDialogtitle");
+        CORE_EXERCISE_RESTRICTION_POPUP_BUTTON = aid("btnNo");
+        LOCKED_MODULE_POPUP_TITLE = "xpath://*[@resource-id='" + ID_PREFIX + "tvTitle' and @text='Complete current module to unlock the next one']";
+        LOCKED_MODULE_POPUP_BUTTON = aid("okButton");
         LOCKED_NEXT_DAY_POPUP_TITLE = "id:" + ID_PREFIX + "tvDialogtitle";
         LOCKED_NEXT_DAY_POPUP_MESSAGE = "id:" + ID_PREFIX + "tvDialogtitle";
         LOCKED_NEXT_DAY_POPUP_BUTTON = "id:" + ID_PREFIX + "btnNo";
@@ -157,10 +198,10 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
     public void assertDailyPracticeIsDisplayed() {
         scrollToDailyPracticeSection();
         waitForElementPresent(DAILY_PRACTICE_SECTION_TITLE, "DAILY PRACTICE section is not displayed", 15);
-        waitForElementPresent(FIRST_PRACTICE_TITLE, "Custom Kegel Training card is not displayed", 15);
+        waitForElementPresent(FIRST_PRACTICE_TITLE, "Daily Practice card is not displayed", 15);
         waitForElementPresent(FIRST_PRACTICE_TYPE, "Daily Practice card type is not displayed", 15);
         Assert.assertTrue(
-                "Custom Kegel Training card must be tappable",
+                "Daily Practice card must be tappable",
                 isElementEnabled(waitForElementPresent(FIRST_PRACTICE_CARD, "Daily Practice card is not displayed", 15))
         );
     }

@@ -1,15 +1,15 @@
 package tests;
 
-import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Features;
-import io.qameta.allure.Severity;
-import io.qameta.allure.SeverityLevel;
-import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
+import io.qameta.allure.Step;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Severity;
+import io.qameta.allure.Features;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import lib.CoreTestCase;
-import lib.Platform;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.ExplorePageObject;
@@ -17,27 +17,71 @@ import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.ExplorePageObjectFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.After;
+import lib.Platform;
+import lib.ui.android.AndroidProgramSelectorPageObject;
 import org.junit.Test;
 
 @Epic(value = "The Coach Explore")
 public class ExploreTests extends CoreTestCase {
     private ExplorePageObject explore;
+    private AndroidProgramSelectorPageObject today;
+    private String originalProgram, originalDay, originalProgress;
 
     @Before
     public void openExploreForTest() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         explore = ExplorePageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
         Assert.assertNotNull("Explore page object is not available for current platform", explore);
-        if (!explore.isExploreContextAvailable()) {
+        if (Platform.getInstance().isAndroid() || !explore.isExploreContextAvailable()) {
             TestData.TestAccount account = TestData.existingProgressAccount();
             coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         }
+        if(Platform.getInstance().isAndroid()) {
+            today=new AndroidProgramSelectorPageObject(driver);today.openTodayTab();
+            originalProgram=today.getActiveProgramName();originalDay=today.getCurrentDayLabel();originalProgress=today.getProgramProgressValue();
+        }
         explore.openExploreTab();
+    }
+
+    @After public void restoreAndroidProgram() throws Exception {
+        if(today==null||originalProgram==null) return;
+        // Opening an Explore catalog changes Android's active program; preserve the caller's state.
+        io.qameta.allure.Allure.addAttachment("Explore before restoration","image/png",
+            new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot)driver).getScreenshotAs(org.openqa.selenium.OutputType.BYTES)),"png");
+        ((lib.ui.android.AndroidExplorePageObject)explore).closeTransientDetailIfPresent();
+        today.openTodayTab();
+        if(!originalProgram.equals(today.getActiveProgramName())) {
+            today.openProgramSelector();today.selectProgram(originalProgram);
+        }
+        Assert.assertEquals("Explore changed original stage",originalDay,today.getCurrentDayLabel());
+        Assert.assertEquals("Explore changed original progress",originalProgress,today.getProgramProgressValue());
+    }
+
+    @Test @Issue("COA-8178") @Issue("COA-8179") @Issue("COA-8180")
+    public void testCurrentExploreNavigationAcrossPlatforms() {
+        explore.assertRetiredExploreUiIsAbsent();
+    }
+    @Test @Issue("COA-8181")
+    public void testProgramCatalogContainsCards() {
+        explore.assertMainProgramsRecommendedSection();
+    }
+    @Test @Issue("COA-8182")
+    public void testRemovedCoursesAndPracticesStayAbsent() {
+        explore.assertRemovedCoursesAndPracticesAreAbsent();
+    }
+    @Test
+    public void testSwipeToLastProgramAndOpenIt() {
+        explore.swipeToAndOpenLastRecommendedProgram();
+        explore.closeProgramDetails();
+    }
+    @Test @Issue("COA-8183") @Issue("COA-8184") @Issue("COA-8224")
+    public void testProgramCardOpensDetails() {
+        explore.openFirstRecommendedProgramAndVerifyDetails();
+        explore.closeProgramDetails();
     }
 
     @Test

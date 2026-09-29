@@ -25,9 +25,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test01ProfileScreenShowsProgressAndSettings")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test01ProfileScreenShowsProgressAndSettings() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -45,9 +43,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test02ProfileCanBeOpenedFromMainTabs")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test02ProfileCanBeOpenedFromMainTabs() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -64,9 +60,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test03DeleteAccountConfirmationCanBeCancelled")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test03DeleteAccountConfirmationCanBeCancelled() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        org.junit.Assume.assumeTrue("Android has no account deletion feature (confirmed by the user); not applicable", Platform.getInstance().isIOS());
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -84,9 +78,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test04AuthorizedUserCanLogOut")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test04AuthorizedUserCanLogOut() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -105,9 +97,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test05ProfileAccountSettingsOpensAndReturns")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test05ProfileAccountSettingsOpensAndReturns() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -126,9 +116,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test06ProfileSupportOpensAndReturns")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test06ProfileSupportOpensAndReturns() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -147,9 +135,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test07ProfileFaqOpensAndCloses")
     @Severity(value = SeverityLevel.NORMAL)
     public void test07ProfileFaqOpensAndCloses() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -168,9 +154,7 @@ public class CoachProfileTests extends CoreTestCase {
     @Step("Start test test08ProfileTermsOpensAndCloses")
     @Severity(value = SeverityLevel.NORMAL)
     public void test08ProfileTermsOpensAndCloses() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);

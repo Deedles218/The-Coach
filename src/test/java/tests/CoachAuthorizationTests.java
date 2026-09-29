@@ -25,9 +25,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Step("Start test test01LoginEntryAndEmptyEmailContinueDisabled")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test01LoginEntryAndEmptyEmailContinueDisabled() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -45,9 +43,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Step("Start test test02InvalidEmailKeepsContinueDisabled")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test02InvalidEmailKeepsContinueDisabled() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -66,9 +62,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Step("Start test test03ValidEmailOpensOtpAndCancelReturnsToStart")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test03ValidEmailOpensOtpAndCancelReturnsToStart() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -90,9 +84,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Step("Start test test04ResendCodeOnOtpScreen")
     @Severity(value = SeverityLevel.NORMAL)
     public void test04ResendCodeOnOtpScreen() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -114,9 +106,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Step("Start test test05ExistingProgressUserLoginWithEmailAndOtp")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test05ExistingProgressUserLoginWithEmailAndOtp() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);

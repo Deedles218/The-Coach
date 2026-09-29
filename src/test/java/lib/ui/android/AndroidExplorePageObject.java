@@ -128,6 +128,104 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         CONCEPT_POPUP_CONFIRM_BUTTON = null;
     }
 
+    private static final String PROGRAM_TITLES = "xpath://*[@resource-id='"+ID_PREFIX+"rvActivePrograms']//*[@resource-id='"+ID_PREFIX+"tvTitle']";
+    private boolean carousel(String locator,String direction) {
+        WebElement collection=waitForElementVisible(locator,"Explore carousel absent",10);
+        Map<String,Object> args=new HashMap<String,Object>();
+        args.put("elementId",((RemoteWebElement)collection).getId());args.put("direction",direction);args.put("percent",.85);
+        boolean more=Boolean.TRUE.equals(((JavascriptExecutor)driver).executeScript("mobile: scrollGesture",args));
+        final String[] previous={null};
+        createWait(10).until(d -> {
+            StringBuilder current=new StringBuilder();
+            for(WebElement title:driver.findElements(getLocatorByString(PROGRAM_TITLES)))
+                current.append(title.getText()).append(title.getRect());
+            boolean stable=current.toString().equals(previous[0]);previous[0]=current.toString();return stable;
+        });
+        return more;
+    }
+    @Override public List<String> getProgramNamesFromExplore() {
+        scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
+        // A recycled horizontal carousel retains its previous offset between tab visits.
+        for(int n=0;n<15;n++) {
+            if(!carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION,"left")) break;
+        }
+        java.util.Set<String> names=new java.util.LinkedHashSet<String>();
+        java.util.List<String> before=new java.util.ArrayList<String>();
+        for(int n=0;n<30;n++) {
+            java.util.List<String> visible=getElementAccessibleNames(PROGRAM_TITLES);
+            Assert.assertFalse("Browse Programs has no program names",visible.isEmpty());
+            names.addAll(visible);
+            if(n>0&&visible.equals(before))return new java.util.ArrayList<String>(names);
+            before=visible;carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION,"right");
+        }
+        throw new AssertionError("Explore program list did not reach its end");
+    }
+    @Override public void assertCurrentSectionsAreDisplayed() { super.assertCurrentSectionsAreDisplayed(); }
+    @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
+        scrollUpToTop();
+        for(int n=0;n<20;n++) {
+            assertRetiredSectionHeadingsAbsent();
+            if(!scrollExplore("down")) {
+                assertRetiredSectionHeadingsAbsent();scrollUpToTop();return;
+            }
+        }
+        throw new AssertionError("Explore bottom was not reached; absence is not proven");
+    }
+    private void assertRetiredSectionHeadingsAbsent() {
+        for(String heading:new String[]{"Courses","Body Practices","Mind Practices"})
+            Assert.assertFalse("Retired Explore section reappeared: "+heading,isElementVisible(sectionTitle(heading)));
+    }
+    @Override public void assertRetiredExploreUiIsAbsent() {
+        assertBrowseProgramsReplacesLegacyBlock();
+        Assert.assertFalse("Legacy Tools tab is displayed",isElementVisible(TAB_TOOLS));
+        Assert.assertFalse("Legacy Programs tab is displayed",isElementVisible(TAB_PROGRAMS));
+    }
+    @Override public void assertMainProgramsRecommendedSection() {
+        scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
+        Assert.assertFalse("Browse Programs has no cards",getElementAccessibleNames(PROGRAM_TITLES).isEmpty());
+        WebElement image=waitForElementVisible("xpath://*[@resource-id='"+ID_PREFIX+"rvActivePrograms']//*[@resource-id='"+ID_PREFIX+"ivMainImage']","Program image absent",10);
+        Assert.assertTrue("Program image is empty",image.getRect().width>0&&image.getRect().height>0);
+    }
+    private void openLast(String collection,String titles) {
+        java.util.List<String> before=new java.util.ArrayList<String>();
+        for(int n=0;n<30;n++) {
+            java.util.List<String> names=getElementAccessibleNames(titles);
+            Assert.assertFalse("Carousel has no named cards",names.isEmpty());
+            if(n>0&&names.equals(before)) {
+                java.util.List<WebElement> elements=driver.findElements(getLocatorByString(titles));
+                WebElement last=elements.get(elements.size()-1);String name=last.getText();last.click();
+                assertDestination(name);return;
+            }
+            before=names;carousel(collection,"right");
+        }
+        Assert.fail("Carousel end was not reached");
+    }
+    private static String xpathValue(String value) {
+        if(!value.contains("'"))return "'"+value+"'";
+        if(!value.contains("\""))return "\""+value+"\"";
+        return "concat('"+value.replace("'", "',\"'\",'")+"')";
+    }
+    private void assertDestination(String title) {
+        waitForElementNotVisible(BROWSE_PROGRAMS_TITLE,"Card did not leave Explore",15);
+        waitForElementVisible("xpath://*[@text="+xpathValue(title)+"]","Destination title differs from selected card",15);
+        waitForFirstElementPresent(new String[]{"id:"+ID_PREFIX+"rvQuestions","id:"+ID_PREFIX+"rvProgram","id:"+ID_PREFIX+"tvGoalBody","id:"+ID_PREFIX+"rvLessonDetail","xpath://android.webkit.WebView"},"Destination content is absent",15);
+    }
+    @Override public void openFirstRecommendedProgramAndVerifyDetails() {
+        assertMainProgramsRecommendedSection();WebElement title=waitForElementVisible(PROGRAM_TITLES,"Program card absent",10);
+        String name=title.getText();title.click();assertDestination(name);
+    }
+    @Override public void swipeToAndOpenLastRecommendedProgram() {
+        assertMainProgramsRecommendedSection();openLast(LEGACY_ACTIVE_PROGRAMS_COLLECTION,PROGRAM_TITLES);
+    }
+    @Override public void closeProgramDetails() {closeAndroidDetail();}
+    @Override public void closeCourseDetails() {closeAndroidDetail();}
+    @Override public void closePracticeDetails() {closeAndroidDetail();}
+    @Override public void closeCustomKegel() {closeAndroidDetail();}
+    private void closeAndroidDetail() {
+        waitForFirstElementAndClick(new String[]{DETAIL_NAVIGATE_UP_BUTTON,DETAIL_CLOSE_BUTTON},"Cannot close Explore detail",10);
+        if(isElementVisible(EXIT_ACTIVITY_DIALOG))waitForElementAndClick(EXIT_ACTIVITY_CONFIRM_BUTTON,"Cannot quit unfinished activity",10);
+        waitForElementVisible(EXPLORE_TITLE,"Explore did not return",15);
+    }
     public AndroidExplorePageObject(RemoteWebDriver driver) {
         super(driver);
     }
@@ -221,15 +319,13 @@ public class AndroidExplorePageObject extends ExplorePageObject {
                 "Legacy ALL PROGRAMS title must not be displayed",
                 isElementPresent(LEGACY_ALL_PROGRAMS_TITLE)
         );
-        Assert.assertFalse(
-                "Legacy active-program RecyclerView must not be displayed",
-                isElementPresent(LEGACY_ACTIVE_PROGRAMS_COLLECTION)
-        );
+        // manProd 1.40.21 reuses this resource for the new Browse Programs carousel.
+        waitForElementVisible(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "Browse Programs carousel is absent", 10);
     }
 
     @Step("Verify Courses section is removed")
     public void assertCoursesSectionIsRemoved() {
-        Assert.assertFalse("Courses section must not be displayed", isElementPresent(COURSES_SECTION_TITLE));
+        assertRemovedCoursesAndPracticesAreAbsent();
     }
 
     @Step("Verify configured card templates and titles")
@@ -406,11 +502,11 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     }
 
     private static String sectionTitle(String title) {
-        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and @text='" + title + "']";
+        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + title.toLowerCase(java.util.Locale.ROOT) + "']";
     }
 
     private static String sectionCards(String title) {
-        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and @text='" + title + "']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='" + ID_PREFIX + "rv_horizontal_cards']";
+        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + title.toLowerCase(java.util.Locale.ROOT) + "']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='" + ID_PREFIX + "rv_horizontal_cards']";
     }
 
     private static String first(String xpathLocator) {

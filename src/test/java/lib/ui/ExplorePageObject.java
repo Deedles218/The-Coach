@@ -285,12 +285,13 @@ abstract public class ExplorePageObject extends MainPageObject {
 
     @Step("Verify current Explore sections")
     public void assertCurrentSectionsAreDisplayed() {
-        this.waitForElementPresent(RECOMMENDED_SECTION, "Recommended for you section is not displayed", 10);
-        this.waitForElementPresent(SEXUAL_HEALTH_SECTION, "Sexual Health section is not displayed", 10);
-        this.waitForElementPresent(COURSES_SECTION, "Courses section is not displayed", 10);
-        this.waitForElementPresent(BODY_PRACTICES_SECTION, "Body Practices section is not displayed", 10);
-        this.swipeUpToFindElement(MIND_PRACTICES_SECTION, "Mind Practices section is not displayed", 5);
-        this.waitForElementPresent(MIND_PRACTICES_SECTION, "Mind Practices section is not displayed", 10);
+        assertMainProgramsRecommendedSection();
+        assertRemovedCoursesAndPracticesAreAbsent();
+    }
+
+    /** Both clients removed Courses and Body/Mind Practices (product clarification 2026-09-19). */
+    public void assertRemovedCoursesAndPracticesAreAbsent() {
+        throw new UnsupportedOperationException("Platform must scan the whole Explore page for retired sections");
     }
 
     @Step("Verify the current Main programs area contains Recommended for you programs")
@@ -419,10 +420,11 @@ abstract public class ExplorePageObject extends MainPageObject {
         WebElement image = this.waitForElementPresent(FIRST_PROGRAM_CARD_IMAGE, "Recommended program card has no background image", 10);
         Assert.assertTrue("Recommended program card must have a visible image area", image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0);
 
-        this.waitForElementAndClick(FIRST_PROGRAM_TITLE, "Cannot open first recommended program", 10);
+        org.openqa.selenium.Rectangle cardBounds=card.getRect();
+        this.waitForElementAndClick(FIRST_PROGRAM_TITLE, "Cannot open first program", 10);
         this.waitForElementPresent(PROGRAM_DETAIL_TITLE, "Program detail screen did not open", 15);
         this.waitForElementPresent(PROGRAM_DETAIL_CONTENT, "Program detail content is not displayed", 10);
-        Assert.assertTrue("Recommended program card must be tappable over a meaningful area", card.getSize().getWidth() > 100 && card.getSize().getHeight() > 100);
+        Assert.assertTrue("Recommended program card must be tappable over a meaningful area", cardBounds.getWidth() > 100 && cardBounds.getHeight() > 100);
         Assert.assertFalse("Ordinary program must not show the concept-program popup", this.isElementPresent(CONCEPT_POPUP_CONFIRM_BUTTON));
     }
 

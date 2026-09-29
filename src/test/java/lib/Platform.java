@@ -109,6 +109,7 @@ public class Platform {
         this.setBooleanCapabilityIfPresent(capabilities, "autoAcceptAlerts", this.getConfig("ios.autoAcceptAlerts", "IOS_AUTO_ACCEPT_ALERTS", null));
         this.setBooleanCapabilityIfPresent(capabilities, "autoDismissAlerts", this.getConfig("ios.autoDismissAlerts", "IOS_AUTO_DISMISS_ALERTS", null));
         this.setCapabilityIfPresent(capabilities, "useNewWDA", this.getConfig("ios.useNewWDA", "IOS_USE_NEW_WDA", null));
+        this.setBooleanCapabilityIfPresent(capabilities, "isHeadless", this.getConfig("ios.isHeadless", "IOS_IS_HEADLESS", null));
         this.setCapabilityIfPresent(capabilities, "xcodeOrgId", this.getConfig("ios.xcodeOrgId", "IOS_XCODE_ORG_ID", null));
         this.setCapabilityIfPresent(capabilities, "xcodeSigningId", this.getConfig("ios.xcodeSigningId", "IOS_XCODE_SIGNING_ID", null));
         return capabilities;

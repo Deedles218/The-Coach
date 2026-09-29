@@ -1,0 +1,201 @@
+file,line,class,method,jira_issues,android_status
+src/test/java/tests/AndroidExploreTests.java,62,AndroidExploreTests,testConfiguredSectionsAreDisplayed,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,71,AndroidExploreTests,testCoursesSectionIsRemoved,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,80,AndroidExploreTests,testBrowseProgramsReplacesLegacyBlock,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,89,AndroidExploreTests,testConfiguredCardTemplates,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,99,AndroidExploreTests,testQuickTipVideoCardOpensVideoPlayer,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,108,AndroidExploreTests,testMasterClassCardOpensLessonOrWebView,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidExploreTests.java,117,AndroidExploreTests,testPrivateCoachingCardOpensWebView,,Android: 7 отдельных сценариев; не полная копия iOS Explore
+src/test/java/tests/AndroidModulesSetupTests.java,16,AndroidModulesSetupTests,completeApprovedInitialLastLongerQuestionnaire,,"Android setup, opt-in; не продуктовый тест модулей"
+src/test/java/tests/AndroidSmokeTests.java,41,AndroidSmokeTests,test01EmptyEmailKeepsContinueDisabled,COA-7948,Android: 5 отдельных smoke-сценариев; частичное совпадение с iOS
+src/test/java/tests/AndroidSmokeTests.java,58,AndroidSmokeTests,test02EmailAndOtpOpenAuthorizedToday,COA-7935,Android: 5 отдельных smoke-сценариев; частичное совпадение с iOS
+src/test/java/tests/AndroidSmokeTests.java,71,AndroidSmokeTests,test03MainThreeTabNavigation,COA-8178,Android: 5 отдельных smoke-сценариев; частичное совпадение с iOS
+src/test/java/tests/AndroidSmokeTests.java,86,AndroidSmokeTests,test04DailyPracticeOpensCustomKegelStartScreen,COA-8087,Android: 5 отдельных smoke-сценариев; частичное совпадение с iOS
+src/test/java/tests/AndroidSmokeTests.java,111,AndroidSmokeTests,test05ProfileAndLogout,COA-8500,Android: 5 отдельных smoke-сценариев; частичное совпадение с iOS
+src/test/java/tests/ChatTests.java,20,ChatTests,testChatInput1,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,37,ChatTests,testChatInput2,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,54,ChatTests,testChatInput3,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,71,ChatTests,testChatInput4,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,88,ChatTests,testChatInput5,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,105,ChatTests,testChatInput6,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,123,ChatTests,testChatInput7,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,140,ChatTests,testChatInput8,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,157,ChatTests,testChatInput9,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,173,ChatTests,testChatInput10,,@Ignore: устаревший Chat
+src/test/java/tests/ChatTests.java,189,ChatTests,testChatInput11,,@Ignore: устаревший Chat
+src/test/java/tests/CoachAuthorizationFlowTests.java,28,CoachAuthorizationFlowTests,testFeedPopupLogoutAndStartScreenButtons,,@Ignore: устаревший Feed flow
+src/test/java/tests/CoachAuthorizationTests.java,27,CoachAuthorizationTests,test01LoginEntryAndEmptyEmailContinueDisabled,,Нет полной Android-копии; 5 ранних return без проверок
+src/test/java/tests/CoachAuthorizationTests.java,47,CoachAuthorizationTests,test02InvalidEmailKeepsContinueDisabled,,Нет полной Android-копии; 5 ранних return без проверок
+src/test/java/tests/CoachAuthorizationTests.java,68,CoachAuthorizationTests,test03ValidEmailOpensOtpAndCancelReturnsToStart,,Нет полной Android-копии; 5 ранних return без проверок
+src/test/java/tests/CoachAuthorizationTests.java,92,CoachAuthorizationTests,test04ResendCodeOnOtpScreen,,Нет полной Android-копии; 5 ранних return без проверок
+src/test/java/tests/CoachAuthorizationTests.java,116,CoachAuthorizationTests,test05ExistingProgressUserLoginWithEmailAndOtp,,Нет полной Android-копии; 5 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,27,CoachProfileTests,test01ProfileScreenShowsProgressAndSettings,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,47,CoachProfileTests,test02ProfileCanBeOpenedFromMainTabs,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,66,CoachProfileTests,test03DeleteAccountConfirmationCanBeCancelled,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,86,CoachProfileTests,test04AuthorizedUserCanLogOut,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,107,CoachProfileTests,test05ProfileAccountSettingsOpensAndReturns,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,128,CoachProfileTests,test06ProfileSupportOpensAndReturns,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,149,CoachProfileTests,test07ProfileFaqOpensAndCloses,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/CoachProfileTests.java,170,CoachProfileTests,test08ProfileTermsOpensAndCloses,,Нет полной Android-копии; 8 ранних return без проверок
+src/test/java/tests/DailyPlanTests.java,44,DailyPlanTests,test01DailyPlanLessonsAndPracticeDisplayed,,Нет Android-копии; 5 ранних return без проверок
+src/test/java/tests/DailyPlanTests.java,67,DailyPlanTests,test02DailyPlanLockedNextDayAndFirstDayLeftArrow,,Нет Android-копии; 5 ранних return без проверок
+src/test/java/tests/DailyPlanTests.java,90,DailyPlanTests,test03DailyPlanLessonOpensAndReturns,,Нет Android-копии; 5 ранних return без проверок
+src/test/java/tests/DailyPlanTests.java,119,DailyPlanTests,test04DailyPlanExerciseOpensAndReturns,,Нет Android-копии; 5 ранних return без проверок
+src/test/java/tests/DailyPlanTests.java,147,DailyPlanTests,test05DailyPlanRemoveActionCanBeCancelled,,Нет Android-копии; 5 ранних return без проверок
+src/test/java/tests/ExploreTests.java,49,ExploreTests,testExploreUsesCurrentNavigation,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,62,ExploreTests,testMainProgramsDisplaysRecommendedForYou,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,75,ExploreTests,testCoursesSectionDisplaysCards,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,88,ExploreTests,testBodyPracticesSectionDisplaysCards,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,101,ExploreTests,testMindPracticesSectionDisplaysCards,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,114,ExploreTests,testSwipeToLastRecommendedProgramAndOpenIt,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,128,ExploreTests,testSwipeToLastCourseAndOpenIt,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,142,ExploreTests,testSwipeToLastBodyPracticeAndOpenIt,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,156,ExploreTests,testSwipeToLastMindPracticeAndOpenIt,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,170,ExploreTests,testRecommendedProgramOpensDetails,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,184,ExploreTests,testCourseCardsAreCompactAndOpenDetails,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/ExploreTests.java,198,ExploreTests,testCustomKegelIsAvailableFromExplore,,Нет полной Android-копии; 12 ранних return без проверок
+src/test/java/tests/HW/ArticleTests.java,13,ArticleTests,testCompareArticleTitle,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/ArticleTests.java,28,ArticleTests,testSwipeArticle,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/ChangeAppCondition.java,13,ChangeAppCondition,testChangeScreenOrientationOnSearchResult,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/ChangeAppCondition.java,37,ChangeAppCondition,testCheckSearchArticleInBackground,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/GetStartedTest.java,10,GetStartedTest,testPassThroughWelcome,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/HomeworkEx12.java,10,HomeworkEx12,testCheckArticlesByTitleAndDescription,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/HomeworkEx17.java,22,HomeworkEx17,testSaveFirstArticleToMyList,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/HomeworkEx18.java,11,HomeworkEx18,testCheckArticlesByTitleAndDescription,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/HW/MyListsTests.java,23,MyListsTests,testSaveFirstArticleToMyList,,Legacy HW/Wikipedia: не покрытие The Coach; Android parity не засчитывается
+src/test/java/tests/KegelCardLocatorUnitTests.java,28,KegelCardLocatorUnitTests,scheduledTwinIsExcluded,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/KegelCardLocatorUnitTests.java,31,KegelCardLocatorUnitTests,scheduledCardCannotSatisfyMissingCatchUp,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/KegelCardLocatorUnitTests.java,34,KegelCardLocatorUnitTests,laterSectionDoesNotBelongToCatchUp,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/KegelCardLocatorUnitTests.java,37,KegelCardLocatorUnitTests,duplicateCatchUpRemainsDetectable,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/KegelExerciseTests.java,33,KegelExerciseTests,test01KegelExercisePlayerFlow,,"Нет Android player/completion parity: 1 ранний return, остальные Assert.fail iOS-only"
+src/test/java/tests/KegelExerciseTests.java,66,KegelExerciseTests,test02KegelSoundAndVibrationConfigurations,,"Нет Android player/completion parity: 1 ранний return, остальные Assert.fail iOS-only"
+src/test/java/tests/KegelExerciseTests.java,95,KegelExerciseTests,test03KegelStartPageExerciseInformation,,"Нет Android player/completion parity: 1 ранний return, остальные Assert.fail iOS-only"
+src/test/java/tests/KegelExerciseTests.java,112,KegelExerciseTests,test04KegelCompletionIntensityCanBeChanged,,"Нет Android player/completion parity: 1 ранний return, остальные Assert.fail iOS-only"
+src/test/java/tests/KegelExerciseTests.java,133,KegelExerciseTests,test05KegelExerciseInstructionPages,,"Нет Android player/completion parity: 1 ранний return, остальные Assert.fail iOS-only"
+src/test/java/tests/LoginFailureScreenshotUnitTests.java,23,LoginFailureScreenshotUnitTests,masksScaledInputAndKeyboardButRetainsErrorArea,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/LoginFailureScreenshotUnitTests.java,31,LoginFailureScreenshotUnitTests,refusesScreenWithoutLocatedInput,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/LoginFailureScreenshotUnitTests.java,34,LoginFailureScreenshotUnitTests,masksConnectMailFormToo,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/LoginFailureScreenshotUnitTests.java,40,LoginFailureScreenshotUnitTests,refusesOtpScreen,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/MaleBuildStartScreenTests.java,55,MaleBuildStartScreenTests,test01MaleBuildStartScreenButtonsAndLinks,,iOS-only; 2 ранних return на Android
+src/test/java/tests/MaleBuildStartScreenTests.java,88,MaleBuildStartScreenTests,test02MaleBuildLoginWithDsAccountAndOtp,,iOS-only; 2 ранних return на Android
+src/test/java/tests/ModuleStageUnitTests.java,11,ModuleStageUnitTests,sameStageInAnotherModuleIsNotTheSamePosition,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,15,ModuleStageUnitTests,moduleTitleContentIsNotAnOracle,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,19,ModuleStageUnitTests,dayLabelCannotPassAsStage,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,22,ModuleStageUnitTests,emptyModuleNameFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,25,ModuleStageUnitTests,outOfRangeStageFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,28,ModuleStageUnitTests,touchingEdgesDoNotOverlap,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,32,ModuleStageUnitTests,positiveAreaIntersectionIsAnOverlap,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,36,ModuleStageUnitTests,partiallyClippedElementFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,39,ModuleStageUnitTests,emptyElementFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModuleStageUnitTests.java,42,ModuleStageUnitTests,nonSquareContainerUsesHeightAndWidthCorrectly,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ModulesAccountInspectionTests.java,23,ModulesAccountInspectionTests,inspectSuppliedModuleAccount,,iOS inspection opt-in; подготовка отдельно от Android module suite
+src/test/java/tests/ModulesTests.java,106,ModulesTests,testModuleTitleAndStageAreVisible,"COA-9015,COA-9016",Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,112,ModulesTests,testHeaderBoundsAndPeerOverlap,COA-9014,Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,117,ModulesTests,testNextStageWithoutCompletingActivities,COA-9044,Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,122,ModulesTests,testPreviousStagesBackToFirst,COA-9045,Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,131,ModulesTests,testLastStageIsAccessibleWithoutCompletion,COA-9046,Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,136,ModulesTests,testPreviousFromLastStage,COA-9047,Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/ModulesTests.java,145,ModulesTests,testNextModuleBlockedAndGotItRetainsStage,"COA-9048,COA-9049,COA-9050,COA-9051",Общие iOS/Android: 7 PASS на Android manProd 1.40.21
+src/test/java/tests/OnboardingGoalProgramTests.java,34,OnboardingGoalProgramTests,testSelectedGoalMatchesTodayProgram,,Общий сценарий iOS/Android через factories
+src/test/java/tests/OnboardingPaywallTests.java,29,OnboardingPaywallTests,test01NewUserPurchasesTopSubscription,,Общие 5 сценариев; отдельные StoreKit/Google Play реализации
+src/test/java/tests/OnboardingPaywallTests.java,44,OnboardingPaywallTests,test02NewUserPurchasesBottomSubscription,,Общие 5 сценариев; отдельные StoreKit/Google Play реализации
+src/test/java/tests/OnboardingPaywallTests.java,59,OnboardingPaywallTests,test03TermsAndPrivacyOpens,,Общие 5 сценариев; отдельные StoreKit/Google Play реализации
+src/test/java/tests/OnboardingPaywallTests.java,71,OnboardingPaywallTests,test04AutoRenewalDisclosureIsExact,,Общие 5 сценариев; отдельные StoreKit/Google Play реализации
+src/test/java/tests/OnboardingPaywallTests.java,82,OnboardingPaywallTests,test05RestoreResponds,,Общие 5 сценариев; отдельные StoreKit/Google Play реализации
+src/test/java/tests/PdfGuideTests.java,29,PdfGuideTests,testPdfGuideUpsellOpensFromMyWorkbook,,@Ignore: нет подготовленной PDF-фикстуры; Android реализации нет
+src/test/java/tests/ProfileTests.java,22,ProfileTests,testOpenProfile,,@Ignore: устаревший Program tab
+src/test/java/tests/ProfileTests.java,34,ProfileTests,testAssertUserData,,@Ignore: устаревший Program tab
+src/test/java/tests/ProfileTests.java,49,ProfileTests,testOpenNutrition,,@Ignore: устаревший Program tab
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,22,ProgramLoadingEvidenceUnitTests,contentSkeletonContentIsRecordedInOrder,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,32,ProgramLoadingEvidenceUnitTests,viewportScalingPreservesDetection,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,38,ProgramLoadingEvidenceUnitTests,skeletonShimmerAndCompressionTolerancePreservesDetection,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,49,ProgramLoadingEvidenceUnitTests,unchangedTodayDoesNotPassAsLoading,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,54,ProgramLoadingEvidenceUnitTests,selectorBackdropDimmingAloneDoesNotPassAsLoading,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,59,ProgramLoadingEvidenceUnitTests,unchangedSkeletonDoesNotProveAppearance,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,64,ProgramLoadingEvidenceUnitTests,recordingThatStartsLoadingDoesNotProveAppearance,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,69,ProgramLoadingEvidenceUnitTests,skeletonThatNeverDisappearsFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,74,ProgramLoadingEvidenceUnitTests,blankAfterSkeletonDoesNotStandInForLoadedContent,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,79,ProgramLoadingEvidenceUnitTests,contentFollowedByUnfinishedBlankTransitionFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,84,ProgramLoadingEvidenceUnitTests,modulePlaceholderWithoutTitlePlaceholderDoesNotPass,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/ProgramLoadingEvidenceUnitTests.java,94,ProgramLoadingEvidenceUnitTests,coloredContentCardsAreNotNeutralSkeletons,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/PushNotificationTests.java,29,PushNotificationTests,testNotificationPromptCanBeClosed,,@Ignore: устаревший сценарий
+src/test/java/tests/PushPermissionTests.java,29,PushPermissionTests,testCleanInstallShowsPushPermissionPrompt,COA-7918,iOS-only: requireIOSPlatform; Android permission-flow отсутствует
+src/test/java/tests/PushPermissionTests.java,48,PushPermissionTests,testReinstallShowsPushPermissionPromptAgain,COA-7918,iOS-only: requireIOSPlatform; Android permission-flow отсутствует
+src/test/java/tests/ReleaseSmokeTests.java,35,ReleaseSmokeTests,testMainThreeTabNavigation,COA-8178,iOS-only: requireIOSPlatform; update/PDF parity отсутствует
+src/test/java/tests/ReleaseSmokeTests.java,52,ReleaseSmokeTests,testCurrentExploreSectionsAreDisplayed,COA-8178,iOS-only: requireIOSPlatform; update/PDF parity отсутствует
+src/test/java/tests/ReleaseSmokeTests.java,69,ReleaseSmokeTests,testExploreRecommendedAndCustomKegel,COA-8174,iOS-only: requireIOSPlatform; update/PDF parity отсутствует
+src/test/java/tests/ReleaseSmokeTests.java,92,ReleaseSmokeTests,testMyWorkbookPdfPaywallCanBeClosed,COA-8870,iOS-only: requireIOSPlatform; update/PDF parity отсутствует
+src/test/java/tests/ReleaseSmokeTests.java,110,ReleaseSmokeTests,testUpdatePreservesAuthorizationAndProgress,COA-7914,iOS-only: requireIOSPlatform; update/PDF parity отсутствует
+src/test/java/tests/RestoringTestActionUnitTests.java,15,RestoringTestActionUnitTests,successfulScenarioRestoresOriginalStateExactlyOnce,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,31,RestoringTestActionUnitTests,checkedScenarioFailureStillRestoresOriginalState,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,44,RestoringTestActionUnitTests,failedAssertionStillRestoresOriginalState,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,56,RestoringTestActionUnitTests,restorationFailureIsSuppressedUnderOriginalAssertion,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,65,RestoringTestActionUnitTests,failedRestorationAssertionIsSuppressedUnderOriginalCheckedFailure,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,74,RestoringTestActionUnitTests,cleanupFailureAloneFailsSuccessfulScenario,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,80,RestoringTestActionUnitTests,cleanupAssertionAloneFailsSuccessfulScenario,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/RestoringTestActionUnitTests.java,86,RestoringTestActionUnitTests,sharedFailureInstanceCannotTriggerSelfSuppression,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SearchTests.java,24,SearchTests,testSearch,,@Ignore: устаревший Feed/search
+src/test/java/tests/SearchTests.java,46,SearchTests,testCancelSearch,,@Ignore: устаревший Feed/search
+src/test/java/tests/SearchTests.java,59,SearchTests,testAmountOfNotEmptySearch,,@Ignore: устаревший Feed/search
+src/test/java/tests/SearchTests.java,73,SearchTests,testAmountOfEmptySearch,,@Ignore: устаревший Feed/search
+src/test/java/tests/SelectorMotionUnitTests.java,16,SelectorMotionUnitTests,acceptsIntermediateOpeningAndClosingPositions,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,20,SelectorMotionUnitTests,rejectsSingleFinalScreenshot,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,23,SelectorMotionUnitTests,rejectsInstantJump,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,26,SelectorMotionUnitTests,rejectsOppositeDirection,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,29,SelectorMotionUnitTests,rejectsStationaryCompressionJitter,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,45,SelectorMotionUnitTests,acceptsOrangeOnAllFourEdges,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,49,SelectorMotionUnitTests,rejectsOrangeArtworkWithoutOutline,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,53,SelectorMotionUnitTests,rejectsOutlineOfWrongColor,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,57,SelectorMotionUnitTests,findsShortHandleOnWhiteSheet,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SelectorMotionUnitTests.java,66,SelectorMotionUnitTests,rejectsGrayBackdropWithoutHandle,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/SmokeTests.java,31,SmokeTests,testCleanInstallOnboardingLeadsToDailyPlan,COA-7914,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,53,SmokeTests,testTodayDailyPlanIsDisplayed,COA-7956,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,74,SmokeTests,testLoginWithEmptyEmailKeepsContinueDisabled,COA-7948,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,93,SmokeTests,testEmailAndOtpOpenAuthorizedDailyPlan,COA-7935,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,108,SmokeTests,testProfileOpensWithoutCoordinateFallback,COA-8503,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,123,SmokeTests,testLogoutReturnsToWelcome,COA-8500,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/SmokeTests.java,139,SmokeTests,testKegelPlayerFlow,COA-8087,iOS-only: requireIOSPlatform; AndroidSmokeTests покрывает только часть
+src/test/java/tests/StoreKitPurchaseTests.java,30,StoreKitPurchaseTests,testStartFreeTrialInStoreKitSandbox,COA-755,"iOS StoreKit; Android отдельная покупка/restore в OnboardingPaywallTests, не буквальный дубль"
+src/test/java/tests/StoreKitPurchaseTests.java,51,StoreKitPurchaseTests,testRestorePurchasesInStoreKitSandbox,COA-872,"iOS StoreKit; Android отдельная покупка/restore в OnboardingPaywallTests, не буквальный дубль"
+src/test/java/tests/TestModelAccountProvisioningTests.java,22,TestModelAccountProvisioningTests,testProvisionAndVerifyDedicatedAccount,,iOS setup opt-in; Android provisioning не реализован
+src/test/java/tests/TestModelAutomationTests.java,92,TestModelAutomationTests,test01Coa7947ValidEmailEnablesContinue,COA-7947,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,110,TestModelAutomationTests,test02Coa7949ValidEmailAuthorization,COA-7949,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,138,TestModelAutomationTests,test03Coa7950InvalidEmailIsRejected,COA-7950,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,158,TestModelAutomationTests,test04Coa8235DailyPlanProgramsMatchExplore,COA-8235,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,183,TestModelAutomationTests,test05Coa8511RepeatedPostponeMovesCardToTargetDay,COA-8511,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,194,TestModelAutomationTests,test06Coa8512PostponeDoesNotChangeProgressAfterRestart,COA-8512,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,295,TestModelAutomationTests,test07Coa8517RemovedExerciseCanBeRecovered,COA-8517,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelAutomationTests.java,320,TestModelAutomationTests,test08Coa8518FirstLockedNextDayTapShowsPopup,COA-8518,iOS-only через Assume и Simulator API; COA-8518 отдельно deferred
+src/test/java/tests/TestModelLifecycleUnitTests.java,12,TestModelLifecycleUnitTests,primaryFailureSurvivesTeardownFailure,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelLifecycleUnitTests.java,21,TestModelLifecycleUnitTests,teardownFailureStillFailsSuccessfulScenario,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelLifecycleUnitTests.java,27,TestModelLifecycleUnitTests,successfulLifecycleDoesNotInventFailure,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelMailFixtureUnitTests.java,10,TestModelMailFixtureUnitTests,recordedAnonymousFixtureCanResume,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelMailFixtureUnitTests.java,15,TestModelMailFixtureUnitTests,differentAnonymousAccountCannotResume,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelMailFixtureUnitTests.java,20,TestModelMailFixtureUnitTests,missingOwnershipCannotResume,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelMailFixtureUnitTests.java,25,TestModelMailFixtureUnitTests,missingCurrentIdentityCannotResume,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelMailFixtureUnitTests.java,30,TestModelMailFixtureUnitTests,invalidIdentityCannotBeRecorded,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelPremiumInspectionTests.java,27,TestModelPremiumInspectionTests,inspectApprovedPremiumAccountWithoutReset,,iOS inspection opt-in; не регрессионное покрытие Android
+src/test/java/tests/TestModelProgressUnitTests.java,7,TestModelProgressUnitTests,exactTwoPercentPasses,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,11,TestModelProgressUnitTests,presentationWhitespaceDoesNotChangeTheValue,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,16,TestModelProgressUnitTests,changedProgressDoesNotPass,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,21,TestModelProgressUnitTests,resetToZeroAfterRestartCannotPass,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,26,TestModelProgressUnitTests,missingProgressCannotPass,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,31,TestModelProgressUnitTests,containingTwoPercentDoesNotSatisfyExactValue,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,36,TestModelProgressUnitTests,oldConfigurationCannotWeakenTheReviewedOracle,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,48,TestModelProgressUnitTests,moduleBaselinePasses,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,49,TestModelProgressUnitTests,missingBaselineFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,50,TestModelProgressUnitTests,twoMissingValuesFail,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,51,TestModelProgressUnitTests,matchingGarbageFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelProgressUnitTests.java,52,TestModelProgressUnitTests,outOfRangeFails,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,18,TestModelScopeUnitTests,coachForHerCaseIsExplicitlyDeferred,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,26,TestModelScopeUnitTests,existingSelectorFixtureScopeIsNotExpanded,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,31,TestModelScopeUnitTests,customizationInspectionCannotSelectAnUnrelatedProgram,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,35,TestModelScopeUnitTests,maintenanceDayWithoutTotalIsReadable,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,36,TestModelScopeUnitTests,ordinaryDayWithTotalIsStillReadable,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TestModelScopeUnitTests.java,37,TestModelScopeUnitTests,moduleStageIsStillReadable,,Unit/offline: не требует дублирования на мобильные платформы
+src/test/java/tests/TodayProgramSelectorTests.java,79,TodayProgramSelectorTests,testCoa8232SelectingProgramUpdatesToday,COA-8232,iOS-only через Assume; UI/analytics/motion Android не реализованы
+src/test/java/tests/TodayProgramSelectorTests.java,106,TodayProgramSelectorTests,testProgramChangeFixtureRestoresAfterFailure,,iOS-only через Assume; UI/analytics/motion Android не реализованы
+src/test/java/tests/TodayProgramSelectorTests.java,127,TodayProgramSelectorTests,testCoa8231ActiveProgramIsFirstAfterSwitch,"COA-8231,COA-8253",iOS-only через Assume; UI/analytics/motion Android не реализованы
+src/test/java/tests/TodayProgramSelectorTests.java,153,TodayProgramSelectorTests,testCoa8228SwipeDownClosesSelector,COA-8228,iOS-only через Assume; UI/analytics/motion Android не реализованы
+src/test/java/tests/TodayProgramSelectorTests.java,164,TodayProgramSelectorTests,testCoa8230ProgramsScrollVertically,COA-8230,iOS-only через Assume; UI/analytics/motion Android не реализованы
+src/test/java/tests/TodayProgramSelectorTests.java,173,TodayProgramSelectorTests,testCoa8227OpensSelectorWithAnalytics,"COA-8227,COA-8229",iOS-only через Assume; UI/analytics/motion Android не реализованы

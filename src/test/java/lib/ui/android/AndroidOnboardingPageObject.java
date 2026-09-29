@@ -21,10 +21,12 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     private static final String CONTINUE_BUTTON = "id:" + ID_PREFIX + "bContinue";
     private static final String QUESTION_NUMBER = "id:" + ID_PREFIX + "tvAnswerNum";
     private static final String QUESTIONNAIRE_WEBVIEW =
-            "xpath://android.webkit.WebView[.//android.widget.TextView[starts-with(@text,'STEP ')]]";
+            "xpath://android.webkit.WebView[.//android.widget.TextView[starts-with(@text,'STEP ')] "
+                    + "or .//android.view.View[@resource-id='question']]";
     private static final String PAYWALL_ROOT = "id:" + ID_PREFIX + "clPaywallContainer";
     private static final String PAYWALL_CLOSE = "id:" + ID_PREFIX + "btnClose";
     private static final String TODAY_TAB = "id:" + ID_PREFIX + "nav_graph_daily";
+    private static final String WORKBOOK_UPSELL = "id:" + ID_PREFIX + "tvEworkbook";
 
     private static final By SEMANTIC_QUESTIONNAIRE_ACTION = By.xpath(
             "//*[@enabled='true' and "
@@ -35,7 +37,11 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                     + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')=\"LET'S GO\")]"
     );
     private static final By QUESTIONNAIRE_ANSWER = By.xpath(
-            "(//android.webkit.WebView//android.view.View["
+            "(//android.webkit.WebView//android.view.View[starts-with(@resource-id,'answer-') "
+                    + "and @enabled='true']"
+                    + " | //android.webkit.WebView//android.widget.TextView[starts-with(@resource-id,'answer-') "
+                    + "and @enabled='true']"
+                    + " | //android.webkit.WebView//android.view.View["
                     + "count(android.widget.TextView)=1 and count(android.view.View)=1]"
                     + "/android.widget.TextView[string-length(normalize-space(@text)) > 0])[1]"
     );
@@ -64,6 +70,9 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Select Android onboarding goal: {goal.displayName}")
     public void selectGoal(OnboardingGoal goal) {
+        // An existing linked account can resume after the goal questions,
+        // directly at the optional workbook offer (observed on 1.40.21).
+        if (questionnaireDestinationIsVisible()) return;
         String uppercaseGoal = goal.getDisplayName().toUpperCase(Locale.US);
         String goalLocator = "xpath://android.widget.Button["
                 + "translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')="
@@ -106,7 +115,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 15
         );
         waitForFirstElementPresent(
-                new String[]{QUESTION_NUMBER, QUESTIONNAIRE_WEBVIEW, PAYWALL_ROOT, TODAY_TAB},
+                new String[]{QUESTION_NUMBER, QUESTIONNAIRE_WEBVIEW, PAYWALL_ROOT, WORKBOOK_UPSELL, "id:" + ID_PREFIX + "tvHeader", TODAY_TAB},
                 "Android questionnaire did not start after goal selection",
                 30
         );
@@ -149,7 +158,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     }
 
     private boolean questionnaireDestinationIsVisible() {
-        return isElementPresent(PAYWALL_ROOT) || isElementPresent(TODAY_TAB);
+        return isElementPresent(PAYWALL_ROOT) || isElementPresent(WORKBOOK_UPSELL) || isElementPresent("id:" + ID_PREFIX + "tvHeader") || isElementPresent(TODAY_TAB);
     }
 
     private void waitForQuestionnaireActionOrDestination(long timeoutInSeconds) {
@@ -174,12 +183,19 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
             WebElement paywallClose = firstDisplayedEnabled(By.id(ID_PREFIX + "btnClose"));
             boolean paywallVisible = isElementPresent(PAYWALL_ROOT) || paywallClose != null;
             if (paywallVisible) {
+                boolean workbook = isElementPresent(WORKBOOK_UPSELL);
                 Assert.assertNotNull(
                         "Android paywall is displayed without a semantic btnClose control",
                         paywallClose
                 );
                 String before = safePageSource();
-                paywallClose.click();
+                java.util.Map<String,Object> gesture=new java.util.HashMap<String,Object>();
+                gesture.put("elementId",((org.openqa.selenium.remote.RemoteWebElement)paywallClose).getId());
+                ((org.openqa.selenium.JavascriptExecutor)driver).executeScript("mobile: clickGesture",gesture);
+                if (workbook) {
+                    waitForElementNotVisible(WORKBOOK_UPSELL,
+                            "Android workbook close did not dismiss the offer", 12);
+                }
                 waitForSourceToChange(before, 12);
                 Assert.assertFalse(
                         "Android paywall close did not dismiss or advance the paywall. "
@@ -187,6 +203,12 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                         before.equals(safePageSource()) && isElementPresent(PAYWALL_ROOT)
                 );
                 paywallsClosed++;
+                continue;
+            }
+
+            WebElement introduction = firstDisplayedEnabled(By.id(ID_PREFIX + "btnGotIt"));
+            if (introduction != null && isElementPresent("id:" + ID_PREFIX + "tvHeader")) {
+                clickAndWaitForStateChange(introduction, 8);
                 continue;
             }
 

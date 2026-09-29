@@ -27,9 +27,7 @@ public class PdfGuideTests extends CoreTestCase {
     @Step("Start test testPdfGuideUpsellOpensFromMyWorkbook")
     @Severity(value = SeverityLevel.CRITICAL)
     public void testPdfGuideUpsellOpensFromMyWorkbook() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);

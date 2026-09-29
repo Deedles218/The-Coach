@@ -16,22 +16,14 @@ import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.io.File;
 
 @Epic(value = "The Coach Daily Plan")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DailyPlanTests extends CoreTestCase {
-    @BeforeClass
-    public static void deleteScreenshotsBeforeRun() {
-        deleteScreenshotFiles(new File(System.getProperty("user.dir")));
-        deleteScreenshotFiles(new File(System.getProperty("user.dir"), "target/screenshots"));
-    }
-
     @Test
     @Features(value = {
             @Feature(value = "Daily Plan"),
@@ -42,9 +34,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Step("Start test test01DailyPlanLessonsAndPracticeDisplayed")
     @Severity(value = SeverityLevel.NORMAL)
     public void test01DailyPlanLessonsAndPracticeDisplayed() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -65,9 +55,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Step("Start test test02DailyPlanLockedNextDayAndFirstDayLeftArrow")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test02DailyPlanLockedNextDayAndFirstDayLeftArrow() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -88,9 +76,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Step("Start test test03DailyPlanLessonOpensAndReturns")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test03DailyPlanLessonOpensAndReturns() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -113,13 +99,11 @@ public class DailyPlanTests extends CoreTestCase {
             @Feature(value = "Exercises")
     })
     @DisplayName("COA-7967 Daily Plan exercise opens and returns")
-    @Description("Starts from the progress-dependent Daily Plan, opens the first Daily Practice exercise, verifies the practice start screen, and returns without starting or completing it.")
+    @Description("Starts from the progress-dependent Daily Plan, opens the first Daily Practice exercise, verifies its native start screen or guide-video controls, and returns without completing the activity.")
     @Step("Start test test04DailyPlanExerciseOpensAndReturns")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test04DailyPlanExerciseOpensAndReturns() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -145,9 +129,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Step("Start test test05DailyPlanRemoveActionCanBeCancelled")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test05DailyPlanRemoveActionCanBeCancelled() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        org.junit.Assume.assumeTrue("Android has no postpone/remove/recover actions (confirmed by product owner)", Platform.getInstance().isIOS());
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -172,23 +154,4 @@ public class DailyPlanTests extends CoreTestCase {
         coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
     }
 
-    private static void deleteScreenshotFiles(File directory) {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            return;
-        }
-
-        for (File file : files) {
-            if (file.isFile() && isScreenshotFile(file)) {
-                if (!file.delete()) {
-                    System.out.println("Cannot delete old screenshot: " + file.getAbsolutePath());
-                }
-            }
-        }
-    }
-
-    private static boolean isScreenshotFile(File file) {
-        String fileName = file.getName().toLowerCase();
-        return fileName.endsWith("_screenshot.png") || fileName.endsWith(".screenshot.png");
-    }
 }

@@ -60,6 +60,24 @@ public class ReleaseSmokeTests extends CoreTestCase {
     }
 
     @Test
+    @Features(value = {@Feature(value = "Explore"), @Feature(value = "Recommended"), @Feature(value = "Retired Explore sections")})
+    @Issue("COA-8174")
+    @DisplayName("Release smoke: current program catalog and retired sections")
+    @Description("Verifies the program catalog and absence of Courses and Body/Mind Practices on the full Explore page.")
+    @Step("Start test testExploreProgramCatalogAndRetiredSections")
+    @Severity(value = SeverityLevel.CRITICAL)
+    public void testExploreProgramCatalogAndRetiredSections() {
+        requireIOSPlatform();
+
+        CoachFlowPageObject coachFlow = authorizedCoachFlow(TestData.existingProgressAccount());
+        ExplorePageObject explore = ExplorePageObjectFactory.get(driver);
+        Assert.assertNotNull("Explore page object is not available for current platform", explore);
+        explore.openExploreTab();
+        explore.assertCurrentSectionsAreDisplayed();
+        coachFlow.openToday();
+    }
+
+    @Test
     @Features(value = {@Feature(value = "Explore"), @Feature(value = "Recommended"), @Feature(value = "Custom Kegel")})
     @Issue("COA-8174")
     @DisplayName("Release smoke: current Explore Recommended and Custom Kegel")

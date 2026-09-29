@@ -143,6 +143,11 @@ public class CoreTestCase {
         return "Test does not support platform " + Platform.getInstance().getPlatformVar();
     }
 
+    protected void requireMobilePlatform() {
+        Assert.assertTrue("The Coach requires an iOS or Android driver",
+                Platform.getInstance().isIOS() || Platform.getInstance().isAndroid());
+    }
+
     protected void requireIOSPlatform() {
         Assert.assertTrue(
                 "This The Coach mobile suite is iOS-only; run it with -Dplatform=ios",

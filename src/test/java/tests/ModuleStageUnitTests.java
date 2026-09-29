@@ -1,7 +1,7 @@
 package tests;
 
 import lib.ModuleStage;
-import lib.ui.ios.iOSModulesPageObject;
+import lib.ui.ModulesPageObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.Rectangle;
@@ -26,20 +26,20 @@ public class ModuleStageUnitTests {
         new ModuleStage(1, 3, 2);
     }
     @Test public void touchingEdgesDoNotOverlap() {
-        Assert.assertFalse(iOSModulesPageObject.overlaps(new Rectangle(0, 0, 20, 10),
+        Assert.assertFalse(ModulesPageObject.overlaps(new Rectangle(0, 0, 20, 10),
                 new Rectangle(10, 0, 20, 10)));
     }
     @Test public void positiveAreaIntersectionIsAnOverlap() {
-        Assert.assertTrue(iOSModulesPageObject.overlaps(new Rectangle(0, 0, 20, 10),
+        Assert.assertTrue(ModulesPageObject.overlaps(new Rectangle(0, 0, 20, 10),
                 new Rectangle(9, 0, 20, 10)));
     }
     @Test(expected = AssertionError.class) public void partiallyClippedElementFails() {
-        iOSModulesPageObject.assertContained(new Rectangle(0, 0, 100, 100), new Rectangle(95, 5, 10, 10));
+        ModulesPageObject.assertContained(new Rectangle(0, 0, 100, 100), new Rectangle(95, 5, 10, 10));
     }
     @Test(expected = AssertionError.class) public void emptyElementFails() {
-        iOSModulesPageObject.assertContained(new Rectangle(0, 0, 100, 100), new Rectangle(5, 5, 0, 10));
+        ModulesPageObject.assertContained(new Rectangle(0, 0, 100, 100), new Rectangle(5, 5, 0, 10));
     }
     @Test public void nonSquareContainerUsesHeightAndWidthCorrectly() {
-        iOSModulesPageObject.assertContained(new Rectangle(0, 0, 200, 100), new Rectangle(90, 190, 10, 10));
+        ModulesPageObject.assertContained(new Rectangle(0, 0, 200, 100), new Rectangle(90, 190, 10, 10));
     }
 }

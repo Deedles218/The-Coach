@@ -31,9 +31,7 @@ public class KegelExerciseTests extends CoreTestCase {
     @Step("Start test test01KegelExercisePlayerFlow")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test01KegelExercisePlayerFlow() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
@@ -44,6 +42,7 @@ public class KegelExerciseTests extends CoreTestCase {
         TestData.deterministicFixture();
         TestData.TestAccount account = TestData.dedicatedKegelPlayerAccount();
         coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        verifyAndroidMutableFixture();
         dailyPlan.openTodayTab();
         dailyPlan.openKegelExerciseFromDailyPlan();
         dailyPlan.assertKegelStartScreenIsDisplayed();
@@ -158,9 +157,7 @@ public class KegelExerciseTests extends CoreTestCase {
     }
 
     private DailyPlanPageObject openDailyPlan() {
-        if (!Platform.getInstance().isIOS()) {
-            Assert.fail("Kegel exercise coverage is iOS-only.");
-        }
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
@@ -169,14 +166,24 @@ public class KegelExerciseTests extends CoreTestCase {
 
         dailyPlan.closeKegelExerciseFlowIfPresent();
         if (dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
+            verifyAndroidMutableFixture();
             return dailyPlan;
         }
         TestData.deterministicFixture();
         TestData.TestAccount account = TestData.dedicatedKegelPlayerAccount();
         coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        verifyAndroidMutableFixture();
         if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
             dailyPlan.openTodayTab();
         }
         return dailyPlan;
     }
+    private void verifyAndroidMutableFixture() {
+        if (!Platform.getInstance().isAndroid()) return;
+        String uid=System.getenv("COACH_ANDROID_MUTABLE_UID");
+        Assert.assertNotNull("Kegel changes require a dedicated mutable Android fixture UID",uid);
+        try { Assert.assertEquals("Wrong mutable fixture",uid,lib.AndroidModuleEvidence.currentUid()); }
+        catch(Exception failure) { throw new AssertionError("Cannot verify mutable Android fixture",failure); }
+    }
+
 }

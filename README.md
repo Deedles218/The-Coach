@@ -183,11 +183,19 @@ approved existing-progress account into `COACH_EXISTING_PROGRESS_EMAIL` and
 omit the optional Kegel account variables to reuse that account. The P1 PDF
 paywall test remains blocked until the no-PDF account is provisioned.
 
-## Modules (isolated iOS suite)
+## Modules (iOS and Android)
 
 `suites.ModulesSuite` adds module header, intra-module navigation and locked-next-module
-checks from the September handoff. It uses its own COA-9044 account through the
-existing Keychain runner. See [coverage, fixture requirements and commands](docs/modules-automation.md).
+checks from the September handoff through one shared test class and platform Page Objects.
+The approved COA-9044/Premium credentials come from Keychain. Android manProd 1.40.21
+uses a rooted test emulator and a separate launcher:
+
+```bash
+python3 scripts/run_modules_android.py --serial emulator-5554
+```
+
+See [coverage, fixture requirements and commands](docs/modules-automation.md) and
+[the repository-wide Android parity audit](docs/android-test-parity-audit-2026-09-19.md).
 Completion, calendar transitions and the device matrix remain explicitly uncovered.
 
 ## iOS IPA on a real device
@@ -329,3 +337,5 @@ the full suite. Video checks require `ffmpeg`, `xcrun` and Python 3.
 See [ready coverage, setup and validation](docs/ready-ios-autotests.md) and
 [Today selector implementation](docs/today-program-selector-automation.md).
 Generated screenshots, recordings, cache evidence and reports stay local under `target/`.
+
+Android parity, уточнённые различия платформ и команды прогонов: [отчёт](docs/android-parity-implementation-2026-09-19.md).

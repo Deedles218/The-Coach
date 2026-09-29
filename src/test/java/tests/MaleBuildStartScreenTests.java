@@ -53,7 +53,9 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
     @Step("Start test test01MaleBuildStartScreenButtonsAndLinks")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test01MaleBuildStartScreenButtonsAndLinks() {
-        if (!Platform.getInstance().isIOS()) {
+        requireMobilePlatform();
+        if (Platform.getInstance().isAndroid()) {
+            new lib.ui.android.AndroidWelcomePageObject(driver).verifyButtonsAndLegalLinks();
             return;
         }
 
@@ -86,8 +88,12 @@ public class MaleBuildStartScreenTests extends CoreTestCase {
     @Step("Start test test02MaleBuildLoginWithDsAccountAndOtp")
     @Severity(value = SeverityLevel.BLOCKER)
     public void test02MaleBuildLoginWithDsAccountAndOtp() {
-        if (!Platform.getInstance().isIOS()) {
-            return;
+        requireMobilePlatform();
+        if (Platform.getInstance().isAndroid()) {
+            lib.ui.android.AndroidCoachFlowPageObject coach=new lib.ui.android.AndroidCoachFlowPageObject(driver);
+            TestData.TestAccount account=TestData.existingProgressAccount();
+            coach.ensureLoggedOutOnStartScreen();coach.loginWithEmailAndOtp(account.getEmail(),account.getOtp());
+            coach.assertAuthorizedDashboardIsDisplayed();return;
         }
 
         MainPageObject page = new MainPageObject(driver);

@@ -28,9 +28,17 @@ public class SmokeTests extends CoreTestCase {
     @Description("Starts the app from a real clean-install capability set, completes the configured onboarding steps, verifies the in-app push prompt is shown, and verifies the authorized Daily Plan is underneath it.")
     @Step("Start test testCleanInstallOnboardingLeadsToDailyPlan")
     @Severity(value = SeverityLevel.BLOCKER)
-    public void testCleanInstallOnboardingLeadsToDailyPlan() {
-        requireIOSPlatform();
+    public void testCleanInstallOnboardingLeadsToDailyPlan() throws Exception {
+        requireMobilePlatform();
 
+        if (Platform.getInstance().isAndroid()) {
+            Assert.assertTrue("Clean Android install required", Platform.getInstance().isFreshAndroidInstallConfigured());
+            Assert.assertEquals("Disable automatic permissions", "false", System.getProperty("android.autoGrantPermissions"));
+            lib.ui.android.AndroidPermissionPageObject permission=new lib.ui.android.AndroidPermissionPageObject(driver);
+            permission.completeFreshJourneyToPermission();permission.allowAndVerifySystemPermission();
+            permission.finishOnboardingToToday();
+            return;
+        }
         requireCleanInstallConfiguration();
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -51,7 +59,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testTodayDailyPlanIsDisplayed")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testTodayDailyPlanIsDisplayed() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
@@ -72,7 +80,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testLoginWithEmptyEmailKeepsContinueDisabled")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testLoginWithEmptyEmailKeepsContinueDisabled() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
@@ -91,7 +99,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testEmailAndOtpOpenAuthorizedDailyPlan")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testEmailAndOtpOpenAuthorizedDailyPlan() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = authorizedCoachFlow();
         coachFlow.assertAuthorizedDashboardIsDisplayed();
@@ -106,7 +114,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testProfileOpensWithoutCoordinateFallback")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testProfileOpensWithoutCoordinateFallback() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = authorizedCoachFlow();
         coachFlow.openProfile();
@@ -121,7 +129,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testLogoutReturnsToWelcome")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testLogoutReturnsToWelcome() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = authorizedCoachFlow();
         coachFlow.openProfile();
@@ -137,7 +145,7 @@ public class SmokeTests extends CoreTestCase {
     @Step("Start test testKegelPlayerFlow")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testKegelPlayerFlow() {
-        requireIOSPlatform();
+        requireMobilePlatform();
 
         CoachFlowPageObject coachFlow = authorizedCoachFlow(TestData.kegelPlayerAccount());
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);

@@ -7,8 +7,8 @@
 ## Реализованный набор
 
 `suites.ModulesSuite` → `tests.ModulesTests`, существующий Java 8 / JUnit 4 /
-Appium стек. Семь независимых методов; последовательный запуск на одном
-изолированном аккаунте. Ключ COA-9044 служит именем аккаунта для всего набора,
+Appium стек. Семь общих для iOS и Android методов, `ModulesPageObjectFactory` и
+платформенные Page Objects; последовательный запуск на одном разрешённом аккаунте. Ключ COA-9044 служит именем аккаунта для всего набора,
 каждый метод сохраняет собственные Jira-ключи через `@Issue`.
 
 | Кейсы | Метод / состояние реализации |
@@ -36,8 +36,8 @@ Appium стек. Семь независимых методов; последо�
 Границы accessibility-элементов не доказывают отсутствие обрезания глифов,
 перекрытия произвольными слоями или соблюдение safe area. COA-9014 остаётся
 частичным. Исходная матрица COA-9018: iPhone 17 Pro Max, iPhone 13,
-iPhone SE 2020, Samsung S25 Ultra, Samsung S25. Android Page Object для этого
-набора пока отсутствует. Локаль English, portrait, штатный размер текста.
+iPhone SE 2020, Samsung S25 Ultra, Samsung S25. Android Page Object добавлен в текущей задаче; прогон на одном эмуляторе
+не закрывает исходную матрицу физических устройств. Локаль English, portrait, штатный размер текста.
 
 ## Изоляция и данные
 
@@ -277,8 +277,9 @@ UI-дерево с тем же именем в `target/page-source/`.
 
 **Результат полного прогона на Premium:** 7 tests, 0 failures, 1 error,
 0 skipped, 532.236 s: шесть PASS, один ERROR при восстановлении после
-`testNextModuleBlockedAndGotItRetainsStage`. Отчёт сохранён без перезаписи:
-`target/surefire-reports/suites.ModulesSuite.txt`.
+`testNextModuleBlockedAndGotItRetainsStage`. На момент того прогона отчёт находился в
+`target/surefire-reports/suites.ModulesSuite.txt`; этот общий путь перезаписывается
+следующими запусками. Приведённые числа описывают исторический iOS-прогон.
 
 **Повтор после исправления ожидания:**
 
@@ -296,3 +297,104 @@ python3 scripts/run_test_model_local.py COA-9044 --modules-premium --modules-pro
 сохранён. После восстановления стандартный teardown вышел из аккаунта.
 Семь unit-проверок module runner и девять premium runner повторно прошли;
 `git diff --check` для изменённых исходников и скриптов не выявил ошибок.
+
+
+## Android: та же модульная регрессия
+
+Платформа выбрана пользователем: **manProd 1.40.21 (339)**,
+`com.vamapps.thecoach`, Android 16 / API 36, `TheCoach_API_36_ARM`,
+`emulator-5554`, English/portrait. Используется тот же предоставленный аккаунт;
+UID совпал, production API подтвердил почту и активную подписку.
+
+Сценарии не скопированы в расходящийся Android test class: все семь находятся в
+`ModulesTests`, общие navigation/lock/geometry проверки — в `ModulesPageObject`.
+Factory выбирает `iOSModulesPageObject` или `AndroidModulesPageObject`.
+Android locators проверены по APK и фактическому UI: `tvModuleName`,
+`tvDaysNumber`, `ivBack`, `ivNext`; блокирующий диалог — `tvTitle` и `okButton`.
+Геометрия остаётся частичным покрытием COA-9014.
+
+### Android fixture evidence
+
+Root-доступ нужен **только на выбранном тестовом эмуляторе**, чтобы читать
+Firebase session из sandbox приложения. Reader проверяет non-anonymous UID,
+согласованность UID с JWT, срок токена и ожидаемый UID; server `/user/` дополнительно
+проверяет почту и Premium. Секреты не пишутся в артефакты.
+
+В отличие от iOS CFURL cache, Android использует authenticated catalog GET
+`/api/v1/coachprogram/catalog/v3/last_longer/?day_of_program=N` **после** того,
+как UI сам перешёл на этап N. Проверяются program/day/module metadata и
+`completed=false` у всех возвращённых активностей, отсутствие переноса.
+Повторная проверка UI подтверждает, что сбор evidence не изменил позицию.
+Это отдельное чтение backend-каталога, не захват сетевого ответа Android-приложения;
+оно не доказывает полного соответствия отрисованных карточек ответу каталога.
+Android reader не использует selecting `/daily_program` endpoint, не завершает
+активности и не выдаёт подписку. Текущая реализация ограничена модулем 1 Last Longer,
+этапами 1–7. Дата/завершение/другие программы не подготавливаются автоматически.
+
+### Запуск Android
+
+Установить утверждённый APK и запустить Appium на 4723:
+
+```bash
+adb -s emulator-5554 install -r /Users/deedles/Downloads/app-1.40.21-manProd-release.apk
+adb -s emulator-5554 root
+appium --base-path / --address 127.0.0.1 --log-level warn
+python3 scripts/run_modules_android.py --serial emulator-5554
+# Один сценарий:
+python3 scripts/run_modules_android.py --serial emulator-5554 --method testNextStageWithoutCompletingActivities
+```
+
+Runner проверяет root и установленную версию 1.40.21, читает существующий
+Keychain `the-coach-modules-premium`, передаёт email/OTP/UID окружением и
+архивирует свежие reports/screenshots/XML/logs в `target/android-modules-<timestamp>/`.
+Registry iOS и других кейсов не меняется. `--setup` — отдельная явная подготовка
+уже подтверждённого аккаунта, не часть ModulesSuite и не автоматическое создание
+нового аккаунта. Не запускать этот аккаунт одновременно на iOS и Android.
+
+### Подготовка и диагностические находки Android
+
+Вход открыл Android-анкету. После выбора Last Longer возникло PDF-предложение;
+его X не закрывал экран ни через native click, ни через clickGesture/ADB tap.
+Системный Back вернул к дополнительным целям. Снимок:
+`target/screenshots/android-workbook-close-blocker-2026-09-19.png`.
+После одного диагностического restart (без очистки данных) появились push prompt,
+пять вводных подсказок и webinar promo; их закрытие позволило открыть Today.
+Причина неработающего X не установлена. Этот дефект подготовки не скрыт retry.
+
+Android onboarding теперь распознаёт workbook как отдельный конечный экран,
+ожидает его реального закрытия и сообщает ошибку сразу, а не нажимает X до 16 раз.
+Добавлена обработка фактически наблюдавшихся вводных подсказок `tvHeader/btnGotIt`.
+Модульные тесты используют уже подготовленный аккаунт, не проходят анкету заново.
+Исходный Android экран: Last Longer, Module 1, Stage 1 of 7, **1 %**;
+отображаемый процент отличается от iOS 0 % и не используется как completion oracle.
+
+Первый focused module run: **1 test, 0 failures, 0 errors**, 23.771 s.
+Архив: `target/android-modules-20260919-160625/`.
+
+
+### Итоговая проверка Android — 19 сентября 2026
+
+Полный `suites.ModulesSuite`: **7 tests, 0 failures, 0 errors, 0 skipped**, 318.886 s.
+Неизменяемый в следующих запусках архив:
+[JUnit summary](../target/android-modules-20260919-161214/surefire-reports/suites.ModulesSuite.txt),
+[JUnit XML](../target/android-modules-20260919-161214/surefire-reports/TEST-suites.ModulesSuite.xml).
+После сценариев восстановлен Module 1 / Stage 1 of 7:
+[финальный скриншот](../target/screenshots/android-modules-restored-2026-09-19.png).
+Активности не завершались, покупок и сброса программы не было.
+
+Проверки общего кода: **18 Java unit tests** (ModuleStage/RestoringTestAction)
+и **12 Python tests** (Android evidence/runner) прошли.
+Контрольная iOS-регрессия `testNextStageWithoutCompletingActivities` после
+рефакторинга: **1 test, 0 failures, 0 errors, 0 skipped**, 69.89 s;
+[отдельный архив](../target/ios-modules-regression-20260919/surefire-reports/tests.ModulesTests.txt).
+Это один контрольный сценарий iOS, не повторный полный iOS-suite.
+
+Начальная Android-подготовка не подтверждена чистым повторным прогоном:
+сбой закрытия PDF upsell остаётся диагностической находкой. Изменения распознавания
+onboarding скомпилированы, но весь новый onboarding с начала не повторялся.
+[Скриншот блокера](../target/screenshots/android-workbook-close-blocker-2026-09-19.png).
+Полный успешный module run использовал аккаунт после описанной выше подготовки.
+
+Проверка всех прежних тестов репозитория:
+[аудит Android parity](android-test-parity-audit-2026-09-19.md).
+Полного Android-покрытия прежних наборов нет; их полный UI-прогон не выполнялся.

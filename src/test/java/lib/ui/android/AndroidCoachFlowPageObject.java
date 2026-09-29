@@ -31,6 +31,111 @@ import java.util.Map;
  * expose a writable value.
  */
 public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
+    private static String androidId(String name) { return "id:" + APP_PACKAGE + ":id/" + name; }
+    private static String androidText(String text) {
+        return "xpath://*[@text=" + xpathLiteral(text) + "]";
+    }
+    private static String xpathLiteral(String text) {
+        if (text.contains("'")) return "\"" + text + "\"";
+        return "'" + text + "'";
+    }
+
+    private void openProfileItem(String locator) {
+        scrollSettingsToBottom();
+        waitForElementAndClick(locator, "Profile action is unavailable", 10);
+    }
+
+    @Override public void openAccountSettingsFromProfile() {
+        openProfileItem(PROFILE_ACCOUNT_SETTINGS_BUTTON);
+        waitForElementVisible("xpath://android.webkit.WebView", "Account settings WebView is absent", 15);
+        waitForElementVisible("xpath://*[contains(@text,'Please enter your email')]", "Account email form did not load", 25);
+        waitForElementVisible("xpath://android.widget.EditText", "Account email field is absent", 10);
+    }
+
+    @Override public void openSupportFromProfile() {
+        openProfileItem(PROFILE_SUPPORT_BUTTON);
+        waitForElementVisible(androidId("tvHelp"), "Support heading is absent", 15);
+        waitForElementVisible(androidText("Billing & Payments"), "Support categories are absent", 10);
+    }
+
+    @Override public void openFaqFromProfile() {
+        openProfileItem(PROFILE_FAQ_BUTTON);
+        waitForElementVisible("xpath://android.webkit.WebView", "FAQ WebView is absent", 15);
+        waitForElementVisible(androidText("How do I use The Coach app?"), "FAQ content did not load", 25);
+    }
+
+    @Override public void openTermsFromProfile() {
+        openProfileItem(PROFILE_TERMS_BUTTON);
+        waitForElementVisible("xpath://android.webkit.WebView", "Terms WebView is absent", 15);
+        waitForElementVisible("xpath://*[contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'TERMS OF') or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'PRIVACY POLICY')]",
+                "Legal document content did not load", 25);
+    }
+
+    @Override public void closeProfileBrowser() {
+        waitForElementAndClick(androidId("btnClose"), "Cannot close Profile WebView", 10);
+        assertProfileScreenIsDisplayed();
+    }
+
+    @Override public void returnToProfileFromSubscreen() {
+        if (isElementVisible(androidId("btnClose"))) closeProfileBrowser();
+        else super.returnToProfileFromSubscreen();
+    }
+
+    @Override public void returnFromOtpFlowToStartScreen() {
+        waitForElementAndClick(CLOSE_LOGIN_BUTTON, "Cannot leave Android OTP", 10);
+        waitForFirstElementPresent(new String[]{LOGIN_EMAIL_INPUT,START_BUTTON,ONBOARDING_GOALS_TITLE},
+                "OTP cancel did not return to an authentication entry screen",15);
+        if(isElementVisible(LOGIN_EMAIL_INPUT)) returnFromLoginFlowToStartScreen();
+        else {
+            if(isElementVisible(ONBOARDING_GOALS_TITLE))
+                leaveGoalEntryForWelcome();
+            waitForStartScreen();
+        }
+    }
+
+    private void leaveGoalEntryForWelcome() {
+        final org.openqa.selenium.Rectangle[] previous={null};
+        WebElement back=createWait(10).until(d -> {
+            WebElement element=driver.findElement(By.id(APP_PACKAGE+":id/ivBackArrow"));
+            org.openqa.selenium.Rectangle current=element.getRect();
+            boolean stable=current.equals(previous[0]);previous[0]=current;
+            return stable&&element.isDisplayed()?element:null;
+        });
+        Map<String,Object> gesture=new HashMap<String,Object>();
+        gesture.put("elementId",((RemoteWebElement)back).getId());
+        ((JavascriptExecutor)driver).executeScript("mobile: clickGesture",gesture);
+        waitForElementNotVisible(ONBOARDING_GOALS_TITLE,"Goal-entry Back did not return to Welcome",10);
+    }
+
+    @Override public void cleanupForNextTest() {
+        ensureLoggedOutOnStartScreen();
+    }
+
+    @Override public void openMyWorkbookFromProfile() {
+        openProfileItem(PROFILE_MY_WORKBOOK_BUTTON);
+        waitForElementVisible(androidId("tvEworkbook"), "Workbook offer is absent: check no-PDF fixture", 15);
+    }
+
+    @Override public void assertPdfGuideUpsellIsDisplayed() {
+        waitForElementVisible(androidId("tvEworkbook"), "PDF offer is absent", 15);
+        waitForElementEnabled(androidId("btnClose"), "PDF close control is absent", 10);
+        waitForElementNotVisible(androidId("pbLoading"),"PDF product details are still loading",20);
+        WebElement price=waitForElementVisible(androidId("tvNewPrice"),"PDF price is absent",10);
+        Assert.assertTrue("PDF price did not load",price.getText().matches(".*[0-9].*"));
+        for(int n=0;n<5&&!isElementVisible(androidId("btnContinue"));n++) {
+            Map<String,Object> scroll=new HashMap<String,Object>();
+            scroll.put("elementId",((RemoteWebElement)driver.findElement(By.id(APP_PACKAGE+":id/scroll"))).getId());
+            scroll.put("direction","down");scroll.put("percent",.7);
+            ((JavascriptExecutor)driver).executeScript("mobile: scrollGesture",scroll);
+        }
+        waitForElementEnabled(androidId("btnContinue"), "PDF purchase control is absent", 10);
+    }
+
+    @Override public void closePdfGuideUpsell() {
+        waitForElementAndClick(androidId("btnClose"), "Cannot close PDF offer", 10);
+        waitForElementNotVisible(androidId("tvEworkbook"), "PDF offer did not close", 12);
+    }
+
     private static final String APP_PACKAGE = "com.vamapps.thecoach";
     private static final String ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER =
             "id:" + APP_PACKAGE + ":id/tvAnswerNum";
@@ -109,15 +214,17 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     public void ensureExistingProgressUserIsLoggedIn(String email, String otpCode) {
         closeAuthorizedTransientSurfaceIfPresent();
         if (isAuthorizedDashboardDisplayed()) {
-            // Android also exposes the same three bottom tabs for an
-            // anonymous/onboarding user. Verify the account state through
-            // Profile before treating the tabs as an authenticated session.
-            if (!isAnonymousSessionDisplayed()) {
-                // Keep the current authenticated destination. Android
-                // Explore tests may arrive here from Today or from a restored
-                // detail surface and will select Explore explicitly
-                // afterwards.
-                return;
+            openToday();
+            openProfile();
+            waitForElementNotVisible(androidId("pbLoading"), "Profile account state is still loading", 20);
+            if (!isAnonymousProfileDisplayed()) {
+                createWait(20).withMessage("Profile email has not loaded").until(d -> {
+                    java.util.List<WebElement> users = driver.findElements(By.id(APP_PACKAGE + ":id/tvUserName"));
+                    return !users.isEmpty() && users.get(0).getText().contains("@");
+                });
+                String actualEmail = driver.findElement(By.id(APP_PACKAGE + ":id/tvUserName")).getText();
+                returnToMainScreenFromProfile();
+                if (email.equalsIgnoreCase(actualEmail.trim())) return;
             }
         }
 
@@ -148,6 +255,11 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
             openProfile();
             logOut();
             return;
+        }
+
+        if(isElementVisible(ONBOARDING_GOALS_TITLE)) {
+            leaveGoalEntryForWelcome();
+            waitForStartScreen();return;
         }
 
         if (isElementPresent(START_SCREEN_TITLE) || isElementPresent(LOGIN_BUTTON)) {
@@ -199,6 +311,12 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     @Step("Verify Android Profile metrics and settings")
     public void assertProfileSmokeContentIsDisplayed() {
+        for (int n=0; n<3 && !isElementVisible(PROFILE_PROGRAM_SETTINGS_TITLE); n++) {
+            WebElement list=waitForElementVisible(PROFILE_SCREEN,"Profile settings list absent",10);
+            Map<String,Object> args=new HashMap<String,Object>();
+            args.put("elementId",((RemoteWebElement)list).getId());args.put("direction","up");args.put("percent",1.0);
+            ((JavascriptExecutor)driver).executeScript("mobile: scrollGesture",args);
+        }
         waitForElementPresent(PROFILE_SCREEN, "Android Profile screen is not displayed", 10);
         waitForElementPresent(PROFILE_PROGRESS_EXERCISES, "Completed exercises metric is not displayed", 10);
         waitForElementPresent(PROFILE_PROGRESS_LESSONS, "Completed lessons metric is not displayed", 10);
@@ -244,6 +362,20 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void loginWithEmailAndOtp(String email, String otpCode) {
+        authenticateForFixtureSetup(email, otpCode);
+        if (isElementPresent(ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER)) {
+            Assert.fail(
+                    "Android authorization is blocked by the post-auth questionnaire; "
+                            + "complete the Android onboarding fixture before running authorized smoke checks"
+            );
+        }
+        waitForAuthorizedDashboard();
+        waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Android authorization loading indicator is still displayed", 30);
+        openToday();
+    }
+
+    /** Authentication only; setup callers handle the account's required onboarding explicitly. */
+    public void authenticateForFixtureSetup(String email, String otpCode) {
         openLoginFlow();
         typeLoginEmail(email);
         assertLoginContinueButtonIsEnabled();
@@ -256,15 +388,6 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
                 "Android authorization did not reach the dashboard or the post-auth questionnaire",
                 30
         );
-        if (isElementPresent(ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER)) {
-            Assert.fail(
-                    "Android authorization is blocked by the post-auth questionnaire; "
-                            + "complete the Android onboarding fixture before running authorized smoke checks"
-            );
-        }
-        waitForAuthorizedDashboard();
-        waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Android authorization loading indicator is still displayed", 30);
-        openToday();
     }
 
     @Override
@@ -338,7 +461,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         }
     }
 
-    private void closeOtpConfirmationIfPresent() {
+    public void closeOtpConfirmationIfPresent() {
         try {
             waitForElementPresent(
                     OTP_CONFIRMATION_TITLE,
@@ -498,6 +621,13 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
      * treated as an Explore detail close action.
      */
     private void closeAuthorizedTransientSurfaceIfPresent() {
+        if (isElementVisible(androidId("ivClose")) && isElementVisible(androidId("tvHeader"))) {
+            waitForElementAndClick(androidId("ivClose"), "Cannot dismiss Android promo", 10);
+            waitForElementNotVisible(androidId("ivClose"), "Android promo did not close", 10);
+        }
+        if (isElementPresent(PROFILE_SCREEN)) {
+            returnToMainScreenFromProfile();
+        }
         if (isElementPresent(PROFILE_SCREEN)
                 || isElementPresent(START_SCREEN_TITLE)
                 || isElementPresent(LOGIN_SCREEN_TITLE)

@@ -18,9 +18,9 @@ public class iOSExplorePageObject extends ExplorePageObject {
         TAB_PROGRAMS = "xpath://XCUIElementTypeButton[@name='Programs']";
         TAB_TOOLS = "xpath://XCUIElementTypeButton[@name='Tools']";
 
-        RECOMMENDED_SECTION = "id:RECOMMENDED FOR YOU";
-        RECOMMENDED_COLLECTION = "xpath://XCUIElementTypeStaticText[@name='RECOMMENDED FOR YOU']/following-sibling::XCUIElementTypeCollectionView";
-        RECOMMENDED_PROGRAM_CARDS = "xpath://XCUIElementTypeStaticText[@name='RECOMMENDED FOR YOU']/following-sibling::XCUIElementTypeCollectionView//XCUIElementTypeOther[@name='CoachProgramDetailedManCard']";
+        RECOMMENDED_SECTION = "id:ALL PROGRAMS";
+        RECOMMENDED_COLLECTION = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]/XCUIElementTypeCollectionView";
+        RECOMMENDED_PROGRAM_CARDS = RECOMMENDED_COLLECTION + "//XCUIElementTypeOther[@name='CoachProgramDetailedManCard']";
         SEXUAL_HEALTH_SECTION = "id:SEXUAL HEALTH";
         COURSES_SECTION = "id:COURSES";
         COURSES_COLLECTION = "xpath://XCUIElementTypeStaticText[@name='COURSES']/following-sibling::XCUIElementTypeCollectionView";
@@ -40,12 +40,12 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
         FIRST_PROGRAM_CARD = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]";
         FIRST_PROGRAM_CARD_IMAGE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]//XCUIElementTypeImage";
-        FIRST_PROGRAM_TITLE = "id:Keep It Hard";
+        FIRST_PROGRAM_TITLE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]//XCUIElementTypeStaticText[1]";
         // Program-card names are dynamic. Prefer the dedicated identifier and
         // retain the existing card hierarchy only as a migration fallback.
         EXPLORE_PROGRAM_ITEMS = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedManCard']//XCUIElementTypeStaticText[1]";
-        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(//XCUIElementTypeStaticText[@name='RECOMMENDED FOR YOU']/following-sibling::XCUIElementTypeCollectionView//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[last()]";
-        LAST_RECOMMENDED_PROGRAM_TITLE = "id:Kegel Challenge";
+        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[last()]";
+        LAST_RECOMMENDED_PROGRAM_TITLE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[last()]//XCUIElementTypeStaticText[1]";
         PROGRAM_DETAIL_TITLE = "id:NewCoachProgramHeaderView";
         PROGRAM_DETAIL_CONTENT = "id:DailyDaySwitcherView";
         PROGRAM_DETAIL_CLOSE_BUTTON = "id:CloseRoundBlack";
@@ -89,6 +89,27 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
     public iOSExplorePageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
+        waitForElementVisible(SELECTED_EXPLORE_TAB,"Explore is not selected",10);
+        // Scan to both ends; checking only the first viewport would miss lazy sections.
+        for(String direction:new String[]{"down","up"}) {
+            String previous=""; boolean end=false;
+            for(int n=0;n<20;n++) {
+                for(String title:new String[]{"COURSES","BODY PRACTICES","MIND PRACTICES"})
+                    Assert.assertFalse("Retired Explore section reappeared: "+title,
+                        isElementVisible("xpath://XCUIElementTypeStaticText[translate(@label,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='"+title+"']"));
+                StringBuilder viewport=new StringBuilder();
+                for(WebElement e:driver.findElements(org.openqa.selenium.By.xpath("//XCUIElementTypeStaticText[@visible='true']")))
+                    viewport.append(e.getText()).append(e.getRect());
+                if(previous.equals(viewport.toString())) {end=true;break;}
+                previous=viewport.toString();
+                Map<String,Object> args=new HashMap<String,Object>();args.put("direction",direction);
+                ((JavascriptExecutor)driver).executeScript("mobile: swipe",args);
+            }
+            Assert.assertTrue("Explore end was not reached; absence is not proven",end);
+        }
     }
 
     @Override
