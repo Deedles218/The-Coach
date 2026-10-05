@@ -12,6 +12,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BooleanSupplier;
 
 public class AndroidOnboardingPageObject extends OnboardingPageObject {
     private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
@@ -71,16 +72,29 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Select Android onboarding goal: {goal.displayName}")
     public void selectGoal(OnboardingGoal goal) {
+        selectGoal(goal.getDisplayName());
+    }
+
+    @Override
+    public void completeNewUserJourneyToPaywall(String goal) {
+        assertFreshStartIsDisplayed();
+        openStartFlow();
+        selectGoal(goal);
+        completeQuestionnaire();
+    }
+
+    private void selectGoal(String goal) {
+        Assert.assertNotNull("Configured Android goal is required", goal);
         // An existing linked account can resume after the goal questions,
         // directly at the optional workbook offer (observed on 1.40.21).
         if (questionnaireDestinationIsVisible()) return;
-        String uppercaseGoal = goal.getDisplayName().toUpperCase(Locale.US);
+        String uppercaseGoal = goal.toUpperCase(Locale.US);
         String goalLocator = "xpath://android.widget.Button["
                 + "translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')="
                 + xpathLiteral(uppercaseGoal) + "]";
         waitForElementAndClick(
                 goalLocator,
-                "Cannot select Android onboarding goal '" + goal.getDisplayName() + "'",
+                "Cannot select Android onboarding goal '" + goal + "'",
                 20
         );
 
@@ -179,8 +193,34 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Close Android onboarding paywalls and optional popups")
     public int closePaywallsAndPopups() {
+        return closePaywallsAndPopupsUntil(() -> false);
+    }
+
+    @Override
+    public int closePaywallsBeforeSlides(String firstSlideHeader) {
+        int closed = closePaywallsAndPopupsUntil(() -> isElementVisible(slideHeader(firstSlideHeader)));
+        waitForElementVisible(slideHeader(firstSlideHeader),
+                "Product onboarding did not appear; verify fresh first visit and active Android configuration", 30);
+        return closed;
+    }
+
+    @Override
+    public int closePaywallsWithoutConsumingSlides(String[] slideHeaders) {
+        return closePaywallsAndPopupsUntil(() -> {
+            for (String header : slideHeaders) if (isElementVisible(slideHeader(header))) return true;
+            return false;
+        });
+    }
+
+    private String slideHeader(String header) {
+        return "xpath://*[@resource-id='" + ID_PREFIX + "viewPager']//*[@resource-id='"
+                + ID_PREFIX + "tvHeader' and @text=" + xpathLiteral(header) + "]";
+    }
+
+    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
+            if (destinationVisible.getAsBoolean()) return paywallsClosed;
             WebElement paywallClose = firstDisplayedEnabled(By.id(ID_PREFIX + "btnClose"));
             boolean paywallVisible = isElementPresent(PAYWALL_ROOT) || paywallClose != null;
             if (paywallVisible) {
@@ -270,6 +310,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         if (!value.contains("'")) {
             return "'" + value + "'";
         }
-        return "\"" + value + "\"";
+        if (!value.contains("\"")) return "\"" + value + "\"";
+        return "concat('" + value.replace("'", "',\"'\",'") + "')";
     }
 }

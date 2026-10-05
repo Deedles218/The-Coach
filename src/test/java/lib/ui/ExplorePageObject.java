@@ -102,6 +102,17 @@ abstract public class ExplorePageObject extends MainPageObject {
         super(driver);
     }
 
+    public abstract void assertConfiguredSectionsAreDisplayed();
+    public abstract void assertCoursesSectionIsRemoved();
+    public abstract void assertBrowseProgramsReplacesLegacyBlock();
+    public abstract void assertConfiguredCardTemplates();
+    public abstract void assertConfiguredCardTitlesAreNonEmpty();
+    public abstract void openQuickTipVideoAndVerifyPlayer();
+    public abstract void openMasterClassAndVerifyDestination();
+    public abstract void openPrivateCoachingAndVerifyWebView();
+    public abstract void closePrivateCoachingWebView();
+    public abstract void closeTransientDetailIfPresent();
+
     public boolean isExploreContextAvailable() {
         return this.isElementPresent(EXPLORE_ENTRY_POINT);
     }

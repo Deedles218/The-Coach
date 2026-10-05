@@ -12,10 +12,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         TAB_SHOP = "id:Shop";
         TAB_SHOP_SELECTED = "xpath://XCUIElementTypeButton[@name='Shop' and @value='1']";
         SHOP_CONTENT_MARKER = "id:shop_screen";
-        // Do not use the tab itself as a content assertion. The app must ship
-        // the shop_screen root id so a successful tab tap cannot mask a blank
-        // or still-loading Shop screen.
-        SHOP_CONTENT_FALLBACK = null;
+        // The Store link is actual rendered content in the observed native
+        // accessibility tree. Neither alternative accepts the tab itself.
+        SHOP_CONTENT_FALLBACK = "xpath://XCUIElementTypeLink[@name='The Coach Store' and @visible='true']";
         TAB_FEED = "id:Feed";
         FEED_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Feed']";
         FEED_DEPRECATION_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Feed will be removed')]";

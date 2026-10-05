@@ -32,6 +32,14 @@ abstract public class OnboardingPageObject extends MainPageObject {
         completeQuestionnaire();
     }
 
+    public void completeNewUserJourneyToPaywall(String goal) {
+        completeNewUserJourneyToPaywall(OnboardingGoal.fromConfiguredValue(goal));
+    }
+
+    public abstract int closePaywallsBeforeSlides(String firstSlideHeader);
+
+    public abstract int closePaywallsWithoutConsumingSlides(String[] slideHeaders);
+
     @Step("Verify the app is on a fresh new-user Start screen")
     public abstract void assertFreshStartIsDisplayed();
 

@@ -56,6 +56,16 @@ def capture(device, bundle, goal, output):
         values = dict(connection.execute(
             'SELECT key, value FROM main_active WHERE key IN (?, ?)',
             (config_key, 'abtest_onboarding_slides')))
+    return export_properties(values, bundle, goal, output)
+
+
+def export_properties(values, bundle, goal, output, platform='ios'):
+    """Convert the app's active configuration, never use another platform's fixture."""
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.unlink(missing_ok=True)
+    config_key = ('daily_plan_onboarding_slides_for_her'
+                  if bundle.endswith('-for-her') or bundle.endswith('.forher') else 'daily_plan_onboarding_slides')
     errors = []
     if not json.loads(values['abtest_onboarding_slides']).get('isEnabled'):
         errors.append('Active abtest_onboarding_slides is disabled')
@@ -67,7 +77,7 @@ def capture(device, bundle, goal, output):
                       + '; matching orders: ' + str([slide['order'] for slide in slides]))
     if len({slide['header'] for slide in slides}) != len(slides):
         errors.append('Slide headers must be unambiguous accessibility labels')
-    properties = {'bundleId': bundle, 'goal': goal, 'configKey': config_key, 'count': len(slides)}
+    properties = {('appPackage' if platform == 'android' else 'bundleId'): bundle, 'goal': goal, 'configKey': config_key, 'count': len(slides)}
     for index, slide in enumerate(slides, 1):
         for key in ('id', 'header', 'buttonText', 'imageUrl'):
             if not slide.get(key):

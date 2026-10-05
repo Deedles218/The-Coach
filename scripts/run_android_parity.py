@@ -16,7 +16,7 @@ SUITES = {
     "auth": "tests.CoachAuthorizationTests",
     "profile": "tests.CoachProfileTests",
     "daily": "tests.DailyPlanTests",
-    "explore": "tests.ExploreTests",
+    "explore": "tests.ConfiguredExploreTests",
     "explore-cards": "tests.AndroidExploreTests",
     "welcome": "tests.MaleBuildStartScreenTests",
     "selector": "tests.AndroidProgramSelectorTests",
@@ -26,6 +26,7 @@ SUITES = {
     "push": "tests.AndroidPushPermissionTests",
     "billing": "tests.AndroidPurchaseTests",
     "test-model": "tests.AndroidTestModelTests",
+    "slides": "tests.OnboardingSlidesTests",
     "safe": "suites.AndroidRegressionSuite",
 }
 
@@ -38,6 +39,9 @@ def main():
     parser.add_argument("--old-apk", type=Path)
     parser.add_argument("--new-apk", type=Path)
     parser.add_argument("--fixture-service", default=MODULES_PREMIUM_SERVICE)
+    parser.add_argument("--slides-fixture", type=Path)
+    parser.add_argument("--prepared-slides", action="store_true",
+                        help="The first uncompleted slide is already open; preserve this installation")
     args = parser.parse_args()
     if not re.fullmatch(r"emulator-[0-9]+", args.serial):
         parser.error("Select the explicit test emulator")
@@ -45,6 +49,8 @@ def main():
         parser.error("Invalid method name")
     if args.suite == "update" and (not args.old_apk or not args.new_apk):
         parser.error("Update requires both --old-apk and --new-apk")
+    if args.suite == "slides" and (not args.slides_fixture or not args.slides_fixture.is_file()):
+        parser.error("Slides require --slides-fixture from this Android build's active configuration")
     version = subprocess.check_output([os.environ.get("ADB","adb"),"-s",args.serial,"shell","getprop","ro.build.version.release"], text=True,timeout=15).strip()
     record = json.loads(keychain(args.fixture_service))
     if not all(record.get(k) for k in ("uid", "email", "otp")):
@@ -66,10 +72,15 @@ def main():
            "-Dandroid.appPackage=com.vamapps.thecoach", "-Dandroid.appActivity=com.vamapps.thecoach.MainActivity"]
     if args.suite == "safe":
         cmd += ["-Dcoach.modules.enabled=true", "-Dcoach.modules.programId=last_longer"]
-    if args.suite in ("push", "billing", "test-model") and not (args.suite == "test-model" and args.method == "testValidEmailEnablesContinue"):
+    fresh_slides = (args.suite == "slides" and not args.prepared_slides
+                    and args.method != "testExistingProgressUserDoesNotSeeSlides")
+    if (fresh_slides or args.suite in ("push", "billing", "test-model")) and not (args.suite == "test-model" and args.method == "testValidEmailEnablesContinue"):
         if not args.new_apk: parser.error("Clean-install suite requires --new-apk")
         cmd = [arg for arg in cmd if not arg.startswith(("-Dandroid.noReset=", "-Dandroid.fullReset="))]
         cmd += ["-Dandroid.noReset=false", "-Dandroid.fullReset=true", "-Dandroid.autoGrantPermissions=" + ("false" if args.suite == "push" else "true"), "-Dandroid.app=" + str(args.new_apk.resolve())]
+    if args.suite == "slides":
+        cmd += ["-Donboarding.slides.fixture=" + str(args.slides_fixture.resolve()),
+                "-Donboarding.slides.prepared=" + str(args.prepared_slides).lower()]
     if args.suite == "update" and args.new_apk:
         cmd.append("-Dandroid.app=" + str(args.new_apk.resolve()))
     for key, value in (("old", args.old_apk), ("new", args.new_apk)):

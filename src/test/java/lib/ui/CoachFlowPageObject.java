@@ -171,6 +171,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
                 || this.isElementPresent(TEST_ID_TODAY_TAB)
                 || this.isElementPresent(TAB_TODAY)) {
+            this.openToday();
             this.openProfile();
             this.logOut();
             return;
@@ -370,6 +371,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 new String[]{TEST_ID_PROFILE_WORKBOOK, PROFILE_MY_WORKBOOK_BUTTON},
                 "My workbook item is not displayed",
                 10
+        );
+        this.swipeUpToFindFirstVisibleElement(
+                new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
+                "Cannot find FAQ below the visible Profile items",
+                3
         );
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
@@ -886,6 +892,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
                 || this.isElementPresent(TEST_ID_TODAY_TAB)
                 || this.isElementPresent(TAB_TODAY)) {
+            this.openToday();
             this.openProfile();
             this.logOut();
         }
