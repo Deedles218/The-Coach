@@ -53,11 +53,26 @@ public class Platform {
     }
     public RemoteWebDriver getDriver() throws Exception
     {
+        return getDriver(null, null);
+    }
+
+    /** Explicit locale for the localization suite; other suites retain their defaults. */
+    public RemoteWebDriver getDriver(String language, String locale) throws Exception
+    {
+        if ((language == null) != (locale == null)) {
+            throw new IllegalArgumentException("Language and locale must be supplied together");
+        }
         URL URL= new URL(this.getAppiumUrl());
         if(this.isAndroid()) {
-            return new AndroidDriver(URL, this.getAndroidDesiredCapabilities());
+            DesiredCapabilities capabilities = this.getAndroidDesiredCapabilities();
+            this.setCapabilityIfPresent(capabilities, "language", language);
+            this.setCapabilityIfPresent(capabilities, "locale", locale);
+            return new AndroidDriver(URL, capabilities);
         }else if (this.isIOS()) {
-            return new IOSDriver(URL, this.getIOSDesiredCapabilities());
+            DesiredCapabilities capabilities = this.getIOSDesiredCapabilities();
+            this.setCapabilityIfPresent(capabilities, "language", language);
+            this.setCapabilityIfPresent(capabilities, "locale", locale);
+            return new IOSDriver(URL, capabilities);
         }else if (this.isMw()) {
             return new ChromeDriver(this.getMwChromeOptions());
         }else {

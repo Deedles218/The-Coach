@@ -136,7 +136,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         waitForElementNotVisible(androidId("tvEworkbook"), "PDF offer did not close", 12);
     }
 
-    private static final String APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER =
             "id:" + APP_PACKAGE + ":id/tvAnswerNum";
 

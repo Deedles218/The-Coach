@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import io.qameta.allure.Step;
+import lib.Platform;
 import lib.ui.OnboardingGoal;
 import lib.ui.OnboardingPageObject;
 import org.junit.Assert;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class AndroidOnboardingPageObject extends OnboardingPageObject {
-    private static final String APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ID_PREFIX = APP_PACKAGE + ":id/";
 
     private static final String START_BUTTON = "id:" + ID_PREFIX + "btnSignInAnonymous";
