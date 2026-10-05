@@ -56,8 +56,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         DELETE_ACCOUNT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'It will be impossible to restore the progress')]";
         DELETE_ACCOUNT_CANCEL_BUTTON = "id:CANCEL";
         LOG_OUT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Log Out']";
-        LOG_OUT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[@name='Log out of your account?']";
-        LOG_OUT_CONFIRM_BUTTON = "id:YES";
+        LOG_OUT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[@name='Log out of your account?' "
+                + "or starts-with(@name, 'Your account is currently anonymous because')]";
+        LOG_OUT_CONFIRM_BUTTON = "xpath://*[@name='YES'] "
+                + "| //XCUIElementTypeButton[@name='LOG OUT' and @visible='true']";
 
         START_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Feel the new level') or contains(@name, 'FEEL THE NEW LEVEL')]";
         START_BUTTON = "id:START NOW";
@@ -102,6 +104,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     public void ensureLoggedOutOnStartScreen() {
         activateAppIfPossible();
+        if (isElementVisible(LOG_OUT_CONFIRM_TITLE)) {
+            confirmLogoutIfNeeded();
+        }
         // A cold simulator launch can render the subscription error after the
         // first optional-popup check. Wait for an actionable entry surface.
         createWait(30).withMessage("No actionable screen after launching Coach").until(ignored ->

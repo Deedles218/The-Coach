@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class iOSOnboardingPageObject extends OnboardingPageObject {
     private static final String START_BUTTON = "id:START NOW";
@@ -97,6 +98,19 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Select iOS onboarding goal: {goal.displayName}")
     public void selectGoal(OnboardingGoal goal) {
+        selectGoal(goal.getDisplayName());
+    }
+
+    @Step("Complete fresh iOS questionnaire for configured goal: {goal}")
+    public void completeNewUserJourneyToPaywall(String goal) {
+        assertFreshStartIsDisplayed();
+        openStartFlow();
+        selectGoal(goal);
+        completeQuestionnaire();
+    }
+
+    @Step("Select configured iOS goal: {goal}")
+    public void selectGoal(String goal) {
         if (!isElementVisible(GOAL_TITLE)) {
             closePreQuestionnairePrompts();
             completeAdditionalGoalsIfPresent();
@@ -106,14 +120,14 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             );
             return;
         }
-        String expected = goal.getDisplayName().toUpperCase(Locale.US);
+        String expected = goal.toUpperCase(Locale.US);
         String goalLocator = "xpath:(//XCUIElementTypeButton | //XCUIElementTypeStaticText)["
                 + "@visible='true' and translate(normalize-space(@name), "
                 + "'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')="
                 + xpathLiteral(expected) + "]";
         waitForElementAndClick(
                 goalLocator,
-                "Cannot select iOS onboarding goal '" + goal.getDisplayName() + "'",
+                "Cannot select iOS onboarding goal '" + goal + "'",
                 20
         );
 
@@ -176,8 +190,33 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Close iOS onboarding paywalls and optional popups")
     public int closePaywallsAndPopups() {
+        return closePaywallsAndPopupsUntil(() -> false);
+    }
+
+    @Step("Close paywalls without consuming the first product onboarding slide")
+    public int closePaywallsBeforeSlides(String firstSlideHeader) {
+        int closed = closePaywallsAndPopupsUntil(() -> isElementVisible("id:" + firstSlideHeader));
+        waitForElementPresent("id:" + firstSlideHeader,
+                "Product onboarding did not appear; verify first-visit state and active configuration", 30);
+        return closed;
+    }
+
+    @Step("Close optional paywalls while preserving any reappearing product slide")
+    public int closePaywallsWithoutConsumingSlides(String[] slideHeaders) {
+        return closePaywallsAndPopupsUntil(() -> {
+            for (String header : slideHeaders) {
+                if (isElementVisible("id:" + header)) return true;
+            }
+            return false;
+        });
+    }
+
+    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
+            if (destinationVisible.getAsBoolean()) {
+                return paywallsClosed;
+            }
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
