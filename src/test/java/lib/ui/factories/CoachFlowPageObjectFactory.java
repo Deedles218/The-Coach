@@ -16,4 +16,17 @@ public final class CoachFlowPageObjectFactory {
         }
         return IOSPageObjectFactory.create(() -> new iOSCoachFlowPageObject(driver));
     }
+
+    /** Keep platform-specific login behavior, with a caller-owned dashboard readiness check. */
+    public static CoachFlowPageObject get(RemoteWebDriver driver, Runnable dashboardReady) {
+        java.util.Objects.requireNonNull(dashboardReady, "Dashboard readiness check is required");
+        if (Platform.getInstance().isAndroid()) {
+            return new AndroidCoachFlowPageObject(driver) {
+                @Override public void waitForAuthorizedDashboard() { dashboardReady.run(); }
+            };
+        }
+        return IOSPageObjectFactory.create(() -> new iOSCoachFlowPageObject(driver) {
+            @Override public void waitForAuthorizedDashboard() { dashboardReady.run(); }
+        });
+    }
 }

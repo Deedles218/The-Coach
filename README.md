@@ -198,6 +198,29 @@ See [coverage, fixture requirements and commands](docs/modules-automation.md) an
 [the repository-wide Android parity audit](docs/android-test-parity-audit-2026-09-19.md).
 Completion, calendar transitions and the device matrix remain explicitly uncovered.
 
+## Localization suite (iOS and Android)
+
+`suites.LocalizationSuite` runs the localization UI matrix through the dedicated
+Maven profile `localization`. It covers Welcome/Login, Dashboard/Profile and
+app-language selection with cold-restart persistence. Men's builds use
+`en,fr,de,it,es`; latest women's builds use `en,es,fr`.
+
+```bash
+mvn test -Plocalization -Dplatform=android \
+  -Dandroid.udid=emulator-5554 -Dandroid.deviceName=TheCoach_API_36_Play \
+  -Dandroid.platformVersion=16 -Dandroid.appPackage=com.vamapps.thecoach.forher \
+  -Dandroid.appActivity=com.vamapps.thecoach.MainActivity \
+  -Dlocalization.variant=female -Dlocalization.locales=en \
+  -Dlocalization.scenarios=welcome \
+  -Dlocalization.fixture=src/test/resources/localization/android-female-prod-2.16.9.properties
+```
+
+The example runs one Welcome/Login case without credentials. Omit
+`localization.locales` for all languages; omit `localization.scenarios` for all
+three scenarios. Authenticated cases require a prepared returning-user account
+and observed language-setting selectors. See the [localization instructions,
+build fixtures and current execution limits](docs/localization-smoke.md).
+
 ## iOS IPA on a real device
 
 `/Users/deedles/Downloads/The Coach.ipa` is a device-only `arm64` build:
