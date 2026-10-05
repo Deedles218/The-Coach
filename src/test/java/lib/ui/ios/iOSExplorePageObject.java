@@ -91,6 +91,133 @@ public class iOSExplorePageObject extends ExplorePageObject {
         super(driver);
     }
 
+    private static final String EXPLORE_HEADING = "xpath://XCUIElementTypeStaticText[@name='Explore' and @visible='true']";
+
+    private String configuredSection(String title) {
+        return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
+                + title.toLowerCase(java.util.Locale.ROOT) + "' and @visible='true']";
+    }
+
+    private String configuredCards(String title) {
+        // Scope cards to the nearest section containing its heading and collection,
+        // rather than using unrelated images/buttons elsewhere on the page.
+        return configuredSection(title) + "/ancestor::XCUIElementTypeOther[.//XCUIElementTypeCollectionView][1]"
+                + "//XCUIElementTypeCollectionView/*[not(@type='XCUIElementTypeOther' and contains(@name,'scroll bar'))]";
+    }
+
+    private void revealConfiguredSection(String title) {
+        if (!isElementVisible(configuredSection(title))) rewindConfiguredCatalog();
+        swipeUpToFindFirstVisibleElement(new String[]{configuredSection(title)}, "Explore section absent: " + title, 8);
+        waitForElementVisible(configuredSection(title), "Explore section not visible: " + title, 10);
+    }
+
+    private void rewindConfiguredCatalog() {
+        for (int swipe = 0; swipe < 20; swipe++) {
+            String before = configuredViewport();
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("direction", "down");
+            ((JavascriptExecutor) driver).executeScript("mobile: swipe", arguments);
+            final String[] previous = {null};
+            createWait(10).withMessage("Explore scroll did not settle").until(d -> {
+                String current = configuredViewport();
+                boolean stable = current.equals(previous[0]);
+                previous[0] = current;
+                return stable;
+            });
+            if (before.equals(configuredViewport())) return;
+        }
+        throw new AssertionError("Explore top was not reached");
+    }
+
+    private String configuredViewport() {
+        StringBuilder viewport = new StringBuilder();
+        for (WebElement text : driver.findElements(org.openqa.selenium.By.xpath(
+                "//XCUIElementTypeStaticText[@visible='true']")))
+            viewport.append(text.getText()).append(text.getRect());
+        return viewport.toString();
+    }
+
+    @Override public void assertConfiguredSectionsAreDisplayed() {
+        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"})
+            revealConfiguredSection(title);
+    }
+    @Override public void assertCoursesSectionIsRemoved() { assertRemovedCoursesAndPracticesAreAbsent(); }
+    @Override public void assertBrowseProgramsReplacesLegacyBlock() {
+        assertMainProgramsRecommendedSection();
+        assertRetiredExploreUiIsAbsent();
+    }
+    @Override public void assertConfiguredCardTemplates() {
+        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"}) {
+            revealConfiguredSection(title);
+            String cards = configuredCards(title);
+            waitForElementVisible(cards, "No configured cards in " + title, 10);
+            WebElement image = waitForElementVisible(cards + "//XCUIElementTypeImage",
+                    "Configured card has no image in " + title, 10);
+            Assert.assertTrue("Configured image has empty bounds in " + title,
+                    image.getRect().getWidth() > 0 && image.getRect().getHeight() > 0);
+        }
+        waitForElementEnabled(coachingAction(), "Private coaching action is missing", 10);
+    }
+    @Override public void assertConfiguredCardTitlesAreNonEmpty() {
+        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"}) {
+            revealConfiguredSection(title);
+            List<WebElement> titles = driver.findElements(getLocatorByString(
+                    configuredCards(title) + "//XCUIElementTypeStaticText[@visible='true']"));
+            Assert.assertFalse("Configured cards have no titles in " + title, titles.isEmpty());
+            for (WebElement node : titles) Assert.assertFalse("Empty configured card title", node.getText().trim().isEmpty());
+        }
+    }
+    @Override public void openQuickTipVideoAndVerifyPlayer() {
+        revealConfiguredSection("Quick Tips");
+        waitForElementAndClick(configuredCards("Quick Tips"), "Quick Tip card absent", 10);
+        waitForElementNotVisible(EXPLORE_HEADING, "Quick Tip left user on Explore", 15);
+        new lib.ui.VideoLessonPlayerPageObject(driver).waitUntilReady();
+    }
+    @Override public void openMasterClassAndVerifyDestination() {
+        revealConfiguredSection("Master Classes");
+        waitForElementAndClick(configuredCards("Master Classes"), "Master Class card absent", 10);
+        waitForElementNotVisible(EXPLORE_HEADING, "Master Class left user on Explore", 15);
+        waitForFirstElementPresent(new String[]{"xpath://XCUIElementTypeWebView",
+                COURSE_DETAIL_TITLE, "id:LessonVideoView",
+                "xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']"},
+                "Master Class did not open lesson or WebView content", 20);
+    }
+    @Override public void openPrivateCoachingAndVerifyWebView() {
+        revealConfiguredSection("Private coaching session");
+        waitForElementAndClick(coachingAction(), "Private coaching Learn More action absent", 10);
+        waitForElementNotVisible(EXPLORE_HEADING, "Coaching left user on Explore", 15);
+        String webView = "xpath://XCUIElementTypeWebView";
+        String booking = "xpath://XCUIElementTypeLink[@label='Book 1:1 a private consultation' or @name='Book 1:1 a private consultation']";
+        // XCUITest can flatten WKWebView into native Link nodes (as observed in Shop).
+        waitForFirstElementPresent(new String[]{webView, booking}, "Private coaching web content absent", 20);
+        waitForFirstElementPresent(new String[]{booking,
+                webView + "//*[@label='Book 1:1 a private consultation' or @name='Book 1:1 a private consultation']"},
+                "Private coaching booking action absent", 20);
+    }
+    private String coachingAction() {
+        return configuredCards("Private coaching session")
+                + "//*[(@type='XCUIElementTypeButton' or @type='XCUIElementTypeStaticText') "
+                + "and translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='learn more' and @visible='true']";
+    }
+    @Override public void closePrivateCoachingWebView() { closeTransientDetailIfPresent(); }
+    @Override public void closeTransientDetailIfPresent() {
+        if (isElementVisible(EXPLORE_HEADING)) return;
+        if (isElementVisible("xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']")) {
+            new lib.ui.VideoLessonPlayerPageObject(driver).closePlayer();
+            waitForElementVisible(EXPLORE_HEADING, "Video did not return to Explore", 15);
+            return;
+        }
+        String[] closeControls = new String[]{"id:navBarRoundBack", "id:CloseRoundBlack",
+                "id:navBarRoundClose", "id:ic_outline_close", "id:ProgramCloseButtonIcon"};
+        boolean closable = false;
+        for (String control : closeControls) if (isElementVisible(control)) closable = true;
+        if (!closable) return;
+        waitForFirstElementAndClick(closeControls,
+                "Cannot close Explore destination", 10);
+        if (isElementVisible("id:QUIT")) waitForElementAndClick("id:QUIT", "Cannot quit unfinished video", 10);
+        waitForElementVisible(EXPLORE_HEADING, "Closing destination did not return to Explore", 15);
+    }
+
     @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
         waitForElementVisible(SELECTED_EXPLORE_TAB,"Explore is not selected",10);
         // Scan to both ends; checking only the first viewport would miss lazy sections.

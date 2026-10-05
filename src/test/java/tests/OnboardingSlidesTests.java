@@ -6,8 +6,10 @@ import lib.CoreTestCase;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
-import lib.ui.ios.iOSOnboardingPageObject;
-import lib.ui.ios.iOSOnboardingSlidesPageObject;
+import lib.ui.OnboardingPageObject;
+import lib.ui.OnboardingSlidesPageObject;
+import lib.ui.factories.OnboardingPageObjectFactory;
+import lib.ui.factories.OnboardingSlidesPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.Rectangle;
@@ -25,9 +27,9 @@ public class OnboardingSlidesTests extends CoreTestCase {
     @DisplayName("Product slides: configured content, swipe navigation, media, CTA and one-time completion")
     @Description("Uses the active goal-filtered configuration. Requirements COA-9145 supersede conflicting Skip/cyclic expectations in TMS, as confirmed by the owner. A prepared run requires the first uncompleted slide; a normal run starts from a fresh install.")
     public void testNewUserSlidesNavigationMediaAndCompletion() throws Exception {
-        requireIOSPlatform();
-        try (iOSOnboardingSlidesPageObject slides = new iOSOnboardingSlidesPageObject(driver)) {
-            iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
+        requireMobilePlatform();
+        try (OnboardingSlidesPageObject slides = OnboardingSlidesPageObjectFactory.get(driver)) {
+            OnboardingPageObject onboarding = OnboardingPageObjectFactory.get(driver);
             if (!Boolean.getBoolean("onboarding.slides.prepared")) {
                 onboarding.completeNewUserJourneyToPaywall(slides.goal());
             }
@@ -74,14 +76,14 @@ public class OnboardingSlidesTests extends CoreTestCase {
     @Issue("COA-9431")
     @DisplayName("Existing user with Daily Plan history sees Today without product onboarding")
     public void testExistingProgressUserDoesNotSeeSlides() throws Exception {
-        requireIOSPlatform();
-        iOSOnboardingSlidesPageObject slides = new iOSOnboardingSlidesPageObject(driver);
+        requireMobilePlatform();
+        OnboardingSlidesPageObject slides = OnboardingSlidesPageObjectFactory.get(driver);
         TestData.TestAccount account = TestData.existingProgressAccount();
-        new iOSOnboardingPageObject(driver).closePaywallsAndPopups();
+        OnboardingPageObjectFactory.get(driver).closePaywallsWithoutConsumingSlides(slides.headers());
         CoachFlowPageObject coach = CoachFlowPageObjectFactory.get(driver);
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coach.openToday();
-        new iOSOnboardingPageObject(driver).waitForToday();
+        OnboardingPageObjectFactory.get(driver).waitForToday();
         slides.assertAbsent();
     }
 

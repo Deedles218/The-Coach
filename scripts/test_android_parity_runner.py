@@ -11,6 +11,36 @@ import run_android_parity as runner
 
 
 class AndroidParityRunnerTests(unittest.TestCase):
+    def test_slides_without_active_fixture_fail_before_keychain_or_device_access(self):
+        with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "slides"]), \
+                patch.object(runner, "keychain") as secrets, \
+                patch.object(runner.subprocess, "check_output") as device, \
+                contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                runner.main()
+            secrets.assert_not_called()
+            device.assert_not_called()
+
+    def test_prepared_slides_keep_installation_and_select_shared_test(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000", "uid": "fixture-uid"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = Path(folder) / "slides.properties"
+            fixture.write_text("appPackage=com.vamapps.thecoach\n")
+            with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "slides",
+                                    "--slides-fixture", str(fixture), "--prepared-slides"]), \
+                    patch.object(runner, "ROOT", Path(folder)), \
+                    patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                    patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                    patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                    contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, runner.main())
+            command = launch.call_args.args[0]
+            self.assertIn("-Dtest=tests.OnboardingSlidesTests", command)
+            self.assertIn("-Donboarding.slides.prepared=true", command)
+            self.assertIn("-Dandroid.fullReset=false", command)
+            self.assertNotIn("-Dandroid.fullReset=true", command)
+
     def test_safe_suite_enables_uid_bound_module_tests_and_preserves_exit_status(self):
         record = {"email": "fixture@example.invalid", "otp": "0000", "uid": "fixture-uid"}
         process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 1)
