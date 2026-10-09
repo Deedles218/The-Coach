@@ -13,6 +13,7 @@ import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.TestData;
+import lib.UpdateEvidence;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.ExplorePageObject;
@@ -120,31 +121,48 @@ public class ReleaseSmokeTests extends CoreTestCase {
 
     @Test
     @Features(value = {@Feature(value = "Update"), @Feature(value = "Authorization"), @Feature(value = "Progress")})
-    @Issue("COA-7914")
-    @DisplayName("Release smoke: update preserves authorization and progress")
-    @Description("Installs the old configured build, establishes an authorized progress state, updates the same bundle with the new build, and verifies that authorization and Daily Plan content remain available.")
+    @Issue("COA-7915")
+    @DisplayName("COA-7915 iOS update preserves account, progress and subscription")
+    @Description("Compares UID, active subscription, program, day and progress before and after an in-place update and verifies the installed CFBundleVersion changed to the requested build.")
     @Step("Start test testUpdatePreservesAuthorizationAndProgress")
     @Severity(value = SeverityLevel.BLOCKER)
-    public void testUpdatePreservesAuthorizationAndProgress() {
+    public void testUpdatePreservesAuthorizationAndProgress() throws Exception {
         requireIOSPlatform();
 
         requireUpdateConfiguration();
+        java.util.Map<String,Object> oldBuild = UpdateEvidence.iosBuild(Platform.getInstance().getIOSAppPath());
+        java.util.Map<String,Object> newBuild = UpdateEvidence.iosBuild(Platform.getInstance().getIOSUpdateAppPath());
+        Assert.assertNotEquals("iOS update needs different CFBundleVersion values", oldBuild.get("CFBundleVersion"), newBuild.get("CFBundleVersion"));
+        Assert.assertEquals("The old build is not installed before baseline", oldBuild.get("CFBundleVersion"),
+                UpdateEvidence.installedIOSBuild().get("CFBundleVersion"));
         Assert.assertTrue("The current driver must support app installation", driver instanceof InteractsWithApps);
 
         InteractsWithApps apps = (InteractsWithApps) driver;
         CoachFlowPageObject coachFlow = authorizedCoachFlow(TestData.existingProgressAccount());
+        DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
+        Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
+        dailyPlan.openTodayTab();
+        String program = dailyPlan.getActiveProgramName();
+        String day = dailyPlan.getCurrentDayLabel();
+        String progress = dailyPlan.getProgramProgressValue();
+        java.util.Map<String,Object> beforeAccount = UpdateEvidence.account();
+        UpdateEvidence.attachBuild("ios before update", (String)oldBuild.get("CFBundleShortVersionString"), (String)oldBuild.get("CFBundleVersion"));
+        apps.terminateApp(Platform.getInstance().getIOSBundleId());
         apps.installApp(Platform.getInstance().getIOSUpdateAppPath());
         coachFlow.activateAppIfPossible();
         coachFlow.assertAuthorizedDashboardIsDisplayed();
         coachFlow.openToday();
         coachFlow.assertMainTabsAreDisplayed();
-        DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
-        Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
-        TestData.Fixture fixture = TestData.deterministicFixture();
         dailyPlan.openTodayTab();
         dailyPlan.assertDailyPlanDaySwitcherIsDisplayed();
-        dailyPlan.assertCurrentDayMatches(fixture.getDailyPlanDay());
+        Assert.assertEquals("Update changed selected program", program, dailyPlan.getActiveProgramName());
+        Assert.assertEquals("Update changed viewed day", day, dailyPlan.getCurrentDayLabel());
+        Assert.assertEquals("Update changed progress", progress, dailyPlan.getProgramProgressValue());
         dailyPlan.assertDailyPracticeIsDisplayed();
+        UpdateEvidence.assertAccountPreserved(beforeAccount, UpdateEvidence.account());
+        Assert.assertEquals("New CFBundleVersion was not installed", newBuild.get("CFBundleVersion"),
+                UpdateEvidence.installedIOSBuild().get("CFBundleVersion"));
+        UpdateEvidence.attachBuild("ios after update", (String)newBuild.get("CFBundleShortVersionString"), (String)newBuild.get("CFBundleVersion"));
     }
 
     private CoachFlowPageObject authorizedCoachFlow(TestData.TestAccount account) {

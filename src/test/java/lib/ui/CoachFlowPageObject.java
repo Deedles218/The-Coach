@@ -752,6 +752,21 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.waitForStartScreen();
     }
 
+    @Step("Verify START NOW is visible and enabled")
+    public void assertStartButtonIsEnabled() {
+        this.waitForFirstElementEnabled(new String[]{TEST_ID_START_BUTTON, START_BUTTON},
+                "START NOW must be visible and enabled on Welcome", 10);
+    }
+
+    @Step("Verify START NOW opened the questionnaire rather than Login")
+    public void assertQuestionnaireOpenedWithoutLogin() {
+        this.waitForElementPresent(ONBOARDING_GOALS_TITLE, "Questionnaire goal screen is absent", 10);
+        Assert.assertFalse("START NOW unexpectedly opened Login", this.isElementVisible(TEST_ID_LOGIN_SCREEN)
+                || this.isElementVisible(LOGIN_SCREEN_TITLE));
+        Assert.assertFalse("START NOW unexpectedly opened OTP", this.isElementVisible(TEST_ID_OTP_SCREEN)
+                || this.isElementVisible(OTP_SCREEN_TITLE));
+    }
+
     @Step("Open onboarding flow from start screen")
     public void openStartFlow() {
         this.waitForFirstElementAndClick(

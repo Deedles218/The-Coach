@@ -23,9 +23,10 @@ public class AndroidPushPermissionTests extends AndroidTestCase {
         requireFixture();verifyJourney();
         new AndroidPermissionPageObject(driver).finishOnboardingToToday();
     }
-    @Test @Issue("COA-7918")
+    @Test @Issue("COA-1953")
+    @io.qameta.allure.junit4.DisplayName("COA-1953 Android reinstall requests notification permission again")
     public void testReinstallRequestsNotificationPermissionAgain() throws Exception {
-        requireFixture();verifyJourney();
+        requireFixture();UpdateEvidence.attachInstalledBuild();verifyJourney();
         InteractsWithApps apps=(InteractsWithApps)driver;
         Assert.assertTrue("Could not remove test app",apps.removeApp(Platform.getInstance().getAndroidAppPackage()));
         apps.installApp(Platform.getInstance().getAndroidAppPath());
