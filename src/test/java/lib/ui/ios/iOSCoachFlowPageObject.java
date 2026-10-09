@@ -1,7 +1,16 @@
 package lib.ui.ios;
 
 import lib.ui.CoachFlowPageObject;
+import io.qameta.allure.Step;
+import org.junit.Assert;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.util.Locale;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     static {
@@ -78,9 +87,12 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         LOGIN_VALIDATION_ERROR = "xpath://XCUIElementTypeStaticText[contains(@name, 'valid email') or contains(@label, 'valid email') or contains(@name, 'email is not') or contains(@label, 'email is not')]";
         POST_AUTH_ONBOARDING_MARKER = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?']";
         CLOSE_LOGIN_BUTTON = "id:CloseRoundBlack";
-        NOTIFICATION_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']";
-        NOTIFICATION_PROMPT_ALLOW_BUTTON = "id:push_permission_allow";
-        NOTIFICATION_PROMPT_CLOSE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']/../XCUIElementTypeButton[1]";
+        NOTIFICATION_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track' "
+                + "or @name='Let The Coach support you']";
+        NOTIFICATION_PROMPT_ALLOW_BUTTON = "xpath://XCUIElementTypeButton[@name='push_permission_allow' "
+                + "or @name='REMIND ME TO PRACTICE']";
+        NOTIFICATION_PROMPT_CLOSE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track']/../XCUIElementTypeButton[1] "
+                + "| //XCUIElementTypeButton[@name='MAYBE LATER']";
         SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON = "id:Allow";
         SYSTEM_NOTIFICATION_PERMISSION_ALLOW_BUTTON_FALLBACK = "xpath://XCUIElementTypeAlert//XCUIElementTypeButton[@name='Allow']";
         CONNECT_EMAIL_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Connect you email to save the progress.' or @name='Connect your email to save the progress.']";
@@ -90,7 +102,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         PDF_GUIDE_UPSELL_BUY_BUTTON = "id:ADD TO MY PROGRAM";
         PDF_GUIDE_UPSELL_CLOSE_BUTTON = "id:PDFGuideUpsellCloseImage";
 
-        ONBOARDING_GOALS_TITLE = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?']";
+        ONBOARDING_GOALS_TITLE = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?' "
+                + "or @name='WHAT DO YOU WANT TO ACHIEVE?']";
         ONBOARDING_BACK_BUTTON = "id:ic outline chevron left";
 
         AUTHORIZED_DASHBOARD_MARKER = "xpath://XCUIElementTypeButton[(@name='UserProfileImage' or @name='WomanProfileImage') and @visible='true'] | //XCUIElementTypeButton[@name='Today' and @visible='true']";
@@ -98,6 +111,38 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     public iOSCoachFlowPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    @Step("Request native notification permission from the iOS in-app screen")
+    public void allowNotificationPrompt() {
+        assertNotificationPromptIsDisplayed();
+        waitForElementAndClick(NOTIFICATION_PROMPT_ALLOW_BUTTON,
+                "Cannot request notification permission from the in-app screen", 10);
+        // iOS keeps the in-app screen underneath the native permission alert.
+        // Handle that native alert before evaluating any subsequent app state.
+    }
+
+    @Override
+    @Step("Verify and allow the native iOS Notifications alert")
+    public String allowSystemNotificationPermission() {
+        Alert alert = createWait(15).withMessage("Native iOS notification permission alert did not appear")
+                .until(ExpectedConditions.alertIsPresent());
+        String text = alert.getText();
+        String normalized = text == null ? "" : text.toLowerCase(Locale.US);
+        Assert.assertTrue("Native alert is not a Notifications permission request",
+                normalized.contains("notification") || normalized.contains("уведомлен"));
+        Map<String, Object> args = new HashMap<>();
+        args.put("action", "getButtons");
+        List<?> buttons = (List<?>) ((JavascriptExecutor) driver).executeScript("mobile: alert", args);
+        String allow = buttons.contains("Allow") ? "Allow" : buttons.contains("Разрешить") ? "Разрешить" : null;
+        Assert.assertNotNull("Native notification alert has no supported Allow button", allow);
+        args.put("action", "accept");
+        args.put("buttonLabel", allow);
+        ((JavascriptExecutor) driver).executeScript("mobile: alert", args);
+        createWait(10).withMessage("Native notification permission alert did not close")
+                .until(ExpectedConditions.not(ExpectedConditions.alertIsPresent()));
+        return text;
     }
 
     @Override

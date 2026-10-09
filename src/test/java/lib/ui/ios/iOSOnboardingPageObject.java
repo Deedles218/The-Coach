@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 public class iOSOnboardingPageObject extends OnboardingPageObject {
+    private boolean preserveNotificationPermissionPrompt;
     private static final String START_BUTTON = "id:START NOW";
     private static final String GOAL_TITLE =
             "xpath://XCUIElementTypeStaticText[contains(translate(@name, "
@@ -71,6 +72,26 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
 
     public iOSOnboardingPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Step("Reach the iOS notification prompt without granting or skipping permission")
+    public void completeFreshJourneyToNotificationPermission() {
+        preserveNotificationPermissionPrompt = true;
+        try {
+            if (!notificationPermissionPromptIsVisible()) {
+                completeNewUserJourneyToPaywall(lib.Platform.getInstance().getOnboardingGoal());
+                closePaywallsAndPopupsUntil(this::notificationPermissionPromptIsVisible);
+            }
+            createWait(20).withMessage("iOS notification prompt did not appear during fresh onboarding")
+                    .until(ignored -> notificationPermissionPromptIsVisible());
+        } finally {
+            preserveNotificationPermissionPrompt = false;
+        }
+    }
+
+    private boolean notificationPermissionPromptIsVisible() {
+        return isElementVisible("id:REMIND ME TO PRACTICE")
+                || isElementVisible("xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track' and @visible='true']");
     }
 
     @Override
@@ -144,6 +165,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Step("Complete iOS runtime questionnaire")
     public void completeQuestionnaire() {
         for (int actionNumber = 1; actionNumber <= MAX_QUESTIONNAIRE_ACTIONS; actionNumber++) {
+            if (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible()) return;
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
@@ -292,7 +314,8 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     }
 
     private boolean questionnaireOrDestinationIsVisible() {
-        return isPaywallVisible()
+        return (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible())
+                || isPaywallVisible()
                 || isElementVisible(TODAY_TAB)
                 || isProgramPickerVisible()
                 || !driver.findElements(By.xpath("//XCUIElementTypeWebView[@visible='true']")).isEmpty()
@@ -312,6 +335,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
 
     private void closePreQuestionnairePrompts() {
         for (int attempt = 0; attempt < 6; attempt++) {
+            if (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible()) return;
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }

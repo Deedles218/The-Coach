@@ -9,7 +9,8 @@ import java.nio.file.*;
 
 @Epic("Android release")
 public class AndroidUpdateTests extends AndroidTestCase {
-    @Test @Issue("COA-7914")
+    @Test @Issue("COA-7915")
+    @io.qameta.allure.junit4.DisplayName("COA-7915 Android update preserves account, progress and subscription")
     public void testUpdatePreservesAuthorizationAndProgress() throws Exception {
         Path oldApk = apk("android.update.old"), newApk = apk("android.update.new");
         Assert.assertFalse("Update needs different APK artifacts", java.util.Arrays.equals(Files.readAllBytes(oldApk), Files.readAllBytes(newApk)));
@@ -45,8 +46,10 @@ public class AndroidUpdateTests extends AndroidTestCase {
             Assert.assertEquals("Wrong account before upgrade", expectedUid, AndroidModuleEvidence.currentUid());
             today.openTodayTab();
             String program = today.getActiveProgramName(), day = today.getCurrentDayLabel(), progress = today.getProgramProgressValue();
+            java.util.Map<String,Object> beforeAccount = UpdateEvidence.account();
             String oldVersion = AndroidDevice.version();
             long oldCode=AndroidDevice.versionCode();
+            UpdateEvidence.attachBuild("android before update", oldVersion, Long.toString(oldCode));
             AndroidDevice.adb("shell", "am", "force-stop", packageName);
             String result = AndroidDevice.adb("install", "-r", newApk.toString());
             Assert.assertTrue("Replacement installation failed", result.contains("Success"));
@@ -55,12 +58,14 @@ public class AndroidUpdateTests extends AndroidTestCase {
             new AndroidOnboardingPageObject(driver).closePaywallsAndPopups();
             coach.assertAuthorizedDashboardIsDisplayed();
             Assert.assertEquals("Upgrade lost/replaced account identity", expectedUid, AndroidModuleEvidence.currentUid());
+            UpdateEvidence.assertAccountPreserved(beforeAccount, UpdateEvidence.account());
             today.openTodayTab();
             Assert.assertEquals("Upgrade changed selected program", program, today.getActiveProgramName());
             Assert.assertEquals("Upgrade changed viewed day", day, today.getCurrentDayLabel());
             Assert.assertEquals("Upgrade changed progress", progress, today.getProgramProgressValue());
             Assert.assertTrue("Update must increase versionCode",AndroidDevice.versionCode()>oldCode);
             Assert.assertNotEquals("The installed version did not change", oldVersion, AndroidDevice.version());
+            UpdateEvidence.attachBuild("android after update", AndroidDevice.version(), Long.toString(AndroidDevice.versionCode()));
             Allure.addAttachment("Verified Android upgrade", oldVersion + " -> " + AndroidDevice.version()
                     + "; " + program + "; " + day + "; " + progress + "; UID preserved");
         } catch (Exception | AssertionError failure) {

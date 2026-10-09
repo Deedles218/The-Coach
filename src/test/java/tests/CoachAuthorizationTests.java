@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Step;
@@ -11,6 +12,7 @@ import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.TestData;
+import lib.UpdateEvidence;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
@@ -18,6 +20,24 @@ import org.junit.Test;
 
 @Epic(value = "The Coach authorization")
 public class CoachAuthorizationTests extends CoreTestCase {
+    @Test
+    @Issue("COA-7944")
+    @Features({@Feature("Start screen"), @Feature("Onboarding entry")})
+    @DisplayName("COA-7944 START NOW opens the new-user questionnaire")
+    @Description("Verifies START NOW is enabled on Welcome, opens the goal questionnaire rather than Login, and returns to Welcome.")
+    @Severity(SeverityLevel.BLOCKER)
+    public void testStartNowOpensQuestionnaireWithoutLogin() throws Exception {
+        requireMobilePlatform();
+        UpdateEvidence.attachInstalledBuild();
+        CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
+        Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
+        coachFlow.ensureLoggedOutOnStartScreen();
+        coachFlow.assertStartButtonIsEnabled();
+        coachFlow.openStartFlow();
+        coachFlow.assertQuestionnaireOpenedWithoutLogin();
+        coachFlow.returnFromOnboardingFlowToStartScreen();
+    }
+
     @Test
     @Features(value = {@Feature(value = "Start screen"), @Feature(value = "Authorization")})
     @DisplayName("COA-7954 COA-7948 Login entry opens email form and empty email keeps Continue disabled")
