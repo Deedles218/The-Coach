@@ -24,7 +24,7 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
         waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Selector is still displayed", 10);
         assertDailyPlanDaySwitcherIsDisplayed();
     }
-    public void dismissSelectorIfOpen() { if (!driver.findElements(By.id(PREFIX+"vSwap")).isEmpty()) closeProgramSelector(); }
+    public void dismissSelectorIfOpen() { if (!driver.findElements(LIST).isEmpty()) closeProgramSelector(); }
     private void waitForStableViewport() {
         final String[] previous={null};
         createWait(10).until(d -> {
@@ -60,6 +60,12 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     public void selectProgramWithLoadingCheck(String name) { selectProgram(name, true); }
     private void selectProgram(String name, boolean observeLoading) {
         Assert.assertTrue("Unreviewed selector destination", Arrays.asList("Last Longer","Keep It Hard","Overall Health","Kegel Challenge","Sex Is a Skill","Solving Couple Fights","A Man's Guide to Sexting").contains(name));
+        selectProgram(name, observeLoading, false);
+    }
+    /** Exact observed destination, including the context-dependent Retain program. */
+    public void selectExactProgram(String name) { selectProgram(name, false, true); }
+    private void selectProgram(String name, boolean observeLoading, boolean handleConfirmation) {
+        boolean reachedEnd = false;
         for(int n=0;n<15;n++) {
             for(WebElement title:driver.findElements(TITLES)) if(title.isDisplayed() && name.equalsIgnoreCase(title.getText())) {
                 title.click();
@@ -68,9 +74,23 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
                     waitForElementNotVisible("id:"+PREFIX+"pbLoading", "Today loading did not finish", 20);
                 }
                 waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Selector did not close on selection",15);
+                if (handleConfirmation) {
+                    createWait(20).ignoring(StaleElementReferenceException.class).until(d -> {
+                        if (isElementVisible("xpath://*[@resource-id='"+PREFIX+"tvDialogtitle' and @text='Switch program?']")) {
+                            waitForElementAndClick("id:"+PREFIX+"btnYes", "Cannot confirm program switch",10);
+                            return false;
+                        }
+                        if (isElementVisible("id:"+PREFIX+"btnOk")) {
+                            waitForElementAndClick("id:"+PREFIX+"btnOk", "Cannot close program hint",10);
+                            return false;
+                        }
+                        return isElementVisible("xpath://*[@resource-id='"+PREFIX+"headerContainer']//*[@resource-id='"+PREFIX+"tvGroupName' and @text="+org.openqa.selenium.support.ui.Quotes.escape(name)+"]");
+                    });
+                }
                 waitForSelectedProgram(name); return;
             }
-            if(!scroll("down")) break;
+            if(reachedEnd) break;
+            reachedEnd = !scroll("down");
         }
         Assert.fail("Program is absent from selector: "+name);
     }
