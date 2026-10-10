@@ -41,9 +41,10 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
         selectExactProgram(title);
     }
 
-    private void selectExactProgram(String title) {
+    public void selectExactProgram(String title) {
         String target = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']"
-                + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='" + title + "']";
+                + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label="
+                + org.openqa.selenium.support.ui.Quotes.escape(title) + "]";
         for (int scroll = 0; scroll < 15; scroll++) {
             if (isElementVisible(target)) {
                 waitForElementAndClick(target, "Cannot select fixture program " + title, 10);
