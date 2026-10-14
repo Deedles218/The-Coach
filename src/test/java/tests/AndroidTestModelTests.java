@@ -22,7 +22,8 @@ public class AndroidTestModelTests extends AndroidTestCase {
         onboarding.closePaywallsAndPopups();onboarding.waitForToday();
         AndroidCoachFlowPageObject coach=new AndroidCoachFlowPageObject(driver);
         coach.openToday();coach.openProfile();
-        coach.waitForElementVisible("id:com.vamapps.thecoach:id/btnConnect","Expected a new anonymous profile",15);
+        coach.waitForElementVisible("id:" + Platform.getInstance().getAndroidAppPackage() + ":id/btnConnect",
+                "Expected a new anonymous profile",15);
         coach.openLoginFlow();return coach;
     }
     @Test @Issue("COA-7949") public void testAnonymousConnectAuthorizesExistingAccount() throws Exception {
@@ -37,6 +38,7 @@ public class AndroidTestModelTests extends AndroidTestCase {
         AndroidCoachFlowPageObject coach=anonymousConnect();
         coach.typeLoginEmail(TestData.invalidEmail());coach.assertLoginContinueButtonIsDisabled();
         coach.assertDisabledLoginContinueIsNoOp();
-        coach.waitForElementVisible("id:com.vamapps.thecoach:id/edtEmail","Invalid email left the CONNECT form",10);
+        coach.waitForElementVisible("id:" + Platform.getInstance().getAndroidAppPackage() + ":id/edtEmail",
+                "Invalid email left the CONNECT form",10);
     }
 }

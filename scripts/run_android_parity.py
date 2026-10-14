@@ -27,7 +27,38 @@ SUITES = {
     "billing": "tests.AndroidPurchaseTests",
     "test-model": "tests.AndroidTestModelTests",
     "slides": "tests.OnboardingSlidesTests",
+    "clean-install": "tests.OnboardingGoalProgramTests,tests.ProgramSwitchFeatureTests",
+    "localization": "suites.LocalizationSuite",
     "safe": "suites.AndroidRegressionSuite",
+    "functional": ",".join((
+        "tests.CoachAuthorizationTests",
+        "tests.AndroidSmokeTests",
+        "tests.AndroidReleaseTests",
+        "tests.CoachProfileTests",
+        "tests.DailyPlanTests",
+        "tests.ConfiguredExploreTests",
+        "tests.AndroidExploreTests",
+        "tests.AndroidProgramSelectorTests",
+        "tests.ModulesTests",
+        "tests.KegelExerciseTests",
+        "tests.PdfGuideTests",
+    )),
+}
+
+APP_VARIANTS = {
+    "male": ("com.vamapps.thecoach", "com.vamapps.thecoach.MainActivity"),
+    "female": ("com.vamapps.thecoach.forher", "com.vamapps.thecoach.MainActivity"),
+}
+CLEAN_INSTALL_SUITES = {"push", "billing", "test-model", "clean-install"}
+UID_REQUIRED_SUITES = {"safe", "functional", "kegel", "test-model", "update"}
+MALE_ONLY_SUITES = set(SUITES) - {"auth", "profile", "localization"}
+SUITE_ENV_REQUIREMENTS = {
+    "auth": ("COACH_VALID_EMAIL_WITHOUT_PROGRESS",),
+    "test-model": ("COACH_VALID_EMAIL_WITHOUT_PROGRESS",),
+    "release": ("COACH_NO_PDF_ENTITLEMENT_EMAIL", "COACH_NO_PDF_ENTITLEMENT_OTP",
+                "COACH_NO_PDF_ENTITLEMENT_FIXTURE_ID"),
+    "functional": ("COACH_VALID_EMAIL_WITHOUT_PROGRESS", "COACH_NO_PDF_ENTITLEMENT_EMAIL",
+                   "COACH_NO_PDF_ENTITLEMENT_OTP", "COACH_NO_PDF_ENTITLEMENT_FIXTURE_ID"),
 }
 
 
@@ -35,6 +66,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--serial", required=True)
     parser.add_argument("--suite", choices=SUITES, default="safe")
+    parser.add_argument("--variant", choices=APP_VARIANTS, default="male")
     parser.add_argument("--method", help="A method in the selected test class")
     parser.add_argument("--old-apk", type=Path)
     parser.add_argument("--new-apk", type=Path)
@@ -51,14 +83,44 @@ def main():
         parser.error("Update requires both --old-apk and --new-apk")
     if args.suite == "slides" and (not args.slides_fixture or not args.slides_fixture.is_file()):
         parser.error("Slides require --slides-fixture from this Android build's active configuration")
+    if args.suite == "welcome" and args.variant != "male":
+        parser.error("The male Welcome suite cannot run against the female app variant")
+    if args.variant == "female" and args.suite in MALE_ONLY_SUITES:
+        parser.error("Suite has no reviewed female manifest; use auth, profile, or localization")
+    if args.suite in CLEAN_INSTALL_SUITES and not args.new_apk:
+        parser.error("Clean-install suite requires --new-apk")
+    if args.suite == "billing" and (
+            os.environ.get("GOOGLE_PLAY_LICENSE_TESTER", "").lower() != "true"
+            or os.environ.get("PURCHASE_ALLOW", "").lower() != "true"):
+        parser.error("Billing requires GOOGLE_PLAY_LICENSE_TESTER=true and PURCHASE_ALLOW=true")
+    missing_environment = [name for name in SUITE_ENV_REQUIREMENTS.get(args.suite, ())
+                           if not os.environ.get(name)]
+    if missing_environment:
+        parser.error("Suite data contract is incomplete. Missing: " + ", ".join(missing_environment))
     version = subprocess.check_output([os.environ.get("ADB","adb"),"-s",args.serial,"shell","getprop","ro.build.version.release"], text=True,timeout=15).strip()
     record = json.loads(keychain(args.fixture_service))
-    if not all(record.get(k) for k in ("uid", "email", "otp")):
-        parser.error("Use a UID-verified account record")
+    required_record_fields = ["email", "otp"] + (["uid"] if args.suite in UID_REQUIRED_SUITES else [])
+    if not all(record.get(k) for k in required_record_fields):
+        parser.error("Account record is missing required fields: " + ", ".join(required_record_fields))
+    record_variant = record.get("variant", args.variant).lower()
+    if record_variant != args.variant:
+        parser.error("Account record variant does not match --variant")
+    required_environment = SUITE_ENV_REQUIREMENTS.get(args.suite, ())
+    no_progress_email = os.environ.get("COACH_VALID_EMAIL_WITHOUT_PROGRESS")
+    if "COACH_VALID_EMAIL_WITHOUT_PROGRESS" in required_environment \
+            and no_progress_email.lower() == record["email"].lower():
+        parser.error("Existing-progress and valid-no-progress accounts must be distinct")
+    no_pdf_email = os.environ.get("COACH_NO_PDF_ENTITLEMENT_EMAIL")
+    if "COACH_NO_PDF_ENTITLEMENT_EMAIL" in required_environment \
+            and no_pdf_email.lower() == record["email"].lower():
+        parser.error("Existing-progress and no-PDF entitlement accounts must be distinct")
+    package_name, activity_name = APP_VARIANTS[args.variant]
     env = os.environ.copy()
     env.update(COACH_EXISTING_PROGRESS_EMAIL=record["email"], COACH_EXISTING_PROGRESS_OTP=record["otp"],
-               COACH_EXPECTED_ACCOUNT_UID=record["uid"], COACH_VALID_EMAIL_WITHOUT_PROGRESS=record["email"],
-               COACH_DAILY_PLAN_DAY="Stage 1", COACH_FIXTURE_RESET_MODE="prebuilt")
+               COACH_DAILY_PLAN_DAY="Stage 1", COACH_FIXTURE_RESET_MODE="prebuilt", COACH_ACCOUNT_VARIANT=args.variant,
+               ANDROID_APP_VARIANT=args.variant, TEST_ISOLATION_MODE="logout")
+    if record.get("uid"):
+        env["COACH_EXPECTED_ACCOUNT_UID"] = record["uid"]
     if args.suite == "safe":
         for field in ("email", "otp", "uid"):
             env["COACH_COA9044_" + field.upper()] = record[field]
@@ -69,12 +131,13 @@ def main():
     test = SUITES[args.suite] + ("#" + args.method if args.method else "")
     cmd = ["mvn", "-q", "test", "-Dtest=" + test, "-Dplatform=android", "-Dandroid.udid=" + args.serial,
            "-Dandroid.deviceName=" + args.serial, "-Dandroid.platformVersion=" + version, "-Dandroid.noReset=true", "-Dandroid.fullReset=false",
-           "-Dandroid.appPackage=com.vamapps.thecoach", "-Dandroid.appActivity=com.vamapps.thecoach.MainActivity"]
+           "-Dandroid.appPackage=" + package_name, "-Dandroid.appActivity=" + activity_name,
+           "-Dandroid.app.variant=" + args.variant]
     if args.suite == "safe":
         cmd += ["-Dcoach.modules.enabled=true", "-Dcoach.modules.programId=last_longer"]
     fresh_slides = (args.suite == "slides" and not args.prepared_slides
                     and args.method != "testExistingProgressUserDoesNotSeeSlides")
-    if (fresh_slides or args.suite in ("push", "billing", "test-model")) and not (args.suite == "test-model" and args.method == "testValidEmailEnablesContinue"):
+    if (fresh_slides or args.suite in CLEAN_INSTALL_SUITES) and not (args.suite == "test-model" and args.method == "testValidEmailEnablesContinue"):
         if not args.new_apk: parser.error("Clean-install suite requires --new-apk")
         cmd = [arg for arg in cmd if not arg.startswith(("-Dandroid.noReset=", "-Dandroid.fullReset="))]
         cmd += ["-Dandroid.noReset=false", "-Dandroid.fullReset=true", "-Dandroid.autoGrantPermissions=" + ("false" if args.suite == "push" else "true"), "-Dandroid.app=" + str(args.new_apk.resolve())]
@@ -83,6 +146,12 @@ def main():
                 "-Donboarding.slides.prepared=" + str(args.prepared_slides).lower()]
     if args.suite == "update" and args.new_apk:
         cmd.append("-Dandroid.app=" + str(args.new_apk.resolve()))
+    if args.new_apk:
+        env["ANDROID_RECOVERY_MODE"] = "reinstall"
+        if not any(argument.startswith("-Dandroid.app=") for argument in cmd):
+            cmd.append("-Dandroid.app=" + str(args.new_apk.resolve()))
+    else:
+        env["ANDROID_RECOVERY_MODE"] = "relaunch"
     for key, value in (("old", args.old_apk), ("new", args.new_apk)):
         if value:
             if not value.is_file(): parser.error("APK does not exist: " + str(value))

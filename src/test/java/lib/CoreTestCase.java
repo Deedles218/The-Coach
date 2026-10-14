@@ -4,6 +4,7 @@ import io.appium.java_client.InteractsWithApps;
 import io.qameta.allure.Allure;
 import io.appium.java_client.remote.SupportsRotation;
 import io.qameta.allure.Step;
+import io.qameta.allure.model.Label;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
@@ -30,10 +31,16 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Set;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class CoreTestCase {
+    private static final ConcurrentMap<String, String> ANDROID_BLOCKED_TEST_CLASSES =
+            new ConcurrentHashMap<String, String>();
     protected RemoteWebDriver driver;
+    private Description activeDescription;
+    private boolean appReinstalledDuringCleanup;
 
     @Rule
     public TestRule sessionLifecycle = new TestRule() {
@@ -42,11 +49,18 @@ public class CoreTestCase {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
+                    activeDescription = description;
+                    String blockedReason = ANDROID_BLOCKED_TEST_CLASSES.get(description.getClassName());
+                    Assume.assumeTrue(
+                            "BLOCKED: Android state recovery failed earlier in this class: " + blockedReason,
+                            blockedReason == null
+                    );
                     Throwable primaryFailure = null;
                     try {
                         base.evaluate();
                     } catch (Throwable failure) {
                         primaryFailure = failure;
+                        addFailureTypeLabel(failure);
                         // Capture before teardown closes the Appium session. The
                         // previous TestWatcher ran after @After and saw driver=null.
                         captureFailureArtifacts(failure, description);
@@ -55,8 +69,16 @@ public class CoreTestCase {
                         try {
                             tearDown();
                         } catch (Throwable teardownFailure) {
+                            if (containsSessionRecoveryFailure(teardownFailure)) {
+                                ANDROID_BLOCKED_TEST_CLASSES.put(
+                                        description.getClassName(),
+                                        TestData.sanitizeSensitiveData(teardownFailure.getMessage())
+                                );
+                            }
                             if (primaryFailure == null) throw teardownFailure;
                             primaryFailure.addSuppressed(teardownFailure);
+                        } finally {
+                            activeDescription = null;
                         }
                     }
                 }
@@ -69,12 +91,17 @@ public class CoreTestCase {
     public void setUp() throws Exception {
         Assume.assumeTrue(unsupportedPlatformMessage(), isPlatformSupported());
         TestData.validateTestIsolationMode();
-        if (Platform.getInstance().isIOS()
-                && "reinstall".equals(TestData.testIsolationMode())) {
+        if (Platform.getInstance().isAndroid()) {
+            TestData.validateAndroidRecoveryMode();
+            TestData.validateAndroidAccountVariantIfConfigured();
+        }
+        if ("reinstall".equals(TestData.testIsolationMode())) {
+            String appPath = Platform.getInstance().isIOS()
+                    ? Platform.getInstance().getIOSAppPath()
+                    : Platform.getInstance().getAndroidAppPath();
             Assert.assertTrue(
-                    "TEST_ISOLATION_MODE=reinstall requires -Dios.app=... or IOS_APP",
-                    Platform.getInstance().getIOSAppPath() != null
-                            && !Platform.getInstance().getIOSAppPath().trim().isEmpty()
+                    "TEST_ISOLATION_MODE=reinstall requires a platform app path",
+                    appPath != null && !appPath.trim().isEmpty()
             );
         }
         driver = createDriver();
@@ -85,9 +112,16 @@ public class CoreTestCase {
     @Step("Remove driver and session")
     public void tearDown() {
         if (driver != null) {
+            appReinstalledDuringCleanup = false;
             try {
-                cleanupSessionForNextTest();
-                reinstallApplicationIfConfigured();
+                try {
+                    cleanupSessionForNextTest();
+                    reinstallApplicationIfConfigured();
+                } catch (Throwable teardownFailure) {
+                    addFailureTypeLabel(teardownFailure);
+                    captureFailureArtifacts(teardownFailure, activeDescription);
+                    throw teardownFailure;
+                }
             } finally {
                 try {
                     driver.quit();
@@ -100,33 +134,100 @@ public class CoreTestCase {
 
     protected void cleanupSessionForNextTest() {
         if (driver == null
-                || !Platform.getInstance().isIOS()
                 || (!"logout".equals(TestData.testIsolationMode())
                 && !"reinstall".equals(TestData.testIsolationMode()))) {
             return;
         }
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
-        if (coachFlow != null) {
+        if (coachFlow == null) {
+            return;
+        }
+        if (Platform.getInstance().isAndroid()) {
+            appReinstalledDuringCleanup =
+                    new AndroidSessionStateController(driver, coachFlow).restoreWelcome();
+            return;
+        }
+
+        if (Platform.getInstance().isIOS()) {
             coachFlow.cleanupForNextTest();
         }
     }
 
     protected void reinstallApplicationIfConfigured() {
         if (driver == null
-                || !Platform.getInstance().isIOS()
                 || !"reinstall".equals(TestData.testIsolationMode())
+                || appReinstalledDuringCleanup
                 || !(driver instanceof InteractsWithApps)) {
             return;
         }
 
-        String bundleId = Platform.getInstance().getIOSBundleId();
-        String appPath = Platform.getInstance().getIOSAppPath();
+        String bundleId = Platform.getInstance().isIOS()
+                ? Platform.getInstance().getIOSBundleId()
+                : Platform.getInstance().getAndroidAppPackage();
+        String appPath = Platform.getInstance().isIOS()
+                ? Platform.getInstance().getIOSAppPath()
+                : Platform.getInstance().getAndroidAppPath();
         InteractsWithApps apps = (InteractsWithApps) driver;
         if (apps.isAppInstalled(bundleId) && !apps.removeApp(bundleId)) {
             throw new IllegalStateException("Could not remove app before reinstall: " + bundleId);
         }
         apps.installApp(appPath);
+    }
+
+    private boolean containsSessionRecoveryFailure(Throwable failure) {
+        Throwable current = failure;
+        while (current != null) {
+            if (current instanceof SessionStateRecoveryException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private void addFailureTypeLabel(Throwable failure) {
+        String failureType = null;
+        if (containsCause(failure, AccountVariantMismatchException.class)
+                || containsCause(failure, PostAuthQuestionnaireException.class)) {
+            failureType = "test-data";
+        } else if (containsCause(failure, SessionStateRecoveryException.class)) {
+            failureType = "environment";
+        } else if (containsCause(failure, IllegalStateException.class)) {
+            failureType = "configuration";
+        }
+        if (failureType != null) {
+            Allure.addLabels(new Label().setName("failureType").setValue(failureType));
+        }
+    }
+
+    private boolean containsCause(Throwable failure, Class<? extends Throwable> type) {
+        Throwable current = failure;
+        while (current != null) {
+            if (type.isInstance(current)) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private boolean isAndroidAccessibilityUnavailable(Throwable failure) {
+        if (!Platform.getInstance().isAndroid() || failure == null) {
+            return false;
+        }
+        if (String.valueOf(failure).contains("root AccessibilityNodeInfo")) {
+            return true;
+        }
+        if (isAndroidAccessibilityUnavailable(failure.getCause())) {
+            return true;
+        }
+        for (Throwable suppressed : failure.getSuppressed()) {
+            if (isAndroidAccessibilityUnavailable(suppressed)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected boolean isPlatformSupported() {
@@ -227,7 +328,10 @@ public class CoreTestCase {
             Files.createDirectories(pageSourceDirectory);
             Files.createDirectories(logsDirectory);
 
-            String rawPageSource = driver.getPageSource();
+            boolean accessibilityUnavailable = isAndroidAccessibilityUnavailable(throwable);
+            String rawPageSource = accessibilityUnavailable
+                    ? "<hierarchy unavailable=\"UiAutomator2 could not read AccessibilityNodeInfo\"/>"
+                    : driver.getPageSource();
             String pageSource = TestData.sanitizeSensitiveData(rawPageSource);
             boolean credentialScreen = !rawPageSource.equals(pageSource)
                     || rawPageSource.contains("ENTER SECURITY CODE");
@@ -237,7 +341,7 @@ public class CoreTestCase {
             }
             pageSource = pageSource.replace("<redacted-email>", "&lt;redacted-email&gt;")
                     .replace("<redacted-otp>", "&lt;redacted-otp&gt;");
-            if (driver instanceof TakesScreenshot && !credentialScreen) {
+            if (driver instanceof TakesScreenshot && !credentialScreen && !accessibilityUnavailable) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 Path screenshotPath = screenshotsDirectory.resolve(testName + ".png");
                 Files.copy(screenshot.toPath(), screenshotPath, StandardCopyOption.REPLACE_EXISTING);
@@ -347,6 +451,10 @@ public class CoreTestCase {
             properties.setProperty("Fixture environment", fixtureEnvironment);
         }
         properties.setProperty("Test isolation", TestData.testIsolationMode());
+        if (Platform.getInstance().isAndroid()) {
+            properties.setProperty("App variant", TestData.androidAppVariant());
+            properties.setProperty("Android recovery", TestData.androidRecoveryMode());
+        }
         File environmentFile = new File(directory, "environment.properties");
         try (FileOutputStream output = new FileOutputStream(environmentFile)) {
             properties.store(output, "Test environment");

@@ -27,7 +27,7 @@ import java.util.Set;
 
 /** COA-9551 video lesson player, separate from the Kegel workout player. */
 public final class VideoLessonPlayerPageObject extends MainPageObject {
-    private static final String ANDROID_ID = "com.vamapps.thecoach:id/";
+    private static final String ANDROID_ID = Platform.getInstance().getAndroidAppPackage() + ":id/";
     private static final List<String> SPEEDS = Arrays.asList("x0.5", "x0.75", "x1", "x1.25", "x1.5", "x2");
     private final boolean android;
     private final DailyPlanPageObject today;

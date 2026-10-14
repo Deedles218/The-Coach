@@ -142,6 +142,44 @@ public final class TestData {
         }
     }
 
+    public static String androidRecoveryMode() {
+        String mode = configured("android.recovery.mode", "ANDROID_RECOVERY_MODE");
+        return mode == null ? "relaunch" : mode.trim().toLowerCase(Locale.ROOT);
+    }
+
+    public static void validateAndroidRecoveryMode() {
+        String mode = androidRecoveryMode();
+        if (!"relaunch".equals(mode) && !"reinstall".equals(mode)) {
+            throw new IllegalStateException(
+                    "ANDROID_RECOVERY_MODE must be one of: relaunch, reinstall"
+            );
+        }
+    }
+
+    public static String androidAppVariant() {
+        String configuredVariant = configured("android.app.variant", "ANDROID_APP_VARIANT");
+        if (configuredVariant != null) {
+            return normalizeVariant(configuredVariant, "ANDROID_APP_VARIANT");
+        }
+        return Platform.getInstance().getAndroidAppPackage().contains("forher") ? "female" : "male";
+    }
+
+    public static void validateAndroidAccountVariantIfConfigured() {
+        String accountVariant = configured("coach.account.variant", "COACH_ACCOUNT_VARIANT");
+        if (accountVariant == null) {
+            return;
+        }
+
+        String normalizedAccountVariant = normalizeVariant(accountVariant, "COACH_ACCOUNT_VARIANT");
+        String appVariant = androidAppVariant();
+        if (!appVariant.equals(normalizedAccountVariant)) {
+            throw new IllegalStateException(
+                    "Account variant mismatch: Android app variant is " + appVariant
+                            + " but COACH_ACCOUNT_VARIANT is " + normalizedAccountVariant
+            );
+        }
+    }
+
     public static String sanitizeSensitiveData(String text) {
         if (text == null) {
             return "";
@@ -217,6 +255,14 @@ public final class TestData {
         }
 
         return null;
+    }
+
+    private static String normalizeVariant(String value, String fieldName) {
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+        if (!"male".equals(normalized) && !"female".equals(normalized)) {
+            throw new IllegalStateException(fieldName + " must be one of: male, female");
+        }
+        return normalized;
     }
 
     public static final class TestAccount {
