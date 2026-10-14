@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import lib.AndroidDevice;
+import lib.Platform;
 import lib.ui.MainPageObject;
 import lib.ui.OnboardingGoal;
 import org.junit.Assert;
@@ -8,7 +9,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Android 13+ notification authorization, including its actual OS grant state. */
 public final class AndroidPermissionPageObject extends MainPageObject {
-    private static final String P="com.vamapps.thecoach:id/";
+    private static final String P=Platform.getInstance().getAndroidAppPackage()+":id/";
     private static final String ALLOW="id:com.android.permissioncontroller:id/permission_allow_button";
     private static final String DENY="id:com.android.permissioncontroller:id/permission_deny_button";
     private static final String PROMPT="xpath://*[@resource-id='"+P+"tvHeader' and contains(translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'notification')]";
@@ -50,7 +51,7 @@ public final class AndroidPermissionPageObject extends MainPageObject {
         new AndroidDailyPlanPageObject(driver).openTodayTab();
     }
     public boolean notificationGranted() throws Exception {
-        return AndroidDevice.adb("shell","dumpsys","package","com.vamapps.thecoach")
+        return AndroidDevice.adb("shell","dumpsys","package",Platform.getInstance().getAndroidAppPackage())
                 .matches("(?s).*android\\.permission\\.POST_NOTIFICATIONS: granted=true.*");
     }
 }

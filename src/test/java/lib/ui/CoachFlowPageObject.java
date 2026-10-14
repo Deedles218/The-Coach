@@ -2,6 +2,7 @@ package lib.ui;
 
 import io.appium.java_client.HidesKeyboard;
 import io.qameta.allure.Step;
+import lib.AccountVariantMismatchException;
 import lib.Platform;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
@@ -112,6 +113,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             EXISTING_ACCOUNT_LOGIN_BUTTON,
             SEND_SECURITY_CODE_BUTTON,
             LOGIN_VALIDATION_ERROR,
+            LOGIN_ACCOUNT_VARIANT_ERROR,
             OTP_CONFIRMATION_TITLE,
             OTP_CONFIRMATION_CLOSE_BUTTON,
             POST_AUTH_ONBOARDING_MARKER,
@@ -601,13 +603,26 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Submit email in login flow")
     public void submitLoginEmail() {
-        this.clickOnceAndWaitForTransition(
+        this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
-                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
-                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
                 "Cannot submit email with a single tap",
                 20
         );
+        this.waitForFirstElementPresent(
+                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE,
+                        LOGIN_ACCOUNT_VARIANT_ERROR, TEST_ID_LOGIN_VALIDATION_ERROR, LOGIN_VALIDATION_ERROR},
+                "Email submission produced neither OTP nor a recognized login error",
+                20
+        );
+        if (this.isConfiguredElementPresent(LOGIN_ACCOUNT_VARIANT_ERROR)) {
+            throw new AccountVariantMismatchException(
+                    "The account is assigned to another Coach application variant"
+            );
+        }
+        if (this.isElementPresent(TEST_ID_LOGIN_VALIDATION_ERROR)
+                || this.isConfiguredElementPresent(LOGIN_VALIDATION_ERROR)) {
+            throw new AssertionError("The application rejected the configured login email before OTP");
+        }
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "OTP loading indicator is still displayed", 20);
     }
 
@@ -888,29 +903,40 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Normalize Coach session for the next test")
     public void cleanupForNextTest() {
-        this.activateAppIfPossible();
-        this.closePdfGuideUpsellIfPresent();
-        this.closeNotificationPromptIfPresent();
-        this.closeConnectEmailPromptIfPresent();
-        this.closeKegelExerciseFlowIfPresent();
+        this.ensureLoggedOutOnStartScreen();
+    }
 
-        if (this.isElementPresent(CLOSE_LOGIN_BUTTON)) {
-            this.closeVisibleAuthFlow();
-            return;
+    @Step("Verify session is ready for the next test")
+    public void assertReadyForNextTest() {
+        this.waitForStartScreen();
+    }
+
+    public String describeSessionState() {
+        if (this.isElementPresent(TEST_ID_START_SCREEN) || this.isElementPresent(START_SCREEN_TITLE)) {
+            return "welcome";
         }
-
+        if (this.isElementPresent(TEST_ID_LOGIN_SCREEN) || this.isElementPresent(LOGIN_SCREEN_TITLE)) {
+            return "login";
+        }
+        if (this.isElementPresent(TEST_ID_OTP_SCREEN) || this.isElementPresent(OTP_SCREEN_TITLE)) {
+            return "otp";
+        }
         if (this.isElementPresent(TEST_ID_PROFILE_SCREEN) || this.isElementPresent(PROFILE_SCREEN)) {
-            this.logOut();
-            return;
+            return "profile";
         }
-
+        if (this.isElementPresent(ONBOARDING_GOALS_TITLE)) {
+            return "onboarding";
+        }
         if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
                 || this.isElementPresent(TEST_ID_TODAY_TAB)
                 || this.isElementPresent(TAB_TODAY)) {
-            this.openToday();
-            this.openProfile();
-            this.logOut();
+            return "dashboard";
         }
+        return "unknown";
+    }
+
+    protected boolean isConfiguredElementPresent(String locator) {
+        return locator != null && !locator.trim().isEmpty() && this.isElementPresent(locator);
     }
 
     private void closeKegelExerciseFlowIfPresent() {

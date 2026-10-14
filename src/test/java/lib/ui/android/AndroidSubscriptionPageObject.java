@@ -2,6 +2,7 @@ package lib.ui.android;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.qameta.allure.Step;
+import lib.Platform;
 import lib.ui.SubscriptionPageObject;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -21,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class AndroidSubscriptionPageObject extends SubscriptionPageObject {
-    private static final String APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ID_PREFIX = APP_PACKAGE + ":id/";
 
     private static final String PAYWALL = "id:" + ID_PREFIX + "clPaywallContainer";

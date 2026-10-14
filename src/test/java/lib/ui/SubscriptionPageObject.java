@@ -1,6 +1,7 @@
 package lib.ui;
 
 import io.qameta.allure.Step;
+import lib.Platform;
 import org.junit.Assert;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -78,7 +79,7 @@ public abstract class SubscriptionPageObject extends MainPageObject {
                 new String[]{
                         "id:PREMIUM SUBSCRIBER",
                         "id:Today",
-                        "id:com.vamapps.thecoach:id/nav_graph_daily"
+                        "id:" + Platform.getInstance().getAndroidAppPackage() + ":id/nav_graph_daily"
                 },
                 "Premium access marker is not displayed after purchase/restore",
                 30

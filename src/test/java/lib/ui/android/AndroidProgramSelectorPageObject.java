@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import io.qameta.allure.Allure;
+import lib.Platform;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.*;
@@ -8,7 +9,7 @@ import java.util.*;
 
 /** Selector resources verified from manProd APK and the live bottom sheet. */
 public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject {
-    private static final String PREFIX = "com.vamapps.thecoach:id/";
+    private static final String PREFIX = Platform.getInstance().getAndroidAppPackage() + ":id/";
     private static final By LIST = By.id(PREFIX + "rvActivePrograms");
     private static final By TITLES = By.xpath("//*[@resource-id='"+PREFIX+"rvActivePrograms']//*[@resource-id='"+PREFIX+"tvTitle']");
     public AndroidProgramSelectorPageObject(RemoteWebDriver driver) { super(driver); }

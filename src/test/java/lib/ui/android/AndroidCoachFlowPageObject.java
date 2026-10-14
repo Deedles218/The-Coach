@@ -5,6 +5,8 @@ import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.qameta.allure.Step;
 import lib.Platform;
+import lib.AccountVariantMismatchException;
+import lib.PostAuthQuestionnaireException;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.DailyPlanPageObjectFactory;
@@ -165,6 +167,15 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         POST_AUTH_ONBOARDING_MARKER = TAB_EXPLORE;
         CLOSE_LOGIN_BUTTON = "id:" + APP_PACKAGE + ":id/btnNavigateUp";
         AUTHORIZED_DASHBOARD_MARKER = TAB_EXPLORE;
+        LOGIN_ACCOUNT_VARIANT_ERROR =
+                "xpath://android.widget.TextView["
+                        + "contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'REGULAR COACH APP')"
+                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'COACH FOR HER APP')"
+                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'ANOTHER COACH APP')"
+                        + "]";
+        LOGIN_VALIDATION_ERROR =
+                "xpath://android.widget.TextView[contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'VALID EMAIL')"
+                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'EMAIL IS NOT')]";
 
         PROFILE_BUTTON = "id:" + APP_PACKAGE + ":id/btnAction";
         PROFILE_BUTTON_FEMALE = null;
@@ -269,6 +280,9 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
 
         if (isElementPresent(CLOSE_LOGIN_BUTTON)) {
             waitForElementAndClick(CLOSE_LOGIN_BUTTON, "Cannot close Android login or OTP flow", 10);
+            if (isElementVisible(ONBOARDING_GOALS_TITLE)) {
+                leaveGoalEntryForWelcome();
+            }
             waitForStartScreen();
             return;
         }
@@ -364,7 +378,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     public void loginWithEmailAndOtp(String email, String otpCode) {
         authenticateForFixtureSetup(email, otpCode);
         if (isElementPresent(ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER)) {
-            Assert.fail(
+            throw new PostAuthQuestionnaireException(
                     "Android authorization is blocked by the post-auth questionnaire; "
                             + "complete the Android onboarding fixture before running authorized smoke checks"
             );
@@ -384,10 +398,19 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         typeSecurityCode(otpCode);
         closeOtpConfirmationIfPresent();
         waitForFirstElementPresent(
-                new String[]{TAB_TODAY, TAB_EXPLORE, ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER},
-                "Android authorization did not reach the dashboard or the post-auth questionnaire",
+                new String[]{TAB_TODAY, TAB_EXPLORE, ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER,
+                        LOGIN_ACCOUNT_VARIANT_ERROR, LOGIN_VALIDATION_ERROR},
+                "Android authorization produced no recognized dashboard, questionnaire, or account error",
                 30
         );
+        if (isElementPresent(LOGIN_ACCOUNT_VARIANT_ERROR)) {
+            throw new AccountVariantMismatchException(
+                    "The account is assigned to another Coach application variant"
+            );
+        }
+        if (isElementPresent(LOGIN_VALIDATION_ERROR)) {
+            throw new AssertionError("Android authorization returned a validation error after OTP");
+        }
     }
 
     @Override

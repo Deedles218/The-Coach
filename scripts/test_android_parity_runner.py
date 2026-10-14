@@ -61,6 +61,61 @@ class AndroidParityRunnerTests(unittest.TestCase):
         self.assertEqual(record["email"], environment["COACH_COA9044_EMAIL"])
         self.assertEqual(record["otp"], environment["COACH_COA9044_OTP"])
 
+    def test_female_variant_selects_female_package_and_account_contract(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "female"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "auth",
+                                   "--variant", "female"]), \
+                patch.dict("os.environ", {"COACH_VALID_EMAIL_WITHOUT_PROGRESS": "new@example.invalid"}), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        command = launch.call_args.args[0]
+        environment = launch.call_args.kwargs["env"]
+        self.assertIn("-Dandroid.appPackage=com.vamapps.thecoach.forher", command)
+        self.assertIn("-Dandroid.appActivity=com.vamapps.thecoach.MainActivity", command)
+        self.assertEqual("female", environment["COACH_ACCOUNT_VARIANT"])
+        self.assertEqual("female", environment["ANDROID_APP_VARIANT"])
+
+    def test_account_variant_mismatch_fails_before_maven(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "male"}
+        with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "auth",
+                                "--variant", "female"]), \
+                patch.dict("os.environ", {"COACH_VALID_EMAIL_WITHOUT_PROGRESS": "new@example.invalid"}), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen") as launch, \
+                contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                runner.main()
+        launch.assert_not_called()
+
+    def test_functional_suite_missing_role_data_fails_before_device_access(self):
+        with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "functional"]), \
+                patch.dict("os.environ", {}, clear=True), \
+                patch.object(runner, "keychain") as secrets, \
+                patch.object(runner.subprocess, "check_output") as device, \
+                contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                runner.main()
+        secrets.assert_not_called()
+        device.assert_not_called()
+
+    def test_male_only_suite_is_rejected_for_female_before_device_access(self):
+        with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "functional",
+                                "--variant", "female"]), \
+                patch.object(runner, "keychain") as secrets, \
+                patch.object(runner.subprocess, "check_output") as device, \
+                contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                runner.main()
+        secrets.assert_not_called()
+        device.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
