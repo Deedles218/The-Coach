@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import io.qameta.allure.Step;
+import lib.Platform;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.*;
@@ -8,7 +9,7 @@ import java.util.*;
 
 /** Native Kegel contracts from the installed APK layouts; no generic back-button aliases. */
 public class AndroidKegelPageObject extends AndroidDailyPlanPageObject {
-    private static final String P="com.vamapps.thecoach:id/";
+    private static final String P=Platform.getInstance().getAndroidAppPackage()+":id/";
     private String originalIntensity;
     public AndroidKegelPageObject(RemoteWebDriver driver) { super(driver); }
     private String id(String value) { return "id:"+P+value; }

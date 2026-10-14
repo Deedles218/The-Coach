@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import io.qameta.allure.Step;
+import lib.Platform;
 import lib.ui.ExplorePageObject;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -21,7 +22,7 @@ import java.util.Map;
  * individual cards do not expose a unique resource id.
  */
 public class AndroidExplorePageObject extends ExplorePageObject {
-    private static final String APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ID_PREFIX = APP_PACKAGE + ":id/";
 
     private static final String EXPLORE_TITLE = "id:" + ID_PREFIX + "tvLabel";

@@ -32,13 +32,13 @@ public final class AndroidDevice {
     }
     public static String version() throws Exception {
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("versionName=([^\\s]+)")
-                .matcher(adb("shell", "dumpsys", "package", "com.vamapps.thecoach"));
+                .matcher(adb("shell", "dumpsys", "package", Platform.getInstance().getAndroidAppPackage()));
         Assert.assertTrue("Installed application version is unavailable", m.find());
         return m.group(1);
     }
     public static long versionCode() throws Exception {
         java.util.regex.Matcher m=java.util.regex.Pattern.compile("versionCode=([0-9]+)")
-                .matcher(adb("shell","dumpsys","package","com.vamapps.thecoach"));
+                .matcher(adb("shell","dumpsys","package",Platform.getInstance().getAndroidAppPackage()));
         Assert.assertTrue("Installed version code is unavailable",m.find());
         return Long.parseLong(m.group(1));
     }

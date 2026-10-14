@@ -1,6 +1,7 @@
 package lib.ui.android;
 
 import io.qameta.allure.Step;
+import lib.Platform;
 import lib.ui.DailyPlanPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -23,7 +24,7 @@ import java.util.Map;
  * the Android accessibility tree instead of silently reusing iOS locators.
  */
 public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
-    private static final String APP_PACKAGE = "com.vamapps.thecoach";
+    private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ID_PREFIX = APP_PACKAGE + ":id/";
 
     private static final String DAILY_PRACTICE_SECTION_TITLE =

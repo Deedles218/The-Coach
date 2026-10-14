@@ -1,5 +1,6 @@
 package lib.ui.android;
 
+import lib.Platform;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -7,7 +8,7 @@ import java.util.*;
 
 /** Welcome controls; legal links are two ClickableSpans in the observed tvPolicy TextView. */
 public final class AndroidWelcomePageObject extends AndroidCoachFlowPageObject {
-    private static final String P="com.vamapps.thecoach:id/";
+    private static final String P=Platform.getInstance().getAndroidAppPackage()+":id/";
     public AndroidWelcomePageObject(RemoteWebDriver driver) {super(driver);}
     public void verifyButtonsAndLegalLinks() {
         ensureLoggedOutOnStartScreen();

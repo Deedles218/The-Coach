@@ -16,7 +16,7 @@ import java.util.Map;
 
 /** COA-9549 controls observed in the preprod iOS and 1.41.2 Android builds. */
 public final class ProgramSwitchFeaturePageObject extends MainPageObject {
-    private static final String ANDROID_ID = "com.vamapps.thecoach:id/";
+    private static final String ANDROID_ID = Platform.getInstance().getAndroidAppPackage() + ":id/";
     private final DailyPlanPageObject today;
     private final boolean android;
 

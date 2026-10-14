@@ -1,11 +1,12 @@
 package lib.ui.android;
 
+import lib.Platform;
 import lib.ui.ModulesPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Resource IDs verified on Android manProd 1.40.21 / API 36. */
 public final class AndroidModulesPageObject extends ModulesPageObject {
-    private static final String PREFIX = "com.vamapps.thecoach:id/";
+    private static final String PREFIX = Platform.getInstance().getAndroidAppPackage() + ":id/";
     private final AndroidDailyPlanPageObject today;
 
     public AndroidModulesPageObject(RemoteWebDriver driver) {
