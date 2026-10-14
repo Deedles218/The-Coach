@@ -85,6 +85,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         EXISTING_ACCOUNT_LOGIN_BUTTON = "id:LOGIN";
         SEND_SECURITY_CODE_BUTTON = "xpath://XCUIElementTypeButton[translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='SEND CODE']";
         LOGIN_VALIDATION_ERROR = "xpath://XCUIElementTypeStaticText[contains(@name, 'valid email') or contains(@label, 'valid email') or contains(@name, 'email is not') or contains(@label, 'email is not')]";
+        LOGIN_ACCOUNT_VARIANT_ERROR = "xpath://XCUIElementTypeStaticText[contains(@name, 'regular Coach app') "
+                + "or contains(@label, 'regular Coach app')]";
         POST_AUTH_ONBOARDING_MARKER = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?']";
         CLOSE_LOGIN_BUTTON = "id:CloseRoundBlack";
         NOTIFICATION_PROMPT_TITLE = "xpath://XCUIElementTypeStaticText[@name='Allow notifications to stay on track' "

@@ -112,6 +112,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
             EXISTING_ACCOUNT_LOGIN_BUTTON,
             SEND_SECURITY_CODE_BUTTON,
             LOGIN_VALIDATION_ERROR,
+            LOGIN_ACCOUNT_VARIANT_ERROR,
             OTP_CONFIRMATION_TITLE,
             OTP_CONFIRMATION_CLOSE_BUTTON,
             POST_AUTH_ONBOARDING_MARKER,
@@ -601,13 +602,12 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Submit email in login flow")
     public void submitLoginEmail() {
-        this.clickOnceAndWaitForTransition(
+        this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_LOGIN_CONTINUE, LOGIN_CONTINUE_BUTTON},
-                new String[]{TEST_ID_LOGIN_SCREEN, LOGIN_SCREEN_TITLE},
-                new String[]{TEST_ID_OTP_SCREEN, OTP_SCREEN_TITLE},
                 "Cannot submit email with a single tap",
                 20
         );
+        this.waitForOtpOrAccountVariantError();
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "OTP loading indicator is still displayed", 20);
     }
 
@@ -888,29 +888,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Normalize Coach session for the next test")
     public void cleanupForNextTest() {
-        this.activateAppIfPossible();
-        this.closePdfGuideUpsellIfPresent();
-        this.closeNotificationPromptIfPresent();
-        this.closeConnectEmailPromptIfPresent();
-        this.closeKegelExerciseFlowIfPresent();
-
-        if (this.isElementPresent(CLOSE_LOGIN_BUTTON)) {
-            this.closeVisibleAuthFlow();
-            return;
-        }
-
-        if (this.isElementPresent(TEST_ID_PROFILE_SCREEN) || this.isElementPresent(PROFILE_SCREEN)) {
-            this.logOut();
-            return;
-        }
-
-        if (this.isElementPresent(AUTHORIZED_DASHBOARD_MARKER)
-                || this.isElementPresent(TEST_ID_TODAY_TAB)
-                || this.isElementPresent(TAB_TODAY)) {
-            this.openToday();
-            this.openProfile();
-            this.logOut();
-        }
+        this.ensureLoggedOutOnStartScreen();
     }
 
     private void closeKegelExerciseFlowIfPresent() {
@@ -1008,6 +986,23 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     private void closeVisibleAuthFlow() {
         this.waitForElementAndClick(CLOSE_LOGIN_BUTTON, "Cannot close login or OTP flow", 10);
+    }
+
+    private void waitForOtpOrAccountVariantError() {
+        createWait(20).withMessage("Security code screen did not open after submitting the email\n")
+                .until(ignored -> {
+                    if (isElementVisible(TEST_ID_OTP_SCREEN) || isElementVisible(OTP_SCREEN_TITLE)) {
+                        return true;
+                    }
+                    if (LOGIN_ACCOUNT_VARIANT_ERROR != null
+                            && isElementVisible(LOGIN_ACCOUNT_VARIANT_ERROR)) {
+                        throw new AssertionError(
+                                "The configured account belongs to another Coach app variant. "
+                                        + "Use an account provisioned for the installed build."
+                        );
+                    }
+                    return false;
+                });
     }
 
     private String getIOSBundleId() {

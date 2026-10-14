@@ -66,6 +66,7 @@ public class LocalizationTests extends CoreTestCase {
         super.setUp();
         page = new LocalizationPageObject(driver, fixture);
         page.setSystemLanguage("en");
+        CoachFlowPageObjectFactory.get(driver).ensureLoggedOutOnStartScreen();
         page.waitForEntryScreen();
         Allure.addAttachment("Localization matrix", "platform=" + Platform.getInstance().getPlatformVar()
                 + "\nvariant=" + variant + "\nlocale=" + language + "\nscenario=" + scenario

@@ -106,15 +106,9 @@ public class CoreTestCase {
             return;
         }
 
-        try {
-            CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
-            if (coachFlow != null) {
-                coachFlow.cleanupForNextTest();
-            }
-        } catch (Exception cleanupFailure) {
-            System.err.println(
-                    "Could not normalize app session before teardown: " + cleanupFailure.getMessage()
-            );
+        CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
+        if (coachFlow != null) {
+            coachFlow.cleanupForNextTest();
         }
     }
 
