@@ -31,6 +31,11 @@ public class TestModelLifecycleUnitTests {
     private Throwable evaluate(final Throwable bodyFailure, final RuntimeException teardownFailure) {
         CoreTestCase fixture = new CoreTestCase() {
             @Override
+            protected boolean isAllureReportingEnabled() {
+                return false;
+            }
+
+            @Override
             public void tearDown() {
                 if (teardownFailure != null) throw teardownFailure;
             }

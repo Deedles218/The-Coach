@@ -8,6 +8,7 @@ import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -26,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Set;
 import java.util.Properties;
@@ -43,19 +43,36 @@ public class CoreTestCase {
                 @Override
                 public void evaluate() throws Throwable {
                     Throwable primaryFailure = null;
+                    boolean reportingEnabled = isAllureReportingEnabled();
+                    if (reportingEnabled) {
+                        AllureReportSupport.prepareTestCase(description);
+                    }
+                    String scenarioStep = reportingEnabled
+                            ? AllureReportSupport.startScenario(description)
+                            : null;
                     try {
                         base.evaluate();
                     } catch (Throwable failure) {
                         primaryFailure = failure;
                         // Capture before teardown closes the Appium session. The
                         // previous TestWatcher ran after @After and saw driver=null.
-                        captureFailureArtifacts(failure, description);
+                        if (reportingEnabled && !(failure instanceof AssumptionViolatedException)) {
+                            captureFailureArtifacts(failure, description);
+                        }
                         throw failure;
                     } finally {
+                        if (reportingEnabled) {
+                            AllureReportSupport.finishScenario(scenarioStep, primaryFailure);
+                        }
                         try {
                             tearDown();
                         } catch (Throwable teardownFailure) {
-                            if (primaryFailure == null) throw teardownFailure;
+                            if (primaryFailure == null) {
+                                if (reportingEnabled) {
+                                    AllureReportSupport.attachFailureContext(teardownFailure, description);
+                                }
+                                throw teardownFailure;
+                            }
                             primaryFailure.addSuppressed(teardownFailure);
                         }
                     }
@@ -139,6 +156,15 @@ public class CoreTestCase {
         return true;
     }
 
+    protected boolean isAllureReportingEnabled() {
+        return true;
+    }
+
+    /** Opt in only for a scenario known not to display credential inputs. */
+    protected boolean isFailureScreenshotSafeWithoutPageSource() {
+        return false;
+    }
+
     protected String unsupportedPlatformMessage() {
         return "Test does not support platform " + Platform.getInstance().getPlatformVar();
     }
@@ -220,51 +246,51 @@ public class CoreTestCase {
     }
 
     protected final void captureFailureArtifacts(Throwable throwable, Description description) {
-        if (driver == null) {
-            return;
-        }
-
+        AllureReportSupport.attachFailureContext(throwable, description);
         String testName = safeArtifactName(description == null ? "unknown-test" : description.getMethodName());
         Path screenshotsDirectory = Paths.get("target", "screenshots");
         Path pageSourceDirectory = Paths.get("target", "page-source");
         Path logsDirectory = Paths.get("target", "appium-logs");
+        if (driver == null) {
+            addAllureAttachment(
+                    "Failure artifact capture note",
+                    "text/plain",
+                    "Appium session was not available; screenshot, page source and driver logs could not be captured."
+                            .getBytes(StandardCharsets.UTF_8),
+                    "txt"
+            );
+            return;
+        }
+
         try {
             Files.createDirectories(screenshotsDirectory);
             Files.createDirectories(pageSourceDirectory);
             Files.createDirectories(logsDirectory);
+        } catch (Exception directoryFailure) {
+            attachArtifactCaptureError("artifact directories", directoryFailure);
+        }
 
-            String rawPageSource = driver.getPageSource();
-            String pageSource = TestData.sanitizeSensitiveData(rawPageSource);
-            boolean credentialScreen = !rawPageSource.equals(pageSource)
-                    || rawPageSource.contains("ENTER SECURITY CODE");
+        String rawPageSource = null;
+        String pageSource = null;
+        byte[] rawScreenshot = null;
+        try {
+            if (!(driver instanceof TakesScreenshot)) {
+                throw new IllegalStateException("Driver does not support screenshots");
+            }
+            rawScreenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        } catch (Exception screenshotFailure) {
+            attachArtifactCaptureError("failure screenshot", screenshotFailure);
+        }
+
+        try {
+            rawPageSource = driver.getPageSource();
+            pageSource = TestData.sanitizeSensitiveData(rawPageSource);
             if (rawPageSource.contains("ENTER SECURITY CODE")) {
                 // OTP may be exposed as four independent accessibility nodes.
                 pageSource = pageSource.replaceAll("((?:name|label|value)=\")[0-9](\")", "$1*$2");
             }
             pageSource = pageSource.replace("<redacted-email>", "&lt;redacted-email&gt;")
                     .replace("<redacted-otp>", "&lt;redacted-otp&gt;");
-            if (driver instanceof TakesScreenshot && !credentialScreen) {
-                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                Path screenshotPath = screenshotsDirectory.resolve(testName + ".png");
-                Files.copy(screenshot.toPath(), screenshotPath, StandardCopyOption.REPLACE_EXISTING);
-                byte[] screenshotBytes = Files.readAllBytes(screenshotPath);
-                addAllureAttachment("Failure screenshot", "image/png", screenshotBytes, "png");
-            } else if (driver instanceof TakesScreenshot
-                    && (rawPageSource.contains("ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT")
-                        || rawPageSource.contains("ENTER YOUR EMAIL TO SYNC YOUR PROGRESS AND SETTINGS"))
-                    && !rawPageSource.contains("ENTER SECURITY CODE")) {
-                try {
-                    byte[] screenshotBytes = LoginFailureScreenshot.redact(
-                            ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES), rawPageSource);
-                    Path screenshotPath = screenshotsDirectory.resolve(testName + "-redacted.png");
-                    Files.write(screenshotPath, screenshotBytes);
-                    addAllureAttachment("Failure screenshot (email and keyboard masked)", "image/png", screenshotBytes, "png");
-                } catch (Exception redactionFailure) {
-                    // Still save source/log diagnostics; never persist the unmasked image.
-                    System.err.println("Login screenshot redaction unavailable: " + redactionFailure.getClass().getSimpleName());
-                }
-            }
-
             Path pageSourcePath = pageSourceDirectory.resolve(testName + ".xml");
             Files.write(pageSourcePath, pageSource.getBytes(StandardCharsets.UTF_8));
             addAllureAttachment(
@@ -273,16 +299,97 @@ public class CoreTestCase {
                     pageSource.getBytes(StandardCharsets.UTF_8),
                     "xml"
             );
+        } catch (Exception sourceFailure) {
+            attachArtifactCaptureError("page source", sourceFailure);
+        }
 
+        if (rawScreenshot != null) {
+            try {
+                captureFailureScreenshot(
+                        rawScreenshot,
+                        rawPageSource,
+                        pageSource,
+                        screenshotsDirectory,
+                        testName
+                );
+            } catch (Exception screenshotFailure) {
+                attachArtifactCaptureError("failure screenshot", screenshotFailure);
+            }
+        }
+
+        try {
             String logs = collectDriverLogs();
             String failure = TestData.sanitizeSensitiveData(throwable == null ? "unknown failure" : throwable.toString());
             Path logPath = logsDirectory.resolve(testName + ".log");
             byte[] logBytes = (failure + "\n" + logs).getBytes(StandardCharsets.UTF_8);
             Files.write(logPath, logBytes);
             addAllureAttachment("Failure Appium/driver log", "text/plain", logBytes, "log");
-        } catch (Exception artifactFailure) {
-            System.err.println("Cannot capture failure artifacts: " + artifactFailure.getMessage());
+        } catch (Exception logFailure) {
+            attachArtifactCaptureError("Appium/driver logs", logFailure);
         }
+    }
+
+    private void captureFailureScreenshot(
+            byte[] rawScreenshot,
+            String rawPageSource,
+            String sanitizedPageSource,
+            Path screenshotsDirectory,
+            String testName
+    ) throws Exception {
+        if (rawPageSource == null || sanitizedPageSource == null) {
+            if (isFailureScreenshotSafeWithoutPageSource()) {
+                Files.write(screenshotsDirectory.resolve(testName + ".png"), rawScreenshot);
+                addAllureAttachment("Failure screenshot (page source unavailable)", "image/png", rawScreenshot, "png");
+                return;
+            }
+            throw new IllegalStateException("Page source is unavailable for the credential safety check");
+        }
+
+        boolean credentialScreen = !rawPageSource.equals(sanitizedPageSource)
+                || rawPageSource.contains("ENTER SECURITY CODE");
+        byte[] screenshotBytes;
+        String attachmentName;
+        String fileName;
+        if (!credentialScreen) {
+            screenshotBytes = rawScreenshot;
+            attachmentName = "Failure screenshot";
+            fileName = testName + ".png";
+        } else if ((rawPageSource.contains("ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT")
+                || rawPageSource.contains("ENTER YOUR EMAIL TO SYNC YOUR PROGRESS AND SETTINGS"))
+                && !rawPageSource.contains("ENTER SECURITY CODE")) {
+            screenshotBytes = LoginFailureScreenshot.redact(
+                    rawScreenshot,
+                    rawPageSource
+            );
+            attachmentName = "Failure screenshot (email and keyboard masked)";
+            fileName = testName + "-redacted.png";
+        } else {
+            addAllureAttachment(
+                    "Failure screenshot security note",
+                    "text/plain",
+                    "Screenshot was intentionally omitted because the current screen contains credentials that cannot be safely masked."
+                            .getBytes(StandardCharsets.UTF_8),
+                    "txt"
+            );
+            return;
+        }
+
+        Path screenshotPath = screenshotsDirectory.resolve(fileName);
+        Files.write(screenshotPath, screenshotBytes);
+        addAllureAttachment(attachmentName, "image/png", screenshotBytes, "png");
+    }
+
+    private void attachArtifactCaptureError(String artifact, Exception failure) {
+        String message = "Could not capture " + artifact + ": "
+                + failure.getClass().getSimpleName() + ": "
+                + TestData.sanitizeSensitiveData(failure.getMessage());
+        System.err.println(message);
+        addAllureAttachment(
+                "Failure artifact capture note",
+                "text/plain",
+                message.getBytes(StandardCharsets.UTF_8),
+                "txt"
+        );
     }
 
     private void addAllureAttachment(
@@ -343,7 +450,16 @@ public class CoreTestCase {
         }
 
         Properties properties = new Properties();
-        properties.setProperty("Environment", Platform.getInstance().getPlatformVar());
+        properties.setProperty("Platform", Platform.getInstance().getPlatformVar());
+        properties.setProperty("Java", System.getProperty("java.version"));
+        setEnvironmentCapability(properties, "Device", "appium:deviceName", "deviceName");
+        setEnvironmentCapability(properties, "OS version", "appium:platformVersion", "platformVersion");
+        setEnvironmentCapability(properties, "Automation driver", "appium:automationName", "automationName");
+        if (Platform.getInstance().isIOS()) {
+            properties.setProperty("Application", Platform.getInstance().getIOSBundleId());
+        } else if (Platform.getInstance().isAndroid()) {
+            properties.setProperty("Application", Platform.getInstance().getAndroidAppPackage());
+        }
         String fixtureId = TestData.configuredFixtureId();
         if (fixtureId != null) {
             properties.setProperty("Smoke fixture", fixtureId);
@@ -358,6 +474,19 @@ public class CoreTestCase {
             properties.store(output, "Test environment");
         } catch (IOException e) {
             System.err.println("Cannot write Allure environment file: " + e.getMessage());
+        }
+    }
+
+    private void setEnvironmentCapability(Properties properties, String propertyName, String... capabilityNames) {
+        if (driver == null) {
+            return;
+        }
+        for (String capabilityName : capabilityNames) {
+            Object value = driver.getCapabilities().getCapability(capabilityName);
+            if (value != null && !value.toString().trim().isEmpty()) {
+                properties.setProperty(propertyName, value.toString());
+                return;
+            }
         }
     }
 }
