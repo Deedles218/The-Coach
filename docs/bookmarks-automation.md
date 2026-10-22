@@ -76,6 +76,12 @@ Supply only the values needed by the selected method: `COACH_BOOKMARKS_LESSON_TI
 
 COA-9666 requires `IOS_UPDATE_APP`/`ios.update.app` and intentionally removes then reinstalls the app during its reinstall phase. Simulator `.app` updates validate installed and requested `CFBundleVersion` values and require distinct real build numbers. A placeholder such as `BITRISE_BUILD_NUMBER` blocks update verification; changing bundle metadata locally would not prove an application update.
 
+## Completion indicator after FINISH
+
+The primary completion check uses the named `dailyCompletedCheckmark*` image inside the exact Daily Plan card. On the current builds, a newly completed card can render a visible tick as an unnamed `XCUIElementTypeOther` until the next login. For this observed state, the Page Object checks the rendered indicator immediately following that card's title against a cropped tick reference. It compares the white glyph's shape independently of the male/female circle color; an unnamed container alone is never evidence of completion. The same check protects the incomplete precondition. Successful visual checks attach the actual indicator crop to Allure, without refreshing the screen, restarting the app, or logging in again.
+
+The reference and negative fixtures under `src/test/resources/bookmarks/completion` contain only status icons cropped from the two builds. Unit tests reject unfinished arrows, blank/solid indicators, a different glyph, and a completed neighboring card. A stable accessibility identifier on the live status indicator remains preferable; if the UI glyph changes, review the visual reference and its negative fixtures before updating it.
+
 ## Fresh analytics and request evidence
 
 COA-9662 reads append-only JSONL from `COACH_BOOKMARKS_ANALYTICS_LOG`; COA-9663 reads JSONL from `COACH_BOOKMARKS_NETWORK_LOG`. The tests checkpoint the file before the action and accept only complete records appended afterwards. Each save/delete event must contain the expected lesson and slide in that same event; each POST must contain the expected path, program, day, and slide in that same request.

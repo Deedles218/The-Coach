@@ -2,6 +2,10 @@ package lib.ui;
 
 import io.qameta.allure.Step;
 import lib.RestoringTestAction;
+import lib.DailyPlanCompletionMarker;
+import io.qameta.allure.Allure;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
 import org.openqa.selenium.Dimension;
@@ -11,6 +15,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public abstract class BookmarksPageObject extends MainPageObject {
     protected static String TODAY_TAB;
@@ -322,9 +332,10 @@ public abstract class BookmarksPageObject extends MainPageObject {
         CoachFlowPageObjectFactory.get(driver).openToday();
         swipeUpToFindFirstVisibleElement(new String[]{dailyPlanCardFor(title)},
                 "Completed Daily Plan item is absent: " + title, 8);
-        String completed = dailyPlanCardFor(title)
-                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
-        waitForElementPresent(completed, "Daily Plan item is not marked completed: " + title, 15);
+        Assert.assertEquals("Completion must identify one current Daily Plan card", 1,
+                getAmountElements(dailyPlanCardFor(title)));
+        createWait(15).withMessage("Daily Plan item is not marked completed: " + title)
+                .until(ignored -> isDailyPlanItemCompleted(title, true));
     }
 
     public void assertDailyPlanItemNotCompleted(String title) {
@@ -334,7 +345,40 @@ public abstract class BookmarksPageObject extends MainPageObject {
         swipeUpToFindFirstVisibleElement(new String[]{card}, "Lesson fixture is absent: " + title, 8);
         Assert.assertEquals("Completion fixture must identify one current Daily Plan card", 1, getAmountElements(card));
         Assert.assertFalse("Completion fixture lesson is already completed; restore its account snapshot",
-                isElementVisible(card + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']"));
+                isDailyPlanItemCompleted(title, false));
+    }
+
+    private boolean isDailyPlanItemCompleted(String title, boolean attachEvidence) {
+        String completed = dailyPlanCardFor(title)
+                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+        if (isElementVisible(completed)) return true;
+        List<WebElement> indicators = driver.findElements(getLocatorByString(dailyPlanCompletionIndicatorFor(title)));
+        if (indicators.size() != 1) return false;
+        try {
+            WebElement indicator = indicators.get(0);
+            if (!indicator.isDisplayed()) return false;
+            BufferedImage crop = DailyPlanCompletionMarker.crop(driver.getScreenshotAs(OutputType.BYTES),
+                    indicator.getRect(), driver.manage().window().getSize().width);
+            if (!DailyPlanCompletionMarker.isCompleted(crop)) return false;
+            if (attachEvidence) {
+                ByteArrayOutputStream png = new ByteArrayOutputStream();
+                ImageIO.write(crop, "png", png);
+                Allure.addAttachment("Rendered completion tick on " + title, "image/png",
+                        new ByteArrayInputStream(png.toByteArray()), "png");
+            }
+            return true;
+        } catch (StaleElementReferenceException ignored) {
+            return false; // Reacquire only while the existing explicit wait is polling.
+        } catch (IOException error) {
+            throw new IllegalStateException("Cannot inspect completion indicator on " + title, error);
+        }
+    }
+
+    protected String dailyPlanCompletionIndicatorFor(String title) {
+        // Observed on both builds: the status indicator immediately follows the title.
+        // Its presence alone never proves completion; its rendered tick must match.
+        return dailyPlanCardFor(title) + "//XCUIElementTypeStaticText[@name=" + xpathLiteral(title)
+                + "]/following-sibling::*[1][self::XCUIElementTypeOther and @visible='true']";
     }
 
     public void assertPreviousDayItemNotCompleted(String title, String previousDayTitle) {

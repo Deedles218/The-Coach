@@ -16,6 +16,7 @@ public class BookmarksLocatorUnitTests {
         Screen() { super(null); }
         String slide(String text) { return slideText(text); }
         String card(String title) { return cardFor(title); }
+        String indicator(String title) { return dailyPlanCompletionIndicatorFor(title); }
     }
 
     private int count(String xml, String text) throws Exception {
@@ -64,5 +65,23 @@ public class BookmarksLocatorUnitTests {
                 locator + "//*[@name='filled_bookmark']", document, XPathConstants.NODESET);
         Assert.assertEquals(1, controls.getLength());
         Assert.assertEquals("second", controls.item(0).getAttributes().getNamedItem("fixture").getNodeValue());
+    }
+
+    @Test
+    public void completionIndicatorBelongsToTargetCardAndExcludesMetadataAndHiddenStatus() throws Exception {
+        String xml = "<root><XCUIElementTypeOther name='DailyPlanItem'>"
+                + "<XCUIElementTypeStaticText name='Neighbor'/><XCUIElementTypeOther visible='true' fixture='neighbor'/>"
+                + "</XCUIElementTypeOther><XCUIElementTypeOther name='DailyPlanItem'>"
+                + "<XCUIElementTypeStaticText name='Target'/><XCUIElementTypeOther visible='true' fixture='target'/>"
+                + "<XCUIElementTypeOther visible='true' fixture='metadata'/></XCUIElementTypeOther>"
+                + "<XCUIElementTypeOther name='DailyPlanItem'><XCUIElementTypeStaticText name='Hidden'/>"
+                + "<XCUIElementTypeOther visible='false'/></XCUIElementTypeOther></root>";
+        Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        javax.xml.xpath.XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList result = (NodeList) xpath.evaluate(new Screen().indicator("Target").substring(6), document, XPathConstants.NODESET);
+        Assert.assertEquals(1, result.getLength());
+        Assert.assertEquals("target", result.item(0).getAttributes().getNamedItem("fixture").getNodeValue());
+        Assert.assertEquals(0, ((NodeList) xpath.evaluate(new Screen().indicator("Hidden").substring(6), document, XPathConstants.NODESET)).getLength());
     }
 }
