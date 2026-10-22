@@ -6,8 +6,9 @@ from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
+from unittest.mock import patch
 
-from observe_bookmarks_evidence import AnalyticsReader, CF_EPOCH, fresh_event, fresh_request
+from observe_bookmarks_evidence import AnalyticsReader, CF_EPOCH, current_user, fresh_event, fresh_request, read_requests
 
 
 class BookmarksEvidenceTests(unittest.TestCase):
@@ -92,6 +93,124 @@ class BookmarksEvidenceTests(unittest.TestCase):
                 after = reader.poll(new, 1.9)
                 self.assertTrue(old.exists())
                 self.assertNotEqual(before[0]['fingerprint'], after[0]['fingerprint'])
+            finally:
+                reader.close()
+
+    def cache_user(self, root, stamp=2000, identity='ios_fixture-user', email='fixture@example.test',
+                   route='/api/v1/user/'):
+        cache = root / 'Library/Caches/com.vamapps.The-Coach'
+        cache.mkdir(parents=True, exist_ok=True)
+        request, response = self.request(stamp=stamp)
+        req = plistlib.loads(request)
+        req['Array'][1]['_CFURLString'] = 'https://content.the.coach' + route
+        req['Array'][18] = 'GET'
+        payload = ({'userdata': {'user_id': identity, 'analytics_profile': {'email': email}}}
+                   if route == '/api/v1/user/' else {'email': email})
+        body = json.dumps(payload).encode()
+        with sqlite3.connect(cache / 'Cache.db') as connection:
+            connection.execute('CREATE TABLE IF NOT EXISTS cfurl_cache_response (entry_ID INTEGER, request_key TEXT)')
+            connection.execute('CREATE TABLE IF NOT EXISTS cfurl_cache_blob_data '
+                               '(entry_ID INTEGER, request_object BLOB, response_object BLOB)')
+            connection.execute('CREATE TABLE IF NOT EXISTS cfurl_cache_receiver_data '
+                               '(entry_ID INTEGER, receiver_data BLOB, isDataOnFS INTEGER)')
+            key = connection.execute('SELECT count(*) FROM cfurl_cache_response').fetchone()[0] + 1
+            connection.execute('INSERT INTO cfurl_cache_response VALUES (?,?)',
+                               (key, 'https://content.the.coach' + route))
+            connection.execute('INSERT INTO cfurl_cache_blob_data VALUES (?,?,?)',
+                               (key, plistlib.dumps(req, fmt=plistlib.FMT_BINARY), response))
+            connection.execute('INSERT INTO cfurl_cache_receiver_data VALUES (?,?,0)', (key, body))
+
+    def test_verified_api_identity_allows_events_when_sdk_store_is_empty(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            database = self.sdk_database(root, 'event-without-persisted-user')
+            with sqlite3.connect(database) as connection:
+                connection.execute('DELETE FROM store')
+            self.cache_user(root, identity='fixture-user')
+            uid = current_user(root, 'com.vamapps.The-Coach', 1999, 2001, 'https://content.the.coach')
+            self.assertEqual('fixture-user', uid)
+            reader = AnalyticsReader()
+            try:
+                self.assertEqual([], reader.poll(root, 1.9))
+                self.assertEqual('BookmarkSaved', reader.poll(root, 1.9, uid)[0]['event'])
+                self.assertEqual([], reader.poll(root, 1.9, 'wrong-user'))
+            finally:
+                reader.close()
+
+    def test_cached_identity_must_match_request_and_be_fresh(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.cache_user(root, identity='ios_another-user')
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 1999, 2001, 'https://content.the.coach'))
+            self.cache_user(root, stamp=2001)
+            self.assertEqual('fixture-user', current_user(
+                root, 'com.vamapps.The-Coach', 1999, 2002, 'https://content.the.coach'))
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 2002, 2003, 'https://content.the.coach'))
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 1999, 3001, 'https://content.the.coach'))
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 1999, 2002, 'https://other.example'))
+
+    def test_newer_anonymous_identity_invalidates_previous_signed_in_account(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.cache_user(root)
+            self.cache_user(root, stamp=2001, email=None)
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 1999, 2002, 'https://content.the.coach'))
+
+    def test_bookmark_request_identity_does_not_require_an_sdk_database(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.cache_user(root)
+            cache = root / 'Library/Caches/com.vamapps.The-Coach/Cache.db'
+            request, response = self.request(stamp=2001)
+            with sqlite3.connect(cache) as connection:
+                connection.execute('INSERT INTO cfurl_cache_response VALUES (?,?)',
+                                   (2, 'https://content.the.coach/api/v1/coachprogram/lessons/lesson-a/bookmark'))
+                connection.execute('INSERT INTO cfurl_cache_blob_data VALUES (?,?,?)', (2, request, response))
+            rows = read_requests(root, 'com.vamapps.The-Coach', 1999, 2002, 'https://content.the.coach')
+            self.assertEqual(1, len(rows))
+            self.assertTrue(rows[0]['accountMatched'])
+            self.assertEqual(2, rows[0]['body']['program_day'])
+            self.assertFalse((root / 'Library/com.amplitude.database').exists())
+
+    def test_profile_identity_supports_missing_user_response_and_sdk_store(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.cache_user(root, route='/api/v1/user/achievments/')
+            self.assertEqual('fixture-user', current_user(
+                root, 'com.vamapps.The-Coach', 1999, 2001, 'https://content.the.coach'))
+            self.cache_user(root, stamp=2001, email=None, route='/api/v1/user/achievments/')
+            self.assertIsNone(current_user(root, 'com.vamapps.The-Coach', 1999, 2002, 'https://content.the.coach'))
+
+    def test_drained_event_waits_for_matching_verified_identity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            database = self.sdk_database(root, 'event-before-identity')
+            with sqlite3.connect(database) as connection:
+                connection.execute('DELETE FROM store')
+            reader = AnalyticsReader()
+            try:
+                self.assertEqual([], reader.poll(root, 1.9))
+                with sqlite3.connect(database) as connection:
+                    connection.execute('DELETE FROM events')
+                self.assertEqual([], reader.poll(root, 1.9, 'wrong-user'))
+                self.assertEqual('BookmarkSaved', reader.poll(root, 1.9, 'fixture-user')[0]['event'])
+                self.assertEqual([], reader.poll(root, 1.9, 'fixture-user'))
+            finally:
+                reader.close()
+
+    def test_unverified_old_queue_row_cannot_restart_its_buffer_window(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            database = self.sdk_database(root, 'unverified-event')
+            with sqlite3.connect(database) as connection:
+                connection.execute('DELETE FROM store')
+            reader = AnalyticsReader()
+            try:
+                with patch('observe_bookmarks_evidence.time.monotonic', side_effect=[100, 106, 107]):
+                    self.assertEqual([], reader.poll(root, 1.9))
+                    self.assertEqual([], reader.poll(root, 1.9, 'fixture-user'))
+                    reader.close()  # Reopening after a transient read error must not revive the old row.
+                    self.assertEqual([], reader.poll(root, 1.9, 'fixture-user'))
             finally:
                 reader.close()
 

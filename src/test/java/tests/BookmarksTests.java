@@ -276,7 +276,7 @@ public class BookmarksTests extends CoreTestCase {
 
     @Test @Issue("COA-9659")
     public void finishMarksLessonCompletedInDailyPlan() {
-        prepare(CONTENT);
+        prepare(fixtureRole("completionAccountRole", CONTENT));
         String lesson = required("lessonTitle");
         bookmarks.assertDailyPlanItemNotCompleted(lesson);
         prepareSavedContent(lesson, required("lessonSavedSlideText"));
@@ -303,7 +303,7 @@ public class BookmarksTests extends CoreTestCase {
 
     @Test @Issue("COA-9661")
     public void kegelAndKegelSportCannotBeBookmarked() {
-        prepare(CONTENT);
+        prepare(fixtureRole("kegelAccountRole", CONTENT));
         bookmarks.openContentWithoutBookmarkFromToday(required("kegelTitle"));
         bookmarks.assertOpenedContentCannotBeSaved();
         bookmarks.closeOpenedContent();
@@ -485,6 +485,11 @@ public class BookmarksTests extends CoreTestCase {
         String title = System.getProperty("coach.bookmarks.secondContentTitle");
         if (title == null || title.trim().isEmpty()) title = System.getenv("COACH_BOOKMARKS_SECOND_CONTENT_TITLE");
         return title == null || title.trim().isEmpty() ? required("secondLessonTitle") : title.trim();
+    }
+
+    private static String fixtureRole(String field, String fallback) {
+        String role = optional(field);
+        return role == null ? fallback : role;
     }
 
     private static String recurring(String suffix) {

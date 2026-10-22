@@ -319,7 +319,9 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     public void assertDailyPlanItemCompleted(String title) {
         if (isElementPresent(BOOKMARKS_TITLE)) backFromBookmarks();
-        waitForElementAndClick(TODAY_TAB, "Cannot open Today", 10);
+        CoachFlowPageObjectFactory.get(driver).openToday();
+        swipeUpToFindFirstVisibleElement(new String[]{dailyPlanCardFor(title)},
+                "Completed Daily Plan item is absent: " + title, 8);
         String completed = dailyPlanCardFor(title)
                 + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
         waitForElementPresent(completed, "Daily Plan item is not marked completed: " + title, 15);

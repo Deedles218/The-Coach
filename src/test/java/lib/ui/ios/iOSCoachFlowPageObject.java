@@ -276,9 +276,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         createWait(30).withMessage(prepareQuestionnaire
                 ? "Neither Today nor the new-account questionnaire appeared after OTP"
                 : "Authorized dashboard did not open").until(ignored -> {
-            closeMasterclassPromoIfPresent();
-            return isElementVisible(AUTHORIZED_DASHBOARD_MARKER) || isElementVisible(TEST_ID_TODAY_TAB)
-                    || isElementVisible(TAB_TODAY)
+            closePostAuthPopupsIfPresent();
+            return isAuthorizedDashboardVisible()
                     || (prepareQuestionnaire && isElementVisible(ONBOARDING_GOALS_TITLE));
         });
         if (prepareQuestionnaire) {
@@ -297,7 +296,21 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             closeNotificationPromptIfPresent();
             closeConnectEmailPromptIfPresent();
         }
-        super.waitForAuthorizedDashboard();
+        createWait(30).withMessage("Authorized dashboard did not open").until(ignored -> {
+            closePostAuthPopupsIfPresent();
+            return isAuthorizedDashboardVisible();
+        });
+    }
+
+    private boolean isAuthorizedDashboardVisible() {
+        return isElementVisible(AUTHORIZED_DASHBOARD_MARKER) || isElementVisible(TEST_ID_TODAY_TAB)
+                || isElementVisible(TAB_TODAY);
+    }
+
+    private void closePostAuthPopupsIfPresent() {
+        closeMasterclassPromoIfPresent();
+        if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
+        if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
     }
 
     private KegelCasePageObject quizProfileFlow() {
@@ -409,6 +422,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
         super.openToday();
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
     }
 
     private void closeProgramDiscoveryHintIfPresent() {

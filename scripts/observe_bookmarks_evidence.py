@@ -18,9 +18,83 @@ import urllib.parse
 
 from observe_simulator_event import event_key
 from read_android_module_content import HOST
+from read_simulator_program_content import EvidenceError, _body
 
 EVENTS = {'BookmarksOpened', 'BookmarkSaved', 'BookmarkDeleted'}
 CF_EPOCH = 978307200
+
+
+def request_uid(items, now):
+    sources = [item for item in items if isinstance(item, dict) and 'Authorization' in item]
+    if len(sources) != 1:
+        return None
+    parts = sources[0]['Authorization'].split(' ')
+    if len(parts) != 2 or parts[0].lower() not in ('firebasetoken', 'bearer'):
+        return None
+    token = parts[1].split('.')
+    if len(token) != 3:
+        return None
+    claims = json.loads(base64.urlsafe_b64decode(token[1] + '=' * (-len(token[1]) % 4)))
+    if not isinstance(claims, dict):
+        return None
+    expiry, uid = claims.get('exp'), claims.get('user_id')
+    if (not isinstance(uid, str) or not uid or claims.get('sub') != uid
+            or not isinstance(expiry, (int, float)) or isinstance(expiry, bool)
+            or not math.isfinite(expiry) or expiry <= now):
+        return None
+    return uid
+
+
+def current_user(root, bundle, started, now, host):
+    """Corroborate the latest cached API identity without relying on SDK persistence."""
+    cache = root / 'Library/Caches' / bundle
+    with closing(sqlite3.connect((cache / 'Cache.db').as_uri() + '?mode=ro', uri=True, timeout=.2)) as connection:
+        rows = connection.execute(
+            "SELECT b.request_object,b.response_object,d.receiver_data,d.isDataOnFS "
+            "FROM cfurl_cache_response r JOIN cfurl_cache_blob_data b ON r.entry_ID=b.entry_ID "
+            "JOIN cfurl_cache_receiver_data d ON r.entry_ID=d.entry_ID "
+            "WHERE r.request_key LIKE '%/api/v1/user/%'").fetchall()
+    candidates = []
+    for request_blob, response_blob, body, filesystem in rows:
+        try:
+            request, response = plistlib.loads(request_blob), plistlib.loads(response_blob)
+            if request.get('Version') != 9 or response.get('Version') != 1:
+                continue
+            req, res = request['Array'], response['Array']
+            urls = [item['_CFURLString'] for item in req if isinstance(item, dict) and '_CFURLString' in item]
+            if (len(urls) != 1 or urls[0] not in (host + '/api/v1/user/', host + '/api/v1/user/achievments/')
+                    or len(res) < 5 or res[3] != 200):
+                continue
+            if not isinstance(res[1], (int, float)) or isinstance(res[1], bool) or not math.isfinite(res[1]):
+                continue
+            stamp = res[1] + CF_EPOCH
+            date = next((value for key, value in res[4].items() if key.lower() == 'date'), None)
+            if (not date or stamp < started or stamp > now + 2
+                    or abs(email.utils.parsedate_to_datetime(date).timestamp() - stamp) > 2):
+                continue
+            candidates.append((stamp, req, body, filesystem, urls[0]))
+        except (ValueError, TypeError, KeyError, IndexError, plistlib.InvalidFileException):
+            continue
+    if not candidates:
+        return None
+    _, req, body, filesystem, url = max(candidates, key=lambda row: row[0])
+    try:
+        uid = request_uid(req, now)
+        payload = _body(cache, body, filesystem)
+        if url == host + '/api/v1/user/':
+            user = payload.get('userdata', {})
+            if not uid or user.get('user_id') not in (uid, 'ios_' + uid):
+                return None
+            account_email = user.get('analytics_profile', {}).get('email')
+        else:
+            # Profile fetches this authenticated endpoint even when /user/ is
+            # not cached. Its email corroborates the request's account identity.
+            account_email = payload.get('email')
+        if uid and isinstance(account_email, str) and '@' in account_email:
+            return uid  # SDK events use the Firebase UID, not the API's ios_ prefix.
+    except (ValueError, TypeError, KeyError, AttributeError, EvidenceError):
+        pass
+    return None  # A newer logout/anonymous response must invalidate the previous account.
 
 
 def fresh_event(payload, uid, not_before_ms):
@@ -58,20 +132,8 @@ def fresh_request(request_blob, response_blob, uid, not_before, now, host):
             or not re.fullmatch(r'/api/v1/coachprogram/lessons/[A-Za-z0-9_-]+/bookmark', url.path)
             or req[18] != 'POST'):
         return None
-    sources = [item for item in req if isinstance(item, dict) and 'Authorization' in item]
-    if len(sources) != 1:
-        return None
-    parts = sources[0]['Authorization'].split(' ')
-    if len(parts) != 2 or parts[0].lower() not in ('firebasetoken', 'bearer'):
-        return None
-    token = parts[1].split('.')
-    if len(token) != 3:
-        return None
-    claims = json.loads(base64.urlsafe_b64decode(token[1] + '=' * (-len(token[1]) % 4)))
-    expiry, subject = claims.get('exp'), claims.get('user_id')
-    if (not uid or uid not in (subject, 'ios_' + str(subject)) or claims.get('sub') != subject
-            or not isinstance(expiry, (int, float)) or isinstance(expiry, bool)
-            or not math.isfinite(expiry) or expiry <= now):
+    subject = request_uid(req, now)
+    if not uid or not subject or uid not in (subject, 'ios_' + subject):
         return None
     bodies = [item for item in req[21] if isinstance(item, bytes)]
     if len(bodies) != 1:
@@ -98,15 +160,19 @@ class AnalyticsReader:
     def __init__(self):
         self.root = None
         self.connection = None
+        self.pending = {}
+        self.seen = set()
 
     def close(self):
         if self.connection:
             self.connection.close()
         self.connection = None
 
-    def poll(self, root, started):
+    def poll(self, root, started, expected_uid=None):
         if root != self.root or (root and not root.exists()):
             self.close()
+            self.pending.clear()
+            self.seen.clear()
             self.root = root
         if root is None:
             return []
@@ -114,23 +180,30 @@ class AnalyticsReader:
             database = root / 'Library/com.amplitude.database'
             self.connection = sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=.2)
         row = self.connection.execute("SELECT value FROM store WHERE key='user_id'").fetchone()
-        uid = row[0] if row else None
-        records = []
+        uid = expected_uid if expected_uid is not None else row[0] if row else None
+        now = time.monotonic()
         for payload, in self.connection.execute('SELECT event FROM events'):
             try:
-                event = fresh_event(payload, uid, int(started * 1000))
-                if event:
-                    records.append(event)
+                event_uid = json.loads(payload).get('user_id')
+                event = fresh_event(payload, event_uid, int(started * 1000))
+                if event and event['fingerprint'] not in self.seen:
+                    self.seen.add(event['fingerprint'])
+                    self.pending[event['fingerprint']] = (event_uid, event, now)
             except (ValueError, TypeError, KeyError):
                 continue  # An unrelated malformed SDK row must not discard valid events.
+        records = []
+        for key, (event_uid, event, observed_at) in list(self.pending.items()):
+            if now - observed_at > 5:
+                del self.pending[key]
+            elif uid and event_uid == uid:
+                records.append(event)
+                del self.pending[key]
         return records
 
 
-def read_requests(root, bundle, started, now, host):
-    database = root / 'Library/com.amplitude.database'
-    with closing(sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=.2)) as connection:
-        row = connection.execute("SELECT value FROM store WHERE key='user_id'").fetchone()
-        uid = row[0] if row else None
+def read_requests(root, bundle, started, now, host, uid=None):
+    if uid is None:
+        uid = current_user(root, bundle, started, now, host)
     cache = root / 'Library/Caches' / bundle / 'Cache.db'
     with closing(sqlite3.connect(cache.as_uri() + '?mode=ro', uri=True, timeout=.2)) as connection:
         rows = connection.execute(
@@ -171,7 +244,7 @@ def main():
     outputs = {kind: args.output / (kind + '.jsonl') for kind in ('analytics', 'network')}
     for path in outputs.values():
         path.touch(exist_ok=True)
-    state, started = {'root': None}, time.time()
+    state, started = {'root': None, 'uid': None}, time.time()
     deadline = time.monotonic() + args.timeout
     stop = threading.Event()
     errors = {'analytics': 0, 'network': 0}
@@ -183,9 +256,13 @@ def main():
             while not stop.is_set():
                 try:
                     root = state['root']
-                    records = (reader.poll(root, started) if kind == 'analytics' else
-                               read_requests(root, args.bundle_id, started, time.time(), args.api_host)
-                               if root else [])
+                    if kind == 'analytics':
+                        records = reader.poll(root, started, state['uid'])
+                    elif root:
+                        state['uid'] = current_user(root, args.bundle_id, started, time.time(), args.api_host)
+                        records = read_requests(root, args.bundle_id, started, time.time(), args.api_host, state['uid'])
+                    else:
+                        state['uid'], records = None, []
                     for record in records:
                         if record['fingerprint'] in seen:
                             continue
@@ -195,9 +272,11 @@ def main():
                         counts[kind] += 1
                 except (sqlite3.Error, OSError, ValueError, TypeError, KeyError, IndexError):
                     errors[kind] += 1
+                    if kind == 'network':
+                        state['uid'] = None
                     reader.close()
                 # SDK rows can disappear after upload. Cache parsing runs independently.
-                stop.wait(.005 if kind == 'analytics' else .1)
+                stop.wait(.001 if kind == 'analytics' else .1)
         finally:
             reader.close()
 
@@ -208,7 +287,10 @@ def main():
     try:
         while time.monotonic() < deadline and not (args.stop_file and args.stop_file.exists()):
             try:
-                state['root'] = container(args.udid, args.bundle_id)
+                root = container(args.udid, args.bundle_id)
+                if root != state['root']:
+                    state['uid'] = None
+                state['root'] = root
             except (OSError, subprocess.SubprocessError):
                 state['root'] = None
             stop.wait(.5)  # Follow reinstalls without pausing either evidence stream.

@@ -165,14 +165,16 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
     }
 
     public void swipeSelectorDown() {
-        Rectangle card = firstCardBounds();
-        // Start above the first card, in the sheet header, so this dismisses the
-        // sheet instead of scrolling its collection back to the beginning.
+        Rectangle collection = waitForElementVisible(COLLECTION, "Selector collection is missing", 10).getRect();
+        Rectangle sheet = waitForElementVisible(COLLECTION + "/..", "Selector sheet is missing", 10).getRect();
+        // A partially clipped card can lie above the collection after scrolling.
+        // The sheet's header, rather than that card, owns the dismissal gesture.
+        Assert.assertTrue("Selector has no header above its collection", collection.y > sheet.y);
         Map<String,Object> args = new HashMap<String,Object>();
-        int x = card.x + card.width / 2;
+        int x = collection.x + collection.width / 2;
         int height = driver.manage().window().getSize().height;
         args.put("fromX", x); args.put("toX", x);
-        args.put("fromY", Math.max(1, card.y - 20));
+        args.put("fromY", sheet.y + (collection.y - sheet.y) / 2);
         args.put("toY", height - 30); args.put("duration", .5);
         ((JavascriptExecutor)driver).executeScript("mobile: dragFromToForDuration", args);
         waitForElementNotPresent(CARDS, "Selector did not close after swipe down", 10);
