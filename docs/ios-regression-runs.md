@@ -5,6 +5,12 @@ ci-scripts/run-ios-suite.sh выбирает существующие JUnit suit
 означает оркестрацию выбранных профилей; без --profiles выбран только regression.
 Это не discovery всех Java-классов и не заявление о проверке всего продукта.
 
+Для управляемого запуска одного профиля используйте `run-ios-suite.sh profiles
+<имя>`. Существующие команды `run-ios-suite.sh <suite> [Maven options]`
+сохраняют прежнюю передачу аргументов и проверки данных. Новые reset policies,
+UI gates и раздельные results включаются через `profiles`, `regression`
+или `full`.
+
 ## 1. Подготовка терминалов
 
 В каждом новом терминале сначала перейдите в проект. Переменные, экспортированные
@@ -58,7 +64,7 @@ COACH_ACCOUNT_VARIANT, если задан, должен совпадать. OTP
 Посмотреть состав без доступа к аккаунтам и устройствам:
 
     ./ci-scripts/run-ios-suite.sh full --plan
-    ./ci-scripts/run-ios-suite.sh --help
+    ./ci-scripts/run-ios-suite.sh profiles --help
 
 Проверить наличие данных, сборки, Simulator и готовность Appium без создания
 сессии:
@@ -84,7 +90,7 @@ read-only Simulator helper. COACH_DAILY_PLAN_PROGRAM задаёт дополни
 
 Для проверки только Explore, без требований к Lesson/Practice:
 
-    ./ci-scripts/run-ios-suite.sh explore \
+    ./ci-scripts/run-ios-suite.sh profiles explore \
       --results-root "$PWD/target/ios-explore-$(date +%Y%m%d-%H%M%S)" \
       -Dappium.url=http://127.0.0.1:4726/
 
@@ -128,7 +134,7 @@ installed-профиля. Для физического устройства б�
 
 Пример отдельной localization-проверки:
 
-    ./ci-scripts/run-ios-suite.sh localization --check \
+    ./ci-scripts/run-ios-suite.sh profiles localization --check \
       -Dappium.url=http://127.0.0.1:4726/ \
       -Dlocalization.variant=male \
       -Dlocalization.locales=en \

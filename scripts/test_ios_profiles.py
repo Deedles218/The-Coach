@@ -2,7 +2,9 @@
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -180,6 +182,42 @@ class IOSProfileTests(unittest.TestCase):
                                        capture_output=True, text=True)
         self.assertEqual(2, result.returncode)
         self.assertIn("Broad package discovery", result.stderr)
+
+    def test_existing_suite_keeps_maven_options_and_variant_account_selection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            ci = Path(folder) / "ci-scripts"
+            ci.mkdir()
+            launcher = ci / "run-ios-suite.sh"
+            shutil.copyfile(runner.ROOT / "ci-scripts/run-ios-suite.sh", launcher)
+            simulator = ci / "run-ios-simulator.sh"
+            simulator.write_text(
+                "#!/usr/bin/env python3\nimport json, os, sys\n"
+                "print(json.dumps({'args': sys.argv[1:], 'variantSelected': "
+                "os.environ.get('COACH_EXISTING_PROGRESS_EMAIL') == 'male@example.invalid' "
+                "and os.environ.get('COACH_EXISTING_PROGRESS_OTP') == '5678'}))\n")
+            simulator.chmod(0o755)
+            env = dict(os.environ, IOS_APP_VARIANT="male",
+                       COACH_MALE_EXISTING_PROGRESS_EMAIL="male@example.invalid",
+                       COACH_MALE_EXISTING_PROGRESS_OTP="5678")
+            result = runner.subprocess.run(
+                ["bash", str(launcher), "localization", "-Plocalization", "-q",
+                 "-Dlocalization.locales=en"], env=env, capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stderr)
+        output = json.loads(result.stdout)
+        self.assertTrue(output["variantSelected"])
+        self.assertEqual(["-Dtest=suites.LocalizationSuite", "-Plocalization", "-q",
+                          "-Dlocalization.locales=en"], output["args"])
+
+    def test_managed_profiles_are_available_without_changing_existing_suite_commands(self):
+        for arguments, expected in ((["full", "--plan"], "suites.IOSRegressionSuite"),
+                                    (["profiles", "explore", "--plan"], "suites.ExploreParitySuite"),
+                                    (["profiles", "localization", "--plan"], "suites.LocalizationSuite")):
+            with self.subTest(arguments=arguments):
+                result = runner.subprocess.run(
+                    ["bash", str(runner.ROOT / "ci-scripts/run-ios-suite.sh")] + arguments,
+                    env={}, capture_output=True, text=True)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn(expected, result.stdout)
 
     def test_history_is_copied_without_modifying_the_previous_report(self):
         with tempfile.TemporaryDirectory() as folder:
