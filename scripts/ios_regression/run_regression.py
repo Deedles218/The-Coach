@@ -99,15 +99,6 @@ def environment(variant, role='premium_no_pdf'):
     env['COACH_KEGEL_PLAYER_EMAIL'] = kegel_account['email']
     env['COACH_KEGEL_PLAYER_OTP'] = kegel_account['otp']
     SECRETS.extend([kegel_account['email'], kegel_account['otp']])
-    # Optional per-variant environment bindings keep Bookmarks/dedicated roles separate.
-    for target, source in CONFIG['apps'][variant].get('environmentBindings', {}).items():
-        if not target.startswith('COACH_') or not source.startswith('COACH_'):
-            raise ValueError('environmentBindings accepts COACH_ variables only')
-        if not env.get(source):
-            raise RuntimeError('Missing environment variable: ' + source)
-        env[target] = env[source]
-        if target.endswith(('_EMAIL', '_OTP', '_TOKEN')):
-            SECRETS.append(env[target])
     env['COACH_NO_PDF_ENTITLEMENT_EMAIL'] = ACCOUNTS[(variant, 'premium_no_pdf')]['email']
     env['COACH_NO_PDF_ENTITLEMENT_OTP'] = otp
     env['COACH_NO_PDF_ENTITLEMENT_FIXTURE_ID'] = CONFIG['runId'] + '-' + variant + '-premium_no_pdf'
@@ -118,6 +109,19 @@ def environment(variant, role='premium_no_pdf'):
     env['COACH_COA9551_OTP'] = otp
     if (variant, 'sias_marketing') in ACCOUNTS:
         env['COACH_COA7937_EMAIL'] = ACCOUNTS[(variant, 'sias_marketing')]['email']
+    return bind_environment(variant, env)
+
+
+def bind_environment(variant, env):
+    # Optional per-variant environment bindings keep Bookmarks/dedicated roles separate.
+    for target, source in CONFIG['apps'][variant].get('environmentBindings', {}).items():
+        if not target.startswith('COACH_') or not source.startswith('COACH_'):
+            raise ValueError('environmentBindings accepts COACH_ variables only')
+        if not env.get(source):
+            raise RuntimeError('Missing environment variable: ' + source)
+        env[target] = env[source]
+        if target.endswith(('_EMAIL', '_OTP', '_TOKEN')):
+            SECRETS.append(env[target])
     SECRETS.extend(value for name, value in env.items()
                    if name.startswith('COACH_') and name.endswith(('_EMAIL', '_OTP', '_TOKEN')))
     # Dedicated mutable fixtures are supplied explicitly, never inferred from this registry.
@@ -132,7 +136,9 @@ def run_job(variant, label, test, extra=(), old=False, fresh=False, role='premiu
         archive.parent.mkdir(parents=True, exist_ok=True)
         destination.rename(archive)
     destination.mkdir(parents=True, exist_ok=True)
-    env = os.environ.copy() if label == 'offline-unit' else environment(variant, role)
+    bookmarks_job = test.split('#', 1)[0] == 'tests.BookmarksTests'
+    env = bind_environment(variant, os.environ.copy()) if bookmarks_job else (
+        os.environ.copy() if label == 'offline-unit' else environment(variant, role))
     direct_existing_account = test.split('#', 1)[0] in (
         'tests.CoachAuthorizationTests', 'tests.CoachProfileTests')
     if direct_existing_account:
@@ -165,11 +171,13 @@ def run_job(variant, label, test, extra=(), old=False, fresh=False, role='premiu
     started = time.time()
     record = {'variant': variant, 'label': label, 'test': test, 'command': cmd,
               'appVersion': old_version if old else version, 'bundleId': bundle,
-              'accountRole': 'user-selected-existing-progress' if direct_existing_account else role,
-              'primaryAccountSource': 'user-selected Keychain fixture' if direct_existing_account else 'new account registry',
-              'accountRegistrySha256': CONFIG['registrySha256'],
-              'kegelAccountSource': 'user-selected Keychain fixture',
-              'accessConfiguredInRegistry': None if direct_existing_account else ACCOUNTS[(variant, role)].get('accessConfigured', False),
+              'accountRole': 'bookmarks-role-fixtures' if bookmarks_job else ('user-selected-existing-progress' if direct_existing_account else role),
+              'primaryAccountSource': 'variant-specific Bookmarks environment' if bookmarks_job else (
+                  'user-selected Keychain fixture' if direct_existing_account else 'new account registry'),
+              'accountRegistrySha256': CONFIG.get('registrySha256'),
+              'kegelAccountSource': None if bookmarks_job or label == 'offline-unit' else 'user-selected Keychain fixture',
+              'accessConfiguredInRegistry': None if direct_existing_account or bookmarks_job or label == 'offline-unit'
+                  else ACCOUNTS[(variant, role)].get('accessConfigured', False),
               'started': datetime.datetime.now(datetime.timezone.utc).isoformat()}
     if test.split('#', 1)[0] == 'tests.SmokeTests':
         record['caseAccountSources'] = {
@@ -226,12 +234,18 @@ def run_job(variant, label, test, extra=(), old=False, fresh=False, role='premiu
                     record['cases'].append({'class': case.get('classname'), 'name': case.get('name'),
                                             'status': status, 'seconds': case.get('time'),
                                             'message': redact(message)})
+    if not record['cases']:
+        record['mavenExitCode'] = record['exitCode']
+        record['exitCode'] = record['exitCode'] or 2
+        record['stage'] = 'before-test-results'
     (destination / 'result.json').write_text(json.dumps(record, ensure_ascii=False, indent=2))
     RESULTS.append(record)
     persist()
     counts = {status: sum(c['status'] == status for c in record['cases'])
               for status in ['passed', 'failed', 'skipped']}
     print('DONE', variant, label, 'exit=' + str(record['exitCode']), counts, flush=True)
+    if record['exitCode'] and not record['cases']:
+        raise RuntimeError('Maven produced no test cases; queue stopped. Inspect this job before --resume')
 
 JOBS = []
 unit_classes = sorted('tests.' + p.stem for p in (ROOT / 'src/test/java/tests').glob('*UnitTests.java'))
@@ -241,6 +255,21 @@ for name in COMMON:
         extra = []
         if name == 'ModulesTests':
             extra = ['-Dcoach.modules.enabled=true', '-Dcoach.modules.programId=last_longer']
+        if name == 'BookmarksTests':
+            methods = re.findall(r'\bpublic\s+void\s+(\w+)\s*\(',
+                                 (ROOT / 'src/test/java/tests/BookmarksTests.java').read_text())
+            separate = {
+                'tooltipWaitsForFirstNonEmptyEntry': ('BookmarksTooltipFirstEntry', False, True),
+                'anyTapDismissesTooltipAndItDoesNotReturn': ('BookmarksTooltipDismissal', False, True),
+                'bookmarksAndTooltipStateAcrossUpdateAndReinstall': ('BookmarksUpdate', True, False),
+            }
+            assert set(separate) <= set(methods) and len(methods) == len(set(methods))
+            JOBS.append((variant, name, 'tests.' + name + '#' + '+'.join(m for m in methods if m not in separate),
+                         (), False, False))
+            for method, (label, old, fresh) in separate.items():
+                parameters = ['-Dios.update.app=' + APPS[variant][0]] if old else []
+                JOBS.append((variant, label, 'tests.' + name + '#' + method, parameters, old, fresh))
+            continue
         if name == 'SmokeTests':
             methods = re.findall(r'\bpublic\s+void\s+(test\w+)\s*\(',
                                  (ROOT / 'src/test/java/tests/SmokeTests.java').read_text())
@@ -287,11 +316,15 @@ if __name__ == '__main__':
     if args.list:
         print(json.dumps([{'variant': j[0], 'label': j[1], 'test': j[2]} for j in JOBS], indent=2))
         sys.exit(0)
-    REGISTRY = json.loads(Path(CONFIG['registryPath']).read_text())
-    ACCOUNTS = {(row['variant'], row['role']): row for row in REGISTRY}
-    if len(ACCOUNTS) != len(REGISTRY) or any(row.get('status') != 'verified' for row in REGISTRY):
-        raise RuntimeError('Registry must contain unique, verified variant/role records')
-    CONFIG['registrySha256'] = hashlib.sha256(Path(CONFIG['registryPath']).read_bytes()).hexdigest()
+    needs_registry = any(job[1] != 'offline-unit' and job[2].split('#', 1)[0] != 'tests.BookmarksTests' for job in JOBS)
+    if needs_registry:
+        REGISTRY = json.loads(Path(CONFIG['registryPath']).read_text())
+        ACCOUNTS = {(row['variant'], row['role']): row for row in REGISTRY}
+        if len(ACCOUNTS) != len(REGISTRY) or any(row.get('status') != 'verified' for row in REGISTRY):
+            raise RuntimeError('Registry must contain unique, verified variant/role records')
+        CONFIG['registrySha256'] = hashlib.sha256(Path(CONFIG['registryPath']).read_bytes()).hexdigest()
+    else:
+        CONFIG['registrySha256'] = None
     CONFIG['selectedJobs'] = [{'variant': job[0], 'label': job[1], 'test': job[2]} for job in JOBS]
     OUT.mkdir(parents=True, exist_ok=True)
     if (OUT / 'status.json').exists() and not args.resume:
@@ -304,7 +337,7 @@ if __name__ == '__main__':
         planned = {(job[0], job[1]) for job in JOBS}
         for path in OUT.glob('*/*/result.json'):
             row = json.loads(path.read_text())
-            if (row['variant'], row['label']) in planned:
+            if (row['variant'], row['label']) in planned and (row.get('cases') or row['exitCode'] == 0):
                 RESULTS.append(row)
     done = {(row['variant'], row['label']) for row in RESULTS}
     for job in JOBS:

@@ -20,6 +20,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private boolean preparingExistingProgressAccount;
     private static final String EXPLORE_WELCOME = "id:Welcome to Explore ✨";
     private static final String EXPLORE_WELCOME_CONFIRM = "id:SOUNDS GREAT";
+    private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String ANONYMOUS_ACCOUNT_NETWORK_ERROR =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
+                    + " and contains(@name,'Network error')]";
     static final String MASTERCLASS_PROMO_TITLE = "id:Master the Art of Sensual Touch";
     public static final String WELCOME_START_BUTTON =
             "xpath://XCUIElementTypeButton[@name='START NOW' or @name='Get Started']";
@@ -129,6 +133,29 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     @Override
+    public void typeLoginEmail(String email) {
+        WebElement input = waitForFirstElementEnabled(
+                new String[]{TEST_ID_LOGIN_EMAIL, LOGIN_EMAIL_INPUT},
+                "Cannot find an enabled iOS login email field", 10);
+        input.click();
+        input.clear();
+        input.sendKeys(email);
+        createWait(10).withMessage("iOS login email field did not retain the entered value")
+                .until(ignored -> email.equals(input.getAttribute("value")));
+        hideKeyboardIfPossible();
+    }
+
+    // No @Step: the argument is a credential and must not enter Allure parameters.
+    public void assertAuthenticatedProfileForEmail(String email) {
+        String nickname = email.substring(0, email.indexOf('@'));
+        waitForElementVisible("xpath://XCUIElementTypeStaticText[@name="
+                        + org.openqa.selenium.support.ui.Quotes.escape(nickname) + "]",
+                "The configured account identity did not restore in Profile", 30);
+        Assert.assertFalse("Profile is still anonymous after OTP; restore the account fixture",
+                isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
+    }
+
+    @Override
     public void logOut() {
         // mobile: swipe can target the tabs instead of this native collection.
         // Keep the drag inside Profile, above the persistent tab bar.
@@ -190,14 +217,18 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         }
         // A cold simulator launch can render the subscription error after the
         // first optional-popup check. Wait for an actionable entry surface.
-        createWait(30).withMessage("No actionable screen after launching Coach").until(ignored ->
-                isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
+        createWait(30).withMessage("No actionable screen after launching Coach").until(ignored -> {
+            Assert.assertFalse("iOS startup is blocked by an anonymous-account network error; check network access",
+                    isElementVisible(ANONYMOUS_ACCOUNT_NETWORK_ERROR));
+            return isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
                         || isElementVisible(TAB_TODAY) || isElementVisible(PROFILE_SCREEN)
                         || isElementVisible(CLOSE_LOGIN_BUTTON) || isElementVisible(ONBOARDING_BACK_BUTTON)
                         || isElementVisible(PDF_GUIDE_UPSELL_TITLE) || isElementVisible(NOTIFICATION_PROMPT_TITLE)
                         || isElementVisible(CONNECT_EMAIL_PROMPT_TITLE)
                         || new iOSOnboardingPageObject(driver).isPaywallVisible()
                         || isElementVisible(EXPLORE_WELCOME)
+                        || isElementVisible(PROGRAM_DISCOVERY_HINT)
+                        || isElementVisible("id:ProgramSelectionCardView")
                         || isElementVisible(MASTERCLASS_PROMO_TITLE)
                         || new iOSDailyPlanPageObject(driver).isDailyLessonVisible()
                         || new iOSDailyPlanPageObject(driver).isKegelExerciseFlowVisible()
@@ -205,7 +236,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || isProfileBrowserVisible()
                         || isElementVisible("id:Get an access for your partner")
                         || isElementVisible("id:CoachProgramSettingsIcon")
-                        || isElementVisible("id:navBarRoundBack"));
+                        || isElementVisible("id:navBarRoundBack");
+        });
         closeProgramScreensIfPresent();
         super.ensureLoggedOutOnStartScreen();
     }
@@ -277,6 +309,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
         daily.closeDailyLessonIfPresent();
@@ -361,6 +395,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void openProfile() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
         super.openProfile();
@@ -368,9 +404,26 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void openToday() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
         super.openToday();
+    }
+
+    private void closeProgramDiscoveryHintIfPresent() {
+        if (!isElementVisible(PROGRAM_DISCOVERY_HINT)) return;
+        String confirm = "xpath://XCUIElementTypeStaticText[@name='Tap to explore more programs' and @visible='true']"
+                + "/../XCUIElementTypeButton[@name='OK' and @visible='true']";
+        waitForElementAndClick(confirm, "Cannot close the program discovery hint", 10);
+        createWait(10).withMessage("Program discovery hint stayed visible")
+                .until(ignored -> !isElementVisible(PROGRAM_DISCOVERY_HINT));
+    }
+
+    private void closeProgramSelectorIfPresent() {
+        if (isElementVisible("id:ProgramSelectionCardView")) {
+            new iOSProgramSelectorPageObject(driver).swipeSelectorDown();
+        }
     }
 
     public void closePartnerPromoIfPresent() {

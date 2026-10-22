@@ -35,6 +35,8 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     private static final String TESTFLIGHT_PAYWALL_CLOSE = "id:ic_outline_close";
     private static final String TESTFLIGHT_PAYWALL_RESTORE = "id:RESTORE";
     private static final String SPECIAL_OFFER_CLOSE = "id:SpecialOfferClose";
+    private static final String WORKBOOK_CLOSE =
+            "xpath://XCUIElementTypeButton[@name='PDFGuideUpsellCloseImage' or @name='PDFGuideUpsellCloseImageFemale']";
     private static final String TODAY_TAB = "id:Today";
     private static final By PROGRAM_PICKER_CARD = By.xpath(
             "//XCUIElementTypeOther[@name='ProgramSelectionCardView' and @visible='true']"
@@ -168,7 +170,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Step("Complete iOS runtime questionnaire")
     public void completeQuestionnaire() {
         for (int actionNumber = 1; actionNumber <= MAX_QUESTIONNAIRE_ACTIONS; actionNumber++) {
-            if (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible()) return;
+            if (notificationPermissionPromptIsVisible() || isElementVisible(WORKBOOK_CLOSE)) return;
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
@@ -194,6 +196,18 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             }
             if (action == null) {
                 action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
+            }
+            if (action == null) {
+                createWait(15).withMessage("iOS questionnaire has no actionable answer or destination")
+                        .until(ignored -> notificationPermissionPromptIsVisible()
+                                || isElementVisible(WORKBOOK_CLOSE)
+                                || isPaywallVisible() || isElementVisible(TODAY_TAB)
+                                || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)
+                                || firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION) != null
+                                || firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP) != null
+                                || firstDisplayedEnabled(NATIVE_QUESTIONNAIRE_ANSWER) != null
+                                || firstDisplayedEnabled(QUESTIONNAIRE_ANSWER) != null);
+                continue;
             }
             Assert.assertNotNull(
                     "iOS questionnaire is blocked at action " + actionNumber
@@ -244,6 +258,14 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 return paywallsClosed;
             }
             if (acceptSystemAlertIfPresent()) {
+                continue;
+            }
+            if (notificationPermissionPromptIsVisible()) {
+                new iOSCoachFlowPageObject(driver).closeNotificationPromptIfPresent();
+                continue;
+            }
+            if (isElementVisible(WORKBOOK_CLOSE)) {
+                new iOSCoachFlowPageObject(driver).closePdfGuideUpsellIfPresent();
                 continue;
             }
             if (isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
@@ -323,7 +345,8 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     }
 
     private boolean questionnaireOrDestinationIsVisible() {
-        return (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible())
+        return notificationPermissionPromptIsVisible()
+                || isElementVisible(WORKBOOK_CLOSE)
                 || isPaywallVisible()
                 || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)
                 || isElementVisible(TODAY_TAB)

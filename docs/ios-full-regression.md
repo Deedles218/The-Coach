@@ -56,9 +56,13 @@ python3 scripts/ios_regression/run_regression.py --config target/ios-local.json 
 Для точечного запуска используйте повторяемый `--only <job label>` и отдельный
 output, например `--only SmokeTests --only SmokeCleanInstall`. Для одного
 варианта оставьте в `apps` только его. Полная матрица двух вариантов содержит
-70 заданий, включая два новых Bookmarks-задания. Семь Smoke-методов сохранены:
+76 заданий, включая восемь Bookmarks-заданий. Семь Smoke-методов сохранены:
 шесть выполняются с `noReset=true/fullReset=false`, чистая установка — отдельно
 с `fullReset=true/noReset=false`. Test discovery проверяет, что методы не потеряны.
+Bookmarks также разделены без потери сценариев: 18 обычных методов,
+`BookmarksTooltipFirstEntry` и `BookmarksTooltipDismissal` на чистой установке,
+`BookmarksUpdate` с `oldApp` до обновления на `app`. Для полного bookmarks-прогона
+передайте все четыре label через повторяемый `--only`.
 
 `--resume` продолжает незавершённые задания, включая случаи, когда отдельный
 запуск Maven завершился с ошибкой до создания testcase. Уже завершённые задания

@@ -71,4 +71,58 @@ public class BookmarksEvidenceUnitTests {
         if (value == null) System.clearProperty(property);
         else System.setProperty(property, value);
     }
+
+    @Test
+    public void timestampDigitsCannotSatisfyWrongSlideOrSeparateEventProperties() throws Exception {
+        Path log = Files.createTempFile("bookmarks-structured", ".jsonl");
+        String property = "coach.bookmarks.evidenceTimeoutSeconds";
+        String previous = System.getProperty(property);
+        try {
+            System.setProperty(property, "0");
+            String records = "{\"event\":\"BookmarksOpened\",\"timestamp\":20261022}\n"
+                    + "{\"event\":\"BookmarkSaved\",\"properties\":{\"lesson_id\":\"lesson-a\",\"slide_number\":1}}\n"
+                    + "{\"event\":\"BookmarkDeleted\",\"properties\":{\"lesson_id\":\"lesson-a\",\"slide_number\":1}}\n";
+            Files.write(log, records.getBytes(StandardCharsets.UTF_8));
+            try {
+                BookmarksEvidence.assertBookmarkAnalytics(log.toString(), 0, "lesson-a", 2);
+                Assert.fail("Timestamp digits satisfied the expected slide");
+            } catch (AssertionError expected) {
+                Assert.assertTrue(expected.getMessage().contains("were not observed"));
+            }
+            BookmarksEvidence.assertBookmarkAnalytics(log.toString(), 0, "lesson-a", 1);
+        } finally {
+            restore(property, previous);
+            Files.deleteIfExists(log);
+        }
+    }
+
+    @Test
+    public void bookmarkRequestFieldsMustBelongToOneFreshRequest() throws Exception {
+        Path log = Files.createTempFile("bookmarks-request", ".jsonl");
+        String property = "coach.bookmarks.evidenceTimeoutSeconds";
+        String previous = System.getProperty(property);
+        try {
+            System.setProperty(property, "0");
+            Files.write(log, ("{\"method\":\"POST\",\"path\":\"/api/v1/coachprogram/lessons/lesson-a/bookmark\","
+                    + "\"body\":{\"program_id\":\"program-a\",\"program_day\":1,\"slide_number\":2}}\n")
+                    .getBytes(StandardCharsets.UTF_8));
+            long checkpoint = BookmarksEvidence.checkpoint(log.toString());
+            Files.write(log, ("{\"method\":\"POST\",\"path\":\"/api/v1/coachprogram/lessons/lesson-b/bookmark\","
+                    + "\"body\":{\"program_id\":\"program-a\",\"program_day\":1,\"slide_number\":2}}\n")
+                    .getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            try {
+                BookmarksEvidence.assertBookmarkRequest(log.toString(), checkpoint, "lesson-a", "program-a", 1, 2);
+                Assert.fail("An old matching request satisfied the current action");
+            } catch (AssertionError expected) {
+                Assert.assertTrue(expected.getMessage().contains("were not observed"));
+            }
+            Files.write(log, ("{\"method\":\"POST\",\"path\":\"/api/v1/coachprogram/lessons/lesson-a/bookmark\","
+                    + "\"body\":{\"program_id\":\"program-a\",\"program_day\":1,\"slide_number\":2}}\n")
+                    .getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            BookmarksEvidence.assertBookmarkRequest(log.toString(), checkpoint, "lesson-a", "program-a", 1, 2);
+        } finally {
+            restore(property, previous);
+            Files.deleteIfExists(log);
+        }
+    }
 }
