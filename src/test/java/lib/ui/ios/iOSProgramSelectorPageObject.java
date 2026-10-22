@@ -47,7 +47,8 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
                 + org.openqa.selenium.support.ui.Quotes.escape(title) + "]";
         for (int scroll = 0; scroll < 15; scroll++) {
             if (isElementVisible(target)) {
-                waitForElementAndClick(target, "Cannot select fixture program " + title, 10);
+                new iOSCoachFlowPageObject(driver).tapHittableControl(new String[]{target},
+                        "Cannot select fixture program " + title, 10);
                 waitForElementNotPresent(CARDS, "Selector did not close after selecting " + title, 15);
                 return;
             }
@@ -67,12 +68,18 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
     public void ensureWorkoutProgramSelected(String title) {
         Assert.assertTrue("Configure the observed Kegel program with -Dcoach.kegelPlayer.program",
                 title != null && !title.trim().isEmpty());
+        ensureProgramSelected(title);
+    }
+
+    /** Select an explicit fixture program after login, which may restore a different program. */
+    public void ensureProgramSelected(String title) {
+        Assert.assertTrue("Configure a nonempty fixture program title", title != null && !title.trim().isEmpty());
         if (!title.equalsIgnoreCase(getActiveProgramName())) {
             openProgramSelector();
             selectExactProgram(title);
-            createWait(20).withMessage("Kegel fixture program did not become active: " + title).until(ignored -> {
+            createWait(20).withMessage("Fixture program did not become active: " + title).until(ignored -> {
                 if (isElementVisible("id:Switch program")) {
-                    waitForElementAndClick("id:Switch program", "Cannot confirm the Kegel program switch", 5);
+                    waitForElementAndClick("id:Switch program", "Cannot confirm the fixture program switch", 5);
                     return false;
                 }
                 if (isElementVisible("id:To switch back, tap here")) {
@@ -165,14 +172,16 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
     }
 
     public void swipeSelectorDown() {
-        Rectangle card = firstCardBounds();
-        // Start above the first card, in the sheet header, so this dismisses the
-        // sheet instead of scrolling its collection back to the beginning.
+        Rectangle collection = waitForElementVisible(COLLECTION, "Selector collection is missing", 10).getRect();
+        Rectangle sheet = waitForElementVisible(COLLECTION + "/..", "Selector sheet is missing", 10).getRect();
+        // A partially clipped card can lie above the collection after scrolling.
+        // The sheet's header, rather than that card, owns the dismissal gesture.
+        Assert.assertTrue("Selector has no header above its collection", collection.y > sheet.y);
         Map<String,Object> args = new HashMap<String,Object>();
-        int x = card.x + card.width / 2;
+        int x = collection.x + collection.width / 2;
         int height = driver.manage().window().getSize().height;
         args.put("fromX", x); args.put("toX", x);
-        args.put("fromY", Math.max(1, card.y - 20));
+        args.put("fromY", sheet.y + (collection.y - sheet.y) / 2);
         args.put("toY", height - 30); args.put("duration", .5);
         ((JavascriptExecutor)driver).executeScript("mobile: dragFromToForDuration", args);
         waitForElementNotPresent(CARDS, "Selector did not close after swipe down", 10);

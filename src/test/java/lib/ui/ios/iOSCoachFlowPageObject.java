@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -20,6 +21,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private boolean preparingExistingProgressAccount;
     private static final String EXPLORE_WELCOME = "id:Welcome to Explore ✨";
     private static final String EXPLORE_WELCOME_CONFIRM = "id:SOUNDS GREAT";
+    private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String ANONYMOUS_ACCOUNT_NETWORK_ERROR =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
+                    + " and contains(@name,'Network error')]";
     static final String MASTERCLASS_PROMO_TITLE = "id:Master the Art of Sensual Touch";
     public static final String WELCOME_START_BUTTON =
             "xpath://XCUIElementTypeButton[@name='START NOW' or @name='Get Started']";
@@ -129,6 +134,66 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     @Override
+    @Step("Open the ready iOS login form from Welcome")
+    public void openLoginFlow() {
+        tapHittableControl(new String[]{TEST_ID_LOGIN_BUTTON, LOGIN_BUTTON}, "Welcome Login is not hittable", 10);
+        createWait(10).withMessage("Login tap did not open the email form")
+                .until(ignored -> isLoginFormReady());
+    }
+
+    protected boolean isLoginFormReady() {
+        return isElementVisible(LOGIN_SCREEN_TITLE) && isElementVisible(LOGIN_EMAIL_INPUT);
+    }
+
+    protected void tapHittableControl(String[] locators, String message, long timeout) {
+        WebElement control = createWait(timeout).withMessage(message).until(ignored -> {
+            for (String locator : locators) {
+                for (WebElement element : driver.findElements(getLocatorByString(locator))) {
+                    try {
+                        if (element.isDisplayed() && isElementEnabled(element)
+                                && "true".equalsIgnoreCase(element.getAttribute("hittable"))) return element;
+                    } catch (StaleElementReferenceException rerendered) {
+                        // Reacquire the control during the existing explicit wait.
+                    }
+                }
+            }
+            return null;
+        });
+        tapNativeCenter(control);
+    }
+
+    private void tapNativeCenter(WebElement control) {
+        Rectangle bounds = control.getRect();
+        Map<String, Object> tap = new HashMap<>();
+        tap.put("x", bounds.x + bounds.width / 2);
+        tap.put("y", bounds.y + bounds.height / 2);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+    }
+
+    @Override
+    public void typeLoginEmail(String email) {
+        WebElement input = waitForFirstElementEnabled(
+                new String[]{TEST_ID_LOGIN_EMAIL, LOGIN_EMAIL_INPUT},
+                "Cannot find an enabled iOS login email field", 10);
+        input.click();
+        input.clear();
+        input.sendKeys(email);
+        createWait(10).withMessage("iOS login email field did not retain the entered value")
+                .until(ignored -> email.equals(input.getAttribute("value")));
+        hideKeyboardIfPossible();
+    }
+
+    // No @Step: the argument is a credential and must not enter Allure parameters.
+    public void assertAuthenticatedProfileForEmail(String email) {
+        String nickname = email.substring(0, email.indexOf('@'));
+        waitForElementVisible("xpath://XCUIElementTypeStaticText[@name="
+                        + org.openqa.selenium.support.ui.Quotes.escape(nickname) + "]",
+                "The configured account identity did not restore in Profile", 30);
+        Assert.assertFalse("Profile is still anonymous after OTP; restore the account fixture",
+                isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
+    }
+
+    @Override
     public void logOut() {
         // mobile: swipe can target the tabs instead of this native collection.
         // Keep the drag inside Profile, above the persistent tab bar.
@@ -190,14 +255,18 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         }
         // A cold simulator launch can render the subscription error after the
         // first optional-popup check. Wait for an actionable entry surface.
-        createWait(30).withMessage("No actionable screen after launching Coach").until(ignored ->
-                isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
+        createWait(30).withMessage("No actionable screen after launching Coach").until(ignored -> {
+            Assert.assertFalse("iOS startup is blocked by an anonymous-account network error; check network access",
+                    isElementVisible(ANONYMOUS_ACCOUNT_NETWORK_ERROR));
+            return isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
                         || isElementVisible(TAB_TODAY) || isElementVisible(PROFILE_SCREEN)
                         || isElementVisible(CLOSE_LOGIN_BUTTON) || isElementVisible(ONBOARDING_BACK_BUTTON)
                         || isElementVisible(PDF_GUIDE_UPSELL_TITLE) || isElementVisible(NOTIFICATION_PROMPT_TITLE)
                         || isElementVisible(CONNECT_EMAIL_PROMPT_TITLE)
                         || new iOSOnboardingPageObject(driver).isPaywallVisible()
                         || isElementVisible(EXPLORE_WELCOME)
+                        || isElementVisible(PROGRAM_DISCOVERY_HINT)
+                        || isElementVisible("id:ProgramSelectionCardView")
                         || isElementVisible(MASTERCLASS_PROMO_TITLE)
                         || new iOSDailyPlanPageObject(driver).isDailyLessonVisible()
                         || new iOSDailyPlanPageObject(driver).isKegelExerciseFlowVisible()
@@ -205,7 +274,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || isProfileBrowserVisible()
                         || isElementVisible("id:Get an access for your partner")
                         || isElementVisible("id:CoachProgramSettingsIcon")
-                        || isElementVisible("id:navBarRoundBack"));
+                        || isElementVisible("id:navBarRoundBack");
+        });
         closeProgramScreensIfPresent();
         super.ensureLoggedOutOnStartScreen();
     }
@@ -244,9 +314,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         createWait(30).withMessage(prepareQuestionnaire
                 ? "Neither Today nor the new-account questionnaire appeared after OTP"
                 : "Authorized dashboard did not open").until(ignored -> {
-            closeMasterclassPromoIfPresent();
-            return isElementVisible(AUTHORIZED_DASHBOARD_MARKER) || isElementVisible(TEST_ID_TODAY_TAB)
-                    || isElementVisible(TAB_TODAY)
+            closePostAuthPopupsIfPresent();
+            return isAuthorizedDashboardVisible()
                     || (prepareQuestionnaire && isElementVisible(ONBOARDING_GOALS_TITLE));
         });
         if (prepareQuestionnaire) {
@@ -265,7 +334,26 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             closeNotificationPromptIfPresent();
             closeConnectEmailPromptIfPresent();
         }
-        super.waitForAuthorizedDashboard();
+        createWait(30).withMessage("Authorized dashboard did not open").until(ignored -> {
+            closePostAuthPopupsIfPresent();
+            return isAuthorizedDashboardVisible();
+        });
+    }
+
+    protected boolean isAuthorizedDashboardVisible() {
+        // Persistent tabs also exist beneath auth/navigation overlays. Require
+        // rendered Today content and its Profile control before leaving OTP.
+        return !isElementVisible(OTP_SCREEN_TITLE) && !isElementVisible(LOGIN_SCREEN_TITLE)
+                && !isElementVisible(START_SCREEN_TITLE)
+                && (isElementVisible(PROFILE_BUTTON) || isElementVisible(PROFILE_BUTTON_FEMALE)
+                    || isElementVisible(PROFILE_BUTTON_LEGACY))
+                && isElementVisible("id:DailyPlanItem");
+    }
+
+    private void closePostAuthPopupsIfPresent() {
+        closeMasterclassPromoIfPresent();
+        if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
+        if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
     }
 
     private KegelCasePageObject quizProfileFlow() {
@@ -277,6 +365,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
         daily.closeDailyLessonIfPresent();
@@ -321,11 +411,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                 "Cannot find the Profile browser close control", 10);
         // On the observed iOS 26 Safari controller, element.click() returns
         // success without closing. A native tap at this element's center works.
-        Rectangle bounds = close.getRect();
-        Map<String, Object> tap = new HashMap<>();
-        tap.put("x", bounds.x + bounds.width / 2);
-        tap.put("y", bounds.y + bounds.height / 2);
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        tapNativeCenter(close);
         waitForElementNotVisible(PROFILE_BROWSER_CLOSE_BUTTON, "Profile browser did not close", 10);
         waitForFirstElementPresent(new String[]{PROFILE_SCREEN, TAB_TODAY},
                 "Main app did not return after closing the browser", 10);
@@ -361,16 +447,48 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void openProfile() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
-        super.openProfile();
+        tapHittableControl(new String[]{PROFILE_BUTTON, PROFILE_BUTTON_FEMALE, PROFILE_BUTTON_LEGACY},
+                "Profile control is not hittable", 10);
+        waitForElementVisible(PROFILE_SCREEN, "Profile screen did not open", 10);
+        createWait(30).withMessage("Profile container opened but its content did not load")
+                .until(ignored -> isProfileContentReady());
+    }
+
+    protected boolean isProfileContentReady() {
+        return isElementVisible(PROFILE_SCREEN)
+                && (isElementVisible(PROFILE_PREMIUM_BADGE) || isElementVisible(PROFILE_PROGRESS_LESSONS)
+                    || isElementVisible(PROFILE_ACCOUNT_SETTINGS_BUTTON)
+                    || isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
     }
 
     @Override
     public void openToday() {
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
         super.openToday();
+        closeProgramDiscoveryHintIfPresent();
+        closeProgramSelectorIfPresent();
+    }
+
+    private void closeProgramDiscoveryHintIfPresent() {
+        if (!isElementVisible(PROGRAM_DISCOVERY_HINT)) return;
+        String confirm = "xpath://XCUIElementTypeStaticText[@name='Tap to explore more programs' and @visible='true']"
+                + "/../XCUIElementTypeButton[@name='OK' and @visible='true']";
+        waitForElementAndClick(confirm, "Cannot close the program discovery hint", 10);
+        createWait(10).withMessage("Program discovery hint stayed visible")
+                .until(ignored -> !isElementVisible(PROGRAM_DISCOVERY_HINT));
+    }
+
+    private void closeProgramSelectorIfPresent() {
+        if (isElementVisible("id:ProgramSelectionCardView")) {
+            new iOSProgramSelectorPageObject(driver).swipeSelectorDown();
+        }
     }
 
     public void closePartnerPromoIfPresent() {

@@ -39,10 +39,26 @@ class IOSRegressionTests(unittest.TestCase):
     def test_matrix_has_bookmarks_for_both_variants_and_no_duplicate_job(self):
         module = self.runner()
         keys = [(job[0], job[1]) for job in module.JOBS]
-        self.assertEqual(70, len(keys))
+        self.assertEqual(76, len(keys))
         self.assertEqual(len(keys), len(set(keys)))
         for variant in ('male', 'female'):
             self.assertIn((variant, 'BookmarksTests'), keys)
+
+    def test_bookmarks_installation_modes_preserve_every_method(self):
+        module = self.runner()
+        expected = module.re.findall(r'\bpublic\s+void\s+(\w+)\s*\(',
+                                     (ROOT / 'src/test/java/tests/BookmarksTests.java').read_text())
+        for variant in ('male', 'female'):
+            jobs = [job for job in module.JOBS if job[0] == variant and job[1].startswith('Bookmarks')]
+            self.assertEqual(4, len(jobs))
+            observed = [method for job in jobs for method in job[2].split('#')[1].split('+')]
+            self.assertEqual(collections.Counter(expected), collections.Counter(observed))
+            self.assertEqual(21, len(observed))
+            modes = {job[1]: (job[4], job[5]) for job in jobs}
+            self.assertEqual((False, False), modes['BookmarksTests'])
+            self.assertEqual((False, True), modes['BookmarksTooltipFirstEntry'])
+            self.assertEqual((False, True), modes['BookmarksTooltipDismissal'])
+            self.assertEqual((True, False), modes['BookmarksUpdate'])
 
     def test_list_needs_neither_registry_nor_keychain(self):
         result = subprocess.run([sys.executable, str(HELPERS / 'run_regression.py'), '--config',
@@ -87,13 +103,40 @@ class IOSRegressionTests(unittest.TestCase):
                     patch.object(module.subprocess, 'Popen') as popen:
                 popen.return_value.stdout = iter([])
                 popen.return_value.wait.return_value = 1
-                module.run_job('male', 'SmokeCleanInstall',
-                               'tests.SmokeTests#testCleanInstallOnboardingLeadsToDailyPlan', fresh=True)
+                with self.assertRaisesRegex(RuntimeError, 'Maven produced no test cases'):
+                    module.run_job('male', 'SmokeCleanInstall',
+                                   'tests.SmokeTests#testCleanInstallOnboardingLeadsToDailyPlan', fresh=True)
                 command = popen.call_args[0][0]
                 self.assertIn('-Dios.fullReset=true', command)
                 self.assertIn('-Dios.noReset=false', command)
             self.assertEqual(1, len(list((module.OUT / 'attempts').glob('*/old-evidence.txt'))))
             self.assertEqual(1, module.RESULTS[0]['exitCode'])
+
+    def test_bookmarks_job_uses_its_own_environment_without_registry_or_keychain(self):
+        module = self.runner()
+        with tempfile.TemporaryDirectory() as temporary:
+            module.OUT = Path(temporary)
+            module.ROOT = Path(temporary)
+            module.CONFIG['registrySha256'] = None
+            module.ACCOUNTS = {}
+            def finish():
+                reports = module.ROOT / 'target/surefire-reports'
+                reports.mkdir(parents=True)
+                (reports / 'TEST-tests.BookmarksTests.xml').write_text(
+                    '<testsuite name="tests.BookmarksTests"><testcase classname="tests.BookmarksTests" '
+                    'name="emptyListNeverShowsTooltip" time="0.1"/></testsuite>')
+                return 0
+            with patch.object(module, 'keychain', side_effect=AssertionError('Unexpected Keychain read')), \
+                    patch.object(module, 'persist'), patch.object(module.subprocess, 'Popen') as popen, \
+                    patch.dict(module.os.environ, {'COACH_BOOKMARKS_BASELINE_EMAIL': 'fixture@example.invalid',
+                                                  'COACH_BOOKMARKS_BASELINE_OTP': 'fixture-otp-value'}, clear=True):
+                popen.return_value.stdout = iter([])
+                popen.return_value.wait.side_effect = finish
+                module.run_job('male', 'BookmarksTests', 'tests.BookmarksTests#emptyListNeverShowsTooltip')
+                env = popen.call_args[1]['env']
+                self.assertEqual('fixture@example.invalid', env['COACH_BOOKMARKS_BASELINE_EMAIL'])
+            self.assertIsNone(module.RESULTS[0]['accountRegistrySha256'])
+            self.assertEqual('variant-specific Bookmarks environment', module.RESULTS[0]['primaryAccountSource'])
 
     def test_report_uses_latest_isolated_attempt_and_separates_offline(self):
         module = self.load('render_results', ['renderer'])

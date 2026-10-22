@@ -1,6 +1,13 @@
 package lib.ui;
 
 import io.qameta.allure.Step;
+import lib.RestoringTestAction;
+import lib.TestData;
+import lib.DailyPlanCompletionMarker;
+import io.qameta.allure.Allure;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
+import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -9,6 +16,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public abstract class BookmarksPageObject extends MainPageObject {
     protected static String TODAY_TAB;
@@ -24,6 +37,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
     protected static String ACTIVE_BOOKMARK;
     protected static String CONTENT_CLOSE;
     protected static String CONTENT_EXIT_QUIT;
+    protected static String CONTENT_NEXT;
+    protected static String CONTENT_PREVIOUS;
     protected static String FINISH;
     protected static String CANCEL;
     protected static String REMOVE;
@@ -36,6 +51,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open My Bookmarks from Today")
     public void openFromToday() {
+        if (isScreenVisible()) return;
         tapEntryFromToday();
         waitForElementPresent(BOOKMARKS_TITLE, "My Bookmarks did not open", 15);
     }
@@ -51,10 +67,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open My Bookmarks from Explore")
     public void openFromExplore() {
-        if (!isElementPresent(EXPLORE_SELECTED)) {
-            waitForElementAndClick(EXPLORE_TAB, "Cannot open Explore", 10);
-            waitForElementPresent(EXPLORE_SELECTED, "Explore tab is not selected", 10);
-        }
+        CoachFlowPageObjectFactory.get(driver).openExplore();
         openBookmarks();
     }
 
@@ -106,7 +119,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
         String locator = exactText(title);
         swipeUpToFindFirstVisibleElement(new String[]{locator}, "Daily Plan content is absent: " + title, 8);
         waitForElementAndClick(locator, "Cannot open Daily Plan content: " + title, 10);
-        waitForElementPresent(exactText(title), "Content did not open: " + title, 20);
+        waitForElementPresent(CONTENT_CLOSE, "Content did not open: " + title, 20);
     }
 
     @Step("Save opened content")
@@ -127,6 +140,11 @@ public abstract class BookmarksPageObject extends MainPageObject {
         waitForElementPresent(INACTIVE_BOOKMARK, "Content did not reach inactive bookmark state", 10);
     }
 
+    public void ensureOpenedContentIsSaved() {
+        if (!isElementPresent(ACTIVE_BOOKMARK)) saveOpenedContent();
+        assertOpenedContentSaved();
+    }
+
     public void assertOpenedContentSaved() {
         waitForElementPresent(ACTIVE_BOOKMARK, "Bookmark is not active on the opened slide", 10);
         Assert.assertFalse("Both active and inactive bookmark controls are visible", isElementPresent(INACTIVE_BOOKMARK));
@@ -141,17 +159,19 @@ public abstract class BookmarksPageObject extends MainPageObject {
     public void closeOpenedContent() {
         waitForElementAndClick(CONTENT_CLOSE, "Cannot close content", 10);
         confirmContentExitIfNeeded();
-        waitForElementPresent(TODAY_TAB, "Today did not return after closing content", 15);
+        waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
+                "Neither Today nor My Bookmarks returned after closing content", 15);
     }
 
     public void closeOpenedContentIfPresent() {
+        dismissContentPaywallIfPresent();
         if (isElementPresent(CONTENT_EXIT_QUIT)) {
             confirmContentExitIfNeeded();
             waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
                     "Neither Today nor My Bookmarks returned after confirming content exit", 15);
             return;
         }
-        if (!isElementPresent(FINISH)
+        if (!isElementPresent(CONTENT_CLOSE)
                 || (!isElementPresent(INACTIVE_BOOKMARK) && !isElementPresent(ACTIVE_BOOKMARK))) return;
         waitForElementAndClick(CONTENT_CLOSE, "Cannot close interrupted bookmarked content", 10);
         confirmContentExitIfNeeded();
@@ -162,7 +182,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
     private void confirmContentExitIfNeeded() {
         if (isElementPresent(CONTENT_EXIT_QUIT)) {
             waitForElementAndClick(CONTENT_EXIT_QUIT, "Cannot confirm leaving bookmarked content", 10);
-            waitForElementNotVisible(CONTENT_EXIT_QUIT, "Content exit dialog stayed visible", 10);
+            createWait(10).withMessage("Content exit dialog stayed visible")
+                    .until(ignored -> !isElementVisible(CONTENT_EXIT_QUIT));
         }
     }
 
@@ -174,6 +195,10 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     public void assertCardAbsent(String title) {
         Assert.assertFalse("Bookmark card is still displayed: " + title, isElementPresent(exactText(title)));
+    }
+
+    public boolean hasCard(String title) {
+        return isElementVisible(exactText(title));
     }
 
     public void assertCardComposition(String title) {
@@ -189,6 +214,28 @@ public abstract class BookmarksPageObject extends MainPageObject {
         waitForElementPresent(exactText(category), "Bookmark category is absent: " + category, 10);
     }
 
+    public void assertCardGroupAndCategory(String title, String group, String category) {
+        waitForElementPresent(cardCategoryFor(title, category),
+                "Bookmark card is in the wrong category: " + title + " / " + category, 10);
+        waitForElementPresent(cardGroupFor(title, group),
+                "Bookmark card is in the wrong group: " + title + " / " + group, 10);
+    }
+
+    protected String cardCategoryFor(String title, String category) {
+        return cardFor(title) + "/preceding-sibling::XCUIElementTypeStaticText[1]"
+                + "[@visible='true' and @name=" + xpathLiteral(category) + "]";
+    }
+
+    protected String cardGroupFor(String title, String group) {
+        // In the observed native list, program/module/category headings and
+        // card buttons are siblings. The nearest matching heading owns a card.
+        String module = "starts-with(@name,'MODULE ')";
+        String heading = group.startsWith("MODULE ") ? module
+                : "not(" + module + ") and @name!='Lessons' and @name!='Practices'";
+        return cardFor(title) + "/preceding-sibling::XCUIElementTypeStaticText[" + heading + "][1]"
+                + "[@visible='true' and @name=" + xpathLiteral(group) + "]";
+    }
+
     public void assertCategoryAbsent(String category) {
         Assert.assertFalse("Empty category must be hidden: " + category, isElementPresent(exactText(category)));
     }
@@ -196,9 +243,24 @@ public abstract class BookmarksPageObject extends MainPageObject {
     @Step("Open bookmark card: {title}")
     public void openCard(String title) {
         waitForElementAndClick(exactText(title), "Cannot open bookmark card: " + title, 10);
-        waitForFirstElementPresent(new String[]{INACTIVE_BOOKMARK, ACTIVE_BOOKMARK},
-                "Bookmark card did not open content", 20);
+        createWait(20).withMessage("Bookmark card did not open content").until(ignored ->
+                isElementVisible(INACTIVE_BOOKMARK) || isElementVisible(ACTIVE_BOOKMARK)
+                        || isContentPaywallVisible());
+        if (isContentPaywallVisible()) {
+            // Capture the blocking state before fixture cleanup dismisses it.
+            Allure.addAttachment("Paywall blocking bookmarked content", "application/xml",
+                    TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+            Allure.addAttachment("Paywall blocking bookmarked content", "image/png",
+                    new ByteArrayInputStream(driver.getScreenshotAs(OutputType.BYTES)), "png");
+            Assert.fail("Subscription paywall blocked bookmarked content: " + title);
+        }
     }
+
+    protected boolean isContentPaywallVisible() {
+        return isElementVisible(PAYWALL);
+    }
+
+    protected abstract void dismissContentPaywallIfPresent();
 
     @Step("Open removal dialog for card: {title}")
     public void openRemovalDialog(String title) {
@@ -262,57 +324,137 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void swipeLeftAndAssertSaved(String expectedSlideText) {
-        swipe("left");
-        waitForElementPresent(exactText(expectedSlideText), "Expected content slide did not open: " + expectedSlideText, 15);
+        moveToSlide("left", expectedSlideText, true);
         assertOpenedContentSaved();
     }
 
     public void swipeLeftToSlide(String expectedSlideText) {
-        swipe("left");
-        waitForElementPresent(exactText(expectedSlideText), "Expected content slide did not open: " + expectedSlideText, 15);
+        moveToSlide("left", expectedSlideText, false);
     }
 
     public void swipeRightAndAssertSaved(String expectedSlideText) {
-        swipe("right");
-        waitForElementPresent(exactText(expectedSlideText), "Expected content slide did not open: " + expectedSlideText, 15);
+        moveToSlide("right", expectedSlideText, true);
         assertOpenedContentSaved();
     }
 
     public void assertOpenedAtSlide(String title, String slideText) {
         waitForElementPresent(exactText(title), "Wrong bookmarked content opened: " + title, 10);
-        waitForElementPresent(exactText(slideText), "Content did not open at the saved slide: " + slideText, 10);
+        waitForElementPresent(slideText(slideText), "Content did not open at the saved slide: " + slideText, 10);
     }
 
     public void finishFromBookmarks() {
-        waitForElementAndClick(FINISH, "FINISH is absent in bookmarked content", 10);
+        finishFromBookmarks(null);
+    }
+
+    public void finishFromBookmarks(String completionAnswer) {
+        for (int page = 0; page < 30 && !isElementVisible(FINISH); page++) {
+            String before = driver.getPageSource();
+            waitForElementAndClick(CONTENT_NEXT,
+                    "Content cannot reach FINISH; check the lesson answer fixture", 10);
+            createWait(10).withMessage("Content did not advance towards its final slide")
+                    .until(ignored -> !before.equals(driver.getPageSource()));
+        }
+        WebElement finish = waitForElementPresent(FINISH, "FINISH is absent in bookmarked content", 10);
+        if (!isElementEnabled(finish)) {
+            Assert.assertTrue("FINISH requires an answer; configure the content completion-answer fixture",
+                    completionAnswer != null && !completionAnswer.trim().isEmpty());
+            waitForElementAndClick(exactText(completionAnswer),
+                    "The configured completion answer is absent on the final slide", 10);
+        }
+        waitForElementAndClick(FINISH, "FINISH did not become enabled after the configured answer", 10);
         waitForElementPresent(BOOKMARKS_TITLE, "FINISH did not return to My Bookmarks", 20);
         Assert.assertFalse("Feedback UI appeared after FINISH from Bookmarks", isElementPresent(FEEDBACK));
     }
 
     public void assertDailyPlanItemCompleted(String title) {
         if (isElementPresent(BOOKMARKS_TITLE)) backFromBookmarks();
+        CoachFlowPageObjectFactory.get(driver).openToday();
+        swipeUpToFindFirstVisibleElement(new String[]{dailyPlanCardFor(title)},
+                "Completed Daily Plan item is absent: " + title, 8);
+        Assert.assertEquals("Completion must identify one current Daily Plan card", 1,
+                getAmountElements(dailyPlanCardFor(title)));
+        createWait(15).withMessage("Daily Plan item is not marked completed: " + title)
+                .until(ignored -> isDailyPlanItemCompleted(title, true));
+    }
+
+    public void assertDailyPlanItemNotCompleted(String title) {
+        if (isScreenVisible()) backFromBookmarks();
         waitForElementAndClick(TODAY_TAB, "Cannot open Today", 10);
-        String completed = cardFor(title)
-                + "//*[@visible='true' and (contains(translate(@name,'COMPLETED','completed'),'completed')"
-                + " or contains(translate(@name,'DONE','done'),'done'))]";
-        waitForElementPresent(completed, "Daily Plan item is not marked completed: " + title, 15);
+        String card = dailyPlanCardFor(title);
+        swipeUpToFindFirstVisibleElement(new String[]{card}, "Lesson fixture is absent: " + title, 8);
+        Assert.assertEquals("Completion fixture must identify one current Daily Plan card", 1, getAmountElements(card));
+        Assert.assertFalse("Completion fixture lesson is already completed; restore its account snapshot",
+                isDailyPlanItemCompleted(title, false));
+    }
+
+    private boolean isDailyPlanItemCompleted(String title, boolean attachEvidence) {
+        String completed = dailyPlanCardFor(title)
+                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+        if (isElementVisible(completed)) return true;
+        List<WebElement> indicators = driver.findElements(getLocatorByString(dailyPlanCompletionIndicatorFor(title)));
+        if (indicators.size() != 1) return false;
+        try {
+            WebElement indicator = indicators.get(0);
+            if (!indicator.isDisplayed()) return false;
+            BufferedImage crop = DailyPlanCompletionMarker.crop(driver.getScreenshotAs(OutputType.BYTES),
+                    indicator.getRect(), driver.manage().window().getSize().width);
+            if (!DailyPlanCompletionMarker.isCompleted(crop)) return false;
+            if (attachEvidence) {
+                ByteArrayOutputStream png = new ByteArrayOutputStream();
+                ImageIO.write(crop, "png", png);
+                Allure.addAttachment("Rendered completion tick on " + title, "image/png",
+                        new ByteArrayInputStream(png.toByteArray()), "png");
+            }
+            return true;
+        } catch (StaleElementReferenceException ignored) {
+            return false; // Reacquire only while the existing explicit wait is polling.
+        } catch (IOException error) {
+            throw new IllegalStateException("Cannot inspect completion indicator on " + title, error);
+        }
+    }
+
+    protected String dailyPlanCompletionIndicatorFor(String title) {
+        // Observed on both builds: the status indicator immediately follows the title.
+        // Its presence alone never proves completion; its rendered tick must match.
+        return dailyPlanCardFor(title) + "//XCUIElementTypeStaticText[@name=" + xpathLiteral(title)
+                + "]/following-sibling::*[1][self::XCUIElementTypeOther and @visible='true']";
     }
 
     public void assertPreviousDayItemNotCompleted(String title, String previousDayTitle) {
         waitForElementAndClick("id:leftSwitcherArrow", "Cannot open previous Daily Plan day", 10);
         waitForElementPresent(exactText(previousDayTitle), "Previous Daily Plan day did not open", 15);
+        assertVisibleDayItemNotCompleted(title,
+                "Finishing the saved occurrence also completed the previous day");
+    }
+
+    public void assertRecurringPreviousDayFixture(String title, String savedDayTitle,
+                                                  String previousDayTitle) throws Exception {
+        boolean[] previousOpened = {false};
+        RestoringTestAction.run(() -> {
+            waitForElementAndClick("id:leftSwitcherArrow", "Cannot inspect the previous occurrence fixture", 10);
+            previousOpened[0] = true;
+            waitForElementPresent(exactText(previousDayTitle), "Previous fixture day did not open", 15);
+            assertVisibleDayItemNotCompleted(title,
+                    "Recurring fixture previous occurrence is already completed; restore its account snapshot");
+        }, () -> {
+            if (previousOpened[0]) {
+                waitForElementAndClick("id:rightSwitcherArrow", "Cannot restore the saved occurrence day", 10);
+                waitForElementPresent(exactText(savedDayTitle), "Saved occurrence day did not restore", 15);
+            }
+        });
+    }
+
+    private void assertVisibleDayItemNotCompleted(String title, String message) {
         String titleLocator = exactText(title);
         swipeUpToFindFirstVisibleElement(new String[]{titleLocator},
                 "Recurring practice is absent on previous day: " + title, 8);
-        String completed = cardFor(title)
-                + "//*[@visible='true' and (contains(translate(@name,'COMPLETED','completed'),'completed')"
-                + " or contains(translate(@name,'DONE','done'),'done'))]";
-        Assert.assertFalse("Finishing the saved occurrence also completed the previous day",
-                isElementPresent(completed));
+        String completed = dailyPlanCardFor(title)
+                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+        Assert.assertFalse(message, isElementVisible(completed));
     }
 
     public void assertNoPaywall() {
-        Assert.assertFalse("Paywall blocks bookmarked content", isElementPresent(PAYWALL));
+        Assert.assertFalse("Paywall blocks bookmarked content", isContentPaywallVisible());
     }
 
     public void assertScreenVisible() {
@@ -320,13 +462,36 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public boolean isScreenVisible() {
-        return isElementPresent(BOOKMARKS_TITLE);
+        return isElementVisible(BOOKMARKS_TITLE);
     }
 
     private void swipe(String direction) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("direction", direction);
         ((JavascriptExecutor) driver).executeScript("mobile: swipe", arguments);
+    }
+
+    private void moveToSlide(String direction, String expectedText, boolean verifySaved) {
+        String expected = slideText(expectedText);
+        for (int page = 0; page < 30; page++) {
+            if (isElementVisible(expected)) return;
+            String before = driver.getPageSource();
+            String navigation = "left".equals(direction) ? CONTENT_NEXT : CONTENT_PREVIOUS;
+            if (isElementVisible(navigation)) {
+                waitForElementAndClick(navigation, "Cannot navigate to the expected content slide", 10);
+            } else {
+                swipe(direction);
+            }
+            createWait(10).withMessage("Content slide did not change after navigation")
+                    .until(ignored -> !before.equals(driver.getPageSource()));
+            if (verifySaved) assertOpenedContentSaved();
+        }
+        Assert.fail("Expected content slide was not reachable: " + expectedText);
+    }
+
+    protected String slideText(String text) {
+        return "xpath://XCUIElementTypeCollectionView//XCUIElementTypeStaticText[normalize-space(@name)="
+                + "normalize-space(" + xpathLiteral(text) + ") and @visible='true']";
     }
 
     protected String exactText(String text) {
@@ -336,8 +501,13 @@ public abstract class BookmarksPageObject extends MainPageObject {
     protected String cardFor(String title) {
         String literal = xpathLiteral(title);
         return "xpath:(//XCUIElementTypeStaticText[@name=" + literal + " and @visible='true']"
-                + "/ancestor::*[self::XCUIElementTypeCell or self::XCUIElementTypeOther][.//*[@name="
+                + "/ancestor::*[self::XCUIElementTypeButton or self::XCUIElementTypeCell or self::XCUIElementTypeOther][.//*[@name="
                 + literal + "]][1])";
+    }
+
+    protected String dailyPlanCardFor(String title) {
+        return "xpath://XCUIElementTypeOther[@name='DailyPlanItem' and .//XCUIElementTypeStaticText[@name="
+                + xpathLiteral(title) + "]]";
     }
 
     private String xpathLiteral(String value) {

@@ -31,17 +31,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     static {
         TAB_TODAY = "id:Today";
         SELECTED_TODAY_TAB = "xpath://XCUIElementTypeButton[@name='Today' and @value='1']";
-        ACTIVE_PROGRAM_TITLE = "xpath://XCUIElementTypeStaticText[@visible='true' and ("
-                + "@name='LL' or @label='LL' or @name='KIH' or @label='KIH' "
-                + "or @name='OH' or @label='OH' or @name='SIAS' or @label='SIAS' "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'LAST LONGER') "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'KEEP IT HARD') "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'OVERALL HEALTH') "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
-                + "or @name='Kegel Challenge' or @label='Kegel Challenge' "
-                + "or @name='Path to Desire' or @name='Kegel Journey' "
-                + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
+        ACTIVE_PROGRAM_TITLE = activeProgramTitleLocator();
         // The program selector is a new app-side contract. The active-program
         // label remains a stable fallback for builds that have not migrated
         // the tap target to the dedicated identifier yet.
@@ -156,6 +146,27 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
 
     public iOSDailyPlanPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    public static String activeProgramTitleLocator() {
+        // Current builds expose the program in the Today header next to
+        // Bookmarks. Titles restored from accounts are not a fixed catalog.
+        String header = "//XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']"
+                + "/parent::XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]"
+                + "/XCUIElementTypeStaticText[@visible='true' and //XCUIElementTypeButton"
+                + "[@name='Today' and @value='1' and @visible='true']]";
+        // Keep the observed older-build labels only when this header is absent.
+        return "xpath:" + header + " | //XCUIElementTypeStaticText[not(//XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']) and //XCUIElementTypeButton[@name='Today' and @value='1' and @visible='true'] and @visible='true' and ("
+                + "@name='LL' or @label='LL' or @name='KIH' or @label='KIH' "
+                + "or @name='OH' or @label='OH' or @name='SIAS' or @label='SIAS' "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'LAST LONGER') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'KEEP IT HARD') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'OVERALL HEALTH') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
+                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
+                + "or @name='Kegel Challenge' or @label='Kegel Challenge' "
+                + "or @name='Path to Desire' or @name='Kegel Journey' "
+                + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
     }
 
     private static final String PLAYER_CONTAINER = "//XCUIElementTypeOther[XCUIElementTypeButton[@name='navBarRoundClose']"
