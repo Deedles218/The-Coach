@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.By;
 import org.junit.Assert;
 import org.openqa.selenium.support.ui.Quotes;
 import io.qameta.allure.Allure;
@@ -23,6 +24,12 @@ import lib.TestData;
 
 public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     private int selectorTop;
+    private String openedLessonTitle;
+    private static final String DAILY_FIRST_LESSON_TITLE = "xpath://XCUIElementTypeCollectionView"
+            + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']]"
+            + "//XCUIElementTypeCell//XCUIElementTypeStaticText"
+            + "[following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText"
+            + "[@name='Lesson 1' or @name='How it all works']]";
     private static final String SELECTOR_CARDS = "id:ProgramSelectionCardView";
     private static final String SELECTOR_TITLES = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']//XCUIElementTypeStaticText[@name='TitleBlock.Title']";
     private static final String SELECTOR_COLLECTION = "xpath:(//XCUIElementTypeScrollView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']] | //XCUIElementTypeCollectionView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']])[last()]";
@@ -45,9 +52,9 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
 
         DAILY_LESSONS_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY LESSONS']";
-        FIRST_LESSON_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started' or @name='The Basics of Sexual Desire']";
+        FIRST_LESSON_TITLE = DAILY_FIRST_LESSON_TITLE;
         FIRST_LESSON_TYPE = "xpath://XCUIElementTypeStaticText[@name='Lesson 1' or @name='How it all works']";
-        LESSON_SCREEN_TITLE = FIRST_LESSON_TITLE;
+        LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started' or @name='The Basics of Sexual Desire']";
         LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20 and @name!='The Basics of Sexual Desire']";
         LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back' or @name='ic outline close']";
 
@@ -146,6 +153,49 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
 
     public iOSDailyPlanPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    public static String firstLessonTitleLocator() {
+        return DAILY_FIRST_LESSON_TITLE;
+    }
+
+    @Override
+    public void openFirstDailyLesson() {
+        assertDailyLessonsAreDisplayed();
+        WebElement title = waitForElementPresent(FIRST_LESSON_TITLE, "First lesson title is missing", 10);
+        openedLessonTitle = getElementAccessibleName(title);
+        Assert.assertFalse("First lesson title is empty", openedLessonTitle.isEmpty());
+        title.click();
+        waitForElementNotVisible("id:Today", "Daily Lesson did not replace Today", 15);
+        waitForOpenedLessonTitle();
+    }
+
+    @Override
+    public void assertDailyLessonScreenIsDisplayed() {
+        waitForOpenedLessonTitle();
+        waitForElementPresent(LESSON_SCREEN_BACK_BUTTON, "Daily Lesson close control is missing", 10);
+        createWait(10).withMessage("Daily Lesson body content is not displayed").until(ignored -> {
+            for (WebElement text : driver.findElements(getLocatorByString(LESSON_SCREEN_CONTENT))) {
+                if (text.isDisplayed() && isLessonBodyText(getElementAccessibleName(text), openedLessonTitle)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    protected static boolean isLessonBodyText(String text, String selectedTitle) {
+        return text != null && text.trim().length() > 20 && !text.trim().equals(selectedTitle);
+    }
+
+    private void waitForOpenedLessonTitle() {
+        Assert.assertNotNull("Open a Daily Lesson before verifying its title", openedLessonTitle);
+        createWait(15).withMessage("Opened Daily Lesson does not show its selected title").until(ignored -> {
+            for (WebElement text : driver.findElements(By.className("XCUIElementTypeStaticText"))) {
+                if (text.isDisplayed() && openedLessonTitle.equals(getElementAccessibleName(text))) return true;
+            }
+            return false;
+        });
     }
 
     public static String activeProgramTitleLocator() {
@@ -346,17 +396,18 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     @Override
     @io.qameta.allure.Step("Close iOS Daily Lesson and confirm unfinished exit")
     public void returnFromDailyLessonToDailyPlan() {
-        if (!isLessonExitConfirmationVisible()) {
-            waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson screen", 10);
+        if (!isElementVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+            waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson", 10);
         }
-        createWait(15).withMessage("Daily Plan did not return after closing Daily Lesson").until(ignored -> {
-            if (isLessonExitConfirmationVisible()) {
-                waitForElementAndClick("id:Quit", "Cannot confirm leaving the unfinished lesson", 10);
-                waitForElementNotVisible(LESSON_EXIT_CONFIRM_TITLE, "Lesson exit confirmation did not close", 10);
-                return false;
-            }
-            return isElementVisible(TEST_ID_TODAY_TAB) || isElementVisible(TAB_TODAY);
-        });
+        waitForFirstElementPresent(new String[]{"id:Today", KEGEL_PLAYER_EXIT_CONFIRM_TITLE},
+                "Daily Lesson neither closed nor requested exit confirmation", 10);
+        if (isElementVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+            waitForElementAndClick(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
+                    "Cannot confirm Daily Lesson exit", 10);
+        }
+        waitForElementPresent("id:Today", "Today did not return after closing Daily Lesson", 15);
+        waitForElementNotVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE,
+                "Lesson exit dialog remained open", 10);
     }
 
     @Override

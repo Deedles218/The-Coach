@@ -11,6 +11,26 @@ import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 
 public class iOSExplorePageObject extends ExplorePageObject {
+    // Observed in 1.13.33 (v7) and 1.13.29 (legacy). Keep the title scoped
+    // to the program card: a v7 category badge is also a StaticText node.
+    private static final String PROGRAM_SECTION = "//XCUIElementTypeOther["
+            + "(@name='CoachProgramDetailedSectionViewCoachProgramDetailedManV7Card' "
+            + "or @name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard') "
+            + "and .//XCUIElementTypeStaticText[@name='Browse Programs' or @name='ALL PROGRAMS']]";
+    private static final String PROGRAM_CARDS = PROGRAM_SECTION
+            + "/XCUIElementTypeCollectionView//XCUIElementTypeOther["
+            + "@name='CoachProgramDetailedManV7Card' or @name='CoachProgramDetailedManCard']";
+    private static final String PROGRAM_TITLES = PROGRAM_CARDS + "/XCUIElementTypeStaticText[1] | "
+            + PROGRAM_CARDS + "/XCUIElementTypeImage/XCUIElementTypeStaticText[1]";
+
+    public static String programCollectionLocator() {
+        return "xpath:" + PROGRAM_SECTION + "/XCUIElementTypeCollectionView";
+    }
+
+    public static String programTitlesLocator() {
+        return "xpath:" + PROGRAM_TITLES;
+    }
+
     static {
         TAB_EXPLORE = "id:Explore";
         SELECTED_EXPLORE_TAB = "xpath://XCUIElementTypeButton[@name='Explore' and @value='1']";
@@ -18,9 +38,9 @@ public class iOSExplorePageObject extends ExplorePageObject {
         TAB_PROGRAMS = "xpath://XCUIElementTypeButton[@name='Programs']";
         TAB_TOOLS = "xpath://XCUIElementTypeButton[@name='Tools']";
 
-        RECOMMENDED_SECTION = "id:ALL PROGRAMS";
-        RECOMMENDED_COLLECTION = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]/XCUIElementTypeCollectionView";
-        RECOMMENDED_PROGRAM_CARDS = RECOMMENDED_COLLECTION + "//XCUIElementTypeOther[@name='CoachProgramDetailedManCard']";
+        RECOMMENDED_SECTION = "xpath://XCUIElementTypeStaticText[@name='Browse Programs' or @name='ALL PROGRAMS']";
+        RECOMMENDED_COLLECTION = programCollectionLocator();
+        RECOMMENDED_PROGRAM_CARDS = "xpath:" + PROGRAM_CARDS;
         SEXUAL_HEALTH_SECTION = "id:SEXUAL HEALTH";
         COURSES_SECTION = "id:COURSES";
         COURSES_COLLECTION = "xpath://XCUIElementTypeStaticText[@name='COURSES']/following-sibling::XCUIElementTypeCollectionView";
@@ -38,14 +58,14 @@ public class iOSExplorePageObject extends ExplorePageObject {
         COMPLETED_PROGRAMS_SECTION = "id:COMPLETED PROGRAMS";
         COMING_SOON_SECTION = "id:COMING SOON";
 
-        FIRST_PROGRAM_CARD = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]";
-        FIRST_PROGRAM_CARD_IMAGE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]//XCUIElementTypeImage";
-        FIRST_PROGRAM_TITLE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[1]//XCUIElementTypeStaticText[1]";
+        FIRST_PROGRAM_CARD = "xpath:(" + PROGRAM_CARDS + ")[1]";
+        FIRST_PROGRAM_CARD_IMAGE = FIRST_PROGRAM_CARD + "//XCUIElementTypeImage";
+        FIRST_PROGRAM_TITLE = "xpath:(" + PROGRAM_TITLES + ")[1]";
         // Program-card names are dynamic. Prefer the dedicated identifier and
         // retain the existing card hierarchy only as a migration fallback.
-        EXPLORE_PROGRAM_ITEMS = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedManCard']//XCUIElementTypeStaticText[1]";
-        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[last()]";
-        LAST_RECOMMENDED_PROGRAM_TITLE = "xpath:(//XCUIElementTypeOther[@name='CoachProgramDetailedManCard'])[last()]//XCUIElementTypeStaticText[1]";
+        EXPLORE_PROGRAM_ITEMS = programTitlesLocator();
+        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(" + PROGRAM_CARDS + ")[last()]";
+        LAST_RECOMMENDED_PROGRAM_TITLE = "xpath:(" + PROGRAM_TITLES + ")[last()]";
         PROGRAM_DETAIL_TITLE = "id:NewCoachProgramHeaderView";
         PROGRAM_DETAIL_CONTENT = "id:DailyDaySwitcherView";
         PROGRAM_DETAIL_CLOSE_BUTTON = "id:CloseRoundBlack";
@@ -98,7 +118,22 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
     private static final String EXPLORE_HEADING = "xpath://XCUIElementTypeStaticText[@name='Explore' and @visible='true']";
 
+    @Override
+    @io.qameta.allure.Step("Open Explore and dismiss its abandoned-checkout banner when present")
+    public void openExploreTab() {
+        super.openExploreTab();
+        String close = "id:AbandonedCartCloseButtonIcon";
+        if (isElementVisible(close)) {
+            waitForElementAndClick(close, "Cannot dismiss the Explore checkout banner", 5);
+            waitForElementNotVisible(close, "Explore checkout banner stayed visible", 5);
+        }
+    }
+
     private String configuredSection(String title) {
+        if ("Master Classes".equals(title)) {
+            return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ ',"
+                    + "'abcdefghijklmnopqrstuvwxyz')='masterclasses' and @visible='true']";
+        }
         return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
                 + title.toLowerCase(java.util.Locale.ROOT) + "' and @visible='true']";
     }
@@ -148,6 +183,8 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
     @Override public void assertCoursesSectionIsRemoved() { assertRemovedCoursesAndPracticesAreAbsent(); }
     @Override public void assertBrowseProgramsReplacesLegacyBlock() {
+        waitForElementVisible("id:Browse Programs", "Explore v7 must show Browse Programs", 10);
+        assertElementNotPresent("id:ALL PROGRAMS", "Explore v7 must not show the legacy ALL PROGRAMS heading");
         assertMainProgramsRecommendedSection();
         assertRetiredExploreUiIsAbsent();
     }
@@ -252,12 +289,12 @@ public class iOSExplorePageObject extends ExplorePageObject {
     public void openKegelProgramSettings() { openFixtureProgramSettings("Kegel Challenge"); }
 
     private void openFixtureProgramSettings(String program) {
-        String collection = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' "
-                + "and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]/XCUIElementTypeCollectionView";
-        String title = collection + "//XCUIElementTypeOther[@name='CoachProgramDetailedManCard']"
-                + "/XCUIElementTypeImage/XCUIElementTypeStaticText[@label='" + program + "' and @visible='true']";
+        String collection = programCollectionLocator();
+        String title = "xpath:(" + PROGRAM_TITLES + ")[@label="
+                + lib.ui.LocalizationPageObject.xpathLiteral(program) + " and @visible='true']";
+        new iOSProgramListReader(driver).rewind(programTitlesLocator(), collection);
         for (int i = 0; i < 12 && !isElementVisible(title); i++) {
-            Rectangle bounds = waitForElementPresent(collection, "ALL PROGRAMS carousel is not visible", 15).getRect();
+            Rectangle bounds = waitForElementPresent(collection, "Program carousel is not visible", 15).getRect();
             Map<String, Object> gesture = new HashMap<String, Object>();
             gesture.put("duration", .65);
             gesture.put("fromX", bounds.getX() + bounds.getWidth() * .8);
@@ -266,7 +303,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
             gesture.put("toY", bounds.getY() + bounds.getHeight() * .5);
             ((JavascriptExecutor) driver).executeScript("mobile: dragFromToForDuration", gesture);
         }
-        waitForElementAndClick(title, program + " is absent from ALL PROGRAMS", 10);
+        waitForElementAndClick(title, program + " is absent from the program carousel", 10);
         // Catalog selection returns before the fetched detail screen appears.
         // Wait for that screen transition before looking for its Settings action.
         waitForElementPresent(PROGRAM_DETAIL_TITLE, program + " detail did not load", 30);
@@ -311,16 +348,23 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
     @Override
     public List<String> getProgramNamesFromExplore() {
-        // The current build groups every program in this horizontally recycled
-        // ALL PROGRAMS collection. Require that marker so a different layout is
-        // never silently compared using only the first visible cards.
-        String collection = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' "
-                + "and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]/XCUIElementTypeCollectionView";
-        waitForElementPresent(collection, "The full ALL PROGRAMS collection is not exposed in this Explore variant", 15);
-        String titles = "xpath://XCUIElementTypeOther[@name='CoachProgramDetailedSectionViewCoachProgramDetailedManCard' "
-                + "and .//XCUIElementTypeStaticText[@name='ALL PROGRAMS']]//XCUIElementTypeOther[@name='CoachProgramDetailedManCard']/XCUIElementTypeImage/XCUIElementTypeStaticText";
+        String collection = programCollectionLocator();
+        waitForElementPresent(collection, "The full program carousel is not exposed in this Explore variant", 15);
+        String titles = programTitlesLocator();
         iOSProgramListReader reader = new iOSProgramListReader(driver);
         reader.rewind(titles, collection);
         return reader.collect(titles, collection, true);
+    }
+
+    @Override
+    @io.qameta.allure.Step("Read the complete recycled carousel and open its last program")
+    public void swipeToAndOpenLastRecommendedProgram() {
+        List<String> names = getProgramNamesFromExplore();
+        String last = names.get(names.size() - 1);
+        waitForElementAndClick("xpath:(" + PROGRAM_TITLES + ")[@label="
+                        + lib.ui.LocalizationPageObject.xpathLiteral(last) + " and @visible='true']",
+                "Cannot open the last program in the complete carousel", 10);
+        waitForElementPresent(PROGRAM_DETAIL_TITLE, "Last program detail screen did not open", 15);
+        waitForElementPresent(PROGRAM_DETAIL_CONTENT, "Last program detail content is not displayed", 10);
     }
 }
