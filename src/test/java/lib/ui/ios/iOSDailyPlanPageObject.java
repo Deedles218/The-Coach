@@ -159,6 +159,11 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         return DAILY_FIRST_LESSON_TITLE;
     }
 
+    public static String lessonExitConfirmationLocator() {
+        return KEGEL_PLAYER_EXIT_CONFIRM_TITLE + " | "
+                + LESSON_EXIT_CONFIRM_TITLE.substring("xpath:".length());
+    }
+
     @Override
     public void openFirstDailyLesson() {
         assertDailyLessonsAreDisplayed();
@@ -389,24 +394,24 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     }
 
     private boolean isLessonExitConfirmationVisible() {
-        return isElementVisible(LESSON_EXIT_CONFIRM_TITLE)
-                && isElementVisible("id:Quit") && isElementVisible("id:Continue");
+        return isElementVisible(lessonExitConfirmationLocator());
     }
 
     @Override
     @io.qameta.allure.Step("Close iOS Daily Lesson and confirm unfinished exit")
     public void returnFromDailyLessonToDailyPlan() {
-        if (!isElementVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+        String confirmation = lessonExitConfirmationLocator();
+        if (!isElementVisible(confirmation)) {
             waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson", 10);
         }
-        waitForFirstElementPresent(new String[]{"id:Today", KEGEL_PLAYER_EXIT_CONFIRM_TITLE},
+        waitForFirstElementPresent(new String[]{"id:Today", confirmation},
                 "Daily Lesson neither closed nor requested exit confirmation", 10);
-        if (isElementVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE)) {
+        if (isElementVisible(confirmation)) {
             waitForElementAndClick(KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON,
                     "Cannot confirm Daily Lesson exit", 10);
         }
         waitForElementPresent("id:Today", "Today did not return after closing Daily Lesson", 15);
-        waitForElementNotVisible(KEGEL_PLAYER_EXIT_CONFIRM_TITLE,
+        waitForElementNotVisible(confirmation,
                 "Lesson exit dialog remained open", 10);
     }
 

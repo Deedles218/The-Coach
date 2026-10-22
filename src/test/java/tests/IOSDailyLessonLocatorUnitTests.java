@@ -64,7 +64,7 @@ public class IOSDailyLessonLocatorUnitTests {
         ExitFlow() { super(null); }
         static boolean body(String text, String title) { return isLessonBodyText(text, title); }
         @Override public boolean isElementVisible(String locator) {
-            Assert.assertEquals(KEGEL_PLAYER_EXIT_CONFIRM_TITLE, locator);
+            Assert.assertEquals(lessonExitConfirmationLocator(), locator);
             return confirmation;
         }
         @Override public WebElement waitForElementAndClick(String locator, String message, long timeout) {
@@ -80,7 +80,7 @@ public class IOSDailyLessonLocatorUnitTests {
         }
         @Override public WebElement waitForFirstElementPresent(String[] locators, String message, long timeout) {
             Assert.assertTrue(Arrays.asList(locators).contains("id:Today"));
-            Assert.assertTrue(Arrays.asList(locators).contains(KEGEL_PLAYER_EXIT_CONFIRM_TITLE));
+            Assert.assertTrue(Arrays.asList(locators).contains(lessonExitConfirmationLocator()));
             confirmation = confirmation || needsConfirmation;
             return null;
         }
@@ -91,7 +91,7 @@ public class IOSDailyLessonLocatorUnitTests {
             return null;
         }
         @Override public void waitForElementNotVisible(String locator, String message, long timeout) {
-            Assert.assertEquals(KEGEL_PLAYER_EXIT_CONFIRM_TITLE, locator);
+            Assert.assertEquals(lessonExitConfirmationLocator(), locator);
             Assert.assertFalse(confirmation);
         }
     }
@@ -115,6 +115,21 @@ public class IOSDailyLessonLocatorUnitTests {
         flow.returnFromDailyLessonToDailyPlan();
         Assert.assertEquals(Arrays.asList("quit"), flow.actions);
         Assert.assertTrue(flow.returned);
+    }
+
+    @Test public void bothObservedLessonExitDialogsAreRecognized() throws Exception {
+        String[] dialogs = {
+                "<XCUIElementTypeStaticText name='TitleBlock.Title' label='You have not finished. Are you sure that you want to quit?'/>",
+                "<XCUIElementTypeStaticText label='You haven’t finished. Do you want to quit?' visible='true'/>"
+        };
+        for (String xml : dialogs) {
+            Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new ByteArrayInputStream(("<App>" + xml + "</App>").getBytes(StandardCharsets.UTF_8)));
+            NodeList found = (NodeList) XPathFactory.newInstance().newXPath().evaluate(
+                    iOSDailyPlanPageObject.lessonExitConfirmationLocator().substring("xpath:".length()),
+                    document, XPathConstants.NODESET);
+            Assert.assertEquals(xml, 1, found.getLength());
+        }
     }
     @Test public void longSelectedTitleCannotStandInForMissingBody() {
         String title = "What is male hormonal balance?";

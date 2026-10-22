@@ -20,6 +20,7 @@ public class IOSProfileBrowserLocatorUnitTests {
         Locators() { super(null); }
         String faq() { return PROFILE_FAQ_SCREEN; }
         String terms() { return PROFILE_TERMS_SCREEN; }
+        String close() { return PROFILE_BROWSER_CLOSE_BUTTON; }
     }
 
     private int matches(String xml, String locator) throws Exception {
@@ -61,6 +62,13 @@ public class IOSProfileBrowserLocatorUnitTests {
                 + "</XCUIElementTypeWebView>", new Locators().terms()));
         Assert.assertEquals(0, matches("<XCUIElementTypeStaticText name='Terms &amp; privacy policy'/>",
                 new Locators().terms()));
+    }
+
+    @Test public void supportedSafariCloseControlsRemainRecognized() throws Exception {
+        for (String label : new String[]{"Close", "Done", "Закрыть", "profile_browser_close"}) {
+            Assert.assertEquals(label, 1, matches("<XCUIElementTypeButton name='" + label + "'/>",
+                    new Locators().close()));
+        }
     }
 
     private static class TermsBrowser extends iOSCoachFlowPageObject {

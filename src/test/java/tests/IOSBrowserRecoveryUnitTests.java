@@ -70,6 +70,47 @@ public class IOSBrowserRecoveryUnitTests {
         @Override public void assertProfileScreenIsDisplayed() { checkedProfile = true; }
     }
 
+    private static class SafariBrowser extends Browser {
+        SafariBrowser() { super(new Driver()); }
+        @Override public boolean isElementVisible(String locator) {
+            return visible && (PROFILE_BROWSER_CLOSE_BUTTON.equals(locator)
+                    || "id:URL".equals(locator) || "id:OpenInSafariButton".equals(locator));
+        }
+        @Override public void waitForElementNotVisible(String locator, String message, long timeout) {
+            if ("id:TopBrowserBar".equals(locator)) return;
+            Assert.assertEquals(PROFILE_BROWSER_CLOSE_BUTTON, locator);
+            checkedGone = true;
+            if (stuck && (!fakeDriver.commands.contains("mobile: activateApp") || !restartWorks)) {
+                throw new TimeoutException(message);
+            }
+            visible = false;
+        }
+    }
+
+    @Test public void safariControllerWithoutTopBrowserBarIsRecovered() {
+        SafariBrowser browser = new SafariBrowser();
+        browser.recover();
+        Assert.assertFalse(browser.visible);
+        Assert.assertTrue(browser.checkedGone);
+        Assert.assertEquals(java.util.Collections.singletonList("mobile: tap"), browser.fakeDriver.commands);
+    }
+
+    @Test(expected = TimeoutException.class)
+    public void safariCloseStillFailsWhenOnlyTheCustomBrowserBarIsAbsent() {
+        SafariBrowser browser = new SafariBrowser();
+        browser.stuck = true;
+        browser.closeProfileBrowser();
+    }
+
+    @Test public void stuckSafariControllerCanRestartDuringRecovery() {
+        SafariBrowser browser = new SafariBrowser();
+        browser.stuck = true;
+        browser.recover();
+        Assert.assertFalse(browser.visible);
+        Assert.assertEquals(java.util.Arrays.asList("mobile: tap", "mobile: terminateApp", "mobile: activateApp"),
+                browser.fakeDriver.commands);
+    }
+
     @Test public void successfulCloseVerifiesReturnWithoutRestart() {
         Driver driver = new Driver();
         Browser browser = new Browser(driver);

@@ -83,7 +83,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         PROFILE_TERMS_SCREEN = "xpath://XCUIElementTypeStaticText[@name='The Coach — Terms of Service']";
         PROFILE_BROWSER_CLOSE_BUTTON = "xpath://XCUIElementTypeOther[@name='TopBrowserBar']"
                 + "//XCUIElementTypeButton[@name='Close' or @name='Закрыть']"
-                + " | //XCUIElementTypeButton[@name='Close']";
+                + " | //XCUIElementTypeButton[@name='Close' or @name='Done' or @name='Закрыть'"
+                + " or @name='profile_browser_close']";
         PROFILE_SUBSCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='BackButton' or @name='Daily Plan' or @name='Today' or @name='Back']";
         DELETE_ACCOUNT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Delete my account' or @name='Delete My Data' or @name='Delete my data']";
         DELETE_ACCOUNT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'It will be impossible to restore the progress')]";
@@ -319,9 +320,11 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     public void waitForAuthorizedDashboard() {
         boolean prepareQuestionnaire = preparingExistingProgressAccount
                 && Boolean.getBoolean("coach.ios.preparePostAuthQuestionnaire");
-        waitForFirstElementPresent(new String[]{AUTHORIZED_DASHBOARD_MARKER, TEST_ID_TODAY_TAB,
-                        TAB_TODAY, ONBOARDING_GOALS_TITLE},
-                "Authorization opened neither Today nor the goal questionnaire", 30);
+        createWait(30).withMessage("Authorization opened neither Today nor the goal questionnaire")
+                .until(ignored -> {
+                    closePostAuthPopupsIfPresent();
+                    return isAuthorizedDashboardVisible() || isElementVisible(ONBOARDING_GOALS_TITLE);
+                });
         if (isElementVisible(ONBOARDING_GOALS_TITLE) && !prepareQuestionnaire) {
             throw new PostAuthQuestionnaireException("Existing-progress fixture requires goal selection after OTP. "
                     + "Prepare the account and verify re-login restores Today before running regression; "
@@ -461,8 +464,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Step("Dismiss an observed iOS browser overlay before session recovery")
     protected void closeProfileBrowserIfPresent() {
-        String browser = "id:TopBrowserBar";
-        if (!isElementVisible(browser)) return;
+        if (!isProfileBrowserVisible()) return;
+        String browser = isElementVisible("id:TopBrowserBar")
+                ? "id:TopBrowserBar" : PROFILE_BROWSER_CLOSE_BUTTON;
         try {
             dismissProfileBrowser();
         } catch (TimeoutException closeFailure) {
@@ -473,6 +477,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void dismissProfileBrowser() {
+        String browser = isElementVisible("id:TopBrowserBar")
+                ? "id:TopBrowserBar" : PROFILE_BROWSER_CLOSE_BUTTON;
         RemoteWebElement close = (RemoteWebElement) waitForElementEnabled(PROFILE_BROWSER_CLOSE_BUTTON,
                 "Cannot dismiss the Profile browser overlay", 5);
         Rectangle bounds = close.getRect();
@@ -481,11 +487,14 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         tap.put("x", bounds.width / 2.0);
         tap.put("y", bounds.height / 2.0);
         ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
-        waitForElementNotVisible("id:TopBrowserBar", "Profile browser overlay did not close", 10);
+        waitForElementNotVisible(browser, "Profile browser overlay did not close", 10);
     }
 
     private boolean isProfileBrowserVisible() {
-        return isElementVisible("id:TopBrowserBar");
+        return isElementVisible("id:TopBrowserBar")
+                || (isElementVisible(PROFILE_BROWSER_CLOSE_BUTTON)
+                    && ((isElementVisible("id:URL") && isElementVisible("id:OpenInSafariButton"))
+                        || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN)));
     }
 
     @Step("Recover from an unresponsive browser by restarting Coach without clearing its data")
