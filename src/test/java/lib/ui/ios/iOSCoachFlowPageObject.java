@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -130,6 +131,43 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     public iOSCoachFlowPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    @Step("Open the ready iOS login form from Welcome")
+    public void openLoginFlow() {
+        tapHittableControl(new String[]{TEST_ID_LOGIN_BUTTON, LOGIN_BUTTON}, "Welcome Login is not hittable", 10);
+        createWait(10).withMessage("Login tap did not open the email form")
+                .until(ignored -> isLoginFormReady());
+    }
+
+    protected boolean isLoginFormReady() {
+        return isElementVisible(LOGIN_SCREEN_TITLE) && isElementVisible(LOGIN_EMAIL_INPUT);
+    }
+
+    protected void tapHittableControl(String[] locators, String message, long timeout) {
+        WebElement control = createWait(timeout).withMessage(message).until(ignored -> {
+            for (String locator : locators) {
+                for (WebElement element : driver.findElements(getLocatorByString(locator))) {
+                    try {
+                        if (element.isDisplayed() && isElementEnabled(element)
+                                && "true".equalsIgnoreCase(element.getAttribute("hittable"))) return element;
+                    } catch (StaleElementReferenceException rerendered) {
+                        // Reacquire the control during the existing explicit wait.
+                    }
+                }
+            }
+            return null;
+        });
+        tapNativeCenter(control);
+    }
+
+    private void tapNativeCenter(WebElement control) {
+        Rectangle bounds = control.getRect();
+        Map<String, Object> tap = new HashMap<>();
+        tap.put("x", bounds.x + bounds.width / 2);
+        tap.put("y", bounds.y + bounds.height / 2);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
     }
 
     @Override
@@ -302,9 +340,14 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         });
     }
 
-    private boolean isAuthorizedDashboardVisible() {
-        return isElementVisible(AUTHORIZED_DASHBOARD_MARKER) || isElementVisible(TEST_ID_TODAY_TAB)
-                || isElementVisible(TAB_TODAY);
+    protected boolean isAuthorizedDashboardVisible() {
+        // Persistent tabs also exist beneath auth/navigation overlays. Require
+        // rendered Today content and its Profile control before leaving OTP.
+        return !isElementVisible(OTP_SCREEN_TITLE) && !isElementVisible(LOGIN_SCREEN_TITLE)
+                && !isElementVisible(START_SCREEN_TITLE)
+                && (isElementVisible(PROFILE_BUTTON) || isElementVisible(PROFILE_BUTTON_FEMALE)
+                    || isElementVisible(PROFILE_BUTTON_LEGACY))
+                && isElementVisible("id:DailyPlanItem");
     }
 
     private void closePostAuthPopupsIfPresent() {
@@ -368,11 +411,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                 "Cannot find the Profile browser close control", 10);
         // On the observed iOS 26 Safari controller, element.click() returns
         // success without closing. A native tap at this element's center works.
-        Rectangle bounds = close.getRect();
-        Map<String, Object> tap = new HashMap<>();
-        tap.put("x", bounds.x + bounds.width / 2);
-        tap.put("y", bounds.y + bounds.height / 2);
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        tapNativeCenter(close);
         waitForElementNotVisible(PROFILE_BROWSER_CLOSE_BUTTON, "Profile browser did not close", 10);
         waitForFirstElementPresent(new String[]{PROFILE_SCREEN, TAB_TODAY},
                 "Main app did not return after closing the browser", 10);
@@ -412,7 +451,18 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
         closePartnerPromoIfPresent();
-        super.openProfile();
+        tapHittableControl(new String[]{PROFILE_BUTTON, PROFILE_BUTTON_FEMALE, PROFILE_BUTTON_LEGACY},
+                "Profile control is not hittable", 10);
+        waitForElementVisible(PROFILE_SCREEN, "Profile screen did not open", 10);
+        createWait(30).withMessage("Profile container opened but its content did not load")
+                .until(ignored -> isProfileContentReady());
+    }
+
+    protected boolean isProfileContentReady() {
+        return isElementVisible(PROFILE_SCREEN)
+                && (isElementVisible(PROFILE_PREMIUM_BADGE) || isElementVisible(PROFILE_PROGRESS_LESSONS)
+                    || isElementVisible(PROFILE_ACCOUNT_SETTINGS_BUTTON)
+                    || isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
     }
 
     @Override

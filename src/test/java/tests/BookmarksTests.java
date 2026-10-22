@@ -15,6 +15,7 @@ import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.SubscriptionPageObject;
 import lib.ui.ios.iOSCoachFlowPageObject;
+import lib.ui.ios.iOSProgramSelectorPageObject;
 import lib.ui.factories.BookmarksPageObjectFactory;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
@@ -283,6 +284,8 @@ public class BookmarksTests extends CoreTestCase {
         String answer = optional("completionAnswer");
         if (answer == null && completionLesson == null) answer = optional("lessonCompletionAnswer");
         prepare(fixtureRole("completionAccountRole", CONTENT));
+        String program = optional("completionProgramTitle");
+        if (program != null) new iOSProgramSelectorPageObject(driver).ensureProgramSelected(program);
         bookmarks.assertDailyPlanItemNotCompleted(lesson);
         prepareSavedContent(lesson, savedSlide);
         bookmarks.openFromToday();

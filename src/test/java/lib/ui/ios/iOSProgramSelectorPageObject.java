@@ -67,12 +67,18 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
     public void ensureWorkoutProgramSelected(String title) {
         Assert.assertTrue("Configure the observed Kegel program with -Dcoach.kegelPlayer.program",
                 title != null && !title.trim().isEmpty());
+        ensureProgramSelected(title);
+    }
+
+    /** Select an explicit fixture program after login, which may restore a different program. */
+    public void ensureProgramSelected(String title) {
+        Assert.assertTrue("Configure a nonempty fixture program title", title != null && !title.trim().isEmpty());
         if (!title.equalsIgnoreCase(getActiveProgramName())) {
             openProgramSelector();
             selectExactProgram(title);
-            createWait(20).withMessage("Kegel fixture program did not become active: " + title).until(ignored -> {
+            createWait(20).withMessage("Fixture program did not become active: " + title).until(ignored -> {
                 if (isElementVisible("id:Switch program")) {
-                    waitForElementAndClick("id:Switch program", "Cannot confirm the Kegel program switch", 5);
+                    waitForElementAndClick("id:Switch program", "Cannot confirm the fixture program switch", 5);
                     return false;
                 }
                 if (isElementVisible("id:To switch back, tap here")) {
