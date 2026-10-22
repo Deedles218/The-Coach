@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Blocked by a failed precondition",
+    "matchedStatuses": ["skipped", "broken", "failed"],
+    "messageRegex": "(?s).*BLOCKED:.*"
+  },
+  {
+    "name": "Test data and fixture state",
+    "matchedStatuses": ["broken", "failed"],
+    "messageRegex": "(?s).*(Required test data|Dedicated account|dedicated account|Daily Plan day does not match the deterministic fixture|Current existing-progress Daily Plan state).*"
+  },
+  {
+    "name": "Launch configuration and missing fixtures",
+    "matchedStatuses": ["broken", "failed"],
+    "messageRegex": "(?s).*(localization.fixture|onboarding.slides.fixture|coach.kegelUi.fixture|Push permission suite requires|P0 clean-install smoke requires|Update smoke requires|StoreKit suite requires|TestFlight|Configure -D|Supply -D).*"
+  },
+  {
+    "name": "Appium session and device environment",
+    "matchedStatuses": ["broken", "failed"],
+    "traceRegex": "(?s).*(SessionNotCreatedException|NoSuchSessionException|SessionStateRecoveryException).*"
+  },
+  {
+    "name": "External web service — observed HTTP 502",
+    "matchedStatuses": ["broken", "failed"],
+    "traceRegex": "(?s).*ExternalServiceException.*"
+  },
+  {
+    "name": "Locator or synchronization — investigate",
+    "matchedStatuses": ["broken", "failed"],
+    "traceRegex": "(?s).*(TimeoutException|NoSuchElementException|InvalidSelectorException).*"
+  },
+  {
+    "name": "Assertion mismatch — investigate",
+    "matchedStatuses": ["failed"],
+    "traceRegex": "(?s).*AssertionError.*"
+  }
+]

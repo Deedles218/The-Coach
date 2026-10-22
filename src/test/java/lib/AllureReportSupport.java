@@ -11,7 +11,10 @@ import org.junit.runner.Description;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 /** Shared Allure conventions for readable scenarios and actionable failures. */
@@ -27,8 +30,31 @@ public final class AllureReportSupport {
             }
             final String readableName = readableTestName(description);
             lifecycle.updateTestCase(result -> result.setName(readableName));
+            addRunLabels(description);
         } catch (RuntimeException reportingFailure) {
             reportInfrastructureError("rename test", reportingFailure);
+        }
+    }
+
+    private static void addRunLabels(Description description) {
+        for (String key : new String[]{"runProfile", "appVersion", "appBuild", "testGitSha", "testGitDirty", "resetPolicy", "appVariant"}) {
+            String value = System.getProperty("coach.run." + key);
+            if (value != null && !value.trim().isEmpty()) {
+                Allure.addLabels(new io.qameta.allure.model.Label()
+                        .setName(key).setValue(TestData.sanitizeSensitiveData(value)));
+            }
+        }
+        if (description != null && description.getClassName().startsWith("tests.HW.")) {
+            Allure.addLabels(new io.qameta.allure.model.Label().setName("testScope").setValue("legacy"));
+        }
+    }
+
+    public static void writeCategories(Path directory) throws java.io.IOException {
+        Path categories = directory.resolve("categories.json");
+        if (Files.exists(categories)) return;
+        try (InputStream resource = AllureReportSupport.class.getResourceAsStream("/allure-categories.json")) {
+            if (resource == null) throw new java.io.IOException("allure-categories.json resource is missing");
+            Files.copy(resource, categories);
         }
     }
 
@@ -114,6 +140,8 @@ public final class AllureReportSupport {
         context.append("Failure: ")
                 .append(failure == null ? "Unknown failure" : TestData.sanitizeSensitiveData(failure.toString()))
                 .append('\n');
+        context.append("Failure type: ").append(FailureClassifier.type(failure)).append('\n');
+        context.append("Classification confidence: ").append(FailureClassifier.confidence(failure)).append('\n');
         if (failureLocation != null) {
             context.append("Failed action: ")
                     .append(humanizeIdentifier(stripAspectJMethodSuffix(failureLocation.getMethodName())))
