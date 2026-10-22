@@ -276,13 +276,18 @@ public class BookmarksTests extends CoreTestCase {
 
     @Test @Issue("COA-9659")
     public void finishMarksLessonCompletedInDailyPlan() {
+        String completionLesson = optional("completionLessonTitle");
+        String lesson = completionLesson == null ? required("lessonTitle") : completionLesson;
+        String savedSlide = required(completionLesson == null
+                ? "lessonSavedSlideText" : "completionLessonSavedSlideText");
+        String answer = optional("completionAnswer");
+        if (answer == null && completionLesson == null) answer = optional("lessonCompletionAnswer");
         prepare(fixtureRole("completionAccountRole", CONTENT));
-        String lesson = required("lessonTitle");
         bookmarks.assertDailyPlanItemNotCompleted(lesson);
-        prepareSavedContent(lesson, required("lessonSavedSlideText"));
+        prepareSavedContent(lesson, savedSlide);
         bookmarks.openFromToday();
         bookmarks.openCard(lesson);
-        bookmarks.finishFromBookmarks(optional("lessonCompletionAnswer"));
+        bookmarks.finishFromBookmarks(answer);
         bookmarks.assertDailyPlanItemCompleted(lesson);
     }
 
