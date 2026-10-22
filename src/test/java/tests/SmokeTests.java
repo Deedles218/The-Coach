@@ -45,6 +45,17 @@ public class SmokeTests extends CoreTestCase {
 
         coachFlow.activateAppIfPossible();
         coachFlow.waitForStartScreen();
+        if (Platform.getInstance().getIOSOnboardingStepLocators().length == 0) {
+            lib.ui.ios.iOSOnboardingPageObject onboarding = new lib.ui.ios.iOSOnboardingPageObject(driver);
+            onboarding.completeFreshJourneyToNotificationPermission();
+            coachFlow.assertNotificationPromptIsDisplayed();
+            coachFlow.closeNotificationPromptIfPresent();
+            onboarding.completeQuestionnaire();
+            onboarding.closePaywallsAndPopups();
+            onboarding.waitForToday();
+            coachFlow.assertAuthorizedDashboardIsDisplayed();
+            return;
+        }
         coachFlow.openStartFlow();
         coachFlow.completeOnboardingUsingConfiguredSteps(Platform.getInstance().getIOSOnboardingStepLocators());
         coachFlow.assertNotificationPromptIsDisplayed();
@@ -141,7 +152,7 @@ public class SmokeTests extends CoreTestCase {
     @Features(value = {@Feature(value = "Kegel"), @Feature(value = "Player"), @Feature(value = "Safe exit")})
     @Issue("COA-8087")
     @DisplayName("Smoke: Kegel player starts, controls respond, and exits safely")
-    @Description("Uses the deterministic Kegel fixture, completes the default stretching video, closes the stretching completion popup, verifies the Kegel player controls, and exits through the safe confirmation path.")
+    @Description("Uses the deterministic Kegel fixture, completes stretching when included and enabled in the workout, verifies the Kegel player controls, and exits through the safe confirmation path.")
     @Step("Start test testKegelPlayerFlow")
     @Severity(value = SeverityLevel.BLOCKER)
     public void testKegelPlayerFlow() {
@@ -180,10 +191,6 @@ public class SmokeTests extends CoreTestCase {
         Assert.assertTrue(
                 "P0 clean-install smoke requires -Dios.app=/path/to/The-Coach.app or IOS_APP",
                 Platform.getInstance().getIOSAppPath() != null && !Platform.getInstance().getIOSAppPath().trim().isEmpty()
-        );
-        Assert.assertTrue(
-                "P0 clean-install smoke requires -Dios.onboarding.steps=id:<step1>,id:<step2>,... or IOS_ONBOARDING_STEPS",
-                Platform.getInstance().getIOSOnboardingStepLocators().length > 0
         );
     }
 }

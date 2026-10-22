@@ -6,6 +6,7 @@ import lib.Platform;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
+import lib.ui.ios.iOSProgramSelectorPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import lib.ui.factories.OnboardingPageObjectFactory;
@@ -41,6 +42,8 @@ public class IOSSmokeTests extends CoreTestCase {
         authorizedCoach(TestData.kegelPlayerAccount()).openToday();
         DailyPlanPageObject today = DailyPlanPageObjectFactory.get(driver);
         today.openTodayTab();
+        new iOSProgramSelectorPageObject(driver).ensureWorkoutProgramSelected(
+                System.getProperty("coach.kegelPlayer.program"));
         today.assertDailyPlanDaySwitcherIsDisplayed();
         today.assertDailyPracticeIsDisplayed();
         today.openKegelExerciseFromDailyPlan();

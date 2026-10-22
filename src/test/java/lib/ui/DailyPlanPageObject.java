@@ -747,6 +747,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Start Kegel exercise")
     public void startKegelExercise() {
+        boolean stretchingVideoExpected = isKegelStretchingVideoExpected();
         this.scrollToKegelStartButton();
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_PRACTICE_START, PRACTICE_SCREEN_START_BUTTON},
@@ -763,12 +764,16 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel player loading indicator is still displayed",
                 20
         );
-        this.continuePastStretchingVideo();
+        if (stretchingVideoExpected) this.continuePastStretchingVideo();
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
                 "Kegel player did not open after the stretching video",
                 30
         );
+    }
+
+    protected boolean isKegelStretchingVideoExpected() {
+        return true;
     }
 
     @Step("Complete the default Kegel stretching video")
@@ -823,6 +828,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel player info control is not displayed",
                 10
         );
+        this.assertKegelPlayerPhaseControlsAreDisplayed();
+    }
+
+    protected void assertKegelPlayerPhaseControlsAreDisplayed() {
         this.waitForElementPresent(KEGEL_PLAYER_PHASE_REST_BUTTON, "Kegel player Rest phase control is not displayed", 10);
         this.waitForElementPresent(KEGEL_PLAYER_PHASE_WAVES_BUTTON, "Kegel player Waves phase control is not displayed", 10);
     }

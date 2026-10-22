@@ -1,0 +1,52 @@
+{
+  "runId": "ios-full-local",
+  "registryPath": "/absolute/path/to/private/account-registry.json",
+  "otpService": "your-approved-otp-keychain-service",
+  "appiumUrl": "http://127.0.0.1:4737/",
+  "deviceUdid": "YOUR-SIMULATOR-UDID",
+  "deviceName": "Your regression simulator",
+  "platformVersion": "26.5",
+  "apps": {
+    "male": {
+      "app": "/absolute/path/to/current/The Coach.app",
+      "oldApp": "/absolute/path/to/previous/The Coach.app",
+      "bundleId": "com.vamapps.The-Coach",
+      "version": "1.13.34",
+      "oldVersion": "1.13.33",
+      "existingAccountService": "your-approved-male-account-service",
+      "dailyPlanDay": "Stage 1",
+      "postAuthGoal": "Beat premature ejaculation",
+      "localizationFixture": "src/test/resources/localization/ios-male-prod-1.13.33.properties",
+      "suiteProperties": {
+        "KegelOctoberCasesTests": {"coach.kegelUi.fixture": "src/test/resources/kegel/ios-prod-1.13.33.properties"}
+      },
+      "dailyPlanFixture": {
+        "removablePracticeProgram": "Last Longer: Retain",
+        "removablePracticeDay": "Day 7",
+        "removablePracticeTitle": "Body Scanning Exercise",
+        "corePracticeProgram": "Kegel Challenge",
+        "corePracticeDay": "Stage 6 of 9",
+        "corePracticeTitle": "Morning Kegel Workout"
+      }
+    },
+    "female": {
+      "app": "/absolute/path/to/current/The Coach_for_her.app",
+      "oldApp": "/absolute/path/to/previous/The Coach_for_her.app",
+      "bundleId": "com.vamapps.The-Coach-for-her",
+      "version": "2.0.33",
+      "oldVersion": "2.0.32",
+      "existingAccountService": "your-approved-female-account-service",
+      "dailyPlanDay": "Day 1",
+      "postAuthGoal": "Cultivate desire",
+      "localizationFixture": "src/test/resources/localization/ios-female-prod-2.0.31.properties",
+      "dailyPlanFixture": {
+        "removablePracticeProgram": "Kegel Journey",
+        "removablePracticeDay": "Day 4 of 60",
+        "removablePracticeTitle": "Pelvic Pilates",
+        "corePracticeProgram": "Kegel Journey",
+        "corePracticeDay": "Day 5 of 60",
+        "corePracticeTitle": "Morning Kegel Workout"
+      }
+    }
+  }
+}

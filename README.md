@@ -54,6 +54,13 @@ The latest device-run matrix and risk-based QA backlog are in
 
 ## Smoke and isolated integration suites
 
+For a sequential full iOS run on both app variants, use the
+[configurable regression runner](docs/ios-full-regression.md). It keeps the
+six regular Smoke methods separate from the clean-install method, archives
+interrupted attempts, and reports UI and offline results separately.
+The [Bookmarks suite](docs/bookmarks-automation.md) adds iOS cases COA-9647–9667
+with dedicated secret-backed account roles.
+
 The P0 smoke contract is implemented by `suites.SmokeSuite` and covers
 clean-install onboarding, Welcome/Login, Today/Daily Plan, Kegel and Profile
 with Logout. Explore, Shop and update coverage are implemented by the P1
@@ -61,7 +68,7 @@ with Logout. Explore, Shop and update coverage are implemented by the P1
 one-time push permission flow and StoreKit flows are intentionally separate:
 
 ```bash
-mvn test -Dtest=suites.SmokeSuite -Dplatform=ios \
+mvn test -Dtest=tests.SmokeTests#testCleanInstallOnboardingLeadsToDailyPlan -Dplatform=ios \
   -Dios.app=/path/to/The-Coach.app \
   -Dios.fullReset=true -Dios.noReset=false \
   -Dios.onboarding.steps=id:<step1>,id:<step2>

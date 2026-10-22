@@ -249,12 +249,17 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 "Cannot find and tap Explore tab",
                 10
         );
+        dismissExploreWelcomeIfPresent();
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_EXPLORE_SELECTED, TAB_EXPLORE_SELECTED},
                 "Explore tab is not selected",
                 10
         );
         this.waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Explore loading indicator is still displayed", 20);
+    }
+
+    protected void dismissExploreWelcomeIfPresent() {
+        // Platforms with a first-visit introduction dismiss it before checking selection.
     }
 
     @Step("Open Shop screen")
@@ -356,14 +361,12 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         this.waitForElementPresent(PROFILE_PROGRESS_EXERCISES, "Exercise Completed profile metric is not displayed", 10);
         this.waitForElementPresent(PROFILE_PROGRESS_LESSONS, "Lessons Finished profile metric is not displayed", 10);
         this.waitForElementPresent(PROFILE_PROGRESS_STREAK, "Longest Streak Days profile metric is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
-        this.waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
+        this.assertProfileVariantContentIsDisplayed();
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_PROFILE_ACCOUNT_SETTINGS, PROFILE_ACCOUNT_SETTINGS_BUTTON},
                 "Account Settings item is not displayed",
                 10
         );
-        this.waitForElementPresent(PROFILE_BACKED_BY_SCIENCE_BUTTON, "Backed By Science item is not displayed", 10);
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_PROFILE_SUPPORT, PROFILE_SUPPORT_BUTTON},
                 "Support item is not displayed",
@@ -384,6 +387,12 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 "FAQ item is not displayed",
                 10
         );
+    }
+
+    protected void assertProfileVariantContentIsDisplayed() {
+        this.waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
+        this.waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
+        this.waitForElementPresent(PROFILE_BACKED_BY_SCIENCE_BUTTON, "Backed By Science item is not displayed", 10);
     }
 
     @Step("Open Account Settings from Profile")
@@ -439,6 +448,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open FAQ from Profile")
     public void openFaqFromProfile() {
+        this.swipeUpToFindFirstVisibleElement(new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
+                "Cannot find FAQ on Profile", 3);
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON},
                 "Cannot tap FAQ",
@@ -449,6 +460,8 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Open Terms and privacy policy from Profile")
     public void openTermsFromProfile() {
+        this.swipeUpToFindFirstVisibleElement(new String[]{TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON},
+                "Cannot find Terms & privacy policy on Profile", 3);
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON},
                 "Cannot tap Terms & privacy policy",

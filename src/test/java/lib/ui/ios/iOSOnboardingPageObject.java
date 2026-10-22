@@ -21,12 +21,15 @@ import java.util.function.BooleanSupplier;
 
 public class iOSOnboardingPageObject extends OnboardingPageObject {
     private boolean preserveNotificationPermissionPrompt;
-    private static final String START_BUTTON = "id:START NOW";
+    private static final String START_BUTTON = iOSCoachFlowPageObject.WELCOME_START_BUTTON;
     private static final String GOAL_TITLE =
             "xpath://XCUIElementTypeStaticText[contains(translate(@name, "
                     + "'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), "
                     + "'WHAT DO YOU WANT TO ACHIEVE')]";
     private static final String CONTINUE_BUTTON = "id:CONTINUE";
+    private static final String ADDITIONAL_GOALS_TITLE =
+            "xpath://XCUIElementTypeStaticText[translate(normalize-space(@name), "
+                    + "'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='WHAT ELSE DO YOU WANT TO ACHIEVE?']";
     private static final String PAYWALL_MARKER = "id:subscription_paywall";
     private static final String PAYWALL_MARKER_FALLBACK = "id:START FREE TRIAL";
     private static final String TESTFLIGHT_PAYWALL_CLOSE = "id:ic_outline_close";
@@ -172,7 +175,8 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             if (dismissProgramPickerIfPresent()) {
                 continue;
             }
-            if (isPaywallVisible() || isElementVisible(TODAY_TAB)) {
+            if (isPaywallVisible() || isElementVisible(TODAY_TAB)
+                    || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
                 return;
             }
 
@@ -242,6 +246,10 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
+            if (isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
+                new iOSCoachFlowPageObject(driver).closeMasterclassPromoIfPresent();
+                continue;
+            }
             if (dismissProgramPickerIfPresent()) {
                 continue;
             }
@@ -302,6 +310,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Step("Wait for iOS Today")
     public void waitForToday() {
         createWait(30).withMessage("iOS Today tab did not open after onboarding").until(webDriver -> {
+            new iOSCoachFlowPageObject(driver).closeMasterclassPromoIfPresent();
             WebElement notificationClose = firstDisplayedEnabled(By.xpath(
                     "//XCUIElementTypeStaticText[@name='Allow notifications to stay on track' and @visible='true']"
                             + "/../XCUIElementTypeButton[1]"));
@@ -316,6 +325,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     private boolean questionnaireOrDestinationIsVisible() {
         return (preserveNotificationPermissionPrompt && notificationPermissionPromptIsVisible())
                 || isPaywallVisible()
+                || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)
                 || isElementVisible(TODAY_TAB)
                 || isProgramPickerVisible()
                 || !driver.findElements(By.xpath("//XCUIElementTypeWebView[@visible='true']")).isEmpty()
@@ -354,7 +364,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     }
 
     private void completeAdditionalGoalsIfPresent() {
-        if (!isElementVisible("xpath://XCUIElementTypeStaticText[@name='WHAT ELSE DO YOU WANT TO ACHIEVE?']")) {
+        if (!isElementVisible(ADDITIONAL_GOALS_TITLE)) {
             return;
         }
         acceptPendingSystemAlerts();
@@ -364,7 +374,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 5
         );
         if (!isElementEnabled(continueButton)
-                || isElementVisible("xpath://XCUIElementTypeStaticText[@name='WHAT ELSE DO YOU WANT TO ACHIEVE?']")) {
+                || isElementVisible(ADDITIONAL_GOALS_TITLE)) {
             WebElement secondaryGoal = firstDisplayedEnabled(By.xpath(
                     "//XCUIElementTypeOther[@name='StartQuestionnaireCheckedView' and @visible='true']"
                             + "//XCUIElementTypeStaticText[@visible='true' and @enabled='true' and "
@@ -377,14 +387,22 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                     secondaryGoal
             );
             tapElementCenterAndWaitForStateChange(secondaryGoal, 8);
-            Assert.assertNotNull(
-                    "iOS additional goal tap did not select Increase self confidence",
-                    firstDisplayedEnabled(By.xpath(
-                            "//XCUIElementTypeOther[@name='StartQuestionnaireCheckedView' and @visible='true' "
-                                    + "and .//XCUIElementTypeStaticText[@name='INCREASE SELF CONFIDENCE']]"
-                                    + "//XCUIElementTypeButton[@visible='true' and @value='1']"
-                    ))
-            );
+            if (!lib.Platform.getInstance().getIOSBundleId().endsWith("The-Coach-for-her")) {
+                Assert.assertNotNull(
+                        "iOS additional goal tap did not select Increase self confidence",
+                        firstDisplayedEnabled(By.xpath(
+                                "//XCUIElementTypeOther[@name='StartQuestionnaireCheckedView' and @visible='true' "
+                                        + "and .//XCUIElementTypeStaticText[@name='INCREASE SELF CONFIDENCE']]"
+                                        + "//XCUIElementTypeButton[@visible='true' and @value='1']"
+                        ))
+                );
+            } else {
+                // For Her exposes only the answer text; Continue and the next
+                // screen provide the observable confirmation of the choice.
+                Assert.assertTrue("Continue remains disabled after selecting the additional goal",
+                        isElementEnabled(waitForElementPresent(CONTINUE_BUTTON,
+                                "Additional-goals Continue is absent", 5)));
+            }
         }
 
         continueButton = waitForElementPresent(
@@ -393,10 +411,11 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 15
         );
         tapElementCenterAndWaitForStateChange(continueButton, 12);
+        waitForElementNotVisible(ADDITIONAL_GOALS_TITLE, "Additional goals did not advance", 15);
         createWait(30).until(webDriver -> questionnaireOrDestinationIsVisible());
     }
 
-    private boolean isPaywallVisible() {
+    boolean isPaywallVisible() {
         return isElementVisible(PAYWALL_MARKER)
                 || isElementVisible("id:subscription_error_illustration")
                 || isElementVisible(PAYWALL_MARKER_FALLBACK)

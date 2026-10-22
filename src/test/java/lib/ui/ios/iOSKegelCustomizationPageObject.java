@@ -24,10 +24,7 @@ public final class iOSKegelCustomizationPageObject extends iOSDailyPlanPageObjec
 
     public static String catchUpCardLocator(String title) {
         Assert.assertTrue("Unexpected practice title", title != null && !title.contains("'") && !title.contains("\""));
-        return "xpath://XCUIElementTypeOther[@name='DailyPlanItem' and .//XCUIElementTypeStaticText[@name='" + title + "']"
-                + " and ancestor::XCUIElementTypeCell/preceding-sibling::XCUIElementTypeCell"
-                + "[.//XCUIElementTypeStaticText[@name='TitleBlock.Title']][1]"
-                + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='TO CATCH-UP']]";
+        return dailyPlanCardLocator("TO CATCH-UP", title);
     }
 
     public void assertExactCatchUp(String title) {
