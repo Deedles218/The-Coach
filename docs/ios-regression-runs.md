@@ -117,6 +117,14 @@ read-only Simulator helper. COACH_DAILY_PLAN_PROGRAM задаёт дополни
 
 У Explore свой UI-preflight. Проверка одной функции доступна через
 run-ios-simulator.sh -Dtest=tests.ClassName#methodName.
+
+У For Her отдельный конфиг Explore по [COA-7069](https://the-coach.atlassian.net/browse/COA-7069).
+В наблюдённой iOS 2.0.33 конфигурации `abtest_explore_config_v7_for_her`
+поле `programsTitle` пустое: UI-preflight требует карусель с реальными
+программными карточками, изображениями и непустыми названиями, а не мужской
+`Browse Programs`. Мужской контракт заголовка сохранён. Успешный catalog gate
+не подтверждает остальные сценарии `ConfiguredExploreTests`: их ожидания
+секций и переходов нужно сверять отдельно с конфигом выбранного варианта.
 Broad discovery tests.*Tests,tests.HW.* отклоняется до установки или старта
 Simulator.
 

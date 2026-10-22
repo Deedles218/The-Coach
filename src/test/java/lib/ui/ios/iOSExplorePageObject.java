@@ -1,6 +1,7 @@
 package lib.ui.ios;
 
 import lib.ui.ExplorePageObject;
+import lib.Platform;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.util.List;
 import java.util.HashMap;
@@ -22,13 +23,49 @@ public class iOSExplorePageObject extends ExplorePageObject {
             + "@name='CoachProgramDetailedManV7Card' or @name='CoachProgramDetailedManCard']";
     private static final String PROGRAM_TITLES = PROGRAM_CARDS + "/XCUIElementTypeStaticText[1] | "
             + PROGRAM_CARDS + "/XCUIElementTypeImage/XCUIElementTypeStaticText[1]";
+    // COA-7069 gives For Her its own configuration. The observed 2.0.33 v7
+    // config has programsTitle=""; only real, titled program cards are ready.
+    private static final String FOR_HER_PROGRAM_SECTION = "//XCUIElementTypeOther["
+            + "@name='CoachProgramDetailedSectionViewCoachProgramDetailedManV7Card']";
+    private static final String FOR_HER_PROGRAM_CARDS = FOR_HER_PROGRAM_SECTION
+            + "/XCUIElementTypeCollectionView//XCUIElementTypeOther["
+            + "@name='CoachProgramDetailedManV7Card' and XCUIElementTypeImage"
+            + " and XCUIElementTypeStaticText[1][normalize-space(@name)!='' or normalize-space(@label)!='']]";
+
+    private static boolean isForHer() {
+        return "com.vamapps.The-Coach-for-her".equals(Platform.getInstance().getIOSBundleId());
+    }
+
+    private static String programCardsXPath() {
+        return isForHer() ? FOR_HER_PROGRAM_CARDS : PROGRAM_CARDS;
+    }
+
+    private static String programTitlesXPath() {
+        return isForHer() ? FOR_HER_PROGRAM_CARDS + "/XCUIElementTypeStaticText[1]" : PROGRAM_TITLES;
+    }
 
     public static String programCollectionLocator() {
-        return "xpath:" + PROGRAM_SECTION + "/XCUIElementTypeCollectionView";
+        return "xpath:" + (isForHer() ? FOR_HER_PROGRAM_SECTION : PROGRAM_SECTION)
+                + "/XCUIElementTypeCollectionView";
     }
 
     public static String programTitlesLocator() {
-        return "xpath:" + PROGRAM_TITLES;
+        return "xpath:" + programTitlesXPath();
+    }
+
+    private static void configureProgramLocators() {
+        String cards = programCardsXPath();
+        String titles = programTitlesXPath();
+        RECOMMENDED_SECTION = isForHer() ? "xpath:" + cards
+                : "xpath://XCUIElementTypeStaticText[@name='Browse Programs' or @name='ALL PROGRAMS']";
+        RECOMMENDED_COLLECTION = programCollectionLocator();
+        RECOMMENDED_PROGRAM_CARDS = "xpath:" + cards;
+        FIRST_PROGRAM_CARD = "xpath:(" + cards + ")[1]";
+        FIRST_PROGRAM_CARD_IMAGE = FIRST_PROGRAM_CARD + "//XCUIElementTypeImage";
+        FIRST_PROGRAM_TITLE = "xpath:(" + titles + ")[1]";
+        EXPLORE_PROGRAM_ITEMS = programTitlesLocator();
+        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(" + cards + ")[last()]";
+        LAST_RECOMMENDED_PROGRAM_TITLE = "xpath:(" + titles + ")[last()]";
     }
 
     static {
@@ -38,9 +75,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
         TAB_PROGRAMS = "xpath://XCUIElementTypeButton[@name='Programs']";
         TAB_TOOLS = "xpath://XCUIElementTypeButton[@name='Tools']";
 
-        RECOMMENDED_SECTION = "xpath://XCUIElementTypeStaticText[@name='Browse Programs' or @name='ALL PROGRAMS']";
-        RECOMMENDED_COLLECTION = programCollectionLocator();
-        RECOMMENDED_PROGRAM_CARDS = "xpath:" + PROGRAM_CARDS;
+        configureProgramLocators();
         SEXUAL_HEALTH_SECTION = "id:SEXUAL HEALTH";
         COURSES_SECTION = "id:COURSES";
         COURSES_COLLECTION = "xpath://XCUIElementTypeStaticText[@name='COURSES']/following-sibling::XCUIElementTypeCollectionView";
@@ -58,14 +93,6 @@ public class iOSExplorePageObject extends ExplorePageObject {
         COMPLETED_PROGRAMS_SECTION = "id:COMPLETED PROGRAMS";
         COMING_SOON_SECTION = "id:COMING SOON";
 
-        FIRST_PROGRAM_CARD = "xpath:(" + PROGRAM_CARDS + ")[1]";
-        FIRST_PROGRAM_CARD_IMAGE = FIRST_PROGRAM_CARD + "//XCUIElementTypeImage";
-        FIRST_PROGRAM_TITLE = "xpath:(" + PROGRAM_TITLES + ")[1]";
-        // Program-card names are dynamic. Prefer the dedicated identifier and
-        // retain the existing card hierarchy only as a migration fallback.
-        EXPLORE_PROGRAM_ITEMS = programTitlesLocator();
-        LAST_RECOMMENDED_PROGRAM_CARD = "xpath:(" + PROGRAM_CARDS + ")[last()]";
-        LAST_RECOMMENDED_PROGRAM_TITLE = "xpath:(" + PROGRAM_TITLES + ")[last()]";
         PROGRAM_DETAIL_TITLE = "id:NewCoachProgramHeaderView";
         PROGRAM_DETAIL_CONTENT = "id:DailyDaySwitcherView";
         PROGRAM_DETAIL_CLOSE_BUTTON = "id:CloseRoundBlack";
@@ -109,6 +136,9 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
     public iOSExplorePageObject(RemoteWebDriver driver) {
         super(driver);
+        // Base locators are static in the existing architecture; reset all
+        // program selectors together when attaching to another app variant.
+        configureProgramLocators();
     }
 
     @Override
@@ -290,7 +320,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
 
     private void openFixtureProgramSettings(String program) {
         String collection = programCollectionLocator();
-        String title = "xpath:(" + PROGRAM_TITLES + ")[@label="
+        String title = "xpath:(" + programTitlesXPath() + ")[@label="
                 + lib.ui.LocalizationPageObject.xpathLiteral(program) + " and @visible='true']";
         new iOSProgramListReader(driver).rewind(programTitlesLocator(), collection);
         for (int i = 0; i < 12 && !isElementVisible(title); i++) {
@@ -361,7 +391,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
     public void swipeToAndOpenLastRecommendedProgram() {
         List<String> names = getProgramNamesFromExplore();
         String last = names.get(names.size() - 1);
-        waitForElementAndClick("xpath:(" + PROGRAM_TITLES + ")[@label="
+        waitForElementAndClick("xpath:(" + programTitlesXPath() + ")[@label="
                         + lib.ui.LocalizationPageObject.xpathLiteral(last) + " and @visible='true']",
                 "Cannot open the last program in the complete carousel", 10);
         waitForElementPresent(PROGRAM_DETAIL_TITLE, "Last program detail screen did not open", 15);
