@@ -128,6 +128,14 @@ public final class KegelCasePageObject extends MainPageObject {
             coach.openProfile();
         }
         waitForElementVisible(required("auth.profileReady"), "Profile did not finish loading", 30);
+        // Resuming the quiz can restore a connected profile. CONFIRM belongs
+        // only to anonymous profiles; establish a fresh OTP session in this case.
+        if (!isElementVisible(required("auth.confirm"))) {
+            coach.logOut();
+            coach.loginWithEmailAndOtp(email, otp);
+            assertAuthenticatedProfile(coach, email);
+            return;
+        }
         tap("auth.confirm");
         tap("auth.changeEmail");
         visible("auth.emailForm");
@@ -137,6 +145,10 @@ public final class KegelCasePageObject extends MainPageObject {
         coach.assertOtpScreenIsDisplayedForEmail(email);
         coach.typeSecurityCode(otp);
         coach.completeAuthorizationAfterSecurityCode();
+        assertAuthenticatedProfile(coach, email);
+    }
+
+    private void assertAuthenticatedProfile(CoachFlowPageObject coach, String email) {
         // Today can briefly render the previous anonymous profile's cached progress.
         coach.openProfile();
         String nickname = email.substring(0, email.indexOf('@'));

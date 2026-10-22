@@ -63,6 +63,29 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
         throw new AssertionError("Fixture program is not available in selector: " + title);
     }
 
+    /** Prepare the explicitly configured workout program before the Kegel smoke assertion. */
+    public void ensureWorkoutProgramSelected(String title) {
+        Assert.assertTrue("Configure the observed Kegel program with -Dcoach.kegelPlayer.program",
+                title != null && !title.trim().isEmpty());
+        if (!title.equalsIgnoreCase(getActiveProgramName())) {
+            openProgramSelector();
+            selectExactProgram(title);
+            createWait(20).withMessage("Kegel fixture program did not become active: " + title).until(ignored -> {
+                if (isElementVisible("id:Switch program")) {
+                    waitForElementAndClick("id:Switch program", "Cannot confirm the Kegel program switch", 5);
+                    return false;
+                }
+                if (isElementVisible("id:To switch back, tap here")) {
+                    waitForElementAndClick("id:OK", "Cannot close the program-switch hint", 5);
+                    return false;
+                }
+                return isElementVisible(ACTIVE_PROGRAM_TITLE)
+                        && title.equalsIgnoreCase(getActiveProgramName());
+            });
+        }
+        waitForSelectedProgram(title);
+    }
+
     public void waitForSelectedProgram(String title) {
         new WebDriverWait(driver, Duration.ofSeconds(20)).withMessage("Today did not switch to " + title)
                 .until(ignored -> getActiveProgramName().equalsIgnoreCase(title));

@@ -7,6 +7,11 @@ import java.util.Locale;
  * manager and are never stored in source code, Allure metadata, or log output.
  */
 public final class TestData {
+    private static final String[] BOOKMARKS_FIXTURES = {
+            "BASELINE", "CONTENT", "TOOLTIP", "RECURRING", "SWITCHA", "SWITCHB", "UPDATE",
+            "NOSUBSCRIPTION"
+    };
+
     private TestData() {
     }
 
@@ -29,6 +34,16 @@ public final class TestData {
                     + ": configure COACH_" + key + "_EMAIL and COACH_" + key + "_OTP");
         }
         return new TestAccount(email, otp);
+    }
+
+    public static TestAccount bookmarksAccount(String fixture) {
+        String key = fixture.replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT);
+        return new TestAccount(
+                required("coach.bookmarks." + key.toLowerCase(Locale.ROOT) + ".email",
+                        "COACH_BOOKMARKS_" + key + "_EMAIL"),
+                required("coach.bookmarks." + key.toLowerCase(Locale.ROOT) + ".otp",
+                        "COACH_BOOKMARKS_" + key + "_OTP")
+        );
     }
 
     public static TestAccount kegelPlayerAccount() {
@@ -102,6 +117,14 @@ public final class TestData {
      */
     public static String analyticsEventLogPath() {
         return configured("coach.analytics.eventLog", "COACH_ANALYTICS_EVENT_LOG");
+    }
+
+    public static String bookmarksAnalyticsLogPath() {
+        return required("coach.bookmarks.analyticsLog", "COACH_BOOKMARKS_ANALYTICS_LOG");
+    }
+
+    public static String bookmarksNetworkLogPath() {
+        return required("coach.bookmarks.networkLog", "COACH_BOOKMARKS_NETWORK_LOG");
     }
 
     public static Fixture deterministicFixture() {
@@ -193,6 +216,15 @@ public final class TestData {
                         "COACH_" + key + "_" + field.toUpperCase(Locale.ROOT));
                 if (value != null) sanitized = sanitized.replace(value,
                         "link".equals(field) ? "[redacted-link]" : "<redacted-" + field + ">");
+            }
+        }
+        for (String fixture : BOOKMARKS_FIXTURES) {
+            for (String field : new String[]{"email", "otp"}) {
+                String value = configured(
+                        "coach.bookmarks." + fixture.toLowerCase(Locale.ROOT) + "." + field,
+                        "COACH_BOOKMARKS_" + fixture + "_" + field.toUpperCase(Locale.ROOT)
+                );
+                if (value != null) sanitized = sanitized.replace(value, "<redacted-" + field + ">");
             }
         }
         String email = configured("coach.existingProgress.email", "COACH_EXISTING_PROGRESS_EMAIL");

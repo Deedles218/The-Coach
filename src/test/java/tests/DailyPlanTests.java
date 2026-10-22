@@ -11,10 +11,13 @@ import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.TestData;
+import lib.RestoringTestAction;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
+import lib.ui.ios.iOSDailyPlanPageObject;
+import lib.ui.ios.iOSProgramSelectorPageObject;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -125,14 +128,41 @@ public class DailyPlanTests extends CoreTestCase {
             @Feature(value = "Daily Plan customization")
     })
     @DisplayName("COA-8506 COA-8513 COA-8514 Daily Plan item remove action can be cancelled")
-    @Description("Long-presses the first Daily Practice item, verifies customization actions, opens the Remove from Daily Plan confirmation, cancels it, and verifies the item remains.")
+    @Description("Long-presses the configured unfinished removable Daily Practice (or the legacy first-practice fixture), verifies customization actions, cancels removal, and verifies the same card remains. Mandatory Kegel and lessons are covered separately.")
     @Step("Start test test05DailyPlanRemoveActionCanBeCancelled")
     @Severity(value = SeverityLevel.CRITICAL)
-    public void test05DailyPlanRemoveActionCanBeCancelled() {
+    public void test05DailyPlanRemoveActionCanBeCancelled() throws Exception {
         org.junit.Assume.assumeTrue("Android has no postpone/remove/recover actions (confirmed by product owner)", Platform.getInstance().isIOS());
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
         Assert.assertNotNull("Daily Plan page object is not available for current platform", dailyPlan);
+
+        String title = System.getProperty("coach.dailyPlan.removablePracticeTitle");
+        if (title != null && !title.trim().isEmpty()) {
+            CoachFlowPageObject coach = CoachFlowPageObjectFactory.get(driver);
+            TestData.TestAccount account = TestData.testModelAccount("COA8506");
+            coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+            dailyPlan.openTodayTab();
+            iOSDailyPlanPageObject ios = (iOSDailyPlanPageObject) dailyPlan;
+            iOSProgramSelectorPageObject selector = new iOSProgramSelectorPageObject(driver);
+            String originalProgram = dailyPlan.getActiveProgramName();
+            String originalDay = dailyPlan.getCurrentDayLabel();
+            RestoringTestAction.run(() -> {
+                selector.ensureWorkoutProgramSelected(System.getProperty("coach.dailyPlan.removablePracticeProgram"));
+                ios.selectObservedDay(System.getProperty("coach.dailyPlan.removablePracticeDay"));
+                ios.holdIncompletePracticeCard(title);
+                dailyPlan.assertCustomizationActionsSheetIsDisplayed();
+                dailyPlan.tapRemoveFromDailyPlanAction();
+                dailyPlan.assertRemoveFromDailyPlanConfirmationIsDisplayed();
+                dailyPlan.cancelRemoveFromDailyPlan();
+                ios.assertIncompletePracticeStillDisplayed(title);
+            }, () -> {
+                ios.dismissCustomizationIfPresent();
+                selector.ensureWorkoutProgramSelected(originalProgram);
+                ios.selectObservedDay(originalDay);
+            });
+            return;
+        }
 
         ensureExistingProgressDailyPlanState();
         dailyPlan.openTodayTab();
@@ -144,6 +174,45 @@ public class DailyPlanTests extends CoreTestCase {
         dailyPlan.assertRemoveFromDailyPlanConfirmationIsDisplayed();
         dailyPlan.cancelRemoveFromDailyPlan();
         dailyPlan.assertFirstDailyPracticeStillDisplayed();
+    }
+
+    @Test
+    @Features({@Feature("Daily Plan customization"), @Feature("Mandatory Kegel")})
+    @DisplayName("Mandatory Kegel practice cannot be postponed or removed")
+    @Description("Holds an explicitly configured unfinished Kegel practice, verifies the core-exercise restriction, acknowledges it, and verifies that the card and selected day are unchanged.")
+    @Severity(SeverityLevel.CRITICAL)
+    public void test06MandatoryKegelCannotBeCustomized() throws Exception {
+        org.junit.Assume.assumeTrue("Daily Plan customization controls are iOS-only", Platform.getInstance().isIOS());
+        CoachFlowPageObject coach = CoachFlowPageObjectFactory.get(driver);
+        TestData.TestAccount account = TestData.dedicatedKegelPlayerAccount();
+        coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
+        iOSProgramSelectorPageObject selector = new iOSProgramSelectorPageObject(driver);
+        daily.openTodayTab();
+        String originalProgram = daily.getActiveProgramName();
+        String originalDay = daily.getCurrentDayLabel();
+        RestoringTestAction.run(() -> {
+            selector.ensureWorkoutProgramSelected(System.getProperty("coach.dailyPlan.corePracticeProgram"));
+            daily.selectObservedDay(System.getProperty("coach.dailyPlan.corePracticeDay"));
+            daily.assertCorePracticeCannotBeCustomized(System.getProperty("coach.dailyPlan.corePracticeTitle"));
+        }, () -> {
+            daily.dismissCustomizationIfPresent();
+            selector.ensureWorkoutProgramSelected(originalProgram);
+            daily.selectObservedDay(originalDay);
+        });
+    }
+
+    @Test
+    @Features({@Feature("Daily Plan customization"), @Feature("Daily Lessons")})
+    @DisplayName("Daily Lessons cannot be postponed or removed")
+    @Description("Holds the first Daily Lesson in DAILY LESSONS and verifies that no customization controls appear and that the card and selected day remain unchanged.")
+    @Severity(SeverityLevel.NORMAL)
+    public void test07DailyLessonCannotBeCustomized() throws Exception {
+        org.junit.Assume.assumeTrue("Daily Plan customization controls are iOS-only", Platform.getInstance().isIOS());
+        ensureExistingProgressDailyPlanState();
+        iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
+        daily.openTodayTab();
+        RestoringTestAction.run(daily::assertDailyLessonCannotBeCustomized, daily::dismissCustomizationIfPresent);
     }
 
     private void ensureExistingProgressDailyPlanState() {

@@ -91,6 +91,11 @@ public class iOSExplorePageObject extends ExplorePageObject {
         super(driver);
     }
 
+    @Override
+    protected void dismissExploreWelcomeIfPresent() {
+        new iOSCoachFlowPageObject(driver).dismissExploreWelcomeIfPresent();
+    }
+
     private static final String EXPLORE_HEADING = "xpath://XCUIElementTypeStaticText[@name='Explore' and @visible='true']";
 
     private String configuredSection(String title) {

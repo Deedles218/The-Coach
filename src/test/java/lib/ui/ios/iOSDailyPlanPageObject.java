@@ -15,12 +15,19 @@ import javax.imageio.ImageIO;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.junit.Assert;
+import org.openqa.selenium.support.ui.Quotes;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
+import lib.TestData;
 
 public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     private int selectorTop;
     private static final String SELECTOR_CARDS = "id:ProgramSelectionCardView";
     private static final String SELECTOR_TITLES = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']//XCUIElementTypeStaticText[@name='TitleBlock.Title']";
     private static final String SELECTOR_COLLECTION = "xpath:(//XCUIElementTypeScrollView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']] | //XCUIElementTypeCollectionView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']])[last()]";
+    private static final String LESSON_EXIT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' "
+            + "and contains(@label, 'finished') and contains(@label, 'Are you sure that you want to quit?')]";
     static {
         TAB_TODAY = "id:Today";
         SELECTED_TODAY_TAB = "xpath://XCUIElementTypeButton[@name='Today' and @value='1']";
@@ -33,6 +40,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
                 + "or @name='Kegel Challenge' or @label='Kegel Challenge' "
+                + "or @name='Path to Desire' or @name='Kegel Journey' "
                 + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
         // The program selector is a new app-side contract. The active-program
         // label remains a stable fallback for builds that have not migrated
@@ -47,15 +55,16 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
 
         DAILY_LESSONS_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY LESSONS']";
-        FIRST_LESSON_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started']";
-        FIRST_LESSON_TYPE = "xpath://XCUIElementTypeStaticText[@name='Lesson 1']";
-        LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started']";
-        LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20]";
-        LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back']";
+        FIRST_LESSON_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started' or @name='The Basics of Sexual Desire']";
+        FIRST_LESSON_TYPE = "xpath://XCUIElementTypeStaticText[@name='Lesson 1' or @name='How it all works']";
+        LESSON_SCREEN_TITLE = FIRST_LESSON_TITLE;
+        LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20 and @name!='The Basics of Sexual Desire']";
+        LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back' or @name='ic outline close']";
 
         DAILY_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY PRACTICE']";
-        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout']";
-        FIRST_PRACTICE_TYPE = "xpath://XCUIElementTypeStaticText[@name='Guide' or contains(@name, 'days in total')]";
+        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout' or @name='Mindful Eating']";
+        FIRST_PRACTICE_TYPE = "xpath://XCUIElementTypeStaticText[@name='Guide' or @name='Daily workout' or contains(@name, 'day in total') or contains(@name, 'days in total') "
+                + "or (@name='Level 1' and ancestor::XCUIElementTypeOther[@name='DailyPlanItem'][.//XCUIElementTypeStaticText[@name='Mindful Eating']])]";
         CUSTOMIZATION_CATCH_UP_SECTION = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='TO CATCH-UP' and @visible='true']";
         CUSTOMIZATION_CATCH_UP_CARD = "id:daily_plan_catch_up_card";
         CUSTOMIZATION_POSTPONED_ICON = "id:ItemMovedForward";
@@ -99,7 +108,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_PLAYER_BACK_BUTTON = "id:navBarRoundClose";
         KEGEL_PLAYER_MUTE_BUTTON = "xpath://XCUIElementTypeButton[contains(@name, 'sound off')]";
         KEGEL_PLAYER_UNMUTE_BUTTON = "xpath://XCUIElementTypeButton[contains(@name, 'sound on')]";
-        KEGEL_PLAYER_EXERCISE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Contract' or @name='Rest' or @name='Waves' or @name='Squeeze']";
+        KEGEL_PLAYER_EXERCISE_TITLE = kegelPlayerExerciseTitleLocator();
         KEGEL_PLAYER_DIFFICULTY = "xpath://XCUIElementTypeStaticText[@name='GUIDE' or contains(@name, 'How to find pelvic floor')]";
         // Keep a future-compatible fallback for builds that expose progress as a
         // clock-like accessibility label (for example "00:12/03:52"). The current
@@ -117,7 +126,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_PLAYER_INFO_BUTTON = "id:ic outline info";
         KEGEL_PLAYER_INFO_TOOLTIP = "xpath://XCUIElementTypeStaticText[contains(@name, 'How to do the') and contains(@name, 'exercise correctly')]";
         KEGEL_PLAYER_INFO_MODAL_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Kegels') and @visible='true']";
-        KEGEL_PLAYER_INFO_MODAL_CONTENT = "xpath://XCUIElementTypeStaticText[contains(@name, 'Contract your pelvic floor muscle') and @visible='true']";
+        KEGEL_PLAYER_INFO_MODAL_CONTENT = kegelPlayerInfoContentLocator();
         KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON = "xpath://XCUIElementTypeButton[@name='ic outline close' and @visible='true']";
         KEGEL_PLAYER_PHASE_SQUEEZE_BUTTON = "xpath://XCUIElementTypeStaticText[@name='SQUEEZE']";
         KEGEL_PLAYER_PHASE_REST_BUTTON = "xpath://XCUIElementTypeStaticText[@name='REST']";
@@ -125,7 +134,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_PLAYER_EXIT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[(contains(@value, 'You haven') or contains(@label, 'You haven')) and (contains(@value, 'quit') or contains(@label, 'quit')) and @visible='true']";
         KEGEL_PLAYER_EXIT_CONFIRM_QUIT_BUTTON = "id:Quit";
         KEGEL_PLAYER_EXIT_CONFIRM_CONTINUE_BUTTON = "id:Don’t quit";
-        PRACTICE_COMPLETION_FEEDBACK_TITLE = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='YOU’RE GREAT!']";
+        PRACTICE_COMPLETION_FEEDBACK_TITLE = "xpath://XCUIElementTypeStaticText[(@name='TitleBlock.Title' and @label='YOU’RE GREAT!') or @name='Practice complete!']";
         PRACTICE_COMPLETION_FEEDBACK_CLOSE_BUTTON = "id:ic outline close";
         PRACTICE_COMPLETION_INTENSITY_TOO_EASY = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='Too Easy']";
         PRACTICE_COMPLETION_INTENSITY_GREAT = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='Great']";
@@ -147,6 +156,196 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
 
     public iOSDailyPlanPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    private static final String PLAYER_CONTAINER = "//XCUIElementTypeOther[XCUIElementTypeButton[@name='navBarRoundClose']"
+            + " and .//XCUIElementTypeButton[@name='PlayerPauseIcon' or @name='PlayerPlayIcon']]";
+
+    public static String kegelPlayerExerciseTitleLocator() {
+        return "xpath:" + PLAYER_CONTAINER + "/XCUIElementTypeStaticText[@visible='true' and ("
+                + "@name='Contract' or starts-with(@name,'Contract ') or @name='Rest' or @name='Waves' or @name='Squeeze')]";
+    }
+
+    public static String kegelPlayerWorkoutPhaseLocator() {
+        return "xpath:" + PLAYER_CONTAINER + "/XCUIElementTypeCollectionView/XCUIElementTypeCell"
+                + "/XCUIElementTypeStaticText[@visible='true' and (@name='SQUEEZE' or @name='WAVES'"
+                + " or @name='SLOW LADDER' or @name='KICK' or @name='FLICKER' or @name='CLASP' or @name='INVERTED CLASP')]";
+    }
+
+    public static String kegelPlayerInfoContentLocator() {
+        return "xpath://XCUIElementTypeCollectionView[.//XCUIElementTypeStaticText[contains(@name,'Kegels')]]"
+                + "//XCUIElementTypeStaticText[@visible='true' and (contains(@name,'Contract your pelvic floor muscle')"
+                + " or (parent::XCUIElementTypeOther[@name='LessonBulletTextView'] and string-length(normalize-space(@name))>20))]";
+    }
+
+    private static final String STRETCHING_SWITCH =
+            "xpath://XCUIElementTypeOther[@name='KegelComponentViewSwitcherView']//XCUIElementTypeSwitch";
+
+    @Override
+    protected boolean isKegelStretchingVideoExpected() {
+        if (getAmountElements(STRETCHING_SWITCH) == 0) {
+            waitForElementVisible(PRACTICE_SCREEN_START_BUTTON, "Kegel workout start control is missing", 10);
+            Assert.assertTrue("A workout without stretching must expose its exercise list",
+                    getAmountElements(KEGEL_START_SCREEN_EXERCISE_ITEMS) > 0);
+            return false;
+        }
+        String value = waitForElementVisible(STRETCHING_SWITCH,
+                "Kegel stretching preference is not displayed", 10).getAttribute("value");
+        Assert.assertTrue("Kegel stretching switch has an unknown state", "0".equals(value) || "1".equals(value));
+        return "1".equals(value);
+    }
+
+    @Override
+    protected void assertKegelPlayerPhaseControlsAreDisplayed() {
+        waitForElementPresent("xpath:" + PLAYER_CONTAINER
+                        + "/XCUIElementTypeCollectionView/XCUIElementTypeCell/XCUIElementTypeStaticText[@name='REST']",
+                "Kegel player Rest phase control is not displayed", 10);
+        waitForElementPresent(kegelPlayerWorkoutPhaseLocator(),
+                "Kegel player workout phase control is not displayed", 10);
+    }
+
+    public static String dailyPlanCardLocator(String section, String title) {
+        Assert.assertTrue("Daily Plan card title must be configured", title != null && !title.trim().isEmpty());
+        return "xpath://XCUIElementTypeOther[@name='DailyPlanItem' and .//XCUIElementTypeStaticText[@name="
+                + Quotes.escape(title) + "] and ancestor::XCUIElementTypeCell/preceding-sibling::XCUIElementTypeCell"
+                + "[.//XCUIElementTypeStaticText[@name='TitleBlock.Title']][1]"
+                + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label=" + Quotes.escape(section) + "]]";
+    }
+
+    public static String unfinishedDailyPracticeCardLocator(String title) {
+        return dailyPlanCardLocator("DAILY PRACTICE", title)
+                + "[not(.//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true'])]";
+    }
+
+    @Step("Select the observed Daily Plan day without completing activities: {expectedDay}")
+    public void selectObservedDay(String expectedDay) {
+        Assert.assertTrue("Configure the observed Daily Plan fixture day", expectedDay != null && !expectedDay.trim().isEmpty());
+        String target = expectedDay.trim().replaceAll("\\s+", " ");
+        java.util.regex.Matcher desired = java.util.regex.Pattern.compile("^(Day|Stage) (\\d+)(?: of \\d+)?$").matcher(target);
+        Assert.assertTrue("Unsupported Daily Plan fixture day: " + target, desired.matches());
+        int targetNumber = Integer.parseInt(desired.group(2));
+        for (int step = 0; step <= 60; step++) {
+            String before = getCurrentDayLabel().trim().replaceAll("\\s+", " ");
+            if (before.equals(target)) return;
+            java.util.regex.Matcher current = java.util.regex.Pattern.compile("^(Day|Stage) (\\d+)(?: of \\d+)?$").matcher(before);
+            Assert.assertTrue("Current Daily Plan day is unreadable: " + before, current.matches());
+            Assert.assertEquals("Fixture day belongs to a different program day format", desired.group(1), current.group(1));
+            int currentNumber = Integer.parseInt(current.group(2));
+            Assert.assertNotEquals("Fixture day total differs from the selected program", targetNumber, currentNumber);
+            waitForElementAndClick(currentNumber < targetNumber ? RIGHT_SWITCHER_ARROW : LEFT_SWITCHER_ARROW,
+                    "Cannot navigate to the configured Daily Plan day", 10);
+            createWait(15).withMessage("Daily Plan did not leave " + before).until(ignored ->
+                    !before.equals(getCurrentDayLabel().trim().replaceAll("\\s+", " ")));
+        }
+        Assert.fail("Configured Daily Plan day is not reachable: " + target);
+    }
+
+    @Step("Hold the exact unfinished card in Daily Practice: {title}")
+    public void holdIncompletePracticeCard(String title) {
+        String target = unfinishedDailyPracticeCardLocator(title);
+        for (int swipe = 0; swipe < 5 && !isElementVisible(target); swipe++) mobileSwipeUp();
+        Assert.assertEquals("Fixture needs exactly one unfinished practice in DAILY PRACTICE: " + title,
+                1, getAmountElements(target));
+        WebElement card = waitForElementVisible(target, "Configured unfinished practice is not visible: " + title, 10);
+        touchAndHoldElement(card, .8);
+        Allure.addAttachment("Daily Practice hold result", "application/xml",
+                TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+    }
+
+    @Step("Verify the same unfinished practice remains after cancellation: {title}")
+    public void assertIncompletePracticeStillDisplayed(String title) {
+        String target = unfinishedDailyPracticeCardLocator(title);
+        waitForElementVisible(target, "The selected unfinished practice disappeared after cancellation: " + title, 10);
+        Assert.assertEquals("The selected practice was removed or duplicated", 1, getAmountElements(target));
+    }
+
+    @Step("Verify mandatory Kegel rejects postponement and removal: {title}")
+    public void assertCorePracticeCannotBeCustomized(String title) {
+        String before = getCurrentDayLabel();
+        holdIncompletePracticeCard(title);
+        waitForElementVisible(CORE_EXERCISE_RESTRICTION_POPUP_TITLE,
+                "Mandatory Kegel did not show the postpone/remove restriction", 10);
+        waitForElementEnabled(CORE_EXERCISE_RESTRICTION_POPUP_BUTTON, "Restriction acknowledgment is unavailable", 10);
+        Assert.assertFalse("Mandatory Kegel unexpectedly exposed a remove action",
+                isElementVisible(CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON));
+        Assert.assertFalse("Mandatory Kegel unexpectedly exposed a postpone action",
+                isElementVisible(CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON));
+        closeCoreExerciseRestrictionPopup();
+        assertIncompletePracticeStillDisplayed(title);
+        Assert.assertEquals("Mandatory Kegel changed the selected day", before, getCurrentDayLabel());
+    }
+
+    @Step("Verify a Daily Lesson exposes no postpone/remove actions")
+    public void assertDailyLessonCannotBeCustomized() {
+        assertDailyLessonsAreDisplayed();
+        String before = getCurrentDayLabel();
+        String title = getElementAccessibleName(waitForElementVisible(FIRST_LESSON_TITLE, "First lesson is not visible", 10));
+        String target = dailyPlanCardLocator("DAILY LESSONS", title);
+        Assert.assertEquals("Lesson fixture must identify one card in DAILY LESSONS", 1, getAmountElements(target));
+        touchAndHoldElement(waitForElementVisible(target, "Cannot hold the lesson card", 10), .8);
+        Allure.addAttachment("Daily Lesson hold result", "application/xml",
+                TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+        Assert.assertFalse("A lesson unexpectedly exposed customization controls",
+                isCustomizationActionsSheetDisplayed() || isElementVisible(CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON)
+                        || isCoreExerciseRestrictionPopupDisplayed());
+        waitForElementVisible(target, "Lesson disappeared after holding its card", 10);
+        Assert.assertEquals("Holding a lesson changed the selected day", before, getCurrentDayLabel());
+    }
+
+    @Step("Dismiss Daily Plan customization without deleting or postponing")
+    public void dismissCustomizationIfPresent() {
+        if (isElementVisible(CUSTOMIZATION_DELETE_CONFIRM_BUTTON)) {
+            cancelRemoveFromDailyPlan();
+        } else if (isCoreExerciseRestrictionPopupDisplayed()) {
+            closeCoreExerciseRestrictionPopup();
+        } else if (isElementVisible(CUSTOMIZATION_MOVE_TO_TOMORROW_BUTTON)
+                || isElementVisible(CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON)) {
+            waitForElementAndClick(TAB_TODAY, "Cannot dismiss the customization sheet", 10);
+            waitForElementNotVisible(CUSTOMIZATION_REMOVE_FROM_DAILY_PLAN_BUTTON,
+                    "Customization sheet did not dismiss", 10);
+        }
+    }
+
+    boolean isDailyLessonVisible() {
+        return (isElementVisible(LESSON_SCREEN_TITLE) && isElementVisible(LESSON_SCREEN_BACK_BUTTON))
+                || isLessonExitConfirmationVisible();
+    }
+
+    boolean isKegelExerciseFlowVisible() {
+        return isElementVisible(KEGEL_PLAYER_PAUSE_BUTTON) || isElementVisible(KEGEL_PLAYER_PLAY_BUTTON)
+                || isElementVisible(KEGEL_MEDIA_PLAYER_BACK_BUTTON) || isElementVisible(PRACTICE_SCREEN_START_BUTTON)
+                || isElementVisible(PRACTICE_SCREEN_CLOSE_BUTTON) || isElementVisible(KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON)
+                || isElementVisible(PRACTICE_COMPLETION_FEEDBACK_TITLE)
+                || (isElementVisible(KEGEL_PLAYER_INFO_MODAL_TITLE) && isElementVisible(KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON));
+    }
+
+    void closeCompletedPracticeIfPresent() {
+        if (isElementVisible(PRACTICE_COMPLETION_FEEDBACK_TITLE)) closePracticeCompletionFeedbackIfPresent();
+    }
+
+    void closeDailyLessonIfPresent() {
+        if (isDailyLessonVisible()) returnFromDailyLessonToDailyPlan();
+    }
+
+    private boolean isLessonExitConfirmationVisible() {
+        return isElementVisible(LESSON_EXIT_CONFIRM_TITLE)
+                && isElementVisible("id:Quit") && isElementVisible("id:Continue");
+    }
+
+    @Override
+    @io.qameta.allure.Step("Close iOS Daily Lesson and confirm unfinished exit")
+    public void returnFromDailyLessonToDailyPlan() {
+        if (!isLessonExitConfirmationVisible()) {
+            waitForElementAndClick(LESSON_SCREEN_BACK_BUTTON, "Cannot close Daily Lesson screen", 10);
+        }
+        createWait(15).withMessage("Daily Plan did not return after closing Daily Lesson").until(ignored -> {
+            if (isLessonExitConfirmationVisible()) {
+                waitForElementAndClick("id:Quit", "Cannot confirm leaving the unfinished lesson", 10);
+                waitForElementNotVisible(LESSON_EXIT_CONFIRM_TITLE, "Lesson exit confirmation did not close", 10);
+                return false;
+            }
+            return isElementVisible(TEST_ID_TODAY_TAB) || isElementVisible(TAB_TODAY);
+        });
     }
 
     @Override
