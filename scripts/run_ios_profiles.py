@@ -14,15 +14,21 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 EXISTING = ("COACH_EXISTING_PROGRESS_EMAIL", "COACH_EXISTING_PROGRESS_OTP")
+KEGEL_ACCOUNT = ("COACH_KEGEL_PLAYER_EMAIL", "COACH_KEGEL_PLAYER_OTP")
+CORE_PRACTICE_PROPERTIES = ("coach.dailyPlan.corePracticeProgram", "coach.dailyPlan.corePracticeDay",
+                            "coach.dailyPlan.corePracticeTitle")
 PREFLIGHT = "tests.IOSRegressionPreflightTests#"
 PROFILES = {
     "regression": dict(test="suites.IOSRegressionSuite", mode="existing", validator="smoke",
+                       required=KEGEL_ACCOUNT,
+                       required_properties=("coach.kegelPlayer.program",) + CORE_PRACTICE_PROPERTIES,
                        gate=PREFLIGHT + "testExistingProgressFixtureAndExplore"),
     "preflight": dict(test=PREFLIGHT + "testExistingProgressFixtureAndExplore", mode="existing", validator="smoke"),
     "smoke": dict(test="suites.SmokeSuite", mode="clean", validator="smoke", onboarding=True),
     "release-smoke": dict(test="suites.ReleaseSmokeSuite", mode="update", validator="smoke",
                           required=("COACH_EXPECTED_ACCOUNT_UID",)),
     "ios-parity-smoke": dict(test="suites.IOSParitySmokeSuite", mode="existing", validator="smoke",
+                             required_properties=("coach.kegelPlayer.program",),
                              gate=PREFLIGHT + "testExistingProgressFixtureAndExplore"),
     "explore": dict(test="suites.ExploreParitySuite", mode="existing", required=EXISTING,
                     gate=PREFLIGHT + "testExploreCatalogIsReady"),
@@ -30,6 +36,7 @@ PROFILES = {
                           required=EXISTING + ("COACH_VALID_EMAIL_WITHOUT_PROGRESS",)),
     "profile": dict(test="tests.CoachProfileTests", mode="existing", required=EXISTING),
     "daily-plan": dict(test="tests.DailyPlanTests", mode="existing", validator="smoke",
+                       required=KEGEL_ACCOUNT, required_properties=CORE_PRACTICE_PROPERTIES,
                        gate=PREFLIGHT + "testExistingProgressFixtureAndExplore"),
     "kegel": dict(test="tests.KegelExerciseTests", mode="existing", validator="smoke",
                   required=("COACH_KEGEL_PLAYER_EMAIL", "COACH_KEGEL_PLAYER_OTP")),
@@ -319,7 +326,8 @@ def main(argv=None):
             if args.plan:
                 print("  required: " + ", ".join(profile.get("required", ()))
                       + "; validator=" + profile.get("validator", "profile")
-                      + "; fixtures=" + ", ".join(profile.get("files", ())))
+                      + "; fixtures=" + ", ".join(profile.get("files", ()))
+                      + "; properties=" + ", ".join(profile.get("required_properties", ())))
         if args.plan:
             return 0
         history = None

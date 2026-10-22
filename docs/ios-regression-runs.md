@@ -59,6 +59,25 @@ COACH_EXISTING_PROGRESS_EMAIL / COACH_EXISTING_PROGRESS_OTP.
 COACH_ACCOUNT_VARIANT, если задан, должен совпадать. OTP/email не записываются
 в manifest; вывод дочернего процесса очищается перед сохранением в лог.
 
+Для `regression` и `daily-plan` дополнительно нужны отдельные
+`COACH_KEGEL_PLAYER_EMAIL` / `COACH_KEGEL_PLAYER_OTP` и подготовленная обязательная
+практика для `DailyPlanTests`. Это другой аккаунт, отличный от existing-progress.
+Параметры программы, дня и карточки берутся из согласованной
+[Daily Plan fixture](ios-daily-plan-card-fixtures.md), а не подбираются для обхода
+падения. Пример для ранее подготовленной male fixture:
+
+    regression_options=(
+      "-Dcoach.kegelPlayer.program=Kegel Challenge"
+      "-Dcoach.dailyPlan.corePracticeProgram=Kegel Challenge"
+      "-Dcoach.dailyPlan.corePracticeDay=Stage 6 of 9"
+      "-Dcoach.dailyPlan.corePracticeTitle=Morning Kegel Workout"
+    )
+
+Для другой fixture замените значения заранее. `ios-parity-smoke` требует
+`coach.kegelPlayer.program`, но может использовать existing-progress по контракту
+Smoke. При отсутствии обязательных параметров launcher завершится до обращения
+к устройству. `--plan` показывает имена этих параметров без доступа к секретам.
+
 ## 2. План, проверка и запуск
 
 Посмотреть состав без доступа к аккаунтам и устройствам:
@@ -70,6 +89,7 @@ COACH_ACCOUNT_VARIANT, если задан, должен совпадать. OTP
 сессии:
 
     ./ci-scripts/run-ios-suite.sh full --check \
+      "${regression_options[@]}" \
       -Dappium.url=http://127.0.0.1:4726/
 
 Запустить regression и собрать общий отчёт:
@@ -77,6 +97,7 @@ COACH_ACCOUNT_VARIANT, если задан, должен совпадать. OTP
     export ALLURE_BIN="/path/to/allure/bin/allure"
     export RUN_ROOT="$PWD/target/ios-profiles-$(date +%Y%m%d-%H%M%S)"
     ./ci-scripts/run-ios-suite.sh full --profiles regression \
+      "${regression_options[@]}" \
       --results-root "$RUN_ROOT" --report \
       -Dappium.url=http://127.0.0.1:4726/
 
@@ -103,7 +124,9 @@ Simulator.
 
 | Профиль | Основные предусловия |
 | --- | --- |
-| regression, daily-plan, ios-parity-smoke | Existing-progress + smoke fixture; UI gate; noReset=true, fullReset=false |
+| regression | Existing-progress + smoke fixture; отдельный Kegel account, coach.kegelPlayer.program и три corePractice-параметра; UI gate |
+| daily-plan | Existing-progress + smoke fixture; отдельный Kegel account и три corePractice-параметра; UI gate |
+| ios-parity-smoke | Existing-progress + smoke fixture; coach.kegelPlayer.program; UI gate |
 | explore, profile | Existing-progress; Explore имеет собственный UI gate |
 | authorization | Existing-progress + COACH_VALID_EMAIL_WITHOUT_PROGRESS |
 | smoke | Smoke fixture, clean install и IOS_ONBOARDING_STEPS |
@@ -150,6 +173,7 @@ Resource baseline остаётся provisional; наличие файла не �
 Для нескольких уже подготовленных профилей укажите их явно:
 
     ./ci-scripts/run-ios-suite.sh full --profiles regression,authorization,kegel \
+      "${regression_options[@]}" \
       --results-root "$PWD/target/ios-expanded-$(date +%Y%m%d-%H%M%S)" \
       --report -Dappium.url=http://127.0.0.1:4726/
 

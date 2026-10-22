@@ -26,6 +26,16 @@ ENV = {
     "IOS_SIMULATOR_APP": "/fixture/Coach.app",
     "IOS_APP_VARIANT": "male",
 }
+KEGEL_ENV = {
+    "COACH_KEGEL_PLAYER_EMAIL": "kegel@example.invalid",
+    "COACH_KEGEL_PLAYER_OTP": "5678",
+}
+REGRESSION_PROPERTIES = {
+    "coach.kegelPlayer.program": "Kegel Challenge",
+    "coach.dailyPlan.corePracticeProgram": "Kegel Challenge",
+    "coach.dailyPlan.corePracticeDay": "Stage 6 of 9",
+    "coach.dailyPlan.corePracticeTitle": "Morning Kegel Workout",
+}
 
 
 class IOSProfileTests(unittest.TestCase):
@@ -71,6 +81,44 @@ class IOSProfileTests(unittest.TestCase):
             runner.validate_profile("push-permission", {"ios.noReset": "true"}, ENV, INFO)
         with self.assertRaises(runner.PreflightError):
             runner.validate_profile("explore", {"ios.fullReset": "true"}, ENV, INFO)
+
+    def test_daily_plan_profiles_require_a_dedicated_kegel_account(self):
+        for name in ("regression", "daily-plan"):
+            with self.subTest(name=name), self.assertRaisesRegex(runner.PreflightError, "COACH_KEGEL_PLAYER"):
+                runner.validate_profile(name, REGRESSION_PROPERTIES, ENV, INFO)
+
+    def test_daily_plan_profiles_require_the_prepared_core_practice(self):
+        for name in ("regression", "daily-plan"):
+            for key in ("coach.dailyPlan.corePracticeProgram", "coach.dailyPlan.corePracticeDay",
+                        "coach.dailyPlan.corePracticeTitle"):
+                props = dict(REGRESSION_PROPERTIES)
+                del props[key]
+                with self.subTest(name=name, key=key), self.assertRaisesRegex(runner.PreflightError, key):
+                    runner.validate_profile(name, props, dict(ENV, **KEGEL_ENV), INFO)
+
+    def test_ios_smoke_profiles_require_an_observed_workout_program(self):
+        props = dict(REGRESSION_PROPERTIES)
+        del props["coach.kegelPlayer.program"]
+        for name in ("regression", "ios-parity-smoke"):
+            with self.subTest(name=name), self.assertRaisesRegex(runner.PreflightError, "coach.kegelPlayer.program"):
+                runner.validate_profile(name, props, dict(ENV, **KEGEL_ENV), INFO)
+
+    def test_complete_daily_plan_and_smoke_configuration_is_accepted(self):
+        for name in ("regression", "daily-plan", "ios-parity-smoke"):
+            with self.subTest(name=name):
+                runner.validate_profile(name, REGRESSION_PROPERTIES, dict(ENV, **KEGEL_ENV), INFO)
+
+    def test_incomplete_regression_configuration_stops_before_devices_and_maven(self):
+        with patch.dict("os.environ", ENV, clear=True), \
+                patch.object(runner, "load_app", return_value=(Path("/fixture/Coach.app"), dict(INFO))), \
+                patch.object(runner, "validate_runtime") as runtime, \
+                patch.object(runner, "execute", return_value=0) as execute, \
+                tempfile.TemporaryDirectory() as folder, \
+                contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(2, runner.main(["regression", "--results-root", folder]))
+        runtime.assert_not_called()
+        execute.assert_not_called()
 
     def test_fixed_profile_policy_overrides_inherited_reset_environment(self):
         env = dict(ENV, IOS_NO_RESET="true", IOS_FULL_RESET="false")
@@ -126,12 +174,13 @@ class IOSProfileTests(unittest.TestCase):
             self.assertNotIn(secret, output)
 
     def run_mocked(self, folder, codes):
-        with patch.dict("os.environ", ENV, clear=True), \
+        with patch.dict("os.environ", dict(ENV, **KEGEL_ENV), clear=True), \
                 patch.object(runner, "load_app", return_value=(Path("/fixture/Coach.app"), dict(INFO))), \
                 patch.object(runner, "validate_runtime"), \
                 patch.object(runner, "execute", side_effect=codes) as execute, \
                 contextlib.redirect_stdout(io.StringIO()):
-            code = runner.main(["full", "--profiles", "regression,profile", "--results-root", folder])
+            code = runner.main(["full", "--profiles", "regression,profile", "--results-root", folder]
+                               + ["-D" + key + "=" + value for key, value in REGRESSION_PROPERTIES.items()])
         return code, execute, json.loads((Path(folder) / "run-summary.json").read_text())
 
     def test_failed_ui_preflight_blocks_dependent_tests_and_preserves_failure_exit(self):
@@ -253,13 +302,14 @@ class IOSProfileTests(unittest.TestCase):
         self.assertNotIn("testsExit", summary["profiles"]["localization"])
 
     def test_missing_report_tool_fails_before_sessions_or_device_access(self):
-        with patch.dict("os.environ", dict(ENV, ALLURE_BIN="/not-installed/allure"), clear=True), \
+        with patch.dict("os.environ", dict(ENV, **KEGEL_ENV, ALLURE_BIN="/not-installed/allure"), clear=True), \
                 patch.object(runner, "load_app", return_value=(Path("/fixture/Coach.app"), dict(INFO))), \
                 patch.object(runner, "validate_runtime") as runtime, \
                 patch.object(runner, "execute") as execute, \
                 contextlib.redirect_stdout(io.StringIO()), \
                 contextlib.redirect_stderr(io.StringIO()):
-            self.assertEqual(2, runner.main(["regression", "--report"]))
+            self.assertEqual(2, runner.main(["regression", "--report"]
+                             + ["-D" + key + "=" + value for key, value in REGRESSION_PROPERTIES.items()]))
         runtime.assert_not_called()
         execute.assert_not_called()
 
