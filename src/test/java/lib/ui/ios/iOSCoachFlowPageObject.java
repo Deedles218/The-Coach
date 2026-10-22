@@ -78,7 +78,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         PROFILE_MY_WORKBOOK_CLOSE_BUTTON = "id:PDFGuideUpsellCloseImageFemale";
         PROFILE_FAQ_BUTTON = "xpath://XCUIElementTypeStaticText[@name='FAQ']";
         PROFILE_FAQ_SCREEN = "xpath://XCUIElementTypeWebView//XCUIElementTypeOther[@name='FAQ']"
-                + "//XCUIElementTypeButton[@name='How do I use The Coach app?']";
+                + "//XCUIElementTypeButton[@name='How do I use The Coach app?']"
+                + " | //XCUIElementTypeWebView//XCUIElementTypeOther[@name='FAQ (For her)']"
+                + "//XCUIElementTypeButton[@name='How to use the app?']";
         PROFILE_TERMS_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Terms & privacy policy' or @name='Terms and Privacy Policy']";
         PROFILE_TERMS_SCREEN = "xpath://XCUIElementTypeStaticText[@name='The Coach — Terms of Service']";
         PROFILE_BROWSER_CLOSE_BUTTON = "xpath://XCUIElementTypeOther[@name='TopBrowserBar']"

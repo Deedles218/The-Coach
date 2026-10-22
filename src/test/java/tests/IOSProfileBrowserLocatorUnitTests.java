@@ -38,6 +38,22 @@ public class IOSProfileBrowserLocatorUnitTests {
         Assert.assertEquals(1, matches(xml, new Locators().faq()));
     }
 
+    @Test public void forHerFaqQuestionIsRecognizedInsideItsWebDocument() throws Exception {
+        String xml = "<XCUIElementTypeWebView><XCUIElementTypeOther name='FAQ (For her)'>"
+                + "<XCUIElementTypeButton name='How to use the app?'/></XCUIElementTypeOther>"
+                + "</XCUIElementTypeWebView>";
+        Assert.assertEquals(1, matches(xml, new Locators().faq()));
+    }
+
+    @Test public void forHerFaqRequiresItsOwnLoadedWebDocument() throws Exception {
+        String xml = "<XCUIElementTypeOther name='FAQ (For her)'>"
+                + "<XCUIElementTypeButton name='How to use the app?'/></XCUIElementTypeOther>"
+                + "<XCUIElementTypeWebView><XCUIElementTypeButton name='How to use the app?'/>"
+                + "<XCUIElementTypeOther name='FAQ'><XCUIElementTypeButton name='How to use the app?'/>"
+                + "</XCUIElementTypeOther></XCUIElementTypeWebView>";
+        Assert.assertEquals(0, matches(xml, new Locators().faq()));
+    }
+
     @Test public void nativeFaqMenuAndUnrelatedQuestionCannotSatisfyPageReadiness() throws Exception {
         String xml = "<XCUIElementTypeStaticText name='FAQ'/>"
                 + "<XCUIElementTypeOther name='FAQ'><XCUIElementTypeButton"
