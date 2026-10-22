@@ -10,6 +10,11 @@ Java/Appium/Maven/Jenkins/Allure
 Пути, UDID и профили ниже содержат примеры с компьютера автора; для нового
 компьютера используйте свои значения по инструкции.
 
+Полные iOS-прогоны запускаются через
+[профили, preflight и единый Allure-отчёт](docs/ios-regression-runs.md).
+Начните с `./ci-scripts/run-ios-suite.sh full --plan`; маска
+`tests.*Tests,tests.HW.*` смешивает несовместимые reset policies и fixtures.
+
 ## Run iOS tests for a specific build
 
 The bundle ID can be supplied either as the `ios.bundleId` Maven property or
@@ -17,11 +22,13 @@ as the `IOS_BUNDLE_ID` environment variable. The Maven property takes
 precedence over the environment variable.
 
 ```bash
-mvn test -Dplatform=ios -Dios.bundleId=com.vamapps.preprod.The-Coach
+mvn test -Dtest=tests.SmokeTests#testLoginWithEmptyEmailKeepsContinueDisabled \
+  -Dplatform=ios -Dios.bundleId=com.vamapps.preprod.The-Coach
 ```
 
 ```bash
-IOS_BUNDLE_ID=com.vamapps.The-Coach mvn test -Dplatform=ios
+IOS_BUNDLE_ID=com.vamapps.The-Coach mvn test -Dplatform=ios \
+  -Dtest=tests.SmokeTests#testLoginWithEmptyEmailKeepsContinueDisabled
 ```
 
 Known bundle IDs:
