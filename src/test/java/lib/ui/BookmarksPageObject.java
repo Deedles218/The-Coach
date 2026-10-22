@@ -2,6 +2,7 @@ package lib.ui;
 
 import io.qameta.allure.Step;
 import lib.RestoringTestAction;
+import lib.TestData;
 import lib.DailyPlanCompletionMarker;
 import io.qameta.allure.Allure;
 import org.openqa.selenium.OutputType;
@@ -163,6 +164,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void closeOpenedContentIfPresent() {
+        dismissContentPaywallIfPresent();
         if (isElementPresent(CONTENT_EXIT_QUIT)) {
             confirmContentExitIfNeeded();
             waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
@@ -212,6 +214,28 @@ public abstract class BookmarksPageObject extends MainPageObject {
         waitForElementPresent(exactText(category), "Bookmark category is absent: " + category, 10);
     }
 
+    public void assertCardGroupAndCategory(String title, String group, String category) {
+        waitForElementPresent(cardCategoryFor(title, category),
+                "Bookmark card is in the wrong category: " + title + " / " + category, 10);
+        waitForElementPresent(cardGroupFor(title, group),
+                "Bookmark card is in the wrong group: " + title + " / " + group, 10);
+    }
+
+    protected String cardCategoryFor(String title, String category) {
+        return cardFor(title) + "/preceding-sibling::XCUIElementTypeStaticText[1]"
+                + "[@visible='true' and @name=" + xpathLiteral(category) + "]";
+    }
+
+    protected String cardGroupFor(String title, String group) {
+        // In the observed native list, program/module/category headings and
+        // card buttons are siblings. The nearest matching heading owns a card.
+        String module = "starts-with(@name,'MODULE ')";
+        String heading = group.startsWith("MODULE ") ? module
+                : "not(" + module + ") and @name!='Lessons' and @name!='Practices'";
+        return cardFor(title) + "/preceding-sibling::XCUIElementTypeStaticText[" + heading + "][1]"
+                + "[@visible='true' and @name=" + xpathLiteral(group) + "]";
+    }
+
     public void assertCategoryAbsent(String category) {
         Assert.assertFalse("Empty category must be hidden: " + category, isElementPresent(exactText(category)));
     }
@@ -219,9 +243,24 @@ public abstract class BookmarksPageObject extends MainPageObject {
     @Step("Open bookmark card: {title}")
     public void openCard(String title) {
         waitForElementAndClick(exactText(title), "Cannot open bookmark card: " + title, 10);
-        waitForFirstElementPresent(new String[]{INACTIVE_BOOKMARK, ACTIVE_BOOKMARK},
-                "Bookmark card did not open content", 20);
+        createWait(20).withMessage("Bookmark card did not open content").until(ignored ->
+                isElementVisible(INACTIVE_BOOKMARK) || isElementVisible(ACTIVE_BOOKMARK)
+                        || isContentPaywallVisible());
+        if (isContentPaywallVisible()) {
+            // Capture the blocking state before fixture cleanup dismisses it.
+            Allure.addAttachment("Paywall blocking bookmarked content", "application/xml",
+                    TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+            Allure.addAttachment("Paywall blocking bookmarked content", "image/png",
+                    new ByteArrayInputStream(driver.getScreenshotAs(OutputType.BYTES)), "png");
+            Assert.fail("Subscription paywall blocked bookmarked content: " + title);
+        }
     }
+
+    protected boolean isContentPaywallVisible() {
+        return isElementVisible(PAYWALL);
+    }
+
+    protected abstract void dismissContentPaywallIfPresent();
 
     @Step("Open removal dialog for card: {title}")
     public void openRemovalDialog(String title) {
@@ -415,7 +454,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void assertNoPaywall() {
-        Assert.assertFalse("Paywall blocks bookmarked content", isElementPresent(PAYWALL));
+        Assert.assertFalse("Paywall blocks bookmarked content", isContentPaywallVisible());
     }
 
     public void assertScreenVisible() {

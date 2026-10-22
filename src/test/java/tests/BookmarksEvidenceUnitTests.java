@@ -67,6 +67,29 @@ public class BookmarksEvidenceUnitTests {
         }
     }
 
+    @Test
+    public void selectedCompletionAndKegelRolesAreRedacted() {
+        for (String selector : new String[]{"completion", "kegel"}) {
+            String option = "coach.bookmarks." + selector + "AccountRole";
+            String prefix = "coach.bookmarks.freshfixture";
+            String oldRole = System.getProperty(option);
+            String oldEmail = System.getProperty(prefix + ".email");
+            String oldOtp = System.getProperty(prefix + ".otp");
+            try {
+                System.setProperty(option, "Fresh-Fixture");
+                System.setProperty(prefix + ".email", "fresh@example.invalid");
+                System.setProperty(prefix + ".otp", "fresh-fixture-code");
+                Assert.assertEquals("fresh@example.invalid", TestData.bookmarksAccount("Fresh-Fixture").getEmail());
+                Assert.assertEquals("<redacted-email> <redacted-otp>",
+                        TestData.sanitizeSensitiveData("fresh@example.invalid fresh-fixture-code"));
+            } finally {
+                restore(option, oldRole);
+                restore(prefix + ".email", oldEmail);
+                restore(prefix + ".otp", oldOtp);
+            }
+        }
+    }
+
     private void restore(String property, String value) {
         if (value == null) System.clearProperty(property);
         else System.setProperty(property, value);

@@ -1,6 +1,9 @@
 package lib;
 
 import java.util.Locale;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Test-only data access. Secrets are supplied by the runner or a secret
@@ -218,7 +221,13 @@ public final class TestData {
                         "link".equals(field) ? "[redacted-link]" : "<redacted-" + field + ">");
             }
         }
-        for (String fixture : BOOKMARKS_FIXTURES) {
+        Set<String> bookmarksFixtures = new LinkedHashSet<>(Arrays.asList(BOOKMARKS_FIXTURES));
+        for (String selector : new String[]{"completion", "kegel"}) {
+            String role = configured("coach.bookmarks." + selector + "AccountRole",
+                    "COACH_BOOKMARKS_" + selector.toUpperCase(Locale.ROOT) + "_ACCOUNT_ROLE");
+            if (role != null) bookmarksFixtures.add(role.replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT));
+        }
+        for (String fixture : bookmarksFixtures) {
             for (String field : new String[]{"email", "otp"}) {
                 String value = configured(
                         "coach.bookmarks." + fixture.toLowerCase(Locale.ROOT) + "." + field,

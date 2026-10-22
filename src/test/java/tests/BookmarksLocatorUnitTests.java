@@ -17,6 +17,8 @@ public class BookmarksLocatorUnitTests {
         String slide(String text) { return slideText(text); }
         String card(String title) { return cardFor(title); }
         String indicator(String title) { return dailyPlanCompletionIndicatorFor(title); }
+        String category(String title, String category) { return cardCategoryFor(title, category); }
+        String group(String title, String group) { return cardGroupFor(title, group); }
     }
 
     private int count(String xml, String text) throws Exception {
@@ -65,6 +67,69 @@ public class BookmarksLocatorUnitTests {
                 locator + "//*[@name='filled_bookmark']", document, XPathConstants.NODESET);
         Assert.assertEquals(1, controls.getLength());
         Assert.assertEquals("second", controls.item(0).getAttributes().getNamedItem("fixture").getNodeValue());
+    }
+
+    @Test
+    public void neighboringProgramOrCategoryCannotSatisfyCardGrouping() throws Exception {
+        String xml = "<root><XCUIElementTypeOther>"
+                + "<XCUIElementTypeStaticText name='First Program' visible='true'/>"
+                + "<XCUIElementTypeStaticText name='MODULE 1' visible='true'/>"
+                + "<XCUIElementTypeStaticText name='Lessons' visible='true'/>"
+                + "<XCUIElementTypeButton><XCUIElementTypeStaticText name='First' visible='true'/></XCUIElementTypeButton>"
+                + "<XCUIElementTypeStaticText name='Second Program' visible='true'/>"
+                + "<XCUIElementTypeStaticText name='MODULE 2' visible='true'/>"
+                + "<XCUIElementTypeStaticText name='Practices' visible='true'/>"
+                + "<XCUIElementTypeButton><XCUIElementTypeStaticText name='Second' visible='true'/></XCUIElementTypeButton>"
+                + "</XCUIElementTypeOther></root>";
+        Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        javax.xml.xpath.XPath xpath = XPathFactory.newInstance().newXPath();
+        Screen screen = new Screen();
+        for (String locator : new String[]{screen.group("Second", "Second Program"),
+                screen.group("Second", "MODULE 2"), screen.category("Second", "Practices")}) {
+            Assert.assertEquals(1, ((NodeList) xpath.evaluate(locator.substring(6), document, XPathConstants.NODESET)).getLength());
+        }
+        for (String locator : new String[]{screen.group("Second", "First Program"),
+                screen.group("Second", "MODULE 1"), screen.category("Second", "Lessons")}) {
+            Assert.assertEquals(0, ((NodeList) xpath.evaluate(locator.substring(6), document, XPathConstants.NODESET)).getLength());
+        }
+    }
+
+    @Test
+    public void restoredProgramsAreReadFromTodayHeaderInsteadOfLessonTitles() throws Exception {
+        for (String title : new String[]{"A Man&apos;s Guide to Sexting", "Woman’s Guide to Sexting"}) {
+            String xml = "<root><XCUIElementTypeOther><XCUIElementTypeOther><XCUIElementTypeOther>"
+                    + "<XCUIElementTypeStaticText name='" + title + "' visible='true'/>"
+                    + "</XCUIElementTypeOther><XCUIElementTypeOther>"
+                    + "<XCUIElementTypeStaticText name='28%' visible='true'/></XCUIElementTypeOther>"
+                    + "</XCUIElementTypeOther><XCUIElementTypeButton name='nav bar bookmarks' visible='true'/>"
+                    + "</XCUIElementTypeOther><XCUIElementTypeButton name='Today' value='1' visible='true'/>"
+                    + "<XCUIElementTypeOther name='DailyPlanItem'>"
+                    + "<XCUIElementTypeStaticText name='Sex Is a Skill' visible='true'/></XCUIElementTypeOther></root>";
+            Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+            String locator = lib.ui.ios.iOSDailyPlanPageObject.activeProgramTitleLocator().substring(6);
+            javax.xml.xpath.XPath xpath = XPathFactory.newInstance().newXPath();
+            NodeList found = (NodeList) xpath.evaluate(locator, document, XPathConstants.NODESET);
+            Assert.assertEquals(1, found.getLength());
+            Assert.assertEquals(title.replace("&apos;", "'"), found.item(0).getAttributes().getNamedItem("name").getNodeValue());
+            Object explore = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new ByteArrayInputStream(xml.replace("value='1'", "value='0'").getBytes(StandardCharsets.UTF_8)));
+            Assert.assertEquals(0, ((NodeList) xpath.evaluate(locator, explore, XPathConstants.NODESET)).getLength());
+        }
+    }
+
+    @Test
+    public void legacyProgramLabelsAreAcceptedOnlyOnSelectedToday() throws Exception {
+        String locator = lib.ui.ios.iOSDailyPlanPageObject.activeProgramTitleLocator().substring(6);
+        for (boolean today : new boolean[]{true, false}) {
+            String xml = "<root><XCUIElementTypeButton name='Today' visible='true' value='" + (today ? "1" : "0")
+                    + "'/><XCUIElementTypeStaticText name='Last Longer' visible='true'/></root>";
+            Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+            NodeList found = (NodeList) XPathFactory.newInstance().newXPath().evaluate(locator, document, XPathConstants.NODESET);
+            Assert.assertEquals(today ? 1 : 0, found.getLength());
+        }
     }
 
     @Test

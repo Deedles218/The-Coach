@@ -35,4 +35,19 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
     public iOSBookmarksPageObject(RemoteWebDriver driver) {
         super(driver);
     }
+
+    @Override
+    protected boolean isContentPaywallVisible() {
+        return new iOSOnboardingPageObject(driver).isPaywallVisible();
+    }
+
+    @Override
+    protected void dismissContentPaywallIfPresent() {
+        iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
+        if (onboarding.isPaywallVisible()) {
+            onboarding.closePaywallsAndPopups();
+            createWait(15).withMessage("Content paywall stayed visible during cleanup")
+                    .until(ignored -> !onboarding.isPaywallVisible());
+        }
+    }
 }

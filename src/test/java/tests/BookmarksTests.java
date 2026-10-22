@@ -13,13 +13,11 @@ import lib.UpdateEvidence;
 import lib.ui.BookmarksPageObject;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
-import lib.ui.SubscriptionPageObject;
 import lib.ui.ios.iOSCoachFlowPageObject;
 import lib.ui.ios.iOSProgramSelectorPageObject;
 import lib.ui.factories.BookmarksPageObjectFactory;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
-import lib.ui.factories.SubscriptionPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -132,7 +130,7 @@ public class BookmarksTests extends CoreTestCase {
         prepare(CONTENT);
         String lesson = required("lessonTitle");
         RestoringTestAction.run(() -> {
-            bookmarks.openContentFromToday(lesson);
+            openFixtureContentFromToday(lesson);
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.saveOpenedContent();
             bookmarks.swipeLeftAndAssertSaved(required("lessonMiddleSlideText"));
@@ -141,7 +139,7 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.openFromToday();
             bookmarks.assertCardAbsent(lesson);
             bookmarks.backFromBookmarks();
-            bookmarks.openContentFromToday(lesson);
+            openFixtureContentFromToday(lesson);
             bookmarks.saveOpenedContent();
             bookmarks.closeOpenedContent();
             bookmarks.openFromToday();
@@ -155,11 +153,20 @@ public class BookmarksTests extends CoreTestCase {
         String lesson = required("lessonTitle");
         String practice = required("practiceTitle");
         bookmarks.openFromToday();
-        bookmarks.assertGroupAndCategory(required("programTitle"), "Lessons");
+        bookmarks.assertCardGroupAndCategory(lesson, required("programTitle"), "Lessons");
         bookmarks.assertCardComposition(lesson);
-        bookmarks.assertGroupAndCategory(required("moduleTitle"), "Practices");
+        String practiceGroup = optional("practiceGroupTitle");
+        bookmarks.assertCardGroupAndCategory(practice,
+                practiceGroup == null ? required("moduleTitle") : practiceGroup, "Practices");
         bookmarks.assertCardComposition(practice);
-        bookmarks.assertCategoryAbsent(required("emptyCategoryTitle"));
+
+        // Both categories above are populated. Verify hiding on the separately
+        // prepared lesson-only fixture, where Practices is actually empty.
+        switchTo(UPDATE);
+        bookmarks.openFromToday();
+        bookmarks.assertCardGroupAndCategory(lesson, required("programTitle"), "Lessons");
+        bookmarks.assertCardComposition(lesson);
+        bookmarks.assertCategoryAbsent("Practices");
     }
 
     @Test @Issue("COA-9652")
@@ -173,7 +180,7 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.assertEmptyState();
             bookmarks.assertTooltipAbsent(tooltip);
             bookmarks.backFromBookmarks();
-            bookmarks.openContentFromToday(required("lessonTitle"));
+            openFixtureContentFromToday(required("lessonTitle"));
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.saveOpenedContent();
             createdByTest[0] = true;
@@ -183,7 +190,7 @@ public class BookmarksTests extends CoreTestCase {
         }, () -> {
             if (createdByTest[0]) {
                 bookmarks.closeOpenedContentIfPresent();
-                bookmarks.openContentFromToday(lesson);
+                openFixtureContentFromToday(lesson);
                 bookmarks.ensureOpenedContentIsNotSaved();
                 bookmarks.closeOpenedContent();
             }
@@ -227,7 +234,7 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.assertCardAbsent(first);
             bookmarks.assertCard(second);
             bookmarks.backFromBookmarks();
-            bookmarks.openContentFromToday(first);
+            openFixtureContentFromToday(first);
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.saveOpenedContent();
             bookmarks.closeOpenedContent();
@@ -285,7 +292,7 @@ public class BookmarksTests extends CoreTestCase {
         if (answer == null && completionLesson == null) answer = optional("lessonCompletionAnswer");
         prepare(fixtureRole("completionAccountRole", CONTENT));
         String program = optional("completionProgramTitle");
-        if (program != null) new iOSProgramSelectorPageObject(driver).ensureProgramSelected(program);
+        selectFixtureProgram(program);
         bookmarks.assertDailyPlanItemNotCompleted(lesson);
         prepareSavedContent(lesson, savedSlide);
         bookmarks.openFromToday();
@@ -312,6 +319,7 @@ public class BookmarksTests extends CoreTestCase {
     @Test @Issue("COA-9661")
     public void kegelAndKegelSportCannotBeBookmarked() {
         prepare(fixtureRole("kegelAccountRole", CONTENT));
+        selectFixtureProgram(optional("kegelProgramTitle"));
         bookmarks.openContentWithoutBookmarkFromToday(required("kegelTitle"));
         bookmarks.assertOpenedContentCannotBeSaved();
         bookmarks.closeOpenedContent();
@@ -327,7 +335,7 @@ public class BookmarksTests extends CoreTestCase {
         String lesson = required("lessonTitle");
         bookmarks.openFromToday();
         bookmarks.backFromBookmarks();
-        bookmarks.openContentFromToday(lesson);
+        openFixtureContentFromToday(lesson);
         bookmarks.ensureOpenedContentIsNotSaved();
         bookmarks.swipeLeftToSlide(required("lessonSavedSlideText"));
         bookmarks.saveOpenedContent();
@@ -341,6 +349,7 @@ public class BookmarksTests extends CoreTestCase {
         prepare(RECURRING);
         String network = TestData.bookmarksNetworkLogPath();
         long checkpoint = BookmarksEvidence.checkpoint(network);
+        selectFixtureProgram(optional("recurringProgramTitle"));
         bookmarks.openContentFromToday(required("recurringPracticeTitle"));
         bookmarks.ensureOpenedContentIsNotSaved();
         bookmarks.swipeLeftToSlide(recurring("practiceSavedSlideText"));
@@ -428,21 +437,43 @@ public class BookmarksTests extends CoreTestCase {
     }
 
     @Test @Issue("COA-9667")
-    public void newUserWithoutSubscriptionSeesPaywallWhenOpeningBookmarks() {
+    public void availableLessonCanBeBookmarkedWithoutSubscription() throws Exception {
         prepare(NO_SUBSCRIPTION);
-        bookmarks.tapEntryFromToday();
-
-        SubscriptionPageObject paywall = SubscriptionPageObjectFactory.get(driver);
-        Assert.assertNotNull("Subscription page object is unavailable for current platform", paywall);
-        paywall.assertPaywallIsDisplayed();
-        Assert.assertFalse("My Bookmarks opened behind the subscription paywall", bookmarks.isScreenVisible());
+        String lesson = required("lessonTitle");
+        boolean[] createdByTest = {false};
+        RestoringTestAction.run(() -> {
+            bookmarks.openFromToday();
+            bookmarks.assertEmptyState();
+            bookmarks.backFromBookmarks();
+            openFixtureContentFromToday(lesson);
+            bookmarks.assertNoPaywall();
+            bookmarks.ensureOpenedContentIsNotSaved();
+            bookmarks.swipeLeftToSlide(required("lessonSavedSlideText"));
+            bookmarks.saveOpenedContent();
+            createdByTest[0] = true;
+            bookmarks.closeOpenedContent();
+            bookmarks.openFromToday();
+            bookmarks.assertCard(lesson);
+            bookmarks.openCard(lesson);
+            bookmarks.assertNoPaywall();
+            bookmarks.assertOpenedAtSlide(lesson, required("lessonSavedSlideText"));
+            bookmarks.assertOpenedContentSaved();
+        }, () -> {
+            if (createdByTest[0]) {
+                bookmarks.closeOpenedContentIfPresent();
+                bookmarks.openFromToday();
+                bookmarks.openRemovalDialog(lesson);
+                bookmarks.confirmRemoval();
+                bookmarks.assertEmptyState();
+            }
+        });
     }
 
     private void verifyWholeContentBookmark(String title, String firstSlide, String middleSlide,
                                             String lastSlide, String savedSlide) throws Exception {
         RestoringTestAction.run(() -> {
             // Save on the first slide and verify the state on every slide.
-            bookmarks.openContentFromToday(title);
+            openFixtureContentFromToday(title);
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.saveOpenedContent();
             bookmarks.swipeLeftAndAssertSaved(middleSlide);
@@ -453,7 +484,7 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.closeOpenedContent();
 
             // Save on the middle slide and verify both directions.
-            bookmarks.openContentFromToday(title);
+            openFixtureContentFromToday(title);
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.swipeLeftToSlide(middleSlide);
             bookmarks.saveOpenedContent();
@@ -464,7 +495,7 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.closeOpenedContent();
 
             // Save on the last slide and verify the earlier slides.
-            bookmarks.openContentFromToday(title);
+            openFixtureContentFromToday(title);
             bookmarks.ensureOpenedContentIsNotSaved();
             bookmarks.swipeLeftToSlide(middleSlide);
             bookmarks.swipeLeftToSlide(lastSlide);
@@ -482,11 +513,30 @@ public class BookmarksTests extends CoreTestCase {
 
     private void prepareSavedContent(String title, String slideMarker) {
         bookmarks.closeOpenedContentIfPresent();
-        bookmarks.openContentFromToday(title);
+        openFixtureContentFromToday(title);
         bookmarks.ensureOpenedContentIsNotSaved();
         bookmarks.swipeLeftToSlide(slideMarker);
         bookmarks.saveOpenedContent();
         bookmarks.closeOpenedContent();
+    }
+
+    private void openFixtureContentFromToday(String title) {
+        if (bookmarks.isScreenVisible()) bookmarks.backFromBookmarks();
+        coach.openToday();
+        String program;
+        if (title.equals(optional("completionLessonTitle"))) {
+            program = optional("completionProgramTitle");
+        } else if (title.equals(optional("practiceTitle"))) {
+            program = optional("practiceProgramTitle");
+        } else {
+            program = optional("lessonProgramTitle");
+        }
+        selectFixtureProgram(program);
+        bookmarks.openContentFromToday(title);
+    }
+
+    private void selectFixtureProgram(String program) {
+        if (program != null) new iOSProgramSelectorPageObject(driver).ensureProgramSelected(program);
     }
 
     private static String secondContentTitle() {

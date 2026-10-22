@@ -47,7 +47,8 @@ public final class iOSProgramSelectorPageObject extends iOSDailyPlanPageObject {
                 + org.openqa.selenium.support.ui.Quotes.escape(title) + "]";
         for (int scroll = 0; scroll < 15; scroll++) {
             if (isElementVisible(target)) {
-                waitForElementAndClick(target, "Cannot select fixture program " + title, 10);
+                new iOSCoachFlowPageObject(driver).tapHittableControl(new String[]{target},
+                        "Cannot select fixture program " + title, 10);
                 waitForElementNotPresent(CARDS, "Selector did not close after selecting " + title, 15);
                 return;
             }
