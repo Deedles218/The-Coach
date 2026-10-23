@@ -26,10 +26,26 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     private int selectorTop;
     private String openedLessonTitle;
     private static final String DAILY_FIRST_LESSON_TITLE = "xpath://XCUIElementTypeCollectionView"
-            + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']]"
+            + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']"
+            + " and not(.//XCUIElementTypeStaticText[starts-with(@name,'Module ')])]"
             + "//XCUIElementTypeCell//XCUIElementTypeStaticText"
             + "[following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText"
             + "[@name='Lesson 1' or @name='How it all works']]";
+    private static final String MODULE_LESSON_NUMBER = "starts-with(@name,'Lesson ')"
+            + " and number(substring-after(@name,'Lesson '))>0"
+            + " and translate(substring-after(@name,'Lesson '),'0123456789','')=''";
+    // Module lesson numbers continue across stages. Reuse DailyPlanItem and the
+    // nearest section-heading contract used by dailyPlanCardLocator below.
+    private static final String MODULE_FIRST_LESSON_TITLE = "(//XCUIElementTypeCollectionView"
+            + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']"
+            + " and .//XCUIElementTypeStaticText[starts-with(@name,'Module ')]]"
+            + "//XCUIElementTypeOther[@name='DailyPlanItem'"
+            + " and ancestor::XCUIElementTypeCell/preceding-sibling::XCUIElementTypeCell"
+            + "[.//XCUIElementTypeStaticText[@name='TitleBlock.Title']][1]"
+            + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='DAILY LESSONS']]"
+            + "//XCUIElementTypeStaticText[string-length(normalize-space(@name))>0"
+            + " and following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText["
+            + MODULE_LESSON_NUMBER + "]])[1]";
     private static final String SELECTOR_CARDS = "id:ProgramSelectionCardView";
     private static final String SELECTOR_TITLES = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']//XCUIElementTypeStaticText[@name='TitleBlock.Title']";
     private static final String SELECTOR_COLLECTION = "xpath:(//XCUIElementTypeScrollView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']] | //XCUIElementTypeCollectionView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']])[last()]";
@@ -52,8 +68,10 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
 
         DAILY_LESSONS_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY LESSONS']";
-        FIRST_LESSON_TITLE = DAILY_FIRST_LESSON_TITLE;
-        FIRST_LESSON_TYPE = "xpath://XCUIElementTypeStaticText[@name='Lesson 1' or @name='How it all works']";
+        FIRST_LESSON_TITLE = DAILY_FIRST_LESSON_TITLE + " | " + MODULE_FIRST_LESSON_TITLE;
+        FIRST_LESSON_TYPE = "xpath:(" + FIRST_LESSON_TITLE.substring("xpath:".length())
+                + ")/following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText"
+                + "[@name='How it all works' or (" + MODULE_LESSON_NUMBER + ")]";
         LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started' or @name='The Basics of Sexual Desire']";
         LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20 and @name!='The Basics of Sexual Desire']";
         LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back' or @name='ic outline close']";
@@ -156,7 +174,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     }
 
     public static String firstLessonTitleLocator() {
-        return DAILY_FIRST_LESSON_TITLE;
+        return DAILY_FIRST_LESSON_TITLE + " | " + MODULE_FIRST_LESSON_TITLE;
     }
 
     public static String lessonExitConfirmationLocator() {
