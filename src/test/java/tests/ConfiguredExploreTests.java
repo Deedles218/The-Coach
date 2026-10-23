@@ -1,6 +1,7 @@
 package tests;
 
 import io.qameta.allure.*;
+import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.ExploreStateRestorer;
 import lib.TestData;
@@ -11,7 +12,7 @@ import lib.ui.factories.ExplorePageObjectFactory;
 import lib.ui.factories.OnboardingPageObjectFactory;
 import org.junit.*;
 
-/** Current product contract on both platforms; legacy Explore tests remain separate. */
+/** Configured contract per platform/variant; legacy method names remain stable for suite selectors. */
 @Epic("The Coach Explore")
 @Feature("Configured Explore parity")
 public class ConfiguredExploreTests extends CoreTestCase {
@@ -43,7 +44,8 @@ public class ConfiguredExploreTests extends CoreTestCase {
 
     @Test @Issue("COA-8178") public void testCurrentExploreNavigation() { explore.assertRetiredExploreUiIsAbsent(); }
     @Test @Issue("COA-8181") public void testProgramCatalogContainsCards() { explore.assertMainProgramsRecommendedSection(); }
-    @Test @Issue("COA-8182") public void testRemovedCoursesAndPracticesStayAbsent() { explore.assertRemovedCoursesAndPracticesAreAbsent(); }
+    @Test @Issue("COA-8182") @Description("Verify the configured section contract: male iOS production retains Body Practices and removes Courses; other variants retain their existing expectations.")
+    public void testRemovedCoursesAndPracticesStayAbsent() { explore.assertRemovedCoursesAndPracticesAreAbsent(); }
     @Test public void testSwipeToLastProgramAndOpenIt() {
         explore.swipeToAndOpenLastRecommendedProgram();
         explore.closeProgramDetails();
@@ -59,7 +61,8 @@ public class ConfiguredExploreTests extends CoreTestCase {
         explore.assertConfiguredCardTemplates();
         explore.assertConfiguredCardTitlesAreNonEmpty();
     }
-    @Test public void testQuickTipVideoCardOpensVideoPlayer() { explore.openQuickTipVideoAndVerifyPlayer(); }
+    @Test @DisplayName("Quick Tip opens its configured content (article on male iOS production)")
+    public void testQuickTipVideoCardOpensVideoPlayer() { explore.openQuickTipVideoAndVerifyPlayer(); }
     @Test public void testMasterClassCardOpensLessonOrWebView() { explore.openMasterClassAndVerifyDestination(); }
     @Test public void testPrivateCoachingCardOpensWebView() {
         explore.openPrivateCoachingAndVerifyWebView();

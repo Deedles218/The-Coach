@@ -159,7 +159,21 @@ public class iOSExplorePageObject extends ExplorePageObject {
         }
     }
 
-    private String configuredSection(String title) {
+    protected static boolean usesMaleProductionContract() {
+        return "com.vamapps.The-Coach".equals(Platform.getInstance().getIOSBundleId());
+    }
+
+    protected String[] configuredSectionTitles() {
+        return usesMaleProductionContract()
+                ? new String[]{"Quick Tips", "Master Classes", "Private Coaching Sessions", "Body Practices"}
+                : new String[]{"Quick Tips", "Master Classes", "Private coaching session"};
+    }
+
+    private String coachingSectionTitle() {
+        return usesMaleProductionContract() ? "Private Coaching Sessions" : "Private coaching session";
+    }
+
+    protected String configuredSection(String title) {
         if ("Master Classes".equals(title)) {
             return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ ',"
                     + "'abcdefghijklmnopqrstuvwxyz')='masterclasses' and @visible='true']";
@@ -168,7 +182,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
                 + title.toLowerCase(java.util.Locale.ROOT) + "' and @visible='true']";
     }
 
-    private String configuredCards(String title) {
+    protected String configuredCards(String title) {
         // Scope cards to the nearest section containing its heading and collection,
         // rather than using unrelated images/buttons elsewhere on the page.
         return configuredSection(title) + "/ancestor::XCUIElementTypeOther[.//XCUIElementTypeCollectionView][1]"
@@ -208,10 +222,13 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
 
     @Override public void assertConfiguredSectionsAreDisplayed() {
-        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"})
+        for (String title : configuredSectionTitles())
             revealConfiguredSection(title);
     }
-    @Override public void assertCoursesSectionIsRemoved() { assertRemovedCoursesAndPracticesAreAbsent(); }
+    @Override public void assertCoursesSectionIsRemoved() {
+        if (usesMaleProductionContract()) assertSectionsAreAbsent(new String[]{"COURSES"});
+        else assertRemovedCoursesAndPracticesAreAbsent();
+    }
     @Override public void assertBrowseProgramsReplacesLegacyBlock() {
         waitForElementVisible("id:Browse Programs", "Explore v7 must show Browse Programs", 10);
         assertElementNotPresent("id:ALL PROGRAMS", "Explore v7 must not show the legacy ALL PROGRAMS heading");
@@ -219,7 +236,7 @@ public class iOSExplorePageObject extends ExplorePageObject {
         assertRetiredExploreUiIsAbsent();
     }
     @Override public void assertConfiguredCardTemplates() {
-        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"}) {
+        for (String title : configuredSectionTitles()) {
             revealConfiguredSection(title);
             String cards = configuredCards(title);
             waitForElementVisible(cards, "No configured cards in " + title, 10);
@@ -228,10 +245,11 @@ public class iOSExplorePageObject extends ExplorePageObject {
             Assert.assertTrue("Configured image has empty bounds in " + title,
                     image.getRect().getWidth() > 0 && image.getRect().getHeight() > 0);
         }
+        revealConfiguredSection(coachingSectionTitle());
         waitForElementEnabled(coachingAction(), "Private coaching action is missing", 10);
     }
     @Override public void assertConfiguredCardTitlesAreNonEmpty() {
-        for (String title : new String[]{"Quick Tips", "Master Classes", "Private coaching session"}) {
+        for (String title : configuredSectionTitles()) {
             revealConfiguredSection(title);
             List<WebElement> titles = driver.findElements(getLocatorByString(
                     configuredCards(title) + "//XCUIElementTypeStaticText[@visible='true']"));
@@ -241,9 +259,31 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
     @Override public void openQuickTipVideoAndVerifyPlayer() {
         revealConfiguredSection("Quick Tips");
+        if (usesMaleProductionContract()) {
+            // Production v7 routes this specific card to coach_lesson, not a video.
+            waitForElementAndClick(quickTipCardLocator(), "Configured Finish Too Soon card absent", 10);
+            waitForElementNotVisible(SELECTED_EXPLORE_TAB, "Quick Tip left user on the Explore catalog", 15);
+            waitForElementVisible(quickTipArticleTitleLocator(), "Quick Tip opened the wrong article", 15);
+            waitForElementEnabled("id:ic outline close", "Quick Tip article close control absent", 10);
+            waitForElementEnabled("id:CONTINUE", "Quick Tip article Continue control absent", 10);
+            createWait(10).withMessage("Quick Tip article body is not displayed").until(ignored -> {
+                for (WebElement text : driver.findElements(org.openqa.selenium.By.className("XCUIElementTypeStaticText"))) {
+                    if (text.isDisplayed() && iOSDailyPlanPageObject.isLessonBodyText(
+                            getElementAccessibleName(text), "When You’re About to Finish Too Soon")) return true;
+                }
+                return false;
+            });
+            return; // Never advance or complete the article during this opening check.
+        }
         waitForElementAndClick(configuredCards("Quick Tips"), "Quick Tip card absent", 10);
         waitForElementNotVisible(EXPLORE_HEADING, "Quick Tip left user on Explore", 15);
         new lib.ui.VideoLessonPlayerPageObject(driver).waitUntilReady();
+    }
+    protected String quickTipCardLocator() {
+        return configuredCards("Quick Tips") + "//XCUIElementTypeStaticText[@label='Finish Too Soon' and @visible='true']";
+    }
+    protected String quickTipArticleTitleLocator() {
+        return "id:When You’re About to Finish Too Soon";
     }
     @Override public void openMasterClassAndVerifyDestination() {
         revealConfiguredSection("Master Classes");
@@ -255,27 +295,58 @@ public class iOSExplorePageObject extends ExplorePageObject {
                 "Master Class did not open lesson or WebView content", 20);
     }
     @Override public void openPrivateCoachingAndVerifyWebView() {
-        revealConfiguredSection("Private coaching session");
-        waitForElementAndClick(coachingAction(), "Private coaching Learn More action absent", 10);
+        revealConfiguredSection(coachingSectionTitle());
+        waitForElementAndClick(coachingAction(), "Configured private coaching action absent", 10);
         waitForElementNotVisible(EXPLORE_HEADING, "Coaching left user on Explore", 15);
         String webView = "xpath://XCUIElementTypeWebView";
-        String booking = "xpath://XCUIElementTypeLink[@label='Book 1:1 a private consultation' or @name='Book 1:1 a private consultation']";
+        String booking = coachingBookingLocator();
         // XCUITest can flatten WKWebView into native Link nodes (as observed in Shop).
         waitForFirstElementPresent(new String[]{webView, booking}, "Private coaching web content absent", 20);
+        if (usesMaleProductionContract()) {
+            waitForElementVisible(booking, "Connell relationship coaching booking action absent", 20);
+            return; // Only inspect the landing page; never tap a booking link.
+        }
         waitForFirstElementPresent(new String[]{booking,
                 webView + "//*[@label='Book 1:1 a private consultation' or @name='Book 1:1 a private consultation']"},
                 "Private coaching booking action absent", 20);
     }
-    private String coachingAction() {
-        return configuredCards("Private coaching session")
-                + "//*[(@type='XCUIElementTypeButton' or @type='XCUIElementTypeStaticText') "
-                + "and translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='learn more' and @visible='true']";
+    protected String coachingBookingLocator() {
+        String label = usesMaleProductionContract() ? "Book a private 1:1 session" : "Book 1:1 a private consultation";
+        return "xpath://XCUIElementTypeLink[@label='" + label + "' or @name='" + label + "']";
     }
-    @Override public void closePrivateCoachingWebView() { closeTransientDetailIfPresent(); }
+    protected String coachingAction() {
+        return configuredCards(coachingSectionTitle())
+                + "//*[(@type='XCUIElementTypeButton' or @type='XCUIElementTypeStaticText') "
+                + "and translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
+                + (usesMaleProductionContract() ? "book" : "learn more") + "' and @visible='true']";
+    }
+    @Override public void closePrivateCoachingWebView() {
+        if (!isElementVisible("id:TopBrowserBar")) {
+            closeTransientDetailIfPresent();
+            return;
+        }
+        closeExploreBrowser();
+        waitForElementNotVisible("id:TopBrowserBar", "Coaching browser did not close", 10);
+        waitForElementVisible(SELECTED_EXPLORE_TAB, "Coaching close did not restore the selected Explore tab", 15);
+        waitForElementVisible(EXPLORE_HEADING, "Coaching close did not return to Explore", 15);
+    }
+
+    protected void closeExploreBrowser() {
+        // Business assertion: do not replace a failed close with a recovery restart.
+        new iOSCoachFlowPageObject(driver).tapHittableControl(new String[]{
+                "xpath://XCUIElementTypeOther[@name='TopBrowserBar']//XCUIElementTypeButton[@name='Close' or @name='Закрыть']"},
+                "Explore browser close is not hittable", 10);
+    }
     @Override public void closeTransientDetailIfPresent() {
         // The article reader also renders an Explore heading. It is not the
         // catalog until the selected Explore tab has actually returned.
         if (isElementVisible(EXPLORE_HEADING) && isElementVisible(SELECTED_EXPLORE_TAB)) return;
+        if (isElementVisible("id:TopBrowserBar")) {
+            new iOSCoachFlowPageObject(driver).closeProfileBrowserIfPresent();
+            waitForElementVisible(SELECTED_EXPLORE_TAB, "Browser did not restore the selected Explore tab", 15);
+            waitForElementVisible(EXPLORE_HEADING, "Browser did not return to Explore", 15);
+            return;
+        }
         if (isElementVisible("xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']")) {
             new lib.ui.VideoLessonPlayerPageObject(driver).closePlayer();
             waitForElementVisible(SELECTED_EXPLORE_TAB, "Video did not restore the selected Explore tab", 15);
@@ -301,12 +372,20 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
 
     @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
+        if (usesMaleProductionContract()) {
+            // The approved production contract retains Body Practices, not legacy Courses.
+            assertConfiguredSectionsAreDisplayed();
+            assertSectionsAreAbsent(new String[]{"COURSES"});
+        } else assertSectionsAreAbsent(new String[]{"COURSES", "BODY PRACTICES", "MIND PRACTICES"});
+    }
+
+    private void assertSectionsAreAbsent(String[] titles) {
         waitForElementVisible(SELECTED_EXPLORE_TAB,"Explore is not selected",10);
         // Scan to both ends; checking only the first viewport would miss lazy sections.
         for(String direction:new String[]{"down","up"}) {
             String previous=""; boolean end=false;
             for(int n=0;n<20;n++) {
-                for(String title:new String[]{"COURSES","BODY PRACTICES","MIND PRACTICES"})
+                for(String title:titles)
                     Assert.assertFalse("Retired Explore section reappeared: "+title,
                         isElementVisible("xpath://XCUIElementTypeStaticText[translate(@label,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='"+title+"']"));
                 StringBuilder viewport=new StringBuilder();

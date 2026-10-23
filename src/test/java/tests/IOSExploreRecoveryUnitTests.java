@@ -24,6 +24,7 @@ public class IOSExploreRecoveryUnitTests {
         boolean confirmation;
         boolean stuck;
         boolean headingOnReturn = true;
+        boolean browser;
         String quit;
         String close = "id:ic outline close";
         TimeoutException closeFailure;
@@ -31,6 +32,7 @@ public class IOSExploreRecoveryUnitTests {
         Destination() { super(new RemoteWebDriver() { }); }
 
         @Override public boolean isElementVisible(String locator) {
+            if ("id:TopBrowserBar".equals(locator)) return browser;
             if (SELECTED_EXPLORE_TAB.equals(locator)) return catalog;
             if (locator.contains("XCUIElementTypeStaticText[@name='Explore'")) return heading;
             if ("id:QUIT".equals(locator)) return confirmation && "id:QUIT".equals(quit);
@@ -58,6 +60,17 @@ public class IOSExploreRecoveryUnitTests {
 
         private void returnToCatalog() {
             if (!stuck) { catalog = true; heading = headingOnReturn; }
+        }
+
+        @Override protected void closeExploreBrowser() {
+            if (closeFailure != null) throw closeFailure;
+            actions.add("browser-close");
+            if (!stuck) browser = false;
+            returnToCatalog();
+        }
+
+        @Override public void waitForElementNotVisible(String locator, String message, long timeout) {
+            if (isElementVisible(locator)) throw new TimeoutException(message);
         }
 
         @Override public WebElement waitForElementVisible(String locator, String message, long timeout) {
@@ -141,5 +154,32 @@ public class IOSExploreRecoveryUnitTests {
         Destination page = new Destination();
         page.headingOnReturn = false;
         page.closeTransientDetailIfPresent();
+    }
+
+    @Test public void coachingBusinessCloseReturnsToTheSelectedCatalog() {
+        Destination page = new Destination();
+        page.browser = true;
+        page.closePrivateCoachingWebView();
+        Assert.assertEquals(Arrays.asList("browser-close"), page.actions);
+        Assert.assertEquals(Arrays.asList("selected-tab", "heading"), page.verified);
+    }
+
+    @Test public void failedBusinessBrowserCloseIsNotReplacedWithRecovery() {
+        Destination page = new Destination();
+        page.browser = true;
+        page.closeFailure = new TimeoutException("Injected browser close failure");
+        try {
+            page.closePrivateCoachingWebView();
+            Assert.fail("A recovery restart must not make the business close pass");
+        } catch (TimeoutException failure) { Assert.assertSame(page.closeFailure, failure); }
+        Assert.assertTrue(page.browser);
+        Assert.assertTrue(page.actions.isEmpty());
+    }
+
+    @Test(expected = TimeoutException.class) public void survivingBrowserFailsBusinessClose() {
+        Destination page = new Destination();
+        page.browser = true;
+        page.stuck = true;
+        page.closePrivateCoachingWebView();
     }
 }
