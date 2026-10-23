@@ -26,6 +26,11 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private static final String EXPLORE_WELCOME = "id:Welcome to Explore ✨";
     private static final String EXPLORE_WELCOME_CONFIRM = "id:SOUNDS GREAT";
     private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String PARTNER_PROMO_TITLE =
+            "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner'"
+                    + " or @name='More pleasure for both of you']";
+    private static final String PARTNER_PROMO_CLOSE = PARTNER_PROMO_TITLE
+            + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
     private static final String ANONYMOUS_ACCOUNT_NETWORK_ERROR =
             "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
                     + " and contains(@name,'Network error')]";
@@ -283,7 +288,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || new iOSDailyPlanPageObject(driver).isKegelExerciseFlowVisible()
                         || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN)
                         || isProfileBrowserVisible()
-                        || isElementVisible("id:Get an access for your partner")
+                        || isElementVisible(PARTNER_PROMO_TITLE)
                         || isElementVisible("id:CoachProgramSettingsIcon")
                         || isElementVisible("id:navBarRoundBack");
         });
@@ -412,6 +417,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     private void closePostAuthPopupsIfPresent() {
         closeMasterclassPromoIfPresent();
+        closePartnerPromoIfPresent();
         if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
         if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
     }
@@ -576,14 +582,11 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     public void closePartnerPromoIfPresent() {
-        String title = "id:Get an access for your partner";
-        if (!isElementVisible(title)) return;
-        // Observed 2026-09-19: the only unnamed button in this modal is its X.
-        // Scope to the promo container rather than clicking an arbitrary close.
-        String close = "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner']"
-                + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
-        waitForElementAndClick(close, "Cannot close optional partner promo", 10);
-        waitForElementNotVisible(title, "Partner promo remains visible", 10);
+        if (!isElementVisible(PARTNER_PROMO_TITLE)) return;
+        // Both observed headings share the same unnamed X in their promo container.
+        // Keep the gift CTA and other screens' close controls outside this scope.
+        waitForElementAndClick(PARTNER_PROMO_CLOSE, "Cannot close optional partner promo", 10);
+        waitForElementNotVisible(PARTNER_PROMO_TITLE, "Partner promo remains visible", 10);
     }
 
     @Step("Close optional Sensual Touch masterclass promo if displayed")
