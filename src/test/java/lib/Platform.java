@@ -198,6 +198,23 @@ public class Platform {
                 && !this.getAndroidAppPath().trim().isEmpty();
     }
 
+    public String getPostAuthQuestionnaireGoal()
+    {
+        return this.getConfig("postAuth.questionnaire.goal", "POST_AUTH_QUESTIONNAIRE_GOAL", null);
+    }
+
+    /** Setup is explicit and must never be enabled as an ordinary existing-progress login workaround. */
+    public void validateAndroidPostAuthFixturePreparation()
+    {
+        if (!this.isAndroid() || !this.getBooleanConfig("coach.android.preparePostAuthQuestionnaire",
+                "COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE", false)) {
+            throw new IllegalStateException("Android questionnaire fixture preparation requires explicit opt-in");
+        }
+        if (this.getPostAuthQuestionnaireGoal() == null) {
+            throw new IllegalStateException("Fixture preparation requires an explicit postAuth.questionnaire.goal");
+        }
+    }
+
     public String getIOSUpdateAppPath()
     {
         return this.getConfig("ios.update.app", "IOS_UPDATE_APP", null);

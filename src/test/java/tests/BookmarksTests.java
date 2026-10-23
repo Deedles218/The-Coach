@@ -33,14 +33,18 @@ public class BookmarksTests extends CoreTestCase {
     private static final String RECURRING = "RECURRING";
     private static final String SWITCH_A = "SWITCHA";
     private static final String SWITCH_B = "SWITCHB";
-    private static final String UPDATE = "UPDATE";
-    private static final String NO_SUBSCRIPTION = "NOSUBSCRIPTION";
+    protected static final String UPDATE = "UPDATE";
+    protected static final String NO_SUBSCRIPTION = "NOSUBSCRIPTION";
 
-    private CoachFlowPageObject coach;
-    private BookmarksPageObject bookmarks;
+    protected CoachFlowPageObject coach;
+    protected BookmarksPageObject bookmarks;
 
-    private void prepare(String fixture) {
+    protected void requireSupportedPlatform() {
         Assert.assertTrue("Bookmarks Xray cases are currently scoped to iOS", Platform.getInstance().isIOS());
+    }
+
+    protected void prepare(String fixture) {
+        requireSupportedPlatform();
         coach = CoachFlowPageObjectFactory.get(driver);
         bookmarks = BookmarksPageObjectFactory.get(driver);
         bookmarks.closeOpenedContentIfPresent();
@@ -59,7 +63,7 @@ public class BookmarksTests extends CoreTestCase {
         login(TestData.bookmarksAccount(fixture));
     }
 
-    private void login(TestData.TestAccount account) {
+    protected void login(TestData.TestAccount account) {
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coach.openProfile();
         ((iOSCoachFlowPageObject) coach).assertAuthenticatedProfileForEmail(account.getEmail());
@@ -535,7 +539,7 @@ public class BookmarksTests extends CoreTestCase {
         bookmarks.openContentFromToday(title);
     }
 
-    private void selectFixtureProgram(String program) {
+    protected void selectFixtureProgram(String program) {
         if (program != null) new iOSProgramSelectorPageObject(driver).ensureProgramSelected(program);
     }
 
@@ -565,7 +569,7 @@ public class BookmarksTests extends CoreTestCase {
         return value == null || value.trim().isEmpty() ? null : value.trim();
     }
 
-    private static String required(String suffix) {
+    protected static String required(String suffix) {
         String property = "coach.bookmarks." + suffix;
         String env = "COACH_BOOKMARKS_" + suffix.replaceAll("([a-z0-9])([A-Z])", "$1_$2")
                 .toUpperCase(Locale.ROOT);

@@ -141,6 +141,8 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER =
             "id:" + APP_PACKAGE + ":id/tvAnswerNum";
+    private static final String ANDROID_PERMISSION_DENY_BUTTON =
+            "id:com.android.permissioncontroller:id/permission_deny_button";
 
     static {
         TAB_TODAY = "id:" + APP_PACKAGE + ":id/nav_graph_daily";
@@ -219,6 +221,19 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
 
     public AndroidCoachFlowPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Step("Verify Android Profile belongs to the configured account")
+    public void assertAuthenticatedProfileForEmail(String email) {
+        waitForElementNotVisible(androidId("pbLoading"), "Profile account state is still loading", 20);
+        Assert.assertFalse("Profile is anonymous", isAnonymousProfileDisplayed());
+        createWait(20).withMessage("Profile email has not loaded").until(ignored -> {
+            List<WebElement> users = driver.findElements(By.id(APP_PACKAGE + ":id/tvUserName"));
+            return !users.isEmpty() && users.get(0).isDisplayed() && users.get(0).getText().contains("@");
+        });
+        String actual = driver.findElement(By.id(APP_PACKAGE + ":id/tvUserName")).getText();
+        Assert.assertTrue("Android Profile identity differs from the configured fixture",
+                email.equalsIgnoreCase(actual.trim()));
     }
 
     @Override
@@ -300,7 +315,26 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     @Step("Open Android Profile from the top of Today")
     public void openProfile() {
         scrollTodayToTopIfPresent();
-        super.openProfile();
+        try {
+            super.openProfile();
+        } catch (TimeoutException firstAttempt) {
+            if (!(driver instanceof AndroidDriver) || !isAuthorizedDashboardDisplayed()) throw firstAttempt;
+            if (isElementVisible(androidId("btnOk"))) {
+                waitForElementAndClick(androidId("btnOk"), "Cannot dismiss Android program hint", 10);
+            } else {
+                // The local Her capture has an inaccessible Compose tooltip. Never blindly tap this ratio by default.
+                if (!APP_PACKAGE.endsWith(".forher")
+                        || !Boolean.getBoolean("coach.android.allowProfileTooltipFallback")) throw firstAttempt;
+                Dimension size = driver.manage().window().getSize();
+                Map<String, Object> dismissTooltip = new HashMap<>();
+                dismissTooltip.put("x", Math.round(size.getWidth() * 0.475));
+                dismissTooltip.put("y", Math.round(size.getHeight() * 0.165));
+                ((JavascriptExecutor) driver).executeScript("mobile: clickGesture", dismissTooltip);
+            }
+            waitForFirstElementPresent(new String[]{TAB_TODAY, TAB_EXPLORE},
+                    "Android main tabs disappeared after dismissing the first-visit hint", 10);
+            super.openProfile();
+        }
     }
 
     @Override
@@ -385,6 +419,15 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         }
         waitForAuthorizedDashboard();
         waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Android authorization loading indicator is still displayed", 30);
+        openToday();
+    }
+
+    /** Explicit fixture-only entry point. Strict login above deliberately never calls this method. */
+    public void loginForFixturePreparation(String email, String otpCode) {
+        Platform.getInstance().validateAndroidPostAuthFixturePreparation();
+        authenticateForFixtureSetup(email, otpCode);
+        new AndroidOnboardingPageObject(driver).completePostAuthQuestionnaire();
+        waitForAuthorizedDashboard();
         openToday();
     }
 
@@ -644,6 +687,12 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
      * treated as an Explore detail close action.
      */
     private void closeAuthorizedTransientSurfaceIfPresent() {
+        if (isElementVisible(ANDROID_PERMISSION_DENY_BUTTON)) {
+            waitForElementAndClick(ANDROID_PERMISSION_DENY_BUTTON,
+                    "Cannot dismiss the Android permission prompt during state recovery", 10);
+            waitForElementNotVisible(ANDROID_PERMISSION_DENY_BUTTON,
+                    "Android permission prompt did not close during state recovery", 10);
+        }
         if (isElementVisible(androidId("ivClose")) && isElementVisible(androidId("tvHeader"))) {
             waitForElementAndClick(androidId("ivClose"), "Cannot dismiss Android promo", 10);
             waitForElementNotVisible(androidId("ivClose"), "Android promo did not close", 10);

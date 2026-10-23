@@ -49,6 +49,7 @@ APP_VARIANTS = {
     "male": ("com.vamapps.thecoach", "com.vamapps.thecoach.MainActivity"),
     "female": ("com.vamapps.thecoach.forher", "com.vamapps.thecoach.MainActivity"),
 }
+POST_AUTH_GOALS = {"male": "Beat premature ejaculation", "female": "Cultivate desire"}
 CLEAN_INSTALL_SUITES = {"push", "billing", "test-model", "clean-install"}
 UID_REQUIRED_SUITES = {"safe", "functional", "kegel", "test-model", "update"}
 MALE_ONLY_SUITES = set(SUITES) - {"auth", "profile", "localization"}
@@ -74,11 +75,14 @@ def main():
     parser.add_argument("--slides-fixture", type=Path)
     parser.add_argument("--prepared-slides", action="store_true",
                         help="The first uncompleted slide is already open; preserve this installation")
+    parser.add_argument("--post-auth-goal", help="Explicit goal for separate, opt-in fixture preparation; does not enable it")
+    parser.add_argument("--confirm-immersive-mode", action="store_true",
+                        help="Confirm the OS full-screen hint on the selected test emulator (opt-in)")
     args = parser.parse_args()
     if not re.fullmatch(r"emulator-[0-9]+", args.serial):
         parser.error("Select the explicit test emulator")
-    if args.method and not all(method.replace('_','').isalnum() for method in args.method.split('+')):
-        parser.error("Invalid method name")
+    if args.method and (not re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", args.method) or "," in SUITES[args.suite]):
+        parser.error("Select one exact method in a single test class; Surefire 2.12.4 does not support method1+method2")
     if args.suite == "update" and (not args.old_apk or not args.new_apk):
         parser.error("Update requires both --old-apk and --new-apk")
     if args.suite == "slides" and (not args.slides_fixture or not args.slides_fixture.is_file()):
@@ -97,7 +101,6 @@ def main():
                            if not os.environ.get(name)]
     if missing_environment:
         parser.error("Suite data contract is incomplete. Missing: " + ", ".join(missing_environment))
-    version = subprocess.check_output([os.environ.get("ADB","adb"),"-s",args.serial,"shell","getprop","ro.build.version.release"], text=True,timeout=15).strip()
     record = json.loads(keychain(args.fixture_service))
     required_record_fields = ["email", "otp"] + (["uid"] if args.suite in UID_REQUIRED_SUITES else [])
     if not all(record.get(k) for k in required_record_fields):
@@ -115,10 +118,14 @@ def main():
             and no_pdf_email.lower() == record["email"].lower():
         parser.error("Existing-progress and no-PDF entitlement accounts must be distinct")
     package_name, activity_name = APP_VARIANTS[args.variant]
+    adb = os.environ.get("ADB", "adb")
+    version = subprocess.check_output([adb, "-s", args.serial, "shell", "getprop", "ro.build.version.release"],
+                                      text=True, timeout=15).strip()
     env = os.environ.copy()
     env.update(COACH_EXISTING_PROGRESS_EMAIL=record["email"], COACH_EXISTING_PROGRESS_OTP=record["otp"],
                COACH_DAILY_PLAN_DAY="Stage 1", COACH_FIXTURE_RESET_MODE="prebuilt", COACH_ACCOUNT_VARIANT=args.variant,
-               ANDROID_APP_VARIANT=args.variant, TEST_ISOLATION_MODE="logout")
+               ANDROID_APP_VARIANT=args.variant, TEST_ISOLATION_MODE="logout",
+               POST_AUTH_QUESTIONNAIRE_GOAL=args.post_auth_goal or record.get("onboardingGoal") or POST_AUTH_GOALS[args.variant])
     if record.get("uid"):
         env["COACH_EXPECTED_ACCOUNT_UID"] = record["uid"]
     if args.suite == "safe":
@@ -156,13 +163,19 @@ def main():
         if value:
             if not value.is_file(): parser.error("APK does not exist: " + str(value))
             cmd.append("-Dandroid.update." + key + "=" + str(value.resolve()))
+    if args.confirm_immersive_mode:
+        # The local API-36 capture showed an OS-owned hint absent from UiAutomator's tree.
+        # Validate account/APK configuration first; this must never run for rejected input.
+        subprocess.check_output([adb, "-s", args.serial, "shell", "settings", "put", "secure",
+                                 "immersive_mode_confirmations", "confirmed"], text=True, timeout=15)
     start = time.time()
     archive = ROOT / "target" / ("android-parity-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     archive.mkdir(parents=True, exist_ok=False)
     with (archive / "run.log").open("w") as log:
         process = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:
-            for secret in (record["email"], record["otp"]): line = line.replace(secret, "<redacted>")
+            for field in ("email", "otp", "uid"):
+                if record.get(field): line = line.replace(record[field], "<redacted>")
             log.write(line); log.flush(); print(line, end="", flush=True)
         code = process.wait()
     for directory in ("surefire-reports", "screenshots", "page-source"):

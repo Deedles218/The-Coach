@@ -1,5 +1,6 @@
 package lib.ui.android;
 
+import io.appium.java_client.InteractsWithApps;
 import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.OnboardingGoal;
@@ -22,6 +23,8 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     private static final String GOAL_TITLE = "id:" + ID_PREFIX + "tvAcive";
     private static final String CONTINUE_BUTTON = "id:" + ID_PREFIX + "bContinue";
     private static final String QUESTION_NUMBER = "id:" + ID_PREFIX + "tvAnswerNum";
+    private static final String PRIMARY_GOAL_TITLE = "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX
+            + "tvAcive' and contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'WHAT DO YOU WANT TO')]";
     private static final String QUESTIONNAIRE_WEBVIEW =
             "xpath://android.webkit.WebView[.//android.widget.TextView[starts-with(@text,'STEP ')] "
                     + "or .//android.view.View[@resource-id='question']]";
@@ -81,6 +84,29 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         openStartFlow();
         selectGoal(goal);
         completeQuestionnaire();
+    }
+
+    /** Mutating fixture preparation only, never invoked by normal existing-progress authentication. */
+    @Step("Prepare the explicitly approved Android post-auth questionnaire fixture")
+    public void completePostAuthQuestionnaire() {
+        Platform.getInstance().validateAndroidPostAuthFixturePreparation();
+        if (isElementPresent(QUESTION_NUMBER)) {
+            if (isElementPresent(PRIMARY_GOAL_TITLE)) {
+                // Do not choose the first available primary goal when the configured one is absent.
+                selectGoal(Platform.getInstance().getPostAuthQuestionnaireGoal());
+            }
+            completeQuestionnaire();
+            if (driver instanceof InteractsWithApps) {
+                InteractsWithApps apps = (InteractsWithApps) driver;
+                apps.terminateApp(APP_PACKAGE);
+                apps.activateApp(APP_PACKAGE);
+                waitForFirstElementPresent(new String[]{PAYWALL_ROOT, WORKBOOK_UPSELL,
+                                "id:" + ID_PREFIX + "tvHeader", TODAY_TAB},
+                        "Android did not restore a post-questionnaire destination after relaunch", 30);
+            }
+        }
+        closePaywallsAndPopups();
+        waitForToday();
     }
 
     private void selectGoal(String goal) {
