@@ -10,6 +10,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
 import lib.CoreTestCase;
+import lib.ExploreStateRestorer;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.ExplorePageObject;
@@ -19,14 +20,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
 import lib.Platform;
-import lib.ui.android.AndroidProgramSelectorPageObject;
 import org.junit.Test;
 
 @Epic(value = "The Coach Explore")
 public class ExploreTests extends CoreTestCase {
     private ExplorePageObject explore;
-    private AndroidProgramSelectorPageObject today;
-    private String originalProgram, originalDay, originalProgress;
+    private ExploreStateRestorer originalState;
 
     @Before
     public void openExploreForTest() {
@@ -40,25 +39,20 @@ public class ExploreTests extends CoreTestCase {
             TestData.TestAccount account = TestData.existingProgressAccount();
             coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         }
-        if(Platform.getInstance().isAndroid()) {
-            today=new AndroidProgramSelectorPageObject(driver);today.openTodayTab();
-            originalProgram=today.getActiveProgramName();originalDay=today.getCurrentDayLabel();originalProgress=today.getProgramProgressValue();
-        }
+        originalState = ExploreStateRestorer.capture(driver);
         explore.openExploreTab();
     }
 
-    @After public void restoreAndroidProgram() throws Exception {
-        if(today==null||originalProgram==null) return;
-        // Opening an Explore catalog changes Android's active program; preserve the caller's state.
-        io.qameta.allure.Allure.addAttachment("Explore before restoration","image/png",
-            new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot)driver).getScreenshotAs(org.openqa.selenium.OutputType.BYTES)),"png");
-        ((lib.ui.android.AndroidExplorePageObject)explore).closeTransientDetailIfPresent();
-        today.openTodayTab();
-        if(!originalProgram.equals(today.getActiveProgramName())) {
-            today.openProgramSelector();today.selectProgram(originalProgram);
+    @After public void restoreOriginalProgram() throws Exception {
+        if (explore == null) return;
+        if (originalState == null) {
+            explore.closeTransientDetailIfPresent();
+            return;
         }
-        Assert.assertEquals("Explore changed original stage",originalDay,today.getCurrentDayLabel());
-        Assert.assertEquals("Explore changed original progress",originalProgress,today.getProgramProgressValue());
+        originalState.restoreAfter(() -> io.qameta.allure.Allure.addAttachment("Explore before restoration", "image/png",
+                new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
+                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png"),
+                explore::closeTransientDetailIfPresent);
     }
 
     @Test @Issue("COA-8178") @Issue("COA-8179") @Issue("COA-8180")

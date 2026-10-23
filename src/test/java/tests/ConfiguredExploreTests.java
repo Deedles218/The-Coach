@@ -2,11 +2,10 @@ package tests;
 
 import io.qameta.allure.*;
 import lib.CoreTestCase;
-import lib.Platform;
+import lib.ExploreStateRestorer;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.ExplorePageObject;
-import lib.ui.android.AndroidProgramSelectorPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.ExplorePageObjectFactory;
 import lib.ui.factories.OnboardingPageObjectFactory;
@@ -17,8 +16,7 @@ import org.junit.*;
 @Feature("Configured Explore parity")
 public class ConfiguredExploreTests extends CoreTestCase {
     private ExplorePageObject explore;
-    private AndroidProgramSelectorPageObject today;
-    private String originalProgram, originalStage, originalProgress;
+    private ExploreStateRestorer originalState;
 
     @Before public void openExplore() {
         requireMobilePlatform();
@@ -27,34 +25,20 @@ public class ConfiguredExploreTests extends CoreTestCase {
         CoachFlowPageObject coach = CoachFlowPageObjectFactory.get(driver);
         TestData.TestAccount account = TestData.existingProgressAccount();
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
-        if (Platform.getInstance().isAndroid()) {
-            today = new AndroidProgramSelectorPageObject(driver);
-            today.openTodayTab();
-            originalProgram = today.getActiveProgramName();
-            originalStage = today.getCurrentDayLabel();
-            originalProgress = today.getProgramProgressValue();
-        }
+        originalState = ExploreStateRestorer.capture(driver);
         explore.openExploreTab();
     }
 
-    @After public void closeDestinationAndRestoreProgram() {
+    @After public void closeDestinationAndRestoreProgram() throws Exception {
         if (explore == null) return;
-        Allure.addAttachment("Explore before restoration", "image/png",
-                new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
-                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
-        try {
+        if (originalState == null) {
             explore.closeTransientDetailIfPresent();
-        } finally {
-            if (today != null && originalProgram != null && originalStage != null && originalProgress != null) {
-                today.openTodayTab();
-                if (!originalProgram.equals(today.getActiveProgramName())) {
-                    today.openProgramSelector();
-                    today.selectProgram(originalProgram);
-                }
-                Assert.assertEquals("Explore changed the original stage", originalStage, today.getCurrentDayLabel());
-                Assert.assertEquals("Explore changed the original progress", originalProgress, today.getProgramProgressValue());
-            }
+            return;
         }
+        originalState.restoreAfter(() -> Allure.addAttachment("Explore before restoration", "image/png",
+                new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
+                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png"),
+                explore::closeTransientDetailIfPresent);
     }
 
     @Test @Issue("COA-8178") public void testCurrentExploreNavigation() { explore.assertRetiredExploreUiIsAbsent(); }
