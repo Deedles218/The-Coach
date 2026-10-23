@@ -227,7 +227,17 @@ body scoping, negative completion markers, factory selection, 21-method inherita
 and strict/setup authentication separation. Existing iOS locator, rendered
 completion-marker and readiness unit tests remain in the unit selection.
 The native captured XML replay is read-only historical evidence, not a fresh
-Appium pass. No Android target was attached during this continuation, so new
-live UI, both-variant device coverage, completion, analytics/request collection,
-update/reinstall and the candidate access expectation remain unverified.
-Keep this port Draft until those fixture-backed checks and contract review are done.
+Appium pass. The initial port had no attached Android target. The subsequent
+[live Android follow-up](android-pr25-live-ui-2026-10-23.md) uses dedicated API-36
+emulators and distinguishes successful authorization checks from Bookmarks
+attempts blocked during login. It does not establish full Bookmarks parity,
+completion, analytics/request collection, update/reinstall or the candidate
+access expectation. Keep this port Draft until those fixture-backed checks and
+contract review are done.
+
+The follow-up recognizes the current Android `tvEmailNotfoundError` rather than
+waiting for an OTP screen after the app has already rejected the email. Hidden
+or empty error views cannot satisfy it. Onboarding also dismisses the observed
+System UI full-screen hint only when `immersive_cling_title` is visible, through
+System UI's own `ok` id, and verifies its disappearance. This is not a generic
+Got-it/OK tap and does not write device settings from the Page Object.

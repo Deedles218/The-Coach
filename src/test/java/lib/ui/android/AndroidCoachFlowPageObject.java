@@ -176,8 +176,10 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
                         + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'ANOTHER COACH APP')"
                         + "]";
         LOGIN_VALIDATION_ERROR =
-                "xpath://android.widget.TextView[contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'VALID EMAIL')"
-                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'EMAIL IS NOT')]";
+                "xpath://android.widget.TextView[not(@displayed='false') and ("
+                        + "(@resource-id='" + APP_PACKAGE + ":id/tvEmailNotfoundError' and string-length(normalize-space(@text)) > 0)"
+                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'VALID EMAIL')"
+                        + " or contains(translate(@text,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'EMAIL IS NOT'))]";
 
         PROFILE_BUTTON = "id:" + APP_PACKAGE + ":id/btnAction";
         PROFILE_BUTTON_FEMALE = null;

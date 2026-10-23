@@ -8,6 +8,12 @@ import org.junit.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.NodeList;
 
 public class AndroidPostAuthPreparationUnitTests {
     private final Map<String, String> original = new HashMap<>();
@@ -27,6 +33,7 @@ public class AndroidPostAuthPreparationUnitTests {
     private static class Auth extends AndroidCoachFlowPageObject {
         int authentications;
         Auth() { super(null); }
+        String validationError() { return LOGIN_VALIDATION_ERROR; }
         @Override public void authenticateForFixtureSetup(String email, String otp) { authentications++; }
         @Override public boolean isElementPresent(String locator) { return locator.endsWith("/tvAnswerNum"); }
     }
@@ -62,5 +69,24 @@ public class AndroidPostAuthPreparationUnitTests {
         System.setProperty("coach.android.preparePostAuthQuestionnaire", "true");
         Platform.getInstance().validateAndroidPostAuthFixturePreparation();
         Assert.assertEquals("Prepared goal", Platform.getInstance().getPostAuthQuestionnaireGoal());
+    }
+
+    private int matchingErrors(String attributes) throws Exception {
+        String xml = "<root><android.widget.TextView resource-id='"
+                + Platform.getInstance().getAndroidAppPackage() + ":id/tvEmailNotfoundError' "
+                + attributes + "/></root>";
+        Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        return ((NodeList) XPathFactory.newInstance().newXPath().evaluate(
+                new Auth().validationError().substring(6), document, XPathConstants.NODESET)).getLength();
+    }
+
+    @Test public void unregisteredEmailIsARecognizedLoginErrorRatherThanAnOtpTimeout() throws Exception {
+        Assert.assertEquals(1, matchingErrors("text='Email not found. Contact support below.' displayed='true'"));
+    }
+
+    @Test public void emptyOrHiddenEmailErrorCannotRejectAValidLogin() throws Exception {
+        Assert.assertEquals(0, matchingErrors("text='' displayed='true'"));
+        Assert.assertEquals(0, matchingErrors("text='Email not found. Contact support below.' displayed='false'"));
     }
 }

@@ -32,6 +32,8 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     private static final String PAYWALL_CLOSE = "id:" + ID_PREFIX + "btnClose";
     private static final String TODAY_TAB = "id:" + ID_PREFIX + "nav_graph_daily";
     private static final String WORKBOOK_UPSELL = "id:" + ID_PREFIX + "tvEworkbook";
+    private static final String IMMERSIVE_HINT_TITLE = "id:com.android.systemui:id/immersive_cling_title";
+    private static final String IMMERSIVE_HINT_CONFIRM = "id:com.android.systemui:id/ok";
 
     private static final By SEMANTIC_QUESTIONNAIRE_ACTION = By.xpath(
             "//*[@enabled='true' and "
@@ -247,6 +249,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
             if (destinationVisible.getAsBoolean()) return paywallsClosed;
+            if (dismissImmersiveHintIfPresent()) continue;
             WebElement paywallClose = firstDisplayedEnabled(By.id(ID_PREFIX + "btnClose"));
             boolean paywallVisible = isElementPresent(PAYWALL_ROOT) || paywallClose != null;
             if (paywallVisible) {
@@ -302,6 +305,14 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
             break;
         }
         return paywallsClosed;
+    }
+
+    /** API-36 system hint can cover the app before its own close controls become accessible. */
+    protected boolean dismissImmersiveHintIfPresent() {
+        if (!isElementVisible(IMMERSIVE_HINT_TITLE)) return false;
+        waitForElementAndClick(IMMERSIVE_HINT_CONFIRM, "Cannot dismiss Android full-screen system hint", 10);
+        waitForElementNotVisible(IMMERSIVE_HINT_TITLE, "Android full-screen system hint did not close", 10);
+        return true;
     }
 
     @Override
