@@ -273,20 +273,30 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
     @Override public void closePrivateCoachingWebView() { closeTransientDetailIfPresent(); }
     @Override public void closeTransientDetailIfPresent() {
-        if (isElementVisible(EXPLORE_HEADING)) return;
+        // The article reader also renders an Explore heading. It is not the
+        // catalog until the selected Explore tab has actually returned.
+        if (isElementVisible(EXPLORE_HEADING) && isElementVisible(SELECTED_EXPLORE_TAB)) return;
         if (isElementVisible("xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']")) {
             new lib.ui.VideoLessonPlayerPageObject(driver).closePlayer();
+            waitForElementVisible(SELECTED_EXPLORE_TAB, "Video did not restore the selected Explore tab", 15);
             waitForElementVisible(EXPLORE_HEADING, "Video did not return to Explore", 15);
             return;
         }
         String[] closeControls = new String[]{"id:navBarRoundBack", "id:CloseRoundBlack",
-                "id:navBarRoundClose", "id:ic_outline_close", "id:ProgramCloseButtonIcon"};
+                "id:navBarRoundClose", "id:ic_outline_close", "id:ProgramCloseButtonIcon",
+                "id:ic outline close"};
         boolean closable = false;
         for (String control : closeControls) if (isElementVisible(control)) closable = true;
         if (!closable) return;
         waitForFirstElementAndClick(closeControls,
                 "Cannot close Explore destination", 10);
+        String lessonExit = iOSDailyPlanPageObject.lessonExitConfirmationLocator();
+        createWait(10).withMessage("Explore destination neither closed nor requested unfinished exit").until(ignored ->
+                isElementVisible(SELECTED_EXPLORE_TAB) || isElementVisible("id:QUIT") || isElementVisible(lessonExit));
         if (isElementVisible("id:QUIT")) waitForElementAndClick("id:QUIT", "Cannot quit unfinished video", 10);
+        else if (isElementVisible(lessonExit))
+            waitForElementAndClick("id:Quit", "Cannot quit unfinished Explore article", 10);
+        waitForElementVisible(SELECTED_EXPLORE_TAB, "Closing destination did not restore the selected Explore tab", 15);
         waitForElementVisible(EXPLORE_HEADING, "Closing destination did not return to Explore", 15);
     }
 
