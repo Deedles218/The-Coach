@@ -22,6 +22,7 @@ public class IOSConfiguredExploreContractUnitTests {
         String booking() { return coachingBookingLocator(); }
         String quickTip() { return quickTipCardLocator(); }
         String article() { return quickTipArticleTitleLocator(); }
+        String titles(String title) { return configuredCards(title) + "//XCUIElementTypeStaticText[@visible='true']"; }
     }
 
     private void variant(String bundle, java.util.function.Consumer<Locators> assertions) {
@@ -114,5 +115,28 @@ public class IOSConfiguredExploreContractUnitTests {
             Assert.assertEquals(1, count(section("Masterclasses", ""), page.section("Master Classes")));
             Assert.assertEquals(1, count(section("MASTER CLASSES", ""), page.section("Master Classes")));
         });
+    }
+
+    @Test public void visibleCardTitleIsReachableAfterItsHeadingScrollsOffscreen() {
+        variant("com.vamapps.The-Coach", page -> {
+            String xml = section("Masterclasses", "<XCUIElementTypeStaticText label='The Art of Sensual Massage' visible='true'/>")
+                    .replace("label='Masterclasses' visible='true'", "label='Masterclasses' visible='false'");
+            Assert.assertEquals("A hidden header is not ready for header checks", 0, count(xml, page.section("Master Classes")));
+            Assert.assertEquals("A visible card must remain scoped to its offscreen header", 1, count(xml, page.titles("Master Classes")));
+        });
+    }
+
+    @Test public void visibleHeadingAloneCannotMakeOffscreenCardTitlesReady() {
+        variant("com.vamapps.The-Coach", page -> {
+            String xml = section("Masterclasses", "<XCUIElementTypeStaticText label='The Art of Sensual Massage' visible='false'/>");
+            Assert.assertEquals(1, count(xml, page.section("Master Classes")));
+            Assert.assertEquals(0, count(xml, page.titles("Master Classes")));
+        });
+    }
+
+    @Test public void anotherSectionsVisibleTitleCannotSatisfyMasterclassReadiness() {
+        variant("com.vamapps.The-Coach", page -> Assert.assertEquals(0, count(
+                section("Quick Tips", "<XCUIElementTypeStaticText label='Finish Too Soon' visible='true'/>")
+                        + section("Masterclasses", ""), page.titles("Master Classes"))));
     }
 }

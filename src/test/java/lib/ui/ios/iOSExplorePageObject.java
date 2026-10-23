@@ -174,18 +174,24 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
 
     protected String configuredSection(String title) {
+        return configuredSection(title, true);
+    }
+
+    private String configuredSection(String title, boolean visible) {
+        String visibility = visible ? " and @visible='true'" : "";
         if ("Master Classes".equals(title)) {
             return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ ',"
-                    + "'abcdefghijklmnopqrstuvwxyz')='masterclasses' and @visible='true']";
+                    + "'abcdefghijklmnopqrstuvwxyz')='masterclasses'" + visibility + "]";
         }
         return "xpath://XCUIElementTypeStaticText[translate(@label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
-                + title.toLowerCase(java.util.Locale.ROOT) + "' and @visible='true']";
+                + title.toLowerCase(java.util.Locale.ROOT) + "'" + visibility + "]";
     }
 
     protected String configuredCards(String title) {
         // Scope cards to the nearest section containing its heading and collection,
         // rather than using unrelated images/buttons elsewhere on the page.
-        return configuredSection(title) + "/ancestor::XCUIElementTypeOther[.//XCUIElementTypeCollectionView][1]"
+        // The heading can scroll offscreen while its card content is visible.
+        return configuredSection(title, false) + "/ancestor::XCUIElementTypeOther[.//XCUIElementTypeCollectionView][1]"
                 + "//XCUIElementTypeCollectionView/*[not(@type='XCUIElementTypeOther' and contains(@name,'scroll bar'))]";
     }
 
@@ -251,8 +257,10 @@ public class iOSExplorePageObject extends ExplorePageObject {
     @Override public void assertConfiguredCardTitlesAreNonEmpty() {
         for (String title : configuredSectionTitles()) {
             revealConfiguredSection(title);
-            List<WebElement> titles = driver.findElements(getLocatorByString(
-                    configuredCards(title) + "//XCUIElementTypeStaticText[@visible='true']"));
+            String visibleTitles = configuredCards(title) + "//XCUIElementTypeStaticText[@visible='true']";
+            swipeUpToFindFirstVisibleElement(new String[]{visibleTitles},
+                    "Configured card titles are below the viewport in " + title, 8);
+            List<WebElement> titles = driver.findElements(getLocatorByString(visibleTitles));
             Assert.assertFalse("Configured cards have no titles in " + title, titles.isEmpty());
             for (WebElement node : titles) Assert.assertFalse("Empty configured card title", node.getText().trim().isEmpty());
         }

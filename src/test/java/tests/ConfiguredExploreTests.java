@@ -36,9 +36,12 @@ public class ConfiguredExploreTests extends CoreTestCase {
             explore.closeTransientDetailIfPresent();
             return;
         }
-        originalState.restoreAfter(() -> Allure.addAttachment("Explore before restoration", "image/png",
-                new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
-                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png"),
+        originalState.restoreAfter(() -> {
+            Allure.addAttachment("Explore before restoration", "image/png",
+                    new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
+                            .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
+            Allure.addAttachment("Explore source before restoration", "application/xml", driver.getPageSource(), "xml");
+        },
                 explore::closeTransientDetailIfPresent);
     }
 
