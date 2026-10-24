@@ -241,3 +241,40 @@ or empty error views cannot satisfy it. Onboarding also dismisses the observed
 System UI full-screen hint only when `immersive_cling_title` is visible, through
 System UI's own `ok` id, and verifies its disappearance. This is not a generic
 Got-it/OK tap and does not write device settings from the Page Object.
+
+### Android continuation — 2026-10-24
+
+See the separate [authorization/onboarding and Bookmarks report](android-pr25-live-ui-2026-10-24.md)
+for measured results and remaining gates. Android Profile hides the bottom tabs:
+after identity verification, the Android Bookmarks login closes Profile through
+`returnToMainScreenFromProfile()` before selecting Today. This does not change
+the shared iOS login or its 21 test bodies.
+
+An unfinished Android questionnaire cannot be reported as logged out merely by
+navigating Back to Welcome. Cleanup now rejects that state, allowing the existing
+bounded recovery controller to use the configured test APK. App-local reinstall
+recovery is not a server progress reset and does not make the failed scenario pass.
+Post-questionnaire readiness also recognizes the observed notification permission
+dialog and System UI full-screen hint, so existing handlers can process them.
+
+For a separate accessibility diagnostic, opt in with
+`-Dandroid.disableSuppressAccessibilityService=true` or
+`ANDROID_DISABLE_SUPPRESS_ACCESSIBILITY_SERVICE=true`. This preserves configured
+accessibility services instead of UiAutomator2 suppressing them; it neither enables
+a service nor guarantees that WebView exposes every screen. The default capability
+is unchanged, and iOS never receives it. The report records the separate, temporary
+Chromium userdebug override used locally; do not apply it to a personal/production
+device or treat that execution as default-device parity.
+
+On a fresh Android installation, the CONTENT account can show an app-local
+`Remove from bookmarks` popup whose accessibility window hides the list beneath.
+Record this separately from a missing Bookmarks screen. For a non-tooltip diagnostic,
+prepare/dismiss that popup explicitly with the existing UI helper **before** the
+measured attempt; do not silently dismiss it inside tooltip assertions. Current-account
+mode remains diagnostic only, not evidence of strict independent re-login.
+
+**State-safety warning:** a catalog GET for another program was observed to change
+the server's selected program. Never enumerate catalogs as a supposedly read-only
+progress observer. Use identity-verified current-state reads without program/day
+selectors; record and restore any intentionally selected program/day separately.
+Do not infer an all-program completion snapshot from a current-program response.

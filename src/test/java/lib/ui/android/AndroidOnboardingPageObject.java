@@ -102,13 +102,19 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 InteractsWithApps apps = (InteractsWithApps) driver;
                 apps.terminateApp(APP_PACKAGE);
                 apps.activateApp(APP_PACKAGE);
-                waitForFirstElementPresent(new String[]{PAYWALL_ROOT, WORKBOOK_UPSELL,
-                                "id:" + ID_PREFIX + "tvHeader", TODAY_TAB},
-                        "Android did not restore a post-questionnaire destination after relaunch", 30);
+                waitForPostQuestionnaireDestination();
             }
         }
         closePaywallsAndPopups();
         waitForToday();
+    }
+
+    protected void waitForPostQuestionnaireDestination() {
+        // System dialogs can own the accessibility window before the app's destination is visible.
+        waitForFirstElementPresent(new String[]{PAYWALL_ROOT, WORKBOOK_UPSELL,
+                        "id:" + ID_PREFIX + "tvHeader", TODAY_TAB, IMMERSIVE_HINT_TITLE,
+                        "id:com.android.permissioncontroller:id/permission_deny_button"},
+                "Android did not restore a post-questionnaire destination after relaunch", 30);
     }
 
     private void selectGoal(String goal) {

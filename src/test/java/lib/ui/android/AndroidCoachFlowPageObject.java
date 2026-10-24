@@ -110,6 +110,12 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     @Override public void cleanupForNextTest() {
+        if (isElementPresent(ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER)) {
+            // Back only changes navigation; it does not verify that the authenticated user was signed out.
+            // Let the existing state controller perform its configured, bounded app-local recovery.
+            throw new IllegalStateException("Android questionnaire prevents verified logout; "
+                    + "configure reinstall recovery with the test APK instead of accepting Welcome navigation");
+        }
         ensureLoggedOutOnStartScreen();
     }
 

@@ -32,10 +32,13 @@ public class AndroidPostAuthPreparationUnitTests {
     }
     private static class Auth extends AndroidCoachFlowPageObject {
         int authentications;
+        int normalizations;
+        boolean questionnaire = true;
         Auth() { super(null); }
         String validationError() { return LOGIN_VALIDATION_ERROR; }
         @Override public void authenticateForFixtureSetup(String email, String otp) { authentications++; }
-        @Override public boolean isElementPresent(String locator) { return locator.endsWith("/tvAnswerNum"); }
+        @Override public boolean isElementPresent(String locator) { return questionnaire && locator.endsWith("/tvAnswerNum"); }
+        @Override public void ensureLoggedOutOnStartScreen() { normalizations++; }
     }
 
     @Test public void fixtureLoginRejectsMissingApprovalBeforeAuthentication() {
@@ -88,5 +91,18 @@ public class AndroidPostAuthPreparationUnitTests {
     @Test public void emptyOrHiddenEmailErrorCannotRejectAValidLogin() throws Exception {
         Assert.assertEquals(0, matchingErrors("text='' displayed='true'"));
         Assert.assertEquals(0, matchingErrors("text='Email not found. Contact support below.' displayed='false'"));
+    }
+
+    @Test public void unfinishedQuestionnaireCannotBeReportedAsVerifiedLogoutByNavigatingBack() {
+        Auth auth = new Auth();
+        try { auth.cleanupForNextTest(); Assert.fail("Questionnaire cleanup silently accepted navigation as logout"); }
+        catch (IllegalStateException expected) { Assert.assertTrue(expected.getMessage().contains("questionnaire")); }
+        Assert.assertEquals(0, auth.normalizations);
+    }
+
+    @Test public void ordinaryCleanupStillUsesTheExistingLogoutFlow() {
+        Auth auth = new Auth(); auth.questionnaire = false;
+        auth.cleanupForNextTest();
+        Assert.assertEquals(1, auth.normalizations);
     }
 }

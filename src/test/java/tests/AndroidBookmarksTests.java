@@ -33,6 +33,7 @@ public class AndroidBookmarksTests extends BookmarksTests {
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coach.openProfile();
         ((AndroidCoachFlowPageObject) coach).assertAuthenticatedProfileForEmail(account.getEmail());
+        coach.returnToMainScreenFromProfile();
         coach.openToday();
     }
 
