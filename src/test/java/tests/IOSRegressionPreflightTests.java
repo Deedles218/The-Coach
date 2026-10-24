@@ -35,7 +35,7 @@ public class IOSRegressionPreflightTests extends CoreTestCase {
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         String expectedUid = System.getenv("COACH_EXPECTED_ACCOUNT_UID");
         if (expectedUid != null && !expectedUid.trim().isEmpty()) {
-            Assert.assertEquals("Wrong fixture identity", expectedUid.trim(), SimulatorTestIdentity.currentUid());
+            assertFixtureIdentity(expectedUid, SimulatorTestIdentity.currentUid());
         }
         DailyPlanPageObject today = DailyPlanPageObjectFactory.get(driver);
         today.openTodayTab();
@@ -65,5 +65,11 @@ public class IOSRegressionPreflightTests extends CoreTestCase {
         ExplorePageObject explore = ExplorePageObjectFactory.get(driver);
         explore.openExploreTab();
         explore.assertMainProgramsRecommendedSection();
+    }
+
+    static void assertFixtureIdentity(String expectedUid, String actualUid) {
+        // assertEquals would expose both identifiers in Maven and Allure failures.
+        Assert.assertTrue("Wrong fixture identity", expectedUid != null && !expectedUid.trim().isEmpty()
+                && expectedUid.trim().equals(actualUid));
     }
 }

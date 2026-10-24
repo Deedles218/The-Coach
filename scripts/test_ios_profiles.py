@@ -173,6 +173,26 @@ class IOSProfileTests(unittest.TestCase):
         for secret in ("fixture@example.invalid", "1234", "female@example.invalid", "token-secret"):
             self.assertNotIn(secret, output)
 
+    def test_log_redaction_covers_environment_and_jvm_uids(self):
+        env = {"COACH_EXPECTED_ACCOUNT_UID": "synthetic-expected-uid",
+               "COACH_COA9044_UID": "synthetic-module-uid"}
+        props = {"coach.expectedAccount.uid": "synthetic-jvm-uid"}
+        text = "expected=synthetic-expected-uid module=synthetic-module-uid actual=synthetic-jvm-uid"
+        self.assertEqual("expected=<redacted> module=<redacted> actual=<redacted>",
+                         runner.redact(text, env, props))
+
+    def test_uid_redaction_handles_trimmed_overlapping_values_and_mixed_case_keys(self):
+        env = {"COACH_EXPECTED_ACCOUNT_UID": "  synthetic-uid  "}
+        props = {"coach.fixture.UID": "synthetic-uid-long"}
+        self.assertEqual("<redacted> <redacted> <redacted>", runner.redact(
+            "  synthetic-uid   synthetic-uid-long synthetic-uid", env, props))
+
+    def test_uid_redaction_does_not_treat_fixture_ids_or_blank_values_as_uids(self):
+        env = {"COACH_EXPECTED_ACCOUNT_UID": "  ", "COACH_FIXTURE_ID": "fixture-identifier"}
+        props = {"coach.account.uid": "", "coach.fixture.id": "fixture-identifier"}
+        self.assertEqual("fixture-identifier  remains readable", runner.redact(
+            "fixture-identifier  remains readable", env, props))
+
     def run_mocked(self, folder, codes):
         with patch.dict("os.environ", dict(ENV, **KEGEL_ENV), clear=True), \
                 patch.object(runner, "load_app", return_value=(Path("/fixture/Coach.app"), dict(INFO))), \

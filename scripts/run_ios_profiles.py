@@ -144,11 +144,13 @@ def environment_for(variant, supplied, props):
 
 def redact(text, env, props=None):
     secrets = [value for key, value in env.items()
-               if key.endswith(("_EMAIL", "_OTP", "_LINK")) and len(value) > 1]
+               if key.upper().endswith(("_EMAIL", "_OTP", "_LINK", "_UID")) and len(value.strip()) > 1]
     for key, value in (props or {}).items():
-        if key.endswith((".email", ".otp", ".link")) and len(value) > 1:
+        if key.lower().endswith((".email", ".otp", ".link", ".uid")) and len(value.strip()) > 1:
             secrets.append(value)
-    for secret in sorted(set(secrets), key=len, reverse=True):
+    # The preflight trims configured identifiers; redact both forms, longest first.
+    secrets = {secret for value in secrets for secret in (value, value.strip()) if len(secret) > 1}
+    for secret in sorted(secrets, key=len, reverse=True):
         text = text.replace(secret, "<redacted>")
     return re.sub(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", "<redacted-email>", text)
 
