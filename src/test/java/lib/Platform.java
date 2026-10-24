@@ -87,6 +87,9 @@ public class Platform {
         capabilities.setCapability("deviceName", this.getConfig("android.deviceName", "ANDROID_DEVICE_NAME", DEFAULT_ANDROID_DEVICE_NAME));
         capabilities.setCapability("platformVersion", this.getConfig("android.platformVersion", "ANDROID_PLATFORM_VERSION", DEFAULT_ANDROID_PLATFORM_VERSION));
         capabilities.setCapability("automationName", "UiAutomator2");
+        this.setBooleanCapabilityIfPresent(capabilities, "disableSuppressAccessibilityService",
+                this.getConfig("android.disableSuppressAccessibilityService",
+                        "ANDROID_DISABLE_SUPPRESS_ACCESSIBILITY_SERVICE", null));
         this.setCapabilityIfPresent(
                 capabilities,
                 "udid",
@@ -196,6 +199,23 @@ public class Platform {
                 && !this.getBooleanConfig("android.noReset", "ANDROID_NO_RESET", true)
                 && this.getAndroidAppPath() != null
                 && !this.getAndroidAppPath().trim().isEmpty();
+    }
+
+    public String getPostAuthQuestionnaireGoal()
+    {
+        return this.getConfig("postAuth.questionnaire.goal", "POST_AUTH_QUESTIONNAIRE_GOAL", null);
+    }
+
+    /** Setup is explicit and must never be enabled as an ordinary existing-progress login workaround. */
+    public void validateAndroidPostAuthFixturePreparation()
+    {
+        if (!this.isAndroid() || !this.getBooleanConfig("coach.android.preparePostAuthQuestionnaire",
+                "COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE", false)) {
+            throw new IllegalStateException("Android questionnaire fixture preparation requires explicit opt-in");
+        }
+        if (this.getPostAuthQuestionnaireGoal() == null) {
+            throw new IllegalStateException("Fixture preparation requires an explicit postAuth.questionnaire.goal");
+        }
     }
 
     public String getIOSUpdateAppPath()

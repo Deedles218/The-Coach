@@ -62,22 +62,24 @@ public abstract class BookmarksPageObject extends MainPageObject {
             waitForElementAndClick(TODAY_TAB, "Cannot open Today", 10);
             waitForElementPresent(TODAY_SELECTED, "Today tab is not selected", 10);
         }
-        tapBookmarksEntry();
+        tapBookmarksEntry(BOOKMARKS_ENTRY);
     }
 
     @Step("Open My Bookmarks from Explore")
     public void openFromExplore() {
         CoachFlowPageObjectFactory.get(driver).openExplore();
-        openBookmarks();
+        openBookmarks(exploreBookmarksEntry());
     }
 
-    private void openBookmarks() {
-        tapBookmarksEntry();
+    private void openBookmarks(String entry) {
+        tapBookmarksEntry(entry);
         waitForElementPresent(BOOKMARKS_TITLE, "My Bookmarks did not open", 15);
     }
 
-    private void tapBookmarksEntry() {
-        waitForElementAndClick(BOOKMARKS_ENTRY, "Bookmarks entry point is not displayed", 15);
+    protected String exploreBookmarksEntry() { return BOOKMARKS_ENTRY; }
+
+    private void tapBookmarksEntry(String entry) {
+        waitForElementAndClick(entry, "Bookmarks entry point is not displayed", 15);
     }
 
     @Step("Return from My Bookmarks")
@@ -88,13 +90,17 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Verify empty Bookmarks state")
     public void assertEmptyState() {
-        waitForElementPresent(EMPTY_IMAGE, "Empty Bookmarks illustration is absent", 10);
+        if (EMPTY_IMAGE != null) waitForElementPresent(EMPTY_IMAGE, "Empty Bookmarks illustration is absent", 10);
         waitForElementPresent(EMPTY_TEXT, "Empty Bookmarks explanation is absent", 10);
         Assert.assertFalse("Bookmarks list unexpectedly contains cards", hasAnyBookmarkCard());
     }
 
     public void assertNotEmpty() {
-        Assert.assertFalse("Bookmarks still displays the empty illustration", isElementPresent(EMPTY_IMAGE));
+        if (EMPTY_IMAGE != null) {
+            Assert.assertFalse("Bookmarks still displays the empty illustration", isElementPresent(EMPTY_IMAGE));
+        } else {
+            Assert.assertTrue("Bookmarks list has no saved cards", hasAnyBookmarkCard());
+        }
     }
 
     public boolean hasAnyBookmarkCard() {
@@ -204,8 +210,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
     public void assertCardComposition(String title) {
         String card = cardFor(title);
         waitForElementPresent(card, "Bookmark card container is absent: " + title, 10);
-        waitForElementPresent(card + "//XCUIElementTypeImage", "Bookmark card has no image: " + title, 10);
-        waitForElementPresent(card + "//*[@visible='true' and contains(translate(@name,'BOOKMARK','bookmark'),'bookmark')]",
+        waitForElementPresent(cardImageFor(title), "Bookmark card has no image: " + title, 10);
+        waitForElementPresent(cardBookmarkFor(title),
                 "Bookmark card has no active bookmark icon: " + title, 10);
     }
 
@@ -264,8 +270,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open removal dialog for card: {title}")
     public void openRemovalDialog(String title) {
-        String control = cardFor(title)
-                + "//*[@visible='true' and contains(translate(@name,'BOOKMARK','bookmark'),'bookmark')]";
+        String control = cardBookmarkFor(title);
         waitForElementAndClick(control, "Cannot open bookmark removal dialog for: " + title, 10);
         waitForElementPresent(CANCEL, "Removal dialog has no CANCEL action", 10);
         waitForElementPresent(REMOVE, "Removal dialog has no REMOVE action", 10);
@@ -291,10 +296,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     public void dismissTooltipByBlankArea(String text) {
         Dimension size = driver.manage().window().getSize();
-        Map<String, Object> tap = new HashMap<>();
-        tap.put("x", size.width / 2);
-        tap.put("y", Math.max(80, size.height / 4));
-        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        tapBlankArea(size.width / 2, Math.max(80, size.height / 4));
         waitForElementNotVisible(exactText(text), "Tooltip stayed visible after blank-area tap", 10);
     }
 
@@ -387,9 +389,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
                 isDailyPlanItemCompleted(title, false));
     }
 
-    private boolean isDailyPlanItemCompleted(String title, boolean attachEvidence) {
-        String completed = dailyPlanCardFor(title)
-                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+    protected boolean isDailyPlanItemCompleted(String title, boolean attachEvidence) {
+        String completed = completedMarkerFor(title);
         if (isElementVisible(completed)) return true;
         List<WebElement> indicators = driver.findElements(getLocatorByString(dailyPlanCompletionIndicatorFor(title)));
         if (indicators.size() != 1) return false;
@@ -421,7 +422,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void assertPreviousDayItemNotCompleted(String title, String previousDayTitle) {
-        waitForElementAndClick("id:leftSwitcherArrow", "Cannot open previous Daily Plan day", 10);
+        waitForElementAndClick(previousDayControl(), "Cannot open previous Daily Plan day", 10);
         waitForElementPresent(exactText(previousDayTitle), "Previous Daily Plan day did not open", 15);
         assertVisibleDayItemNotCompleted(title,
                 "Finishing the saved occurrence also completed the previous day");
@@ -431,14 +432,14 @@ public abstract class BookmarksPageObject extends MainPageObject {
                                                   String previousDayTitle) throws Exception {
         boolean[] previousOpened = {false};
         RestoringTestAction.run(() -> {
-            waitForElementAndClick("id:leftSwitcherArrow", "Cannot inspect the previous occurrence fixture", 10);
+            waitForElementAndClick(previousDayControl(), "Cannot inspect the previous occurrence fixture", 10);
             previousOpened[0] = true;
             waitForElementPresent(exactText(previousDayTitle), "Previous fixture day did not open", 15);
             assertVisibleDayItemNotCompleted(title,
                     "Recurring fixture previous occurrence is already completed; restore its account snapshot");
         }, () -> {
             if (previousOpened[0]) {
-                waitForElementAndClick("id:rightSwitcherArrow", "Cannot restore the saved occurrence day", 10);
+                waitForElementAndClick(nextDayControl(), "Cannot restore the saved occurrence day", 10);
                 waitForElementPresent(exactText(savedDayTitle), "Saved occurrence day did not restore", 15);
             }
         });
@@ -448,8 +449,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
         String titleLocator = exactText(title);
         swipeUpToFindFirstVisibleElement(new String[]{titleLocator},
                 "Recurring practice is absent on previous day: " + title, 8);
-        String completed = dailyPlanCardFor(title)
-                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+        String completed = completedMarkerFor(title);
         Assert.assertFalse(message, isElementVisible(completed));
     }
 
@@ -465,7 +465,28 @@ public abstract class BookmarksPageObject extends MainPageObject {
         return isElementVisible(BOOKMARKS_TITLE);
     }
 
-    private void swipe(String direction) {
+    protected void tapBlankArea(int x, int y) {
+        Map<String, Object> tap = new HashMap<>();
+        tap.put("x", x);
+        tap.put("y", y);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+    }
+
+    protected String previousDayControl() { return "id:leftSwitcherArrow"; }
+    protected String nextDayControl() { return "id:rightSwitcherArrow"; }
+
+    protected String cardImageFor(String title) { return cardFor(title) + "//XCUIElementTypeImage"; }
+
+    protected String cardBookmarkFor(String title) {
+        return cardFor(title) + "//*[@visible='true' and contains(translate(@name,'BOOKMARK','bookmark'),'bookmark')]";
+    }
+
+    protected String completedMarkerFor(String title) {
+        return dailyPlanCardFor(title)
+                + "//XCUIElementTypeImage[starts-with(@name,'dailyCompletedCheckmark') and @visible='true']";
+    }
+
+    protected void swipe(String direction) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("direction", direction);
         ((JavascriptExecutor) driver).executeScript("mobile: swipe", arguments);
@@ -477,7 +498,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
             if (isElementVisible(expected)) return;
             String before = driver.getPageSource();
             String navigation = "left".equals(direction) ? CONTENT_NEXT : CONTENT_PREVIOUS;
-            if (isElementVisible(navigation)) {
+            if (navigation != null && isElementVisible(navigation)) {
                 waitForElementAndClick(navigation, "Cannot navigate to the expected content slide", 10);
             } else {
                 swipe(direction);
@@ -510,7 +531,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
                 + xpathLiteral(title) + "]]";
     }
 
-    private String xpathLiteral(String value) {
+    protected String xpathLiteral(String value) {
         if (!value.contains("'")) return "'" + value + "'";
         if (!value.contains("\"")) return "\"" + value + "\"";
         StringBuilder result = new StringBuilder("concat(");

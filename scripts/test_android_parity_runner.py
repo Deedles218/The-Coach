@@ -62,15 +62,15 @@ class AndroidParityRunnerTests(unittest.TestCase):
         self.assertEqual(record["otp"], environment["COACH_COA9044_OTP"])
 
     def test_female_variant_selects_female_package_and_account_contract(self):
-        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "female"}
+        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "female", "onboardingGoal": "Cultivate desire"}
         process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
         with tempfile.TemporaryDirectory() as folder, \
                 patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "auth",
-                                   "--variant", "female"]), \
+                                   "--variant", "female", "--confirm-immersive-mode"]), \
                 patch.dict("os.environ", {"COACH_VALID_EMAIL_WITHOUT_PROGRESS": "new@example.invalid"}), \
                 patch.object(runner, "ROOT", Path(folder)), \
                 patch.object(runner, "keychain", return_value=json.dumps(record)), \
-                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n") as device, \
                 patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
                 contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(0, runner.main())
@@ -80,6 +80,9 @@ class AndroidParityRunnerTests(unittest.TestCase):
         self.assertIn("-Dandroid.appActivity=com.vamapps.thecoach.MainActivity", command)
         self.assertEqual("female", environment["COACH_ACCOUNT_VARIANT"])
         self.assertEqual("female", environment["ANDROID_APP_VARIANT"])
+        self.assertEqual("Cultivate desire", environment["POST_AUTH_QUESTIONNAIRE_GOAL"])
+        self.assertIn(["adb", "-s", "emulator-5554", "shell", "settings", "put", "secure",
+                       "immersive_mode_confirmations", "confirmed"], [call.args[0] for call in device.call_args_list])
 
     def test_account_variant_mismatch_fails_before_maven(self):
         record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "male"}
@@ -87,12 +90,82 @@ class AndroidParityRunnerTests(unittest.TestCase):
                                 "--variant", "female"]), \
                 patch.dict("os.environ", {"COACH_VALID_EMAIL_WITHOUT_PROGRESS": "new@example.invalid"}), \
                 patch.object(runner, "keychain", return_value=json.dumps(record)), \
-                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n") as device, \
                 patch.object(runner.subprocess, "Popen") as launch, \
                 contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 runner.main()
         launch.assert_not_called()
+        device.assert_not_called()
+
+    def test_multi_method_selector_fails_before_keychain_or_device_access(self):
+        with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "auth", "--method", "first+second"]), \
+                patch.object(runner, "keychain") as secrets, \
+                patch.object(runner.subprocess, "check_output") as device, \
+                contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                runner.main()
+        secrets.assert_not_called()
+        device.assert_not_called()
+
+    def test_default_does_not_write_device_settings_or_enable_questionnaire(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000", "uid": "fixture-uid", "onboardingGoal": "Prepared goal"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n") as device, \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertEqual(1, device.call_count)
+        self.assertEqual("Prepared goal", launch.call_args.kwargs["env"]["POST_AUTH_QUESTIONNAIRE_GOAL"])
+        self.assertNotIn("COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE", launch.call_args.kwargs["env"])
+
+    def test_explicit_goal_overrides_record_without_enabling_preparation(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000", "onboardingGoal": "Recorded goal"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile", "--post-auth-goal", "Chosen goal"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertEqual("Chosen goal", launch.call_args.kwargs["env"]["POST_AUTH_QUESTIONNAIRE_GOAL"])
+        self.assertNotIn("COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE", launch.call_args.kwargs["env"])
+
+    def test_missing_fixture_goal_does_not_invent_a_program_selection(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertNotIn("POST_AUTH_QUESTIONNAIRE_GOAL", launch.call_args.kwargs["env"])
+
+    def test_explicit_environment_goal_is_preserved_when_record_has_none(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {"POST_AUTH_QUESTIONNAIRE_GOAL": "Explicit fixture goal"}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertEqual("Explicit fixture goal", launch.call_args.kwargs["env"]["POST_AUTH_QUESTIONNAIRE_GOAL"])
 
     def test_functional_suite_missing_role_data_fails_before_device_access(self):
         with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "functional"]), \

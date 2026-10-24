@@ -1,4 +1,4 @@
-# Bookmarks iOS automation
+# Bookmarks automation
 
 `BookmarksTests` contains 21 scenarios linked to Xray cases COA-9647 through COA-9666 and the available base-lesson save check from COA-9667. A linked method alone does not establish complete coverage of every variant in its Xray case; required fixture states and the assertions below must also be verified. Trial variants from COA-9667 and COA-9668 (expired subscription) remain outside this run. The suite is iOS-only because the source cases are labelled iOS and the verified accessibility identifiers come from the iOS build.
 
@@ -147,3 +147,147 @@ Male Kegel required correcting the restored-program locator and using a native t
 Targeted local checks passed: 14 Java Bookmarks locator/evidence unit tests and 5 Python simulator-preparation unit tests. Offline checks additionally validated card grouping on both captured native lists and header matching/exclusion on the failing Today and Bookmarks snapshots. The UI commands used `mvn -q test -Dtest=tests.BookmarksTests#<method> -Dplatform=ios` with per-variant capabilities and secret-backed environments; the unit checks used JUnitCore and `python3 -m unittest discover -s scripts -p test_prepare_bookmarks_simulator.py -v`.
 
 Local artifacts for this run are under `target/bookmarks-full-20261022-1227`: `full-report.html`/`full-status.json` preserve the 42-slot matrix and attempt history; `allure-report-latest` contains only the latest 38 executed scenarios. Raw attempts, diagnostics and account configuration remain local. The grouping, modern Kegel and base-access checks are representative data variants; they do not establish every cross-module/single-category, legacy regular/sport Kegel, or trial variant in Xray.
+
+## Android port — separate candidate contracts (2026-10-23)
+
+`tests.BookmarksTests` and `suites.BookmarksSuite` retain the current iOS contract.
+`tests.AndroidBookmarksTests` inherits its 21 methods and overrides only the two
+platform-specific scenarios below. The bodies of all 21 iOS test methods remain
+unchanged; saved-slide restoration, exact card grouping, completion checks,
+identity verification and fresh structured analytics/request evidence are retained.
+This is a selective port of the local Android work, not a replacement of the
+newer iOS files with older copies.
+
+- COA-9666 uses separate old/new APKs on an explicitly selected test emulator,
+  an in-place `adb install -r` upgrade, a higher installed `versionCode`, and
+  Profile identity verification **without re-login after upgrade**. The later
+  reinstall phase explicitly signs in and checks the app-local tooltip state.
+  The original iOS numeric-build validation is unchanged.
+- The local Android no-subscription candidate expects a paywall at the Bookmarks
+  entry point. It overrides the inherited method only in the Android subclass
+  and has an explicit Android display name. It does **not** replace the iOS
+  available-base-lesson requirement or turn the known iOS access failure green.
+  This Android expectation still requires Product/QA confirmation before merge;
+  an iOS-labelled Jira case alone does not establish the Android contract.
+
+Start with an already prepared `BASELINE` role and one non-completing method:
+
+```bash
+mvn -q test -Dtest=tests.AndroidBookmarksTests#emptyListNeverShowsTooltip \
+  -Dplatform=android -Dandroid.udid=emulator-5554 \
+  -Dandroid.appPackage=com.vamapps.thecoach \
+  -Dandroid.appActivity=com.vamapps.thecoach.MainActivity \
+  -DpostAuth.questionnaire.goal='<fixture-matching primary goal>' \
+  -Dandroid.noReset=true -Dandroid.fullReset=false
+```
+
+For Her uses `com.vamapps.thecoach.forher` and its own approved role accounts.
+Use one app variant per JVM, as in the existing Page Object architecture.
+The same `COACH_BOOKMARKS_<ROLE>_EMAIL/OTP` and content fixture variables apply;
+do not reuse the module/test-model Premium account or the primary iOS regression
+account. Missing roles/content, recurring-day state and fresh Android analytics/
+request observation are real prerequisites, not reasons to skip or loosen tests.
+The Simulator observer above is iOS-only and must not be used as Android evidence.
+Run tooltip-first and update/reinstall cases separately with their required
+app-local state. COA-9666 additionally needs `-Dandroid.update.old=<old.apk>` and
+`-Dandroid.update.new=<new.apk>` for genuine builds of the configured package.
+Do not run the full class against shared accounts: completion cases need dedicated
+snapshots and the update case removes/reinstalls the selected test app.
+
+The generic `run_android_parity.py` suite manifest is unchanged; select the new
+Bookmarks class with Maven as above. Existing parity jobs gain these explicit
+configuration options:
+
+| Option | Effect |
+| --- | --- |
+| `--post-auth-goal <goal>` | Primary goal for the two native Android login questions. Otherwise uses the record's `onboardingGoal`, then an explicitly supplied `POST_AUTH_QUESTIONNAIRE_GOAL`. No male/female goal is guessed. Does **not** enable full questionnaire preparation. |
+| `--confirm-immersive-mode` | Opt-in `adb settings put secure immersive_mode_confirmations confirmed` on the selected `emulator-*`, after account/APK checks. Default runs do not write this setting. |
+| `-Dcoach.android.allowProfileTooltipFallback=true` (direct Maven) | Allows the previously observed Her-only coordinate fallback, only after a failed Profile action and when semantic `btnOk` is absent. Disabled by default; never a general retry. |
+
+Surefire 2.12.4 supports one exact `--method` in a single class, not
+`method1+method2`. Invalid selectors fail before Keychain/device access.
+Runner output redacts configured email, OTP and UID, and preserves Maven's exit code.
+
+Ordinary Android `loginWithEmailAndOtp` includes the **two native goal questions**
+after OTP. The user clarified this expected returning-user contract on 24 October;
+`tvAnswerNum` / `STEP 1/17` or `should_show_goals=true` alone is not a fixture blocker.
+Supply a primary goal matching the existing fixture through
+`postAuth.questionnaire.goal` / `POST_AUTH_QUESTIONNAIRE_GOAL`. If the secondary
+screen requires a choice, the existing named `Increase self confidence` option
+is used; an arbitrary first option is not selected. Missing goals/options fail
+before guessing. The handler closes optional offers through existing helpers and
+still requires Today; it never invokes the full questionnaire, app restart or purchases.
+Unexpected native questions or a full Web questionnaire remain failures, even
+when a setup flag is present.
+
+For a **separate, explicitly approved mutable fixture** needing full onboarding,
+setup code can call `AndroidCoachFlowPageObject.loginForFixturePreparation` with
+both `coach.android.preparePostAuthQuestionnaire=true` (or
+`COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE=true`) and an explicit
+`postAuth.questionnaire.goal` / `POST_AUTH_QUESTIONNAIRE_GOAL`. Validation runs
+before authentication or questionnaire actions; there is no guessed first primary
+goal. This API is not called by ordinary regression tests or the parity runner.
+After full setup, verify an independent ordinary re-login, including its expected
+two goals; preparation alone does not prove the returning-user path. No full setup
+or account mutation was performed while preparing the initial port.
+
+### Verification boundary
+
+Offline verification covers Android locators, row-owned grouping, saved-slide
+body scoping, negative completion markers, factory selection, 21-method inheritance,
+and strict/setup authentication separation. Existing iOS locator, rendered
+completion-marker and readiness unit tests remain in the unit selection.
+The native captured XML replay is read-only historical evidence, not a fresh
+Appium pass. The initial port had no attached Android target. The subsequent
+[live Android follow-up](android-pr25-live-ui-2026-10-23.md) uses dedicated API-36
+emulators and distinguishes successful authorization checks from Bookmarks
+attempts blocked during login. It does not establish full Bookmarks parity,
+completion, analytics/request collection, update/reinstall or the candidate
+access expectation. Keep this port Draft until those fixture-backed checks and
+contract review are done.
+
+The follow-up recognizes the current Android `tvEmailNotfoundError` rather than
+waiting for an OTP screen after the app has already rejected the email. Hidden
+or empty error views cannot satisfy it. Onboarding also dismisses the observed
+System UI full-screen hint only when `immersive_cling_title` is visible, through
+System UI's own `ok` id, and verifies its disappearance. This is not a generic
+Got-it/OK tap and does not write device settings from the Page Object.
+
+### Android continuation — 2026-10-24
+
+See the separate [authorization/onboarding and Bookmarks report](android-pr25-live-ui-2026-10-24.md)
+for historical measured results, and the [two-goal login correction](android-pr25-login-goals-2026-10-24.md)
+for the clarified current contract and fresh follow-up. The earlier persistent-goals
+finding is superseded, not an outstanding backend defect. Android Profile hides the bottom tabs:
+after identity verification, the Android Bookmarks login closes Profile through
+`returnToMainScreenFromProfile()` before selecting Today. This does not change
+the shared iOS login or its 21 test bodies.
+
+An unfinished Android questionnaire cannot be reported as logged out merely by
+navigating Back to Welcome. Cleanup now rejects that state, allowing the existing
+bounded recovery controller to use the configured test APK. App-local reinstall
+recovery is not a server progress reset and does not make the failed scenario pass.
+Post-questionnaire readiness also recognizes the observed notification permission
+dialog and System UI full-screen hint, so existing handlers can process them.
+
+For a separate accessibility diagnostic, opt in with
+`-Dandroid.disableSuppressAccessibilityService=true` or
+`ANDROID_DISABLE_SUPPRESS_ACCESSIBILITY_SERVICE=true`. This preserves configured
+accessibility services instead of UiAutomator2 suppressing them; it neither enables
+a service nor guarantees that WebView exposes every screen. The default capability
+is unchanged, and iOS never receives it. The report records the separate, temporary
+Chromium userdebug override used locally; do not apply it to a personal/production
+device or treat that execution as default-device parity.
+
+On a fresh Android installation, the CONTENT account can show an app-local
+`Remove from bookmarks` popup whose accessibility window hides the list beneath.
+Record this separately from a missing Bookmarks screen. For a non-tooltip diagnostic,
+prepare/dismiss that popup explicitly with the existing UI helper **before** the
+measured attempt; do not silently dismiss it inside tooltip assertions. Current-account
+mode remains diagnostic only, not evidence of strict independent re-login.
+
+**State-safety warning:** a catalog GET for another program was observed to change
+the server's selected program. Never enumerate catalogs as a supposedly read-only
+progress observer. Use identity-verified current-state reads without program/day
+selectors; record and restore any intentionally selected program/day separately.
+Do not infer an all-program completion snapshot from a current-program response.
