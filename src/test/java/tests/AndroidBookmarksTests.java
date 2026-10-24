@@ -31,6 +31,11 @@ public class AndroidBookmarksTests extends BookmarksTests {
 
     @Override protected void login(TestData.TestAccount account) {
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        verifyProfileAndReturnToToday(account);
+    }
+
+    /** Shared by login and upgrade; never repairs a lost upgraded session with another login. */
+    protected void verifyProfileAndReturnToToday(TestData.TestAccount account) {
         coach.openProfile();
         ((AndroidCoachFlowPageObject) coach).assertAuthenticatedProfileForEmail(account.getEmail());
         coach.returnToMainScreenFromProfile();
@@ -74,9 +79,7 @@ public class AndroidBookmarksTests extends BookmarksTests {
             coach.assertAuthorizedDashboardIsDisplayed();
             Assert.assertTrue("Update must increase installed versionCode", AndroidDevice.versionCode() > oldCode);
             // Verify identity without logging in again: a lost session cannot be repaired into a pass.
-            coach.openProfile();
-            ((AndroidCoachFlowPageObject) coach).assertAuthenticatedProfileForEmail(TestData.bookmarksAccount(UPDATE).getEmail());
-            coach.openToday();
+            verifyProfileAndReturnToToday(TestData.bookmarksAccount(UPDATE));
             bookmarks.openFromToday(); bookmarks.assertCard(lesson); bookmarks.assertTooltipAbsent(tooltip);
             apps.terminateApp(packageName);
             Assert.assertTrue("Cannot remove app before reinstall", apps.removeApp(packageName));
