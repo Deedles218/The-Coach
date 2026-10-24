@@ -53,15 +53,30 @@ capabilities описана в [local-setup.md](local-setup.md).
 
 После настройки секретов, устройства и параметров фикстур:
 
+В проекте используется Surefire 2.12.4: селектор `Class#method1+method2`
+не поддерживается и может завершиться ошибкой до открытия Appium-сессии.
+Запускайте точные методы последовательно; ненулевой результат останавливает
+цикл и сохраняет его ненулевой код, чтобы сначала разобрать причину падения.
+Подоболочка не завершает интерактивный терминал. Значения аккаунтов передаются
+через environment, а не через аргументы Maven.
+
 ```bash
-mvn test -Dplatform=ios \
-  '-Dtest=tests.DailyPlanTests#test05DailyPlanRemoveActionCanBeCancelled+test06MandatoryKegelCannotBeCustomized+test07DailyLessonCannotBeCustomized' \
-  "-Dcoach.dailyPlan.removablePracticeProgram=$REMOVABLE_PROGRAM" \
-  "-Dcoach.dailyPlan.removablePracticeDay=$REMOVABLE_DAY" \
-  "-Dcoach.dailyPlan.removablePracticeTitle=$REMOVABLE_TITLE" \
-  "-Dcoach.dailyPlan.corePracticeProgram=$KEGEL_PROGRAM" \
-  "-Dcoach.dailyPlan.corePracticeDay=$KEGEL_DAY" \
-  "-Dcoach.dailyPlan.corePracticeTitle=$KEGEL_TITLE"
+(
+for test_method in \
+  test05DailyPlanRemoveActionCanBeCancelled \
+  test06MandatoryKegelCannotBeCustomized \
+  test07DailyLessonCannotBeCustomized
+do
+  mvn test -Dplatform=ios \
+    "-Dtest=tests.DailyPlanTests#$test_method" \
+    "-Dcoach.dailyPlan.removablePracticeProgram=$REMOVABLE_PROGRAM" \
+    "-Dcoach.dailyPlan.removablePracticeDay=$REMOVABLE_DAY" \
+    "-Dcoach.dailyPlan.removablePracticeTitle=$REMOVABLE_TITLE" \
+    "-Dcoach.dailyPlan.corePracticeProgram=$KEGEL_PROGRAM" \
+    "-Dcoach.dailyPlan.corePracticeDay=$KEGEL_DAY" \
+    "-Dcoach.dailyPlan.corePracticeTitle=$KEGEL_TITLE" || exit "$?"
+done
+)
 ```
 
 Проверка локаторов без устройства:

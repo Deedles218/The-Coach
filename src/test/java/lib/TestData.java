@@ -4,6 +4,9 @@ import java.util.Locale;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test-only data access. Secrets are supplied by the runner or a secret
@@ -211,8 +214,8 @@ public final class TestData {
             return "";
         }
 
-        String sanitized = text;
-        for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518", "COA9044",
+        String sanitized = sanitizeConfiguredUids(text);
+        for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518", "COA9044", "COA9551",
                 "COA8094", "COA8096", "COA8170", "COA8171", "COA7937"}) {
             for (String field : new String[]{"email", "otp", "link"}) {
                 String value = configured("coach." + key.toLowerCase(Locale.ROOT) + "." + field,
@@ -269,6 +272,31 @@ public final class TestData {
             sanitized = sanitized.replace(noPdfOtp, "<redacted-otp>");
         }
         return sanitized;
+    }
+
+    private static String sanitizeConfiguredUids(String text) {
+        Set<String> values = new LinkedHashSet<>();
+        for (String key : System.getProperties().stringPropertyNames()) {
+            if (key.toLowerCase(Locale.ROOT).endsWith(".uid")) {
+                addUidValues(values, System.getProperty(key));
+            }
+        }
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            if (entry.getKey().toUpperCase(Locale.ROOT).endsWith("_UID")) {
+                addUidValues(values, entry.getValue());
+            }
+        }
+        List<String> longestFirst = new ArrayList<>(values);
+        longestFirst.sort((first, second) -> Integer.compare(second.length(), first.length()));
+        for (String value : longestFirst) text = text.replace(value, "[redacted-uid]");
+        return text;
+    }
+
+    private static void addUidValues(Set<String> values, String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            values.add(value);
+            values.add(value.trim());
+        }
     }
 
     private static String required(String propertyName, String environmentName) {

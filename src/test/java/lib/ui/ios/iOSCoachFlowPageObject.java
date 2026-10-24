@@ -2,6 +2,8 @@ package lib.ui.ios;
 
 import lib.ui.CoachFlowPageObject;
 import lib.ui.KegelCasePageObject;
+import lib.Platform;
+import lib.PostAuthQuestionnaireException;
 import java.io.IOException;
 import io.qameta.allure.Step;
 import org.junit.Assert;
@@ -9,8 +11,10 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.util.Locale;
 import java.util.HashMap;
@@ -22,6 +26,11 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private static final String EXPLORE_WELCOME = "id:Welcome to Explore ✨";
     private static final String EXPLORE_WELCOME_CONFIRM = "id:SOUNDS GREAT";
     private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String PARTNER_PROMO_TITLE =
+            "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner'"
+                    + " or @name='More pleasure for both of you']";
+    private static final String PARTNER_PROMO_CLOSE = PARTNER_PROMO_TITLE
+            + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
     private static final String ANONYMOUS_ACCOUNT_NETWORK_ERROR =
             "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
                     + " and contains(@name,'Network error')]";
@@ -67,16 +76,22 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         PROFILE_ACCOUNT_SETTINGS_SCREEN = "xpath://XCUIElementTypeStaticText[contains(@name, 'Please enter your email')]";
         PROFILE_BACKED_BY_SCIENCE_BUTTON = "xpath://XCUIElementTypeStaticText[contains(@name, 'Backed by Science') or contains(@name, 'Backed By Science')]";
         PROFILE_SUPPORT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Support']";
-        PROFILE_SUPPORT_SCREEN = "xpath://XCUIElementTypeStaticText[translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='HELLO!']";
+        PROFILE_SUPPORT_SCREEN = "id:SupportTeamView";
         PROFILE_SUPPORT_FAQ_BUTTON = "xpath://XCUIElementTypeStaticText[@name='FAQ']";
         PROFILE_MY_WORKBOOK_BUTTON = "xpath://XCUIElementTypeStaticText[@name='My workbook']";
         PROFILE_MY_WORKBOOK_SCREEN = "id:ADD TO MY PROGRAM";
         PROFILE_MY_WORKBOOK_CLOSE_BUTTON = "id:PDFGuideUpsellCloseImageFemale";
         PROFILE_FAQ_BUTTON = "xpath://XCUIElementTypeStaticText[@name='FAQ']";
-        PROFILE_FAQ_SCREEN = "xpath:(//XCUIElementTypeButton | //XCUIElementTypeStaticText)[@name='How to use the app?' or @name='How do I use The Coach app?']";
+        PROFILE_FAQ_SCREEN = "xpath://XCUIElementTypeWebView//XCUIElementTypeOther[@name='FAQ']"
+                + "//XCUIElementTypeButton[@name='How do I use The Coach app?']"
+                + " | //XCUIElementTypeWebView//XCUIElementTypeOther[@name='FAQ (For her)']"
+                + "//XCUIElementTypeButton[@name='How to use the app?']";
         PROFILE_TERMS_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Terms & privacy policy' or @name='Terms and Privacy Policy']";
         PROFILE_TERMS_SCREEN = "xpath://XCUIElementTypeStaticText[@name='The Coach — Terms of Service']";
-        PROFILE_BROWSER_CLOSE_BUTTON = "xpath://XCUIElementTypeButton[@name='Close' or @name='Done' or @name='Закрыть']";
+        PROFILE_BROWSER_CLOSE_BUTTON = "xpath://XCUIElementTypeOther[@name='TopBrowserBar']"
+                + "//XCUIElementTypeButton[@name='Close' or @name='Закрыть']"
+                + " | //XCUIElementTypeButton[@name='Close' or @name='Done' or @name='Закрыть'"
+                + " or @name='profile_browser_close']";
         PROFILE_SUBSCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='BackButton' or @name='Daily Plan' or @name='Today' or @name='Back']";
         DELETE_ACCOUNT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Delete my account' or @name='Delete My Data' or @name='Delete my data']";
         DELETE_ACCOUNT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'It will be impossible to restore the progress')]";
@@ -250,6 +265,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     public void ensureLoggedOutOnStartScreen() {
         activateAppIfPossible();
+        closeProfileBrowserIfPresent();
         if (isElementVisible(LOG_OUT_CONFIRM_TITLE)) {
             confirmLogoutIfNeeded();
         }
@@ -272,7 +288,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || new iOSDailyPlanPageObject(driver).isKegelExerciseFlowVisible()
                         || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN)
                         || isProfileBrowserVisible()
-                        || isElementVisible("id:Get an access for your partner")
+                        || isElementVisible(PARTNER_PROMO_TITLE)
                         || isElementVisible("id:CoachProgramSettingsIcon")
                         || isElementVisible("id:navBarRoundBack");
         });
@@ -311,33 +327,82 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     public void waitForAuthorizedDashboard() {
         boolean prepareQuestionnaire = preparingExistingProgressAccount
                 && Boolean.getBoolean("coach.ios.preparePostAuthQuestionnaire");
-        createWait(30).withMessage(prepareQuestionnaire
-                ? "Neither Today nor the new-account questionnaire appeared after OTP"
-                : "Authorized dashboard did not open").until(ignored -> {
-            closePostAuthPopupsIfPresent();
-            return isAuthorizedDashboardVisible()
-                    || (prepareQuestionnaire && isElementVisible(ONBOARDING_GOALS_TITLE));
-        });
-        if (prepareQuestionnaire) {
-            if (isElementVisible(ONBOARDING_GOALS_TITLE)) {
-                String goal = System.getProperty("coach.ios.postAuthGoal");
-                Assert.assertTrue("Configure the approved new-account goal with -Dcoach.ios.postAuthGoal",
-                        goal != null && !goal.trim().isEmpty());
-                iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
-                onboarding.selectGoal(goal);
-                onboarding.completeQuestionnaire();
-                onboarding.closePaywallsAndPopups();
-                onboarding.waitForToday();
-            }
-            // The in-app permission screen can arrive after Today first renders.
-            closePdfGuideUpsellIfPresent();
-            closeNotificationPromptIfPresent();
-            closeConnectEmailPromptIfPresent();
+        createWait(30).withMessage("Authorization opened neither Today nor the goal questionnaire")
+                .until(ignored -> {
+                    closePostAuthPopupsIfPresent();
+                    return isAuthorizedDashboardVisible() || isElementVisible(ONBOARDING_GOALS_TITLE);
+                });
+        if (isElementVisible(ONBOARDING_GOALS_TITLE) && !prepareQuestionnaire) {
+            throw new PostAuthQuestionnaireException("Existing-progress fixture requires goal selection after OTP. "
+                    + "Prepare the account and verify re-login restores Today before running regression; "
+                    + "the questionnaire was not completed automatically by the test.");
         }
+        if (!prepareQuestionnaire) {
+            return;
+        }
+
+        if (isElementVisible(ONBOARDING_GOALS_TITLE)) {
+            String goal = System.getProperty("coach.ios.postAuthGoal");
+            Assert.assertTrue("Configure the approved new-account goal with -Dcoach.ios.postAuthGoal",
+                    goal != null && !goal.trim().isEmpty());
+            iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
+            onboarding.selectGoal(goal);
+            onboarding.completeQuestionnaire();
+            onboarding.closePaywallsAndPopups();
+            onboarding.waitForToday();
+        }
+        // The in-app permission screen can arrive after Today first renders.
+        closePdfGuideUpsellIfPresent();
+        closeNotificationPromptIfPresent();
+        closeConnectEmailPromptIfPresent();
         createWait(30).withMessage("Authorized dashboard did not open").until(ignored -> {
             closePostAuthPopupsIfPresent();
             return isAuthorizedDashboardVisible();
         });
+    }
+
+    private void revealProfileItem(String preferred, String fallback) {
+        if (!isElementVisible(preferred) && !isElementVisible(fallback)) {
+            for (int swipe = 0; swipe < 4 && !isElementVisible(PROFILE_PROGRESS_EXERCISES); swipe++) {
+                Map<String, Object> arguments = new HashMap<>();
+                arguments.put("direction", "down");
+                ((JavascriptExecutor) driver).executeScript("mobile: swipe", arguments);
+            }
+        }
+        swipeUpToFindFirstVisibleElement(new String[]{preferred, fallback},
+                "Profile action did not become visible", 4);
+    }
+
+    @Override
+    public void openSupportFromProfile() {
+        revealProfileItem(TEST_ID_PROFILE_SUPPORT, PROFILE_SUPPORT_BUTTON);
+        super.openSupportFromProfile();
+    }
+
+    @Override
+    public void openFaqFromProfile() {
+        revealProfileItem(TEST_ID_PROFILE_FAQ, PROFILE_FAQ_BUTTON);
+        super.openFaqFromProfile();
+    }
+
+    @Override
+    public void openTermsFromProfile() {
+        revealProfileItem(TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON);
+        try {
+            super.openTermsFromProfile();
+        } catch (TimeoutException failure) {
+            if (isElementVisible("id:TopBrowserBar")) {
+                String loading = "xpath://XCUIElementTypeOther"
+                        + "[starts-with(@name, 'BrowserView?IsPageLoaded=false&')]";
+                String state = isElementVisible(loading)
+                        ? "the web document is still loading"
+                        : "the expected Terms content is not visible";
+                throw new TimeoutException("Terms browser opened, but " + state
+                        + "; expected Terms content within 20 seconds. See the browser screenshot and page source.",
+                        failure);
+            }
+            throw failure;
+        }
     }
 
     protected boolean isAuthorizedDashboardVisible() {
@@ -352,6 +417,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     private void closePostAuthPopupsIfPresent() {
         closeMasterclassPromoIfPresent();
+        closePartnerPromoIfPresent();
         if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
         if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
     }
@@ -365,6 +431,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closeProfileBrowserIfPresent();
         closeProgramDiscoveryHintIfPresent();
         closeProgramSelectorIfPresent();
         closeMasterclassPromoIfPresent();
@@ -372,9 +439,6 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         daily.closeDailyLessonIfPresent();
         daily.closeCompletedPracticeIfPresent();
         if (daily.isKegelExerciseFlowVisible()) daily.closeKegelExerciseFlowIfPresent();
-        if (isProfileBrowserVisible()) {
-            dismissProfileBrowser();
-        }
         if (isElementVisible(EXPLORE_WELCOME)) dismissExploreWelcomeIfPresent();
         closePartnerPromoIfPresent();
         iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
@@ -400,27 +464,53 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     @Override
+    @Step("Close the iOS Profile browser and verify return to Profile")
     public void closeProfileBrowser() {
         dismissProfileBrowser();
         assertProfileScreenIsDisplayed();
     }
 
+    @Step("Dismiss an observed iOS browser overlay before session recovery")
+    protected void closeProfileBrowserIfPresent() {
+        if (!isProfileBrowserVisible()) return;
+        String browser = isElementVisible("id:TopBrowserBar")
+                ? "id:TopBrowserBar" : PROFILE_BROWSER_CLOSE_BUTTON;
+        try {
+            dismissProfileBrowser();
+        } catch (TimeoutException closeFailure) {
+            if (!isElementVisible(browser)) return;
+            restartAfterBrowserDismissalFailure();
+            waitForElementNotVisible(browser, "Browser survived the recovery restart", 10);
+        }
+    }
+
     private void dismissProfileBrowser() {
-        WebElement close = waitForFirstElementEnabled(
-                new String[]{TEST_ID_PROFILE_BROWSER_CLOSE, PROFILE_BROWSER_CLOSE_BUTTON},
-                "Cannot find the Profile browser close control", 10);
-        // On the observed iOS 26 Safari controller, element.click() returns
-        // success without closing. A native tap at this element's center works.
-        tapNativeCenter(close);
-        waitForElementNotVisible(PROFILE_BROWSER_CLOSE_BUTTON, "Profile browser did not close", 10);
-        waitForFirstElementPresent(new String[]{PROFILE_SCREEN, TAB_TODAY},
-                "Main app did not return after closing the browser", 10);
+        String browser = isElementVisible("id:TopBrowserBar")
+                ? "id:TopBrowserBar" : PROFILE_BROWSER_CLOSE_BUTTON;
+        RemoteWebElement close = (RemoteWebElement) waitForElementEnabled(PROFILE_BROWSER_CLOSE_BUTTON,
+                "Cannot dismiss the Profile browser overlay", 5);
+        Rectangle bounds = close.getRect();
+        Map<String, Object> tap = new HashMap<>();
+        tap.put("elementId", close.getId());
+        tap.put("x", bounds.width / 2.0);
+        tap.put("y", bounds.height / 2.0);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        waitForElementNotVisible(browser, "Profile browser overlay did not close", 10);
     }
 
     private boolean isProfileBrowserVisible() {
-        return isElementVisible(PROFILE_BROWSER_CLOSE_BUTTON)
-                && ((isElementVisible("id:URL") && isElementVisible("id:OpenInSafariButton"))
-                || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN));
+        return isElementVisible("id:TopBrowserBar")
+                || (isElementVisible(PROFILE_BROWSER_CLOSE_BUTTON)
+                    && ((isElementVisible("id:URL") && isElementVisible("id:OpenInSafariButton"))
+                        || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN)));
+    }
+
+    @Step("Recover from an unresponsive browser by restarting Coach without clearing its data")
+    private void restartAfterBrowserDismissalFailure() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("bundleId", Platform.getInstance().getIOSBundleId());
+        ((JavascriptExecutor) driver).executeScript("mobile: terminateApp", args);
+        ((JavascriptExecutor) driver).executeScript("mobile: activateApp", args);
     }
 
     @Override
@@ -492,14 +582,11 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     public void closePartnerPromoIfPresent() {
-        String title = "id:Get an access for your partner";
-        if (!isElementVisible(title)) return;
-        // Observed 2026-09-19: the only unnamed button in this modal is its X.
-        // Scope to the promo container rather than clicking an arbitrary close.
-        String close = "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner']"
-                + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
-        waitForElementAndClick(close, "Cannot close optional partner promo", 10);
-        waitForElementNotVisible(title, "Partner promo remains visible", 10);
+        if (!isElementVisible(PARTNER_PROMO_TITLE)) return;
+        // Both observed headings share the same unnamed X in their promo container.
+        // Keep the gift CTA and other screens' close controls outside this scope.
+        waitForElementAndClick(PARTNER_PROMO_CLOSE, "Cannot close optional partner promo", 10);
+        waitForElementNotVisible(PARTNER_PROMO_TITLE, "Partner promo remains visible", 10);
     }
 
     @Step("Close optional Sensual Touch masterclass promo if displayed")

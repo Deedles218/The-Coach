@@ -17,6 +17,21 @@ if [ "$#" -eq 0 ]; then
     exit 2
 fi
 
+for argument in "$@"; do
+    case "$argument" in
+        -Dtest=*)
+            selection="${argument#-Dtest=}"
+            case "$selection" in
+                *'tests.*'*|*'tests.HW.*'*)
+                    echo "Broad package discovery mixes incompatible iOS fixtures and reset policies." >&2
+                    echo "Use ./ci-scripts/run-ios-suite.sh full --plan, an explicit profile, or an exact test method." >&2
+                    exit 2
+                    ;;
+            esac
+            ;;
+    esac
+done
+
 if [ ! -d "$app_path" ]; then
     echo "iOS Simulator .app was not found: $app_path" >&2
     echo "Build or provide a separate .app compiled for iphonesimulator." >&2

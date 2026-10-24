@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 
 
 public class CoreTestCase {
-    private static final ConcurrentMap<String, String> ANDROID_BLOCKED_TEST_CLASSES =
+    private static final ConcurrentMap<String, String> BLOCKED_TEST_CLASSES =
             new ConcurrentHashMap<String, String>();
     protected RemoteWebDriver driver;
     private Description activeDescription;
@@ -50,11 +50,7 @@ public class CoreTestCase {
                 @Override
                 public void evaluate() throws Throwable {
                     activeDescription = description;
-                    String blockedReason = ANDROID_BLOCKED_TEST_CLASSES.get(description.getClassName());
-                    Assume.assumeTrue(
-                            "BLOCKED: Android state recovery failed earlier in this class: " + blockedReason,
-                            blockedReason == null
-                    );
+                    String blockedReason = BLOCKED_TEST_CLASSES.get(description.getClassName());
                     Throwable primaryFailure = null;
                     boolean reportingEnabled = isAllureReportingEnabled();
                     if (reportingEnabled) {
@@ -64,15 +60,19 @@ public class CoreTestCase {
                             ? AllureReportSupport.startScenario(description)
                             : null;
                     try {
+                        Assume.assumeTrue(
+                                "BLOCKED: Session state recovery failed earlier in this class: " + blockedReason,
+                                blockedReason == null
+                        );
                         base.evaluate();
                     } catch (Throwable failure) {
                         primaryFailure = failure;
-                        addFailureTypeLabel(failure);
                         // Capture before teardown closes the Appium session. The
                         // previous TestWatcher ran after @After and saw driver=null.
                         if (reportingEnabled && !(failure instanceof AssumptionViolatedException)) {
                             captureFailureArtifacts(failure, description);
                         }
+                        addFailureTypeLabel(failure);
                         throw failure;
                     } finally {
                         if (reportingEnabled) {
@@ -82,7 +82,7 @@ public class CoreTestCase {
                             tearDown();
                         } catch (Throwable teardownFailure) {
                             if (containsSessionRecoveryFailure(teardownFailure)) {
-                                ANDROID_BLOCKED_TEST_CLASSES.put(
+                                BLOCKED_TEST_CLASSES.put(
                                         description.getClassName(),
                                         TestData.sanitizeSensitiveData(teardownFailure.getMessage())
                                 );
@@ -94,6 +94,9 @@ public class CoreTestCase {
                                 throw teardownFailure;
                             }
                             primaryFailure.addSuppressed(teardownFailure);
+                            // Cleanup diagnostics must not replace the primary
+                            // failure's diagnostic category.
+                            addFailureTypeLabel(primaryFailure);
                         } finally {
                             activeDescription = null;
                         }
@@ -135,8 +138,8 @@ public class CoreTestCase {
                     cleanupSessionForNextTest();
                     reinstallApplicationIfConfigured();
                 } catch (Throwable teardownFailure) {
-                    addFailureTypeLabel(teardownFailure);
                     captureFailureArtifacts(teardownFailure, activeDescription);
+                    addFailureTypeLabel(teardownFailure);
                     throw teardownFailure;
                 }
             } finally {
@@ -167,7 +170,14 @@ public class CoreTestCase {
         }
 
         if (Platform.getInstance().isIOS()) {
-            coachFlow.cleanupForNextTest();
+            try {
+                coachFlow.cleanupForNextTest();
+            } catch (Throwable recoveryFailure) {
+                throw new SessionStateRecoveryException(
+                        "iOS session recovery could not restore the entry state; dependent class scenarios are blocked",
+                        recoveryFailure
+                );
+            }
         }
     }
 
@@ -204,29 +214,12 @@ public class CoreTestCase {
     }
 
     private void addFailureTypeLabel(Throwable failure) {
-        String failureType = null;
-        if (containsCause(failure, AccountVariantMismatchException.class)
-                || containsCause(failure, PostAuthQuestionnaireException.class)) {
-            failureType = "test-data";
-        } else if (containsCause(failure, SessionStateRecoveryException.class)) {
-            failureType = "environment";
-        } else if (containsCause(failure, IllegalStateException.class)) {
-            failureType = "configuration";
-        }
-        if (failureType != null) {
-            Allure.addLabels(new Label().setName("failureType").setValue(failureType));
-        }
-    }
-
-    private boolean containsCause(Throwable failure, Class<? extends Throwable> type) {
-        Throwable current = failure;
-        while (current != null) {
-            if (type.isInstance(current)) {
-                return true;
-            }
-            current = current.getCause();
-        }
-        return false;
+        Allure.getLifecycle().updateTestCase(result -> {
+            result.getLabels().removeIf(label -> "failureType".equals(label.getName())
+                    || "failureConfidence".equals(label.getName()));
+            result.getLabels().add(new Label().setName("failureType").setValue(FailureClassifier.type(failure)));
+            result.getLabels().add(new Label().setName("failureConfidence").setValue(FailureClassifier.confidence(failure)));
+        });
     }
 
     private boolean isAndroidAccessibilityUnavailable(Throwable failure) {
@@ -341,12 +334,12 @@ public class CoreTestCase {
     }
 
     protected final void captureFailureArtifacts(Throwable throwable, Description description) {
-        AllureReportSupport.attachFailureContext(throwable, description);
         String testName = safeArtifactName(description == null ? "unknown-test" : description.getMethodName());
         Path screenshotsDirectory = Paths.get("target", "screenshots");
         Path pageSourceDirectory = Paths.get("target", "page-source");
         Path logsDirectory = Paths.get("target", "appium-logs");
         if (driver == null) {
+            AllureReportSupport.attachFailureContext(throwable, description);
             addAllureAttachment(
                     "Failure artifact capture note",
                     "text/plain",
@@ -382,6 +375,7 @@ public class CoreTestCase {
                 pageSource = "<hierarchy unavailable=\"UiAutomator2 could not read AccessibilityNodeInfo\"/>";
             } else {
                 rawPageSource = driver.getPageSource();
+                FailureClassifier.addPageEvidence(throwable, rawPageSource);
                 pageSource = TestData.sanitizeSensitiveData(rawPageSource);
                 if (rawPageSource.contains("ENTER SECURITY CODE")) {
                     // OTP may be exposed as four independent accessibility nodes.
@@ -401,6 +395,7 @@ public class CoreTestCase {
         } catch (Exception sourceFailure) {
             attachArtifactCaptureError("page source", sourceFailure);
         }
+        AllureReportSupport.attachFailureContext(throwable, description);
 
         if (rawScreenshot != null) {
             try {
@@ -568,6 +563,12 @@ public class CoreTestCase {
             properties.setProperty("Fixture environment", fixtureEnvironment);
         }
         properties.setProperty("Test isolation", TestData.testIsolationMode());
+        for (String key : new String[]{"runProfile", "appVersion", "appBuild", "testGitSha", "testGitDirty", "resetPolicy", "appVariant"}) {
+            String value = System.getProperty("coach.run." + key);
+            if (value != null) properties.setProperty(key, TestData.sanitizeSensitiveData(value));
+        }
+        setEnvironmentCapability(properties, "noReset", "appium:noReset", "noReset");
+        setEnvironmentCapability(properties, "fullReset", "appium:fullReset", "fullReset");
         if (Platform.getInstance().isAndroid()) {
             properties.setProperty("App variant", TestData.androidAppVariant());
             properties.setProperty("Android recovery", TestData.androidRecoveryMode());
@@ -575,6 +576,7 @@ public class CoreTestCase {
         File environmentFile = new File(directory, "environment.properties");
         try (FileOutputStream output = new FileOutputStream(environmentFile)) {
             properties.store(output, "Test environment");
+            AllureReportSupport.writeCategories(directory.toPath());
         } catch (IOException e) {
             System.err.println("Cannot write Allure environment file: " + e.getMessage());
         }

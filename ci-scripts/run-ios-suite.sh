@@ -2,11 +2,26 @@
 set -euo pipefail
 
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
+case "${1:-}" in
+    profiles)
+        shift
+        exec python3 "$script_dir/../scripts/run_ios_profiles.py" "$@"
+        ;;
+    full|regression|preflight)
+        exec python3 "$script_dir/../scripts/run_ios_profiles.py" "$@"
+        ;;
+esac
 project_dir="$(CDPATH= cd -- "$script_dir/.." && pwd)"
 
 usage() {
     cat <<'EOF'
 Usage: IOS_SIMULATOR_APP=/path/to/app.app ./ci-scripts/run-ios-suite.sh <suite> [Maven options]
+
+Managed profiles:
+  ./ci-scripts/run-ios-suite.sh full --plan
+  ./ci-scripts/run-ios-suite.sh profiles <profile> [profile/Maven options]
+  ./ci-scripts/run-ios-suite.sh profiles --help
 
 Suites:
   smoke              suites.SmokeSuite; validates P0 smoke data

@@ -28,6 +28,41 @@ public class TestModelLifecycleUnitTests {
         Assert.assertNull(evaluate(null, null));
     }
 
+    @Test
+    public void failedRecoveryBlocksNextScenarioBeforeItsBody() throws Throwable {
+        final boolean[] executed = {false};
+        CoreTestCase fixture = new CoreTestCase() {
+            @Override protected boolean isAllureReportingEnabled() { return false; }
+            @Override public void tearDown() {
+                throw new lib.SessionStateRecoveryException("Entry state could not be restored", null);
+            }
+        };
+        Description description = Description.createTestDescription("tests.OfflineRecoveryFixture", "first");
+        Statement successfulBody = new Statement() {
+            @Override public void evaluate() { }
+        };
+        try {
+            fixture.sessionLifecycle.apply(successfulBody, description).evaluate();
+            Assert.fail("Recovery failure must fail the first scenario");
+        } catch (lib.SessionStateRecoveryException expected) {
+            // The recovery failure stays visible; only dependent scenarios are blocked.
+        }
+        CoreTestCase next = new CoreTestCase() {
+            @Override protected boolean isAllureReportingEnabled() { return false; }
+        };
+        Statement nextBody = new Statement() {
+            @Override public void evaluate() { executed[0] = true; }
+        };
+        try {
+            next.sessionLifecycle.apply(nextBody,
+                    Description.createTestDescription("tests.OfflineRecoveryFixture", "second")).evaluate();
+            Assert.fail("Dependent scenario must be blocked");
+        } catch (org.junit.AssumptionViolatedException expected) {
+            Assert.assertTrue(expected.getMessage().contains("BLOCKED: Session state recovery"));
+        }
+        Assert.assertFalse("Blocked scenario must not create a driver or run its body", executed[0]);
+    }
+
     private Throwable evaluate(final Throwable bodyFailure, final RuntimeException teardownFailure) {
         CoreTestCase fixture = new CoreTestCase() {
             @Override
