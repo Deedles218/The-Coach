@@ -1,5 +1,11 @@
 # PR #25: Android authorization/onboarding continuation — 2026-10-24
 
+> Historical run. The user subsequently clarified that two native goal questions
+> are expected after Android login. The classification of `should_show_goals=true`
+> and any `tvAnswerNum` as a fixture/server blocker below is superseded by the
+> [two-goal login correction and fresh checks](android-pr25-login-goals-2026-10-24.md).
+> Original execution failures and counts remain unchanged as historical evidence.
+
 ## 1. Executive summary
 
 **Decision: Insufficient evidence; keep Draft, do not merge main.**

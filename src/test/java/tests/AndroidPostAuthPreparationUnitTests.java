@@ -39,6 +39,9 @@ public class AndroidPostAuthPreparationUnitTests {
         @Override public void authenticateForFixtureSetup(String email, String otp) { authentications++; }
         @Override public boolean isElementPresent(String locator) { return questionnaire && locator.endsWith("/tvAnswerNum"); }
         @Override public void ensureLoggedOutOnStartScreen() { normalizations++; }
+        @Override protected void completePostLoginGoalsIfPresent() {
+            throw new PostAuthQuestionnaireException("Unexpected full questionnaire in this fixture");
+        }
     }
 
     @Test public void fixtureLoginRejectsMissingApprovalBeforeAuthentication() {
@@ -53,7 +56,7 @@ public class AndroidPostAuthPreparationUnitTests {
         new AndroidOnboardingPageObject(null).completePostAuthQuestionnaire();
     }
 
-    @Test public void strictLoginStillFailsOnQuestionnaireEvenWhenPreparationIsApproved() {
+    @Test public void strictLoginStillFailsOnUnexpectedQuestionnaireEvenWhenPreparationIsApproved() {
         System.setProperty("coach.android.preparePostAuthQuestionnaire", "true");
         Auth auth = new Auth();
         try { auth.loginWithEmailAndOtp("fixture@example.invalid", "0000"); Assert.fail("Strict login consumed questionnaire"); }

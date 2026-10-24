@@ -62,7 +62,7 @@ class AndroidParityRunnerTests(unittest.TestCase):
         self.assertEqual(record["otp"], environment["COACH_COA9044_OTP"])
 
     def test_female_variant_selects_female_package_and_account_contract(self):
-        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "female"}
+        record = {"email": "fixture@example.invalid", "otp": "0000", "variant": "female", "onboardingGoal": "Cultivate desire"}
         process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
         with tempfile.TemporaryDirectory() as folder, \
                 patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "auth",
@@ -138,6 +138,34 @@ class AndroidParityRunnerTests(unittest.TestCase):
             self.assertEqual(0, runner.main())
         self.assertEqual("Chosen goal", launch.call_args.kwargs["env"]["POST_AUTH_QUESTIONNAIRE_GOAL"])
         self.assertNotIn("COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE", launch.call_args.kwargs["env"])
+
+    def test_missing_fixture_goal_does_not_invent_a_program_selection(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertNotIn("POST_AUTH_QUESTIONNAIRE_GOAL", launch.call_args.kwargs["env"])
+
+    def test_explicit_environment_goal_is_preserved_when_record_has_none(self):
+        record = {"email": "fixture@example.invalid", "otp": "0000"}
+        process = types.SimpleNamespace(stdout=iter([]), wait=lambda: 0)
+        with tempfile.TemporaryDirectory() as folder, \
+                patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "profile"]), \
+                patch.object(runner, "ROOT", Path(folder)), \
+                patch.dict("os.environ", {"POST_AUTH_QUESTIONNAIRE_GOAL": "Explicit fixture goal"}, clear=True), \
+                patch.object(runner, "keychain", return_value=json.dumps(record)), \
+                patch.object(runner.subprocess, "check_output", return_value="16\n"), \
+                patch.object(runner.subprocess, "Popen", return_value=process) as launch, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, runner.main())
+        self.assertEqual("Explicit fixture goal", launch.call_args.kwargs["env"]["POST_AUTH_QUESTIONNAIRE_GOAL"])
 
     def test_functional_suite_missing_role_data_fails_before_device_access(self):
         with patch("sys.argv", ["runner", "--serial", "emulator-5554", "--suite", "functional"]), \

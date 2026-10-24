@@ -49,7 +49,6 @@ APP_VARIANTS = {
     "male": ("com.vamapps.thecoach", "com.vamapps.thecoach.MainActivity"),
     "female": ("com.vamapps.thecoach.forher", "com.vamapps.thecoach.MainActivity"),
 }
-POST_AUTH_GOALS = {"male": "Beat premature ejaculation", "female": "Cultivate desire"}
 CLEAN_INSTALL_SUITES = {"push", "billing", "test-model", "clean-install"}
 UID_REQUIRED_SUITES = {"safe", "functional", "kegel", "test-model", "update"}
 MALE_ONLY_SUITES = set(SUITES) - {"auth", "profile", "localization"}
@@ -75,7 +74,7 @@ def main():
     parser.add_argument("--slides-fixture", type=Path)
     parser.add_argument("--prepared-slides", action="store_true",
                         help="The first uncompleted slide is already open; preserve this installation")
-    parser.add_argument("--post-auth-goal", help="Explicit goal for separate, opt-in fixture preparation; does not enable it")
+    parser.add_argument("--post-auth-goal", help="Fixture-matching goal for the two Android login questions; does not enable full questionnaire preparation")
     parser.add_argument("--confirm-immersive-mode", action="store_true",
                         help="Confirm the OS full-screen hint on the selected test emulator (opt-in)")
     args = parser.parse_args()
@@ -124,8 +123,11 @@ def main():
     env = os.environ.copy()
     env.update(COACH_EXISTING_PROGRESS_EMAIL=record["email"], COACH_EXISTING_PROGRESS_OTP=record["otp"],
                COACH_DAILY_PLAN_DAY="Stage 1", COACH_FIXTURE_RESET_MODE="prebuilt", COACH_ACCOUNT_VARIANT=args.variant,
-               ANDROID_APP_VARIANT=args.variant, TEST_ISOLATION_MODE="logout",
-               POST_AUTH_QUESTIONNAIRE_GOAL=args.post_auth_goal or record.get("onboardingGoal") or POST_AUTH_GOALS[args.variant])
+               ANDROID_APP_VARIANT=args.variant, TEST_ISOLATION_MODE="logout")
+    # Login now answers the two native goal questions. Never invent a goal/program for a shared fixture.
+    post_auth_goal = args.post_auth_goal or record.get("onboardingGoal") or env.get("POST_AUTH_QUESTIONNAIRE_GOAL")
+    if post_auth_goal:
+        env["POST_AUTH_QUESTIONNAIRE_GOAL"] = post_auth_goal
     if record.get("uid"):
         env["COACH_EXPECTED_ACCOUNT_UID"] = record["uid"]
     if args.suite == "safe":

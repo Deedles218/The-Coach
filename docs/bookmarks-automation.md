@@ -177,6 +177,7 @@ mvn -q test -Dtest=tests.AndroidBookmarksTests#emptyListNeverShowsTooltip \
   -Dplatform=android -Dandroid.udid=emulator-5554 \
   -Dandroid.appPackage=com.vamapps.thecoach \
   -Dandroid.appActivity=com.vamapps.thecoach.MainActivity \
+  -DpostAuth.questionnaire.goal='<fixture-matching primary goal>' \
   -Dandroid.noReset=true -Dandroid.fullReset=false
 ```
 
@@ -199,7 +200,7 @@ configuration options:
 
 | Option | Effect |
 | --- | --- |
-| `--post-auth-goal <goal>` | Sets `POST_AUTH_QUESTIONNAIRE_GOAL`; otherwise uses the account record's `onboardingGoal`, then the male/female default. This **does not enable** questionnaire preparation. |
+| `--post-auth-goal <goal>` | Primary goal for the two native Android login questions. Otherwise uses the record's `onboardingGoal`, then an explicitly supplied `POST_AUTH_QUESTIONNAIRE_GOAL`. No male/female goal is guessed. Does **not** enable full questionnaire preparation. |
 | `--confirm-immersive-mode` | Opt-in `adb settings put secure immersive_mode_confirmations confirmed` on the selected `emulator-*`, after account/APK checks. Default runs do not write this setting. |
 | `-Dcoach.android.allowProfileTooltipFallback=true` (direct Maven) | Allows the previously observed Her-only coordinate fallback, only after a failed Profile action and when semantic `btnOk` is absent. Disabled by default; never a general retry. |
 
@@ -207,18 +208,28 @@ Surefire 2.12.4 supports one exact `--method` in a single class, not
 `method1+method2`. Invalid selectors fail before Keychain/device access.
 Runner output redacts configured email, OTP and UID, and preserves Maven's exit code.
 
-Ordinary `loginWithEmailAndOtp` and existing-progress authentication remain strict:
-a post-auth questionnaire raises `PostAuthQuestionnaireException`, even when a
-setup flag is present. For a **separate, explicitly approved mutable fixture**,
+Ordinary Android `loginWithEmailAndOtp` includes the **two native goal questions**
+after OTP. The user clarified this expected returning-user contract on 24 October;
+`tvAnswerNum` / `STEP 1/17` or `should_show_goals=true` alone is not a fixture blocker.
+Supply a primary goal matching the existing fixture through
+`postAuth.questionnaire.goal` / `POST_AUTH_QUESTIONNAIRE_GOAL`. If the secondary
+screen requires a choice, the existing named `Increase self confidence` option
+is used; an arbitrary first option is not selected. Missing goals/options fail
+before guessing. The handler closes optional offers through existing helpers and
+still requires Today; it never invokes the full questionnaire, app restart or purchases.
+Unexpected native questions or a full Web questionnaire remain failures, even
+when a setup flag is present.
+
+For a **separate, explicitly approved mutable fixture** needing full onboarding,
 setup code can call `AndroidCoachFlowPageObject.loginForFixturePreparation` with
 both `coach.android.preparePostAuthQuestionnaire=true` (or
 `COACH_ANDROID_PREPARE_POST_AUTH_QUESTIONNAIRE=true`) and an explicit
 `postAuth.questionnaire.goal` / `POST_AUTH_QUESTIONNAIRE_GOAL`. Validation runs
 before authentication or questionnaire actions; there is no guessed first primary
 goal. This API is not called by ordinary regression tests or the parity runner.
-After setup, verify an independent strict re-login; preparation alone does not
-prove an existing-progress fixture is ready. No setup or account mutation was
-performed while preparing this port.
+After full setup, verify an independent ordinary re-login, including its expected
+two goals; preparation alone does not prove the returning-user path. No full setup
+or account mutation was performed while preparing the initial port.
 
 ### Verification boundary
 
@@ -245,7 +256,9 @@ Got-it/OK tap and does not write device settings from the Page Object.
 ### Android continuation — 2026-10-24
 
 See the separate [authorization/onboarding and Bookmarks report](android-pr25-live-ui-2026-10-24.md)
-for measured results and remaining gates. Android Profile hides the bottom tabs:
+for historical measured results, and the [two-goal login correction](android-pr25-login-goals-2026-10-24.md)
+for the clarified current contract and fresh follow-up. The earlier persistent-goals
+finding is superseded, not an outstanding backend defect. Android Profile hides the bottom tabs:
 after identity verification, the Android Bookmarks login closes Profile through
 `returnToMainScreenFromProfile()` before selecting Today. This does not change
 the shared iOS login or its 21 test bodies.

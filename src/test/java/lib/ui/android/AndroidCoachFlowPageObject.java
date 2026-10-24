@@ -6,7 +6,6 @@ import io.appium.java_client.android.nativekey.KeyEvent;
 import io.qameta.allure.Step;
 import lib.Platform;
 import lib.AccountVariantMismatchException;
-import lib.PostAuthQuestionnaireException;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
 import lib.ui.factories.DailyPlanPageObjectFactory;
@@ -420,17 +419,20 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     public void loginWithEmailAndOtp(String email, String otpCode) {
         authenticateForFixtureSetup(email, otpCode);
         if (isElementPresent(ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER)) {
-            throw new PostAuthQuestionnaireException(
-                    "Android authorization is blocked by the post-auth questionnaire; "
-                            + "complete the Android onboarding fixture before running authorized smoke checks"
-            );
+            completePostLoginGoalsIfPresent();
         }
         waitForAuthorizedDashboard();
         waitForLoadingToDisappearIfPresent(TEST_ID_LOADING, "Android authorization loading indicator is still displayed", 30);
         openToday();
     }
 
-    /** Explicit fixture-only entry point. Strict login above deliberately never calls this method. */
+    /** Only the two expected native goal screens belong to ordinary login, not full onboarding. */
+    protected void completePostLoginGoalsIfPresent() {
+        new AndroidOnboardingPageObject(driver).completePostLoginGoalQuestions(
+                Platform.getInstance().getPostAuthQuestionnaireGoal());
+    }
+
+    /** Explicit full-fixture entry point. Ordinary login never calls this method. */
     public void loginForFixturePreparation(String email, String otpCode) {
         Platform.getInstance().validateAndroidPostAuthFixturePreparation();
         authenticateForFixtureSetup(email, otpCode);

@@ -3,6 +3,7 @@ package lib.ui.android;
 import io.appium.java_client.InteractsWithApps;
 import io.qameta.allure.Step;
 import lib.Platform;
+import lib.PostAuthQuestionnaireException;
 import lib.ui.OnboardingGoal;
 import lib.ui.OnboardingPageObject;
 import org.junit.Assert;
@@ -34,6 +35,17 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     private static final String WORKBOOK_UPSELL = "id:" + ID_PREFIX + "tvEworkbook";
     private static final String IMMERSIVE_HINT_TITLE = "id:com.android.systemui:id/immersive_cling_title";
     private static final String IMMERSIVE_HINT_CONFIRM = "id:com.android.systemui:id/ok";
+    private static final By OPTIONAL_TRANSIENT_CLOSE = By.xpath(
+            "//*[@enabled='true' and @clickable='true' and ("
+                    + "@resource-id='" + ID_PREFIX + "ivClose' "
+                    + "or @resource-id='" + ID_PREFIX + "ivButtonClose' "
+                    + "or @resource-id='" + ID_PREFIX + "btnSkip' "
+                    + "or @resource-id='com.android.permissioncontroller:id/permission_deny_button' "
+                    + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='LATER' "
+                    + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='NOT NOW' "
+                    + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='MAYBE LATER' "
+                    + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='SKIP')]"
+    );
 
     private static final By SEMANTIC_QUESTIONNAIRE_ACTION = By.xpath(
             "//*[@enabled='true' and "
@@ -88,7 +100,37 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         completeQuestionnaire();
     }
 
-    /** Mutating fixture preparation only, never invoked by normal existing-progress authentication. */
+    /** Android returning-user login includes these two native goal questions, not the runtime questionnaire. */
+    @Step("Answer the two expected Android post-login goal questions")
+    public void completePostLoginGoalQuestions(String goal) {
+        if (!isElementPresent(QUESTION_NUMBER)) {
+            rejectUnexpectedLoginQuestionnaire();
+            return;
+        }
+        if (!isElementPresent(PRIMARY_GOAL_TITLE) || isElementPresent(CONTINUE_BUTTON)) {
+            throw new PostAuthQuestionnaireException(
+                    "Unexpected Android questionnaire before the two post-login goal questions");
+        }
+        if (goal == null || goal.trim().isEmpty()) {
+            throw new IllegalStateException("Android login goals require an explicit postAuth.questionnaire.goal "
+                    + "or POST_AUTH_QUESTIONNAIRE_GOAL matching the fixture; no default goal is selected");
+        }
+        selectGoal(goal, false);
+        waitForPostQuestionnaireDestination();
+        rejectUnexpectedLoginQuestionnaire();
+        closePaywallsAndPopups();
+        waitForToday();
+    }
+
+    private void rejectUnexpectedLoginQuestionnaire() {
+        if (isElementPresent(QUESTION_NUMBER) || isElementPresent(QUESTIONNAIRE_WEBVIEW)) {
+            throw new PostAuthQuestionnaireException(
+                    "Unexpected Android questionnaire after the two post-login goals; "
+                            + "ordinary login must not complete full onboarding");
+        }
+    }
+
+    /** Full mutating fixture preparation only; ordinary login uses the bounded goal handler above. */
     @Step("Prepare the explicitly approved Android post-auth questionnaire fixture")
     public void completePostAuthQuestionnaire() {
         Platform.getInstance().validateAndroidPostAuthFixturePreparation();
@@ -113,11 +155,15 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         // System dialogs can own the accessibility window before the app's destination is visible.
         waitForFirstElementPresent(new String[]{PAYWALL_ROOT, WORKBOOK_UPSELL,
                         "id:" + ID_PREFIX + "tvHeader", TODAY_TAB, IMMERSIVE_HINT_TITLE,
-                        "id:com.android.permissioncontroller:id/permission_deny_button"},
+                        "id:com.android.permissioncontroller:id/permission_deny_button", QUESTIONNAIRE_WEBVIEW},
                 "Android did not restore a post-questionnaire destination after relaunch", 30);
     }
 
     private void selectGoal(String goal) {
+        selectGoal(goal, true);
+    }
+
+    protected void selectGoal(String goal, boolean allowSecondaryFallback) {
         Assert.assertNotNull("Configured Android goal is required", goal);
         // An existing linked account can resume after the goal questions,
         // directly at the optional workbook offer (observed on 1.40.21).
@@ -143,7 +189,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                             + "'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')="
                             + "'INCREASE SELF CONFIDENCE' and @enabled='true']"
             ));
-            if (secondaryGoal == null) {
+            if (secondaryGoal == null && allowSecondaryFallback) {
                 secondaryGoal = firstDisplayedEnabled(By.xpath(
                     "//android.widget.Button[@clickable='true' and @enabled='true' "
                             + "and string-length(normalize-space(@text)) > 0 "
@@ -152,7 +198,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 ));
             }
             Assert.assertNotNull(
-                    "Android requires an additional goal, but no selectable option is exposed",
+                    "Android requires an additional goal, but the expected option is not exposed",
                     secondaryGoal
             );
             secondaryGoal.click();
@@ -288,18 +334,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 continue;
             }
 
-            WebElement optionalClose = firstDisplayedEnabled(
-                    By.xpath("//*[@enabled='true' and @clickable='true' and ("
-                            + "@resource-id='" + ID_PREFIX + "ivClose' "
-                            + "or @resource-id='" + ID_PREFIX + "ivButtonClose' "
-                            + "or @resource-id='" + ID_PREFIX + "btnSkip' "
-                            + "or @resource-id='com.android.permissioncontroller:id/permission_deny_button' "
-                            + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='LATER' "
-                            + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='NOT NOW' "
-                            + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='MAYBE LATER' "
-                            + "or translate(normalize-space(@text), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')='SKIP')]"
-                    )
-            );
+            WebElement optionalClose = firstDisplayedEnabled(OPTIONAL_TRANSIENT_CLOSE);
             if (optionalClose != null) {
                 clickAndWaitForStateChange(optionalClose, 8);
                 continue;
@@ -308,9 +343,19 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
             if (isElementPresent(TODAY_TAB)) {
                 return paywallsClosed;
             }
-            break;
+            waitForNextOnboardingActionOrDestination(destinationVisible);
         }
         return paywallsClosed;
+    }
+
+    protected void waitForNextOnboardingActionOrDestination(BooleanSupplier destinationVisible) {
+        createWait(10).withMessage("Android onboarding transition exposed no next action or destination")
+                .until(ignored -> destinationVisible.getAsBoolean() || isElementPresent(TODAY_TAB)
+                        || isElementVisible(IMMERSIVE_HINT_TITLE)
+                        || firstDisplayedEnabled(By.id(ID_PREFIX + "btnClose")) != null
+                        || (firstDisplayedEnabled(By.id(ID_PREFIX + "btnGotIt")) != null
+                            && isElementPresent("id:" + ID_PREFIX + "tvHeader"))
+                        || firstDisplayedEnabled(OPTIONAL_TRANSIENT_CLOSE) != null);
     }
 
     /** API-36 system hint can cover the app before its own close controls become accessible. */
@@ -327,7 +372,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
         waitForElementPresent(TODAY_TAB, "Android Today tab did not open after onboarding", 30);
     }
 
-    private WebElement firstDisplayedEnabled(By locator) {
+    protected WebElement firstDisplayedEnabled(By locator) {
         List<WebElement> candidates = driver.findElements(locator);
         for (WebElement candidate : candidates) {
             try {
