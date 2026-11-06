@@ -34,6 +34,7 @@ public class PartnerAccessTests extends CoreTestCase {
     }
 
     @Test
+    @Issue("COA-9773")
     @DisplayName("COA-9324 Partner offer appears every fifth opening, at most three times")
     @Description("Creates a new buyer, checks all openings 1 through 21, dismisses offers on 5, 10 and 15, "
             + "and verifies no fourth offer on opening 20 or the following opening. Counters persist through cold restarts.")
@@ -57,6 +58,7 @@ public class PartnerAccessTests extends CoreTestCase {
 
     @Test
     @Issue("COA-9687")
+    @io.qameta.allure.Issues({@Issue("COA-9774")})
     @DisplayName("COA-9687 Cancelled partner purchase does not expose an invitation")
     @Description("Opens the offer on the fifth opening, checks the one-time partner product, cancels twice, "
             + "and verifies no invitation on Today or after cold restart. This is the UI cancellation contract; "
@@ -80,7 +82,7 @@ public class PartnerAccessTests extends CoreTestCase {
 
     @Test
     @Issue("COA-9685")
-    @io.qameta.allure.Issues({@Issue("COA-9688")})
+    @io.qameta.allure.Issues({@Issue("COA-9688"), @Issue("COA-9775")})
     @DisplayName("COA-9685 Partner purchase, native share and activation unlock For Her content")
     @Description("Proves an unpaid recipient baseline, buys the one-time partner product in Sandbox, "
             + "shares twice with the same HTTPS invitation, checks the reminder hides after each share and returns on cold opening, "

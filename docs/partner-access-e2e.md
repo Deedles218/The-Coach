@@ -9,11 +9,18 @@ The owner also clarified that one invitation has one stable URL and grants acces
 to only one unique recipient. Share hides the reminder for the current opening;
 the first cold reopening must show it again until recipient activation.
 
-| Method in `tests.PartnerAccessTests` | Assertions |
-| --- | --- |
-| `testOfferEveryFifthOpeningStopsAfterThreeDisplays` | Fresh buyer journey; absence on every other opening 1–21; offers exactly on 5, 10, 15; X dismisses without immediate redisplay; no fourth offer on 20 or 21. Actual terminate/activate calls preserve the app's counters. |
-| `testCancelledPurchaseDoesNotExposeInvite` / COA-9687 | Fifth-opening offer → exact partner paywall → exact one-time product in native Sandbox sheet; two cancellations return to the same paywall; no invitation on Today or after restart. |
-| `testPurchaseShareAndActivatePartnerAccess` / COA-9685, COA-9688 behavior | Unpaid R1 must hit a loaded paywall before purchase. Fifth-opening offer → Sandbox purchase → two native shares yield the same single HTTPS URL. After each share the reminder hides; the first cold reopening shows it again. The real link cold-starts production For Her; fresh membership reads must confirm Premium for the same UID, and R1's locked lesson must open before/after restart. Reopening the same link preserves R1 access. The buyer's reminder stays absent after activation. UI logout creates a distinct unpaid R2; the already used link is checked on both cold and warm opening. R2's lesson stays locked and fresh `/user/` reads remain unpaid throughout the delivery window. |
+| Xray Manual Test | Method in `tests.PartnerAccessTests` | Assertions |
+| --- | --- | --- |
+| [COA-9773](https://the-coach.atlassian.net/browse/COA-9773), 8 steps | `testOfferEveryFifthOpeningStopsAfterThreeDisplays` | Fresh buyer journey; absence on every other opening 1–21; offers exactly on 5, 10, 15; X dismisses without immediate redisplay; no fourth offer on 20 or 21. Actual terminate/activate calls preserve the app's counters. |
+| [COA-9774](https://the-coach.atlassian.net/browse/COA-9774), 7 steps | `testCancelledPurchaseDoesNotExposeInvite` | Fifth-opening offer → exact partner paywall → exact one-time product in native Sandbox sheet; two cancellations return to the same paywall; no invitation on Today or after restart. |
+| [COA-9775](https://the-coach.atlassian.net/browse/COA-9775), 19 steps | `testPurchaseShareAndActivatePartnerAccess` | Unpaid R1 must hit a loaded paywall before purchase. Fifth-opening offer → Sandbox purchase → two native shares yield the same single HTTPS URL. After each share the reminder hides; the first cold reopening shows it again. The real link cold-starts production For Her; fresh membership reads must confirm Premium for the same UID, and R1's locked lesson must open before/after restart. Reopening the same link preserves R1 access. The buyer's reminder stays absent after activation. UI logout creates a distinct unpaid R2; the already used link is checked on both cold and warm opening. R2's lesson stays locked and fresh `/user/` reads remain unpaid throughout the delivery window. |
+
+These three Xray records keep `Test Type = Manual` with native Action / Data /
+Expected Result steps. Their labels are `Test`, `Automated`, `ios`, and each
+tests COA-9324. `Automated` records implementation coverage; execution results
+and the known first-cold-link activation issue are documented separately.
+The corresponding Allure issue annotations link back to these exact cases.
+The older COA-9685 / COA-9687 / COA-9688 cases retain broader backend checks.
 
 These are UI E2E checks with read-only, UID-verified membership evidence for R1/R2.
 They do not assert backend `license_id`, transaction
@@ -31,7 +38,7 @@ installation. A visible Today tab or Premium badge alone never proves activation
   Appium's first launch is opening 1. Logout does not prove zero local counters.
   `partner.freshInstall=true` is an operator confirmation of this preparation,
   not independent evidence of an app-data reset.
-- For COA-9685 prepare a dedicated unpaid For Her profile already on Today.
+- For COA-9775 prepare a dedicated unpaid For Her profile already on Today.
   Verify the unpaid baseline before buying anything; reinstall alone does not
   prove it. Both recipients are test-owned anonymous profiles. After confirming
   R1's persistent access, the case logs out R1 and creates R2 through the native
@@ -113,7 +120,7 @@ For either payment method, use the same device/attach options and enable Sandbox
 -Dstorekit.sandbox=true
 ```
 
-COA-9685 additionally needs:
+COA-9775 additionally needs:
 
 ```sh
 -Dpurchase.allow=true \
