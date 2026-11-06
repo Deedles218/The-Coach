@@ -109,6 +109,10 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         );
     }
 
+    public boolean isGoalSelectionDisplayed() {
+        return isElementVisible(GOAL_TITLE);
+    }
+
     @Override
     @Step("Open iOS Start now")
     public void openStartFlow() {
@@ -181,6 +185,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                     || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
                 return;
             }
+            if (completeVariantQuestionnaireScreen()) continue;
 
             WebElement action = firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP);
             if (action == null) {
@@ -226,6 +231,9 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                         + " actions without reaching a paywall or Today"
         );
     }
+
+    /** Optional variant-specific screen; the default questionnaire flow is unchanged. */
+    protected boolean completeVariantQuestionnaireScreen() { return false; }
 
     @Override
     @Step("Close iOS onboarding paywalls and optional popups")
@@ -520,7 +528,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         }
     }
 
-    private void tapElementCenterAndWaitForStateChange(WebElement element, long timeoutInSeconds) {
+    protected void tapElementCenterAndWaitForStateChange(WebElement element, long timeoutInSeconds) {
         String sourceBeforeTap = safePageSource();
         Rectangle rectangle = element.getRect();
         Map<String, Object> tap = new HashMap<>();
