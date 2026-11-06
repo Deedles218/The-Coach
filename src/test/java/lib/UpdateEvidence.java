@@ -59,6 +59,22 @@ public final class UpdateEvidence {
         if (Platform.getInstance().isAndroid()) {
             attachBuild("android", AndroidDevice.version(), Long.toString(AndroidDevice.versionCode()));
         } else {
+            String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+            if (udid != null && udid.matches("(?i)(?:[0-9a-f]{8}-[0-9a-f]{16}|[0-9a-f]{40})")) {
+                String bundle = Platform.getInstance().getIOSBundleId();
+                Map<String,Object> response = json(Arrays.asList("xcrun", "devicectl", "device", "info", "apps",
+                        "--device", udid, "--bundle-id", bundle, "--quiet", "--json-output", "-", "--timeout", "15"));
+                Map<?,?> result = (Map<?,?>) response.get("result");
+                List<?> apps = (List<?>) result.get("apps");
+                Assert.assertEquals("Expected one installed app matching the tested bundle", 1, apps.size());
+                Map<?,?> app = (Map<?,?>) apps.get(0);
+                Assert.assertEquals(bundle, app.get("bundleIdentifier"));
+                String version = (String) app.get("version"), build = (String) app.get("bundleVersion");
+                Assert.assertTrue("Installed version and build are required", version != null && !version.isEmpty()
+                        && build != null && build.matches("[0-9]+(?:\\.[0-9]+){0,2}"));
+                attachBuild("ios", version, build);
+                return;
+            }
             Map<String,Object> info = installedIOSMetadata();
             attachBuild("ios", (String)info.get("CFBundleShortVersionString"), (String)info.get("CFBundleVersion"));
         }

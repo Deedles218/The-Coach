@@ -164,13 +164,22 @@ public class iOSExplorePageObject extends ExplorePageObject {
     }
 
     protected String[] configuredSectionTitles() {
+        if (usesForHerCatalogV7()) {
+            return new String[]{"Master Classes", "Private Coaching Sessions", "Self-Exploration",
+                    "Partnered Practices", "Aging & Pre-menopause", "Sensual Stories"};
+        }
         return usesMaleProductionContract()
                 ? new String[]{"Quick Tips", "Master Classes", "Private Coaching Sessions", "Body Practices"}
                 : new String[]{"Quick Tips", "Master Classes", "Private coaching session"};
     }
 
     private String coachingSectionTitle() {
-        return usesMaleProductionContract() ? "Private Coaching Sessions" : "Private coaching session";
+        return usesMaleProductionContract() || usesForHerCatalogV7()
+                ? "Private Coaching Sessions" : "Private coaching session";
+    }
+
+    private static boolean usesForHerCatalogV7() {
+        return isForHer() && "for-her-v7".equals(System.getProperty("coach.explore.catalog"));
     }
 
     protected String configuredSection(String title) {
@@ -236,7 +245,12 @@ public class iOSExplorePageObject extends ExplorePageObject {
         else assertRemovedCoursesAndPracticesAreAbsent();
     }
     @Override public void assertBrowseProgramsReplacesLegacyBlock() {
-        waitForElementVisible("id:Browse Programs", "Explore v7 must show Browse Programs", 10);
+        if (usesForHerCatalogV7()) {
+            waitForElementVisible(FIRST_PROGRAM_TITLE, "For Her program carousel must show a titled card", 10);
+            assertElementNotPresent("id:Browse Programs", "For Her configuration has an empty programsTitle");
+        } else {
+            waitForElementVisible("id:Browse Programs", "Explore v7 must show Browse Programs", 10);
+        }
         assertElementNotPresent("id:ALL PROGRAMS", "Explore v7 must not show the legacy ALL PROGRAMS heading");
         assertMainProgramsRecommendedSection();
         assertRetiredExploreUiIsAbsent();

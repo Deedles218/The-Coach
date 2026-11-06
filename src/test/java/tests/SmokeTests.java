@@ -134,7 +134,7 @@ public class SmokeTests extends CoreTestCase {
 
     @Test
     @Features(value = {@Feature(value = "Profile"), @Feature(value = "Logout"), @Feature(value = "Welcome")})
-    @Issue("COA-8500")
+    @Issue("COA-9758")
     @DisplayName("Smoke: Logout returns the user to Welcome")
     @Description("Opens Profile for the existing-progress account, logs out, and verifies that Welcome is displayed again.")
     @Step("Start test testLogoutReturnsToWelcome")
@@ -184,6 +184,10 @@ public class SmokeTests extends CoreTestCase {
     }
 
     private void requireCleanInstallConfiguration() {
+        if (lib.TestFlightHandoff.enabled()) {
+            lib.TestFlightHandoff.perform(driver, "prepare-clean-rc");
+            return;
+        }
         Assert.assertTrue(
                 "P0 clean-install smoke requires -Dios.fullReset=true and -Dios.noReset=false",
                 Platform.getInstance().isCleanInstallConfigured()
@@ -192,5 +196,10 @@ public class SmokeTests extends CoreTestCase {
                 "P0 clean-install smoke requires -Dios.app=/path/to/The-Coach.app or IOS_APP",
                 Platform.getInstance().getIOSAppPath() != null && !Platform.getInstance().getIOSAppPath().trim().isEmpty()
         );
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        lib.TestFlightHandoff.ensureRCIfEnabled(driver);
+        super.cleanupSessionForNextTest();
     }
 }

@@ -132,16 +132,21 @@ public final class iOSTestAccountPageObject extends MainPageObject {
         waitForElementAndClick("id:CONNECT", "New test profile must expose CONNECT", 10);
         WebElement email = waitForElementPresent("xpath://XCUIElementTypeTextField",
                 "Connect email input is not visible", 10);
+        email.clear();
         email.sendKeys(account.getEmail());
         coach.hideKeyboardIfPossible();
         waitForElementAndClick("id:CONTINUE", "Connect email Continue is not enabled", 10);
+        waitForFirstElementPresent(new String[]{"id:ENTER SECURITY CODE", "id:WE’VE FOUND AN EXISTING ACCOUNT"},
+                "Email linking returned neither a new-account OTP nor an existing-account prompt", 20);
+        Assert.assertFalse("The fixture email is already registered; preserve the anonymous profile and use a fresh mailbox",
+                isElementVisible("id:WE’VE FOUND AN EXISTING ACCOUNT"));
         coach.assertOtpScreenIsDisplayedForEmail(account.getEmail());
         coach.typeSecurityCode(account.getOtp());
         waitForElementPresent("id:Your Email is confirmed!", "New email was not confirmed", 20);
         waitForElementAndClick("id:CLOSE", "Cannot close email confirmation", 5);
         waitForElementNotPresent("id:CONNECT", "Profile still asks to connect an email", 10);
         coach.logOut();
-        coach.loginWithEmailAndOtp(account.getEmail(), account.getOtp());
+        coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         coach.openProfile();
         Assert.assertFalse("Re-login did not restore the confirmed profile", isElementVisible("id:CONNECT"));
     }

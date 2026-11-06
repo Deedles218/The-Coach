@@ -15,6 +15,10 @@ Java/Appium/Maven/Jenkins/Allure
 Начните с `./ci-scripts/run-ios-suite.sh full --plan`; маска
 `tests.*Tests,tests.HW.*` смешивает несовместимые reset policies и fixtures.
 
+Дополнения для физического iPhone, доказательства текущей сборки и протокол
+внешнего TestFlight-coordinator описаны в
+[инструкции RC-прогонов](docs/ios-rc-regression-improvements.md).
+
 ## Run iOS tests for a specific build
 
 The bundle ID can be supplied either as the `ios.bundleId` Maven property or

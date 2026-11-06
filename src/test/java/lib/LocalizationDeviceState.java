@@ -11,10 +11,21 @@ public final class LocalizationDeviceState implements AutoCloseable {
 
     private LocalizationDeviceState(Path snapshot) { this.snapshot = snapshot; }
 
+    /** Explicit UI translation coverage; does not claim device-language inheritance. */
+    public static boolean usesIOSLaunchArguments() {
+        return Platform.getInstance().isIOS() && Boolean.getBoolean("localization.ios.launchArguments");
+    }
+
     public static LocalizationDeviceState capture() throws Exception {
         Platform platform = Platform.getInstance();
         String udid = platform.isAndroid() ? AndroidDevice.serial()
                 : System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+        if (usesIOSLaunchArguments()) {
+            if (udid == null || !udid.matches("(?i)(?:[0-9a-f]{8}-[0-9a-f]{16}|[0-9a-f]{40})")) {
+                throw new IllegalArgumentException("Explicit localization launch mode requires a physical iPhone UDID");
+            }
+            return new LocalizationDeviceState(null);
+        }
         if (udid == null || !udid.matches("[A-Fa-f0-9-]{36}|emulator-[0-9]+")) {
             throw new IllegalArgumentException("Localization system changes require an explicit iOS Simulator UDID or Android emulator serial");
         }
@@ -30,6 +41,7 @@ public final class LocalizationDeviceState implements AutoCloseable {
     }
 
     @Override public void close() throws Exception {
+        if (snapshot == null) return;
         // Keep the recovery file if restoration fails; the error names its path.
         try {
             run("restore", snapshot.toString());
@@ -40,11 +52,13 @@ public final class LocalizationDeviceState implements AutoCloseable {
     }
 
     public void prepare() throws Exception {
+        if (snapshot == null) return;
         // Snapshot is already owned by the test lifecycle before the first mutation.
         run("prepare", snapshot.toString());
     }
 
     public void prepareLanguageMenu() throws Exception {
+        if (snapshot == null) throw new IllegalStateException("Launch arguments do not test app/system language priority");
         run("prepare-menu", snapshot.toString());
     }
 

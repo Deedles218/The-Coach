@@ -46,6 +46,8 @@ public class LocalizationTests extends CoreTestCase {
         fixture = LocalizationFixture.load(language, scenario);
         if (!"welcome".equals(scenario)) TestData.existingProgressAccount();
         if ("switch".equals(scenario)) {
+            Assert.assertFalse("Launch arguments cover translated UI, not app/system language priority",
+                    LocalizationDeviceState.usesIOSLaunchArguments());
             Assert.assertTrue("App-language priority requires two supported languages; use welcome,dashboard for a single-language build",
                     LocalizationFixture.supportedLocales(variant).size() > 1);
             fixture.required("language.open.steps");
@@ -70,6 +72,7 @@ public class LocalizationTests extends CoreTestCase {
         page.waitForEntryScreen();
         Allure.addAttachment("Localization matrix", "platform=" + Platform.getInstance().getPlatformVar()
                 + "\nvariant=" + variant + "\nlocale=" + language + "\nscenario=" + scenario
+                + "\nmode=" + (LocalizationDeviceState.usesIOSLaunchArguments() ? "ios-process-language; inheritance/priority not verified" : "native-language-preferences")
                 + "\nbaseline.version=" + fixture.required("source.version")
                 + "\nbaseline.origin=" + fixture.required("source.origin")
                 + "\nbaseline.status=provisional build resources; linguistic review pending");
@@ -139,7 +142,9 @@ public class LocalizationTests extends CoreTestCase {
                     if (originalDevice != null) originalDevice.close();
                 }, () -> super.tearDown());
             } else {
-                RestoringTestAction.run(() -> super.tearDown(), () -> {
+                RestoringTestAction.run(() -> RestoringTestAction.run(() -> {
+                    if (page != null) page.restoreProcessLanguage();
+                }, () -> super.tearDown()), () -> {
                     if (originalDevice != null) originalDevice.close();
                 });
             }

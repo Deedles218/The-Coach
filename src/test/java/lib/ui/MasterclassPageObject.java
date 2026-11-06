@@ -11,6 +11,9 @@ import java.util.Map;
 
 /** Native accessibility contract for the embedded masterclass, on both platforms. */
 public class MasterclassPageObject extends MainPageObject {
+    private static final String IOS_COURSE_BACK = "xpath://XCUIElementTypeButton[@name='BackButton' and @visible='true']"
+            + " | //XCUIElementTypeNavigationBar[@name='The_Coach.CardContentView']"
+            + "//XCUIElementTypeButton[@name='Back' and @visible='true']";
     private final boolean ios = Platform.getInstance().isIOS();
 
     public MasterclassPageObject(RemoteWebDriver driver) { super(driver); }
@@ -66,7 +69,7 @@ public class MasterclassPageObject extends MainPageObject {
     public void openFromExplore() {
         closePlayerIfPresent();
         if (!ios && isElementVisible(courseContent())) backToExplore();
-        String courseBack = "xpath://XCUIElementTypeButton[@name='BackButton']";
+        String courseBack = IOS_COURSE_BACK;
         if (ios && isElementVisible(text("New Supplements"))) {
             waitForElementAndClick("xpath://XCUIElementTypeButton[@name='GO TO SHOP']",
                     "Cannot dismiss the optional Shop introduction", 10);
@@ -92,7 +95,16 @@ public class MasterclassPageObject extends MainPageObject {
             });
             if (isElementVisible(courseBack)) backToExplore();
         }
-        waitForElementAndClick(tab, "Pre-authenticated Explore tab is required", 20);
+        if (ios) {
+            lib.ui.factories.ExplorePageObjectFactory.get(driver).openExploreTab();
+        } else {
+            waitForElementAndClick(tab, "Pre-authenticated Explore tab is required", 20);
+        }
+        if (ios && Boolean.getBoolean("masterclass.openCurrentCatalog")) {
+            lib.ui.factories.ExplorePageObjectFactory.get(driver)
+                    .openMasterClassAndVerifyDestination();
+            return;
+        }
         String card = text(required("card"));
         // Normalize scroll first: subsequent tests may inherit a scrolled catalog.
         for (int i = 0; i < 5 && !isElementVisible(card); i++) swipe("down");
@@ -116,7 +128,7 @@ public class MasterclassPageObject extends MainPageObject {
     }
 
     public void backToExplore() {
-        String back = ios ? "xpath://XCUIElementTypeButton[@name='BackButton']"
+        String back = ios ? IOS_COURSE_BACK
                 : System.getProperty("masterclass.backLocator");
         if (back == null) {
             driver.navigate().back();

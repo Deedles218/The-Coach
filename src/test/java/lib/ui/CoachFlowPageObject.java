@@ -219,11 +219,18 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Wait for authorized dashboard")
     public void waitForAuthorizedDashboard() {
-        this.waitForFirstElementPresent(
-                new String[]{AUTHORIZED_DASHBOARD_MARKER, TEST_ID_TODAY_TAB, TAB_TODAY},
-                "Authorized dashboard did not open",
-                30
-        );
+        // Keep popup handling inside this overridable wait: iOS also recognizes
+        // the post-auth questionnaire and must not be gated by a tabs-only wait.
+        this.createWait(30).withMessage("Authorized dashboard did not open after dismissing login prompts")
+                .until(webDriver -> {
+                    if (NOTIFICATION_PROMPT_TITLE != null && this.isElementVisible(NOTIFICATION_PROMPT_TITLE)) {
+                        this.closeNotificationPrompt();
+                        return false;
+                    }
+                    return this.isElementVisible(AUTHORIZED_DASHBOARD_MARKER)
+                            || this.isElementVisible(TEST_ID_TODAY_TAB)
+                            || this.isElementVisible(TAB_TODAY);
+                });
     }
 
     @Step("Open Today screen")
@@ -338,6 +345,9 @@ abstract public class CoachFlowPageObject extends MainPageObject {
 
     @Step("Verify Profile screen content")
     public void assertProfileScreenIsDisplayed() {
+        if (this.isElementPresent(PROFILE_PREMIUM_BADGE)) {
+            this.waitForElementPresent(PROFILE_PREMIUM_BADGE, "Profile premium badge is not displayed", 10);
+        }
         this.assertProfileSmokeContentIsDisplayed();
         this.swipeUpToFindFirstElement(
                 new String[]{TEST_ID_PROFILE_TERMS, PROFILE_TERMS_BUTTON},
@@ -346,9 +356,6 @@ abstract public class CoachFlowPageObject extends MainPageObject {
         );
         this.swipeUpToFindElement(DELETE_ACCOUNT_BUTTON, "Cannot find Delete my account item on Profile screen", 2);
         this.waitForElementPresent(DELETE_ACCOUNT_BUTTON, "Delete my data/account item is not displayed", 10);
-        if (this.isElementPresent(PROFILE_PREMIUM_BADGE)) {
-            this.waitForElementPresent(PROFILE_PREMIUM_BADGE, "Profile premium badge is not displayed", 10);
-        }
     }
 
     @Step("Verify Profile Smoke content")
@@ -455,7 +462,7 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 "Cannot tap FAQ",
                 10
         );
-        this.waitForElementPresent(PROFILE_FAQ_SCREEN, "FAQ browser did not open", 20);
+        this.waitForElementPresent(PROFILE_FAQ_SCREEN, "FAQ document content did not load", profileWebLoadSeconds());
     }
 
     @Step("Open Terms and privacy policy from Profile")
@@ -467,7 +474,11 @@ abstract public class CoachFlowPageObject extends MainPageObject {
                 "Cannot tap Terms & privacy policy",
                 10
         );
-        this.waitForElementPresent(PROFILE_TERMS_SCREEN, "Terms browser did not open", 20);
+        this.waitForElementPresent(PROFILE_TERMS_SCREEN, "Terms browser did not open", profileWebLoadSeconds());
+    }
+
+    protected long profileWebLoadSeconds() {
+        return Long.getLong("coach.profile.webLoadSeconds", 20L);
     }
 
     @Step("Return to Profile screen from an internal Profile screen")
@@ -899,19 +910,25 @@ abstract public class CoachFlowPageObject extends MainPageObject {
     public void closeNotificationPromptIfPresent() {
         try {
             this.waitForElementPresent(NOTIFICATION_PROMPT_TITLE, "Notification prompt is not displayed", 2);
-            this.waitForFirstElementAndClick(
-                    new String[]{TEST_ID_NOTIFICATION_CLOSE, NOTIFICATION_PROMPT_CLOSE_BUTTON},
-                    "Cannot close notification prompt",
-                    10
-            );
-            this.waitForElementNotPresent(
-                    NOTIFICATION_PROMPT_TITLE,
-                    "Notification prompt is still displayed",
-                    10
-            );
-        } catch (Exception e) {
+        } catch (TimeoutException e) {
             System.out.println("Notification prompt was not shown; continuing.");
+            return;
         }
+        this.closeNotificationPrompt();
+    }
+
+    @Step("Close notification prompt")
+    private void closeNotificationPrompt() {
+        this.waitForFirstElementAndClick(
+                new String[]{TEST_ID_NOTIFICATION_CLOSE, NOTIFICATION_PROMPT_CLOSE_BUTTON},
+                "Cannot close notification prompt",
+                10
+        );
+        this.waitForElementNotPresent(
+                NOTIFICATION_PROMPT_TITLE,
+                "Notification prompt is still displayed",
+                10
+        );
     }
 
     @Step("Normalize Coach session for the next test")

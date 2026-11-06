@@ -84,7 +84,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
                 String uid = SimulatorTestIdentity.currentUid();
                 try (SimulatorAnalyticsEvidence analytics = new SimulatorAnalyticsEvidence(
                         "COA-8232", "ProgramModalSelect", uid, "keep_it_hard");
-                     SimulatorModalMotion recording = new SimulatorModalMotion("COA-8232")) {
+                     SimulatorModalMotion recording = new SimulatorModalMotion("COA-8232", driver)) {
                     long actionBoundary = System.currentTimeMillis();
                     today.selectProgram("Keep It Hard");
                     today.waitForSelectedProgram("Keep It Hard");
@@ -132,7 +132,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
                 today.assertActiveProgramIsFirst("Last Longer");
                 SimulatorModalMotion.assertOrangeOutline(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES),
                         today.firstCardBounds(), driver.manage().window().getSize().width);
-                try (SimulatorModalMotion recording = new SimulatorModalMotion("COA-8231")) {
+                try (SimulatorModalMotion recording = new SimulatorModalMotion("COA-8231", driver)) {
                     today.selectProgram("Keep It Hard");
                     today.waitForSelectedProgram("Keep It Hard");
                     recording.finishRecording();
@@ -154,7 +154,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         prepare();
         today.openProgramSelector();
         Rectangle card = today.firstCardBounds();
-        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8228")) {
+        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8228", driver)) {
             today.swipeSelectorDown();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, false);
         }
@@ -175,7 +175,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         // Identity is read only after the existing fixture login verifies its email.
         String uid = SimulatorTestIdentity.currentUid();
         try (SimulatorAnalyticsEvidence analytics = new SimulatorAnalyticsEvidence("COA-8227", "ProgramModalOpen", uid);
-             SimulatorModalMotion motion = new SimulatorModalMotion("COA-8227")) {
+             SimulatorModalMotion motion = new SimulatorModalMotion("COA-8227", driver)) {
             today.openProgramSelector();
             Rectangle card = today.firstCardBounds();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, true);
@@ -192,7 +192,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         today.closeProgramSelector();
         today.openProgramSelector();
         Rectangle card = today.firstCardBounds();
-        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8229")) {
+        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8229", driver)) {
             today.closeProgramSelector();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, false);
         }

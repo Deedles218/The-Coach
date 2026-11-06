@@ -1,6 +1,8 @@
 package lib.ui.ios;
 
+import io.appium.java_client.HasSettings;
 import io.qameta.allure.Step;
+import lib.Platform;
 import lib.ui.SubscriptionPageObject;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -15,7 +17,8 @@ import java.util.Map;
 
 public class iOSSubscriptionPageObject extends SubscriptionPageObject {
     private static final String PAYWALL_MARKER =
-            "xpath://XCUIElementTypeStaticText[contains(@name,\"THE COACH'S HERE TO HELP\")]";
+            "xpath://XCUIElementTypeStaticText[contains(translate(@name, "
+                    + "'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),\"THE COACH'S HERE TO HELP\")]";
     private static final String TOP_PLAN =
             "xpath://XCUIElementTypeButton[@visible='true' and "
                     + ".//XCUIElementTypeStaticText[@name='One Month Plan']]";
@@ -29,10 +32,19 @@ public class iOSSubscriptionPageObject extends SubscriptionPageObject {
                     + "and contains(@name,'Privacy Policy') and contains(@name,'Terms of Service')]";
     private static final String TODAY_TAB = "id:Today";
     private static final String PREMIUM_MARKER = "id:PREMIUM SUBSCRIBER";
+    private static final String SANDBOX_ENVIRONMENT =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and (contains(@name,'Environment: Sandbox') "
+                    + "or @name='For testing purposes only. You will not be charged for confirming this purchase.')]";
+    private static final String PURCHASE_SUCCESS = "id:Your purchase was successful.";
+    private static final String STORE_PASSWORD = "xpath://XCUIElementTypeSecureTextField[@visible='true']";
+    private static final String TESTFLIGHT_AUTH_NOTICE =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,"
+                    + "'Beta testers are not charged for this In-App purchase')]";
 
     private static final String[] PURCHASE_SHEET_MARKERS = new String[]{
             "id:Subscribe",
             "id:Buy",
+            SANDBOX_ENVIRONMENT,
             "xpath://XCUIElementTypeSheet[@visible='true']",
             "xpath://XCUIElementTypeStaticText[@visible='true' and ("
                     + "contains(@name,'Confirm Your Subscription') "
@@ -42,7 +54,8 @@ public class iOSSubscriptionPageObject extends SubscriptionPageObject {
     private static final String[] PURCHASE_CONFIRM_BUTTONS = new String[]{
             "id:Subscribe",
             "id:Buy",
-            "id:Confirm"
+            "id:Confirm",
+            "xpath://XCUIElementTypeButton[@visible='true' and @label='Subscribe']"
     };
     private static final By TERMS_DESTINATION = By.xpath(
             "//XCUIElementTypeWebView[@visible='true'] "
@@ -104,31 +117,123 @@ public class iOSSubscriptionPageObject extends SubscriptionPageObject {
     @Step("Open iOS StoreKit sandbox purchase sheet")
     public void startPurchaseAndWaitForStore() {
         waitForElementAndClick(CONTINUE_BUTTON, "Cannot tap Continue on iOS paywall", 15);
-        waitForFirstElementPresent(
+        inSystemPurchaseWindow(() -> waitForFirstElementPresent(
                 PURCHASE_SHEET_MARKERS,
                 "iOS StoreKit purchase sheet did not open",
                 30
-        );
+        ));
     }
 
     @Override
     @Step("Confirm iOS StoreKit sandbox purchase")
     public void confirmTestPurchase() {
-        waitForFirstElementAndClick(
+        Assert.assertTrue("Confirming a test purchase requires explicit Sandbox and purchase flags",
+                Platform.getInstance().isStoreKitSandboxEnabled()
+                        && Platform.getInstance().isStoreKitPurchaseAllowed());
+        inSystemPurchaseWindow(() -> {
+            waitForElementPresent(SANDBOX_ENVIRONMENT,
+                    "Purchase was not confirmed: the native sheet does not identify a test purchase", 10);
+            waitForFirstElementAndClick(
                 PURCHASE_CONFIRM_BUTTONS,
                 "Cannot confirm StoreKit sandbox purchase. A real-device side-button or biometric confirmation may require manual test-lab support.",
                 20
-        );
+            );
+        });
+    }
+
+    private void inSystemPurchaseWindow(Runnable action) {
+        Object previous = activeApplication();
+        try {
+            activeApplication("com.apple.springboard");
+            action.run();
+        } finally {
+            activeApplication(previous == null ? "auto" : previous);
+        }
+    }
+
+    @Step("Verify selected StoreKit subscription explicitly offers a free trial")
+    public void assertFreeTrialIsOffered() {
+        inSystemPurchaseWindow(() -> {
+            try {
+                WebElement offer = waitForElementVisible(
+                    "xpath://XCUIElementTypeStaticText[@visible='true' and ("
+                            + "contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'free trial')"
+                            + " or contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'days free')"
+                            + " or contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'week free')"
+                            + " or contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'month free'))]",
+                    "The selected native StoreKit offer has no verified free trial; do not substitute a regular purchase", 10);
+                io.qameta.allure.Allure.addAttachment("Selected native StoreKit trial offer", normalizedText(offer));
+            } catch (RuntimeException | AssertionError failure) {
+                // Preserve the native offer before dismissing this unconfirmed
+                // test purchase. Do not leave StoreKit blocking the next case.
+                try {
+                    io.qameta.allure.Allure.addAttachment("Unverified trial offer before dismissal", "image/png",
+                            new java.io.ByteArrayInputStream(driver.getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
+                } catch (RuntimeException artifactFailure) {
+                    failure.addSuppressed(artifactFailure);
+                }
+                try {
+                    if (isElementVisible(SANDBOX_ENVIRONMENT) || isElementVisible(TESTFLIGHT_AUTH_NOTICE)) {
+                        waitForElementAndClick("id:dismiss", "Cannot dismiss the unconfirmed test-store offer", 5);
+                        waitForElementNotVisible(SANDBOX_ENVIRONMENT, "Test-store offer stayed visible", 10);
+                    }
+                } catch (RuntimeException | AssertionError cleanupFailure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+                throw failure;
+            }
+        });
+    }
+
+    @Override
+    @Step("Verify explicit premium subscriber status in iOS Profile")
+    public void assertPremiumAccessIsDisplayed() {
+        waitForElementVisible(PREMIUM_MARKER,
+                "Profile does not show the Premium Subscriber status after the test purchase", 30);
+    }
+
+    protected Object activeApplication() {
+        return ((HasSettings) driver).getSettings().get("defaultActiveApplication");
+    }
+
+    protected void activeApplication(Object application) {
+        ((HasSettings) driver).setSetting("defaultActiveApplication", application);
     }
 
     @Override
     @Step("Verify iOS premium access after purchase")
     public void assertPurchaseCompleted() {
-        waitForFirstElementPresent(
-                new String[]{TODAY_TAB, PREMIUM_MARKER},
-                "iOS purchase did not close the paywall and expose premium content",
-                45
-        );
+        final boolean[] passwordSubmitted = {false};
+        final boolean[] storeConfirmed = {false};
+        createWait(45).withMessage("iOS purchase did not close the paywall and expose premium content")
+                .until(ignored -> {
+                    inSystemPurchaseWindow(() -> {
+                        if (isElementVisible(STORE_PASSWORD) && isElementVisible("id:Sign In")) {
+                            Assert.assertFalse("TestFlight rejected the supplied Apple Account password", passwordSubmitted[0]);
+                            Assert.assertTrue("Unexpected store authentication prompt", isElementVisible(TESTFLIGHT_AUTH_NOTICE));
+                            Assert.assertTrue("Store authentication requires explicit test-purchase authorization",
+                                    Platform.getInstance().isStoreKitSandboxEnabled()
+                                            && Platform.getInstance().isStoreKitPurchaseAllowed());
+                            String password = System.getenv("COACH_STOREKIT_PASSWORD");
+                            Assert.assertTrue("TestFlight requires COACH_STOREKIT_PASSWORD from the test secret store",
+                                    password != null && !password.isEmpty());
+                            // Do not pass credentials through annotated helpers or Allure step parameters.
+                            waitForElementPresent(STORE_PASSWORD, "TestFlight password input disappeared", 5).sendKeys(password);
+                            waitForElementAndClick("id:Sign In", "Cannot authorize the test purchase", 5);
+                            passwordSubmitted[0] = true;
+                            waitForElementNotPresent(STORE_PASSWORD, "TestFlight did not accept the password", 20);
+                        }
+                        if (isElementVisible(PURCHASE_SUCCESS)) {
+                            waitForElementAndClick("id:OK", "Cannot acknowledge successful test purchase", 5);
+                            storeConfirmed[0] = true;
+                        }
+                    });
+                    return storeConfirmed[0] || isElementVisible(TODAY_TAB) || isElementVisible(PREMIUM_MARKER);
+                });
+        // A successful purchase may lead to a conditional workbook upsell before Today.
+        iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
+        onboarding.closePaywallsAndPopups();
+        onboarding.waitForToday();
     }
 
     @Override
@@ -197,6 +302,15 @@ public class iOSSubscriptionPageObject extends SubscriptionPageObject {
                 .until(webDriver -> isElementVisible(TODAY_TAB)
                         || isElementVisible(PREMIUM_MARKER)
                         || !driver.findElements(RESTORE_RESULT).isEmpty());
+        java.util.Set<String> observed = new java.util.LinkedHashSet<>();
+        for (WebElement result : driver.findElements(RESTORE_RESULT)) {
+            if (result.isDisplayed()) observed.add(normalizedText(result));
+        }
+        if (isElementVisible(PREMIUM_MARKER)) observed.add("Premium Subscriber is visible");
+        if (isElementVisible(TODAY_TAB)) observed.add("Today tab is visible");
+        String evidence = lib.TestData.sanitizeSensitiveData(String.join("\n", observed))
+                .replaceAll("(?i)[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", "[account]");
+        io.qameta.allure.Allure.addAttachment("Observed iOS Restore result", evidence);
     }
 
     private boolean termsDestinationIsVisible() {

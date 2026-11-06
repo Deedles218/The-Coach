@@ -31,6 +31,10 @@ public class OnboardingSlidesTests extends CoreTestCase {
         try (OnboardingSlidesPageObject slides = OnboardingSlidesPageObjectFactory.get(driver)) {
             OnboardingPageObject onboarding = OnboardingPageObjectFactory.get(driver);
             if (!Boolean.getBoolean("onboarding.slides.prepared")) {
+                if (lib.TestFlightHandoff.enabled()) {
+                    lib.TestFlightHandoff.perform(driver, "prepare-clean-rc");
+                    CoachFlowPageObjectFactory.get(driver).activateAppIfPossible();
+                }
                 onboarding.completeNewUserJourneyToPaywall(slides.goal());
             }
             slides.startMediaRecording();
@@ -89,6 +93,7 @@ public class OnboardingSlidesTests extends CoreTestCase {
 
     @Override
     protected void cleanupSessionForNextTest() {
+        lib.TestFlightHandoff.ensureRCIfEnabled(driver);
         // Preserve the newly completed anonymous identity so restart persistence can be inspected.
         // The existing-user method performs its normal project cleanup.
         if (driver != null && !Boolean.getBoolean("onboarding.slides.preserveSession")) {

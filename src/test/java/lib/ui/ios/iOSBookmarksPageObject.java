@@ -1,5 +1,7 @@
 package lib.ui.ios;
 
+import io.appium.java_client.HasSettings;
+import lib.Platform;
 import lib.ui.BookmarksPageObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -34,6 +36,53 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
 
     public iOSBookmarksPageObject(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    protected void selectRecurringDay(String expectedDay, boolean previous) {
+        for (int attempt = 0; attempt < 8 && !isElementVisible("id:leftSwitcherArrow"); attempt++) swipe("down");
+        // Repeated practices can be separated by several days (COA-9664).
+        new iOSProgramSelectorPageObject(driver).selectObservedDay(expectedDay);
+    }
+
+    @Override
+    @io.qameta.allure.Step("Save opened content in the Coach application")
+    public void saveOpenedContent() {
+        inCoachWindow(() -> {
+            new iOSCoachFlowPageObject(driver).tapHittableControl(new String[]{INACTIVE_BOOKMARK},
+                    "Inactive bookmark is not hittable in Coach", 10);
+            waitForElementNotVisible(INACTIVE_BOOKMARK, "Bookmark did not switch to active state", 15);
+            assertOpenedContentSaved();
+        });
+    }
+
+    @Override
+    protected void tapBookmarksEntry(String entry) {
+        inCoachWindow(() -> new iOSCoachFlowPageObject(driver).tapHittableControl(
+                new String[]{entry}, "Bookmarks entry is not hittable in Coach", 15));
+    }
+
+    private void inCoachWindow(Runnable action) {
+        HasSettings settings = (HasSettings) driver;
+        Object previous = settings.getSettings().get("defaultActiveApplication");
+        try {
+            settings.setSetting("defaultActiveApplication", Platform.getInstance().getIOSBundleId());
+            action.run();
+        } finally {
+            settings.setSetting("defaultActiveApplication", previous == null ? "auto" : previous);
+        }
+    }
+
+    @Override
+    public void openFromToday() {
+        try {
+            super.openFromToday();
+        } catch (org.openqa.selenium.TimeoutException failure) {
+            if (!new iOSCoachFlowPageObject(driver).returnFromExternalAppIfVisible()) throw failure;
+            io.qameta.allure.Allure.addAttachment("Observed external application interruption",
+                    "A recognized external application interrupted opening My Bookmarks; Coach was reactivated.");
+            super.openFromToday();
+        }
     }
 
     @Override
