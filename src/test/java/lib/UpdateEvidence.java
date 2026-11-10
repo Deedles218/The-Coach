@@ -3,6 +3,7 @@ package lib;
 import io.qameta.allure.Allure;
 import org.junit.Assert;
 import org.openqa.selenium.json.Json;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /** Read-only account evidence. The reader emits only UID and subscriptionActive. */
@@ -62,6 +64,63 @@ public final class UpdateEvidence {
             Map<String,Object> info = installedIOSMetadata();
             attachBuild("ios", (String)info.get("CFBundleShortVersionString"), (String)info.get("CFBundleVersion"));
         }
+    }
+
+    /** Read-only metadata for new mobile cases, including explicitly selected real devices. */
+    public static void attachInstalledBuild(RemoteWebDriver driver) throws Exception {
+        Platform platform = Platform.getInstance();
+        String udid = platform.isIOS() ? System.getProperty("ios.udid", System.getenv("IOS_UDID"))
+                : System.getProperty("android.udid", System.getenv("ANDROID_UDID"));
+        Assert.assertTrue("Installed-build evidence requires an explicitly selected device", udid != null && !udid.trim().isEmpty());
+        Object actual = driver.getCapabilities().getCapability("appium:udid");
+        if (actual == null) actual = driver.getCapabilities().getCapability("udid");
+        Assert.assertEquals("Metadata must come from the actual Appium device", udid, actual);
+        if (platform.isIOS() && udid.matches("[A-Fa-f0-9-]{36}")) {
+            attachInstalledBuild();
+        } else if (platform.isAndroid()) {
+            String adb = System.getenv("ADB") == null ? "adb" : System.getenv("ADB");
+            String dump = command(Arrays.asList(adb, "-s", udid, "shell", "dumpsys", "package", platform.getAndroidAppPackage()));
+            Map<String,String> info = androidInstalledBuild(dump);
+            attachBuild("android", info.get("version"), info.get("build"));
+        } else {
+            Path output = Files.createTempFile("coach-installed-ios-app-", ".json");
+            try {
+                command(Arrays.asList("xcrun", "devicectl", "device", "info", "apps", "--device", udid,
+                        "--bundle-id", platform.getIOSBundleId(), "--include-default-apps", "--json-output", output.toString()));
+                Map<String,Object> response = new Json().toType(new String(Files.readAllBytes(output), StandardCharsets.UTF_8), Map.class);
+                Map<String,String> info = iosDeviceInstalledBuild(response, platform.getIOSBundleId());
+                attachBuild("ios", info.get("version"), info.get("build"));
+            } finally {
+                Files.deleteIfExists(output);
+            }
+        }
+    }
+
+    public static Map<String,String> iosDeviceInstalledBuild(Map<String,Object> response, String expectedBundle) {
+        Assert.assertTrue("Device app metadata has no result object", response.get("result") instanceof Map);
+        Object apps = ((Map<?,?>) response.get("result")).get("apps");
+        Assert.assertTrue("Device app metadata must identify exactly one requested app", apps instanceof List && ((List<?>) apps).size() == 1);
+        Object app = ((List<?>) apps).get(0);
+        Assert.assertTrue("Device app metadata is not an app object", app instanceof Map);
+        Map<?,?> fields = (Map<?,?>) app;
+        Assert.assertEquals("Installed metadata belongs to another app", expectedBundle, fields.get("bundleIdentifier"));
+        return installedBuildValues(fields.get("version"), fields.get("bundleVersion"));
+    }
+
+    public static Map<String,String> androidInstalledBuild(String dump) {
+        java.util.regex.Matcher version = java.util.regex.Pattern.compile("versionName=([^\\s]+)").matcher(dump);
+        java.util.regex.Matcher build = java.util.regex.Pattern.compile("versionCode=([0-9]+)").matcher(dump);
+        Assert.assertTrue("Installed Android version name is absent", version.find());
+        Assert.assertTrue("Installed Android version code is absent", build.find());
+        return installedBuildValues(version.group(1), build.group(1));
+    }
+
+    private static Map<String,String> installedBuildValues(Object version, Object build) {
+        Assert.assertTrue("Installed application version is absent", version instanceof String && !((String)version).trim().isEmpty());
+        Assert.assertTrue("Installed application build is absent", build instanceof String && !((String)build).trim().isEmpty());
+        Map<String,String> result = new HashMap<>();
+        result.put("version", (String)version); result.put("build", (String)build);
+        return result;
     }
 
     public static void validateIOSBuild(Map<String, Object> info, String expectedBundle) {

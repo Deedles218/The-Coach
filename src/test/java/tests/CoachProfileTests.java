@@ -10,14 +10,28 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.PreparedMobileProfile;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 @Epic(value = "The Coach Profile")
 public class CoachProfileTests extends CoreTestCase {
+    private final boolean preparedProfile = Boolean.getBoolean("coach.profile.preparedProfile");
+    private boolean preservePreparedProfile;
+
+    @Before @Override public void setUp() throws Exception {
+        if (preparedProfile) PreparedMobileProfile.assertPreservationAllowed();
+        super.setUp();
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        if (!preservePreparedProfile) super.cleanupSessionForNextTest();
+    }
+
     @Test
     @Features(value = {@Feature(value = "Profile"), @Feature(value = "Authorization")})
     @DisplayName("COA-7205 Profile screen shows progress and settings blocks")
@@ -37,6 +51,7 @@ public class CoachProfileTests extends CoreTestCase {
     }
 
     @Test
+    @io.qameta.allure.Issue("COA-7204")
     @Features(value = {@Feature(value = "Profile"), @Feature(value = "Navigation")})
     @DisplayName("COA-8503 Profile can be opened from main tabs")
     @Description("Verifies Profile access from Today and Explore for an authorized existing-progress user.")
@@ -48,8 +63,13 @@ public class CoachProfileTests extends CoreTestCase {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
-        TestData.TestAccount account = TestData.existingProgressAccount();
-        coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        if (preparedProfile) {
+            preservePreparedProfile = true;
+            PreparedMobileProfile.verifyFromToday(coachFlow);
+        } else {
+            TestData.TestAccount account = TestData.existingProgressAccount();
+            coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
+        }
         coachFlow.assertProfileCanBeOpenedFromMainTabs();
     }
 

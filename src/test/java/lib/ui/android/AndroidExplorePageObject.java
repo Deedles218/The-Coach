@@ -1,19 +1,27 @@
 package lib.ui.android;
 
 import io.qameta.allure.Step;
+import lib.AppearanceSnapshot;
+import lib.DailyPlanCompletionMarker;
 import lib.Platform;
 import lib.ui.ExplorePageObject;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Explore contract for the configurable Android catalog shipped in 1.40.x.
@@ -49,10 +57,10 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     private static final String MASTER_CLASS_BANNER = "id:" + ID_PREFIX + "iv_banner";
     private static final String PRIVATE_COACHING_AVATAR = "id:" + ID_PREFIX + "iv_avatar";
     private static final String PRIVATE_COACHING_JOIN_BUTTON = "id:" + ID_PREFIX + "btn_join";
-
     private static final String CARD_TITLE_NODES =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_title']";
     private static final String EXPLORE_WEBVIEW = "xpath://android.webkit.WebView";
+    private static final String EXPLORE_TAB_WEBVIEW = "id:" + ID_PREFIX + "webview_container";
     private static final String VIDEO_PLAYER = "id:" + ID_PREFIX + "viewPlayer";
     private static final String VIDEO_PLAY_PAUSE_BUTTON = "id:" + ID_PREFIX + "exo_play_pause";
     private static final String TODAY_TAB = "id:" + ID_PREFIX + "nav_graph_daily";
@@ -131,18 +139,28 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     private static final String PROGRAM_TITLES = "xpath://*[@resource-id='"+ID_PREFIX+"rvActivePrograms']//*[@resource-id='"+ID_PREFIX+"tvTitle']";
     private boolean carousel(String locator,String direction) {
+        return carousel(locator, direction, .85);
+    }
+
+    private boolean carousel(String locator, String direction, double fraction) {
         WebElement collection=waitForElementVisible(locator,"Explore carousel absent",10);
         Map<String,Object> args=new HashMap<String,Object>();
-        args.put("elementId",((RemoteWebElement)collection).getId());args.put("direction",direction);args.put("percent",.85);
+        args.put("elementId",((RemoteWebElement)collection).getId());args.put("direction",direction);args.put("percent",fraction);
         boolean more=Boolean.TRUE.equals(((JavascriptExecutor)driver).executeScript("mobile: scrollGesture",args));
         final String[] previous={null};
         createWait(10).until(d -> {
-            StringBuilder current=new StringBuilder();
-            for(WebElement title:driver.findElements(getLocatorByString(PROGRAM_TITLES)))
-                current.append(title.getText()).append(title.getRect());
-            boolean stable=current.toString().equals(previous[0]);previous[0]=current.toString();return stable;
+            String current = visibleProgramViewport();
+            boolean stable = current.equals(previous[0]); previous[0] = current; return stable;
         });
         return more;
+    }
+
+    private String visibleProgramViewport() {
+        StringBuilder viewport = new StringBuilder();
+        for (WebElement title : driver.findElements(getLocatorByString(PROGRAM_TITLES))) {
+            viewport.append(title.getText()).append(title.getRect());
+        }
+        return viewport.toString();
     }
     @Override public List<String> getProgramNamesFromExplore() {
         scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
@@ -163,11 +181,20 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     }
     @Override public void assertCurrentSectionsAreDisplayed() { super.assertCurrentSectionsAreDisplayed(); }
     @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
+        assertAbsentAcrossExplore(this::assertRetiredSectionHeadingsAbsent);
+    }
+    @Override public void assertActiveProgramBlockIsAbsent() {
+        waitForElementVisible(CATALOG_CONTAINER, "Explore catalog is not displayed", 10);
+        String active = "xpath://android.widget.TextView[translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+                + "'abcdefghijklmnopqrstuvwxyz')='active program' or @text='Активная программа']";
+        assertAbsentAcrossExplore(() -> Assert.assertFalse("Active Program is visible on Explore", isElementVisible(active)));
+    }
+    private void assertAbsentAcrossExplore(Runnable assertion) {
         scrollUpToTop();
         for(int n=0;n<20;n++) {
-            assertRetiredSectionHeadingsAbsent();
+            assertion.run();
             if(!scrollExplore("down")) {
-                assertRetiredSectionHeadingsAbsent();scrollUpToTop();return;
+                assertion.run();scrollUpToTop();return;
             }
         }
         throw new AssertionError("Explore bottom was not reached; absence is not proven");
@@ -183,6 +210,10 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     }
     @Override public void assertMainProgramsRecommendedSection() {
         scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
+        assertBrowseProgramCardsPresent();
+    }
+
+    private void assertBrowseProgramCardsPresent() {
         Assert.assertFalse("Browse Programs has no cards",getElementAccessibleNames(PROGRAM_TITLES).isEmpty());
         WebElement image=waitForElementVisible("xpath://*[@resource-id='"+ID_PREFIX+"rvActivePrograms']//*[@resource-id='"+ID_PREFIX+"ivMainImage']","Program image absent",10);
         Assert.assertTrue("Program image is empty",image.getRect().width>0&&image.getRect().height>0);
@@ -243,12 +274,15 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         if (!isElementPresent(EXPLORE_TITLE)) {
             waitForElementAndClick(TAB_EXPLORE, "Cannot tap Android Explore tab", 15);
         }
+        waitForFirstElementPresent(new String[]{EXPLORE_TITLE, EXPLORE_TAB_WEBVIEW},
+                "Android Explore did not open", 20);
+        closeExploreTabWebViewIfPresent();
         waitForElementPresent(EXPLORE_TITLE, "Android Explore title is not displayed", 20);
         waitForElementPresent(CATALOG_CONTAINER, "Android Explore catalog did not load", 20);
         scrollUpToTop();
-        waitForElementPresent(
-                QUICK_TIPS_SECTION_TITLE,
-                "Android Explore remote-configured sections did not load",
+        waitForFirstElementPresent(
+                new String[]{BROWSE_PROGRAMS_TITLE, PROGRAM_TITLES},
+                "Android Explore program catalog did not load",
                 30
         );
     }
@@ -260,6 +294,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
      * current screen.
      */
     public void closeTransientDetailIfPresent() {
+        closeExploreTabWebViewIfPresent();
         if (isElementPresent(EXPLORE_TITLE)) {
             return;
         }
@@ -303,6 +338,16 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         }
     }
 
+    private boolean closeExploreTabWebViewIfPresent() {
+        if (isElementVisible(SELECTED_EXPLORE_TAB) && isElementVisible(EXPLORE_TAB_WEBVIEW)) {
+            // This destination is pushed onto Explore's own back stack and has no Close control.
+            driver.navigate().back();
+            waitForElementNotVisible(EXPLORE_TAB_WEBVIEW, "Android Explore WebView did not close", 10);
+            return true;
+        }
+        return false;
+    }
+
     @Step("Verify required configurable Explore sections")
     public void assertConfiguredSectionsAreDisplayed() {
         waitForElementPresent(EXPLORE_TITLE, "Explore title is not displayed", 10);
@@ -326,7 +371,112 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Verify Courses section is removed")
     public void assertCoursesSectionIsRemoved() {
-        assertRemovedCoursesAndPracticesAreAbsent();
+        assertAbsentAcrossExplore(() -> Assert.assertFalse("Courses is visible on Explore",
+                isElementVisible(sectionTitle("Courses"))));
+    }
+
+    @Step("Verify readable title, description and details on each Browse Programs card")
+    public void assertBrowseProgramsCardsAreReadable() {
+        scrollUpToTop();
+        assertBrowseProgramCardsPresent();
+        boolean atStart = false;
+        for (int swipe = 0; swipe < 15; swipe++) {
+            String before = visibleProgramViewport();
+            if (!carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "left") && before.equals(visibleProgramViewport())) {
+                atStart = true;
+                break;
+            }
+        }
+        Assert.assertTrue("Browse Programs did not return to its first card", atStart);
+        By cards = By.xpath("//*[@resource-id='" + ID_PREFIX + "rvActivePrograms']/android.view.ViewGroup");
+        List<WebElement> firstViewport = driver.findElements(cards);
+        Assert.assertFalse("Browse Programs has no rendered cards", firstViewport.isEmpty());
+        int fullCardWidth = firstViewport.get(0).getRect().width;
+        int viewportWidth = waitForElementVisible(LEGACY_ACTIVE_PROGRAMS_COLLECTION,
+                "Browse Programs carousel is absent", 10).getRect().width;
+        // Keep each move within the range in which the next card can fit completely.
+        double fraction = Math.max(.08, Math.min(.28, (viewportWidth - fullCardWidth) / (double) viewportWidth));
+        Set<String> seen = new LinkedHashSet<>();
+        Set<String> checked = new LinkedHashSet<>();
+        String previousViewport = null;
+        boolean endConfirmation = false;
+        boolean canScrollFurther = true;
+        for (int swipe = 0; swipe < 64; swipe++) {
+            StringBuilder viewport = new StringBuilder();
+            for (WebElement card : driver.findElements(cards)) {
+                List<WebElement> titles = card.findElements(By.id(ID_PREFIX + "tvTitle"));
+                String name = titles.isEmpty() ? "" : titles.get(0).getText();
+                Rectangle box = card.getRect();
+                viewport.append(name).append(box);
+                if (!name.trim().isEmpty()) seen.add(name);
+                if (box.width < fullCardWidth - 2) continue; // Adjacent cards are intentionally clipped by the carousel.
+                WebElement title = card.findElement(By.id(ID_PREFIX + "tvTitle"));
+                if (!checked.add(title.getText())) continue;
+                List<WebElement> fields = new ArrayList<>();
+                fields.add(title);
+                fields.add(card.findElement(By.id(ID_PREFIX + "tvDescription")));
+                for (String optional : new String[]{"tvTimeText", "tvExcerciceText"}) {
+                    for (WebElement field : card.findElements(By.id(ID_PREFIX + optional))) {
+                        if (field.isDisplayed()) fields.add(field);
+                    }
+                }
+                assertCardFieldsFit(box, fields.toArray(new WebElement[0]));
+            }
+            String currentViewport = viewport.toString();
+            boolean unchanged = currentViewport.equals(previousViewport);
+            if (unchanged && endConfirmation && !canScrollFurther) {
+                Assert.assertTrue("Browse Programs must display multiple readable cards", checked.size() > 1);
+                Assert.assertEquals("Not every visible card was verified at full width", seen, checked);
+                return;
+            }
+            // UiAutomator can report false while the last item is still only partly on screen.
+            // Confirm a stationary viewport with one larger gesture before accepting the end.
+            endConfirmation = unchanged;
+            previousViewport = currentViewport;
+            canScrollFurther = carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "right", endConfirmation ? .85 : fraction);
+        }
+        Assert.fail("Browse Programs carousel did not reach its last card; observed " + seen);
+    }
+
+    @Step("Verify the configured coaching card shows its image, title, expert and action")
+    public void assertCoachingCardIsReadable() throws IOException {
+        String title = System.getProperty("coach.explore.coaching.title", "Relationships: 1:1 Session");
+        String cardLocator = "xpath://*[@resource-id='" + ID_PREFIX + "catalogContainer']"
+                + "//androidx.cardview.widget.CardView[.//*[@resource-id='" + ID_PREFIX + "tv_title'"
+                + " and @text=" + xpathValue(title) + "]]";
+        scrollDownUntil(cardLocator, 8);
+        WebElement card = waitForElementVisible(cardLocator, "Configured coaching card is absent", 10);
+        Assert.assertEquals("The coaching title must identify one card", 1, getAmountElements(cardLocator));
+        WebElement author = card.findElement(By.id(ID_PREFIX + "tv_doctor"));
+        WebElement join = card.findElement(By.id(ID_PREFIX + "btn_join"));
+        Assert.assertEquals("The reviewed coaching expert text differs",
+                System.getProperty("coach.explore.coaching.expert", "Connell Barrett"), author.getText());
+        Assert.assertEquals("The coaching action differs",
+                System.getProperty("coach.explore.coaching.action", "JOIN"), join.getText());
+        Assert.assertTrue("The coaching action is disabled", join.isEnabled());
+        assertCardFieldsFit(card.getRect(), card.findElement(By.id(ID_PREFIX + "tv_title")), author, join);
+        WebElement image = card.findElement(By.id(ID_PREFIX + "iv_avatar"));
+        Assert.assertTrue("Coaching card image is absent", image.isDisplayed());
+        Assert.assertTrue("Coaching card image has not rendered", AppearanceSnapshot.hasVisibleContrast(
+                DailyPlanCompletionMarker.crop(driver.getScreenshotAs(OutputType.BYTES), image.getRect(),
+                        driver.manage().window().getSize().width)));
+    }
+
+    private void assertCardFieldsFit(Rectangle card, WebElement... fields) {
+        List<Rectangle> occupied = new ArrayList<>();
+        for (WebElement field : fields) {
+            Rectangle bounds = field.getRect();
+            Assert.assertTrue("Card text or control is empty", field.isDisplayed()
+                    && !field.getText().trim().isEmpty() && bounds.width > 0 && bounds.height > 0);
+            Assert.assertTrue("Card content extends outside its card", bounds.x >= card.x && bounds.y >= card.y
+                    && bounds.x + bounds.width <= card.x + card.width && bounds.y + bounds.height <= card.y + card.height);
+            for (Rectangle previous : occupied) {
+                Assert.assertFalse("Card content overlaps", bounds.x < previous.x + previous.width
+                        && previous.x < bounds.x + bounds.width && bounds.y < previous.y + previous.height
+                        && previous.y < bounds.y + bounds.height);
+            }
+            occupied.add(bounds);
+        }
     }
 
     @Step("Verify configured card templates and titles")
@@ -403,25 +553,63 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Open private coaching card and verify WebView")
     public void openPrivateCoachingAndVerifyWebView() {
-        scrollDownUntil(PRIVATE_COACHING_JOIN_BUTTON, 6);
+        String configuredTitle = System.getProperty("coach.explore.webview.title");
+        String cardAction = PRIVATE_COACHING_JOIN_BUTTON;
+        String heading = PRIVATE_COACHING_WEBVIEW;
+        String booking = PRIVATE_COACHING_BOOK_BUTTON;
+        if (configuredTitle == null) {
+            scrollDownUntil(cardAction, 6);
+        } else {
+            heading = webViewText(requiredWebViewFixture("heading"));
+            booking = webViewText(requiredWebViewFixture("action"));
+            cardAction = configuredWebViewCardAction(configuredTitle);
+        }
         // The Android Button is exposed as visible/enabled in the hierarchy,
         // but Appium's generic isEnabled() can briefly report false while the
         // horizontal RecyclerView finishes binding. Wait for visibility, then
         // use the semantic element click.
         WebElement joinButton = waitForElementPresent(
-                PRIVATE_COACHING_JOIN_BUTTON,
+                cardAction,
                 "Cannot find Private coaching session action",
                 10
         );
         joinButton.click();
         waitForElementPresent(EXPLORE_WEBVIEW, "Private coaching card did not open a WebView", 15);
-        waitForElementPresent(PRIVATE_COACHING_WEBVIEW, "Private coaching WebView content is not displayed", 15);
-        waitForElementPresent(PRIVATE_COACHING_BOOK_BUTTON, "Private coaching WebView booking action is not displayed", 15);
+        waitForElementPresent(heading, "Private coaching WebView content is not displayed", 15);
+        waitForElementPresent(booking, "Private coaching WebView booking action is not displayed", 15);
+    }
+
+    private String configuredWebViewCardAction(String title) {
+        String collection = sectionCards(requiredWebViewFixture("section"));
+        scrollDownUntil(collection, 8);
+        String action = collection + "//androidx.cardview.widget.CardView[.//*[@resource-id='"
+                + ID_PREFIX + "tv_title' and @text=" + xpathValue(title) + "]]"
+                + "//*[@resource-id='" + ID_PREFIX + "btn_join']";
+        for (int swipe = 0; swipe < 10 && carousel(collection, "left"); swipe++) {
+            // Start from the first card when Explore retains a horizontal offset.
+        }
+        for (int swipe = 0; swipe < 10 && !isElementVisible(action); swipe++) {
+            if (!carousel(collection, "right")) break;
+        }
+        return action;
+    }
+
+    private static String requiredWebViewFixture(String field) {
+        String value = System.getProperty("coach.explore.webview." + field);
+        Assert.assertTrue("Configure the reviewed WebView " + field, value != null && !value.trim().isEmpty());
+        return value;
+    }
+
+    private static String webViewText(String expected) {
+        String literal = xpathValue(expected);
+        return EXPLORE_WEBVIEW + "[@package='" + APP_PACKAGE + "']//*[@text=" + literal + " or @content-desc=" + literal + "]";
     }
 
     @Step("Close private coaching WebView")
     public void closePrivateCoachingWebView() {
-        waitForElementAndClick(DETAIL_CLOSE_BUTTON, "Cannot close private coaching WebView", 10);
+        if (!closeExploreTabWebViewIfPresent()) {
+            waitForElementAndClick(DETAIL_CLOSE_BUTTON, "Cannot close private coaching WebView", 10);
+        }
         waitForElementPresent(EXPLORE_TITLE, "Explore did not return after closing private coaching WebView", 10);
     }
 

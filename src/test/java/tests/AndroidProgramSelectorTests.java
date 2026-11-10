@@ -12,11 +12,26 @@ import java.util.*;
 public class AndroidProgramSelectorTests extends AndroidTestCase {
     private AndroidProgramSelectorPageObject today;
     private String original, day, progress;
+    private boolean preservePreparedProfile;
+
+    @Before @Override public void setUp() throws Exception {
+        if (Boolean.getBoolean("coach.selector.preparedProfile")) PreparedMobileProfile.assertPreservationAllowed();
+        super.setUp();
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        if (!preservePreparedProfile) super.cleanupSessionForNextTest();
+    }
+
     private void prepare() throws Exception {
         AndroidCoachFlowPageObject coach=new AndroidCoachFlowPageObject(driver);
         TestData.TestAccount account=TestData.existingProgressAccount();
         coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(),account.getOtp());
         Assert.assertEquals("Wrong selector account",System.getenv("COACH_EXPECTED_ACCOUNT_UID"),AndroidModuleEvidence.currentUid());
+        captureBaseline();
+    }
+
+    private void captureBaseline() {
         today=new AndroidProgramSelectorPageObject(driver); today.openTodayTab();
         original=today.getActiveProgramName();day=today.getCurrentDayLabel();progress=today.getProgramProgressValue();
     }
@@ -29,7 +44,17 @@ public class AndroidProgramSelectorTests extends AndroidTestCase {
         Assert.assertEquals("Original progress changed",progress,today.getProgramProgressValue());
     }
     private void scenario(RestoringTestAction.CheckedAction action) throws Exception {
-        prepare();
+        scenario(action, false);
+    }
+
+    private void scenario(RestoringTestAction.CheckedAction action, boolean readOnly) throws Exception {
+        if (readOnly && Boolean.getBoolean("coach.selector.preparedProfile")) {
+            preservePreparedProfile = true;
+            PreparedMobileProfile.verifyFromToday(new AndroidCoachFlowPageObject(driver));
+            captureBaseline();
+        } else {
+            prepare();
+        }
         RestoringTestAction.run(()-> {
             try { action.run(); }
             catch(Exception|AssertionError e) { captureFailureArtifacts(e,Description.createTestDescription(getClass(),"androidSelectorBeforeRestore"));throw e; }
@@ -61,11 +86,11 @@ public class AndroidProgramSelectorTests extends AndroidTestCase {
             try(AndroidModalMotion motion=new AndroidModalMotion(driver,"COA-8228")) {
                 today.swipeSelectorDown();motion.assertVerticalMotion(card,driver.manage().window().getSize().width,false);
             }
-        });
+        }, true);
     }
     @Test @Issue("COA-8230")
     public void testProgramsScrollVertically() throws Exception {
-        scenario(()-> { today.openProgramSelector();today.assertProgramsScrollVertically();today.closeProgramSelector(); });
+        scenario(()-> { today.openProgramSelector();today.assertProgramsScrollVertically();today.closeProgramSelector(); }, true);
     }
     @Test @Issue("COA-8231") @Issue("COA-8253")
     public void testActiveProgramIsFirstAfterSwitch() throws Exception {

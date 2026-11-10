@@ -22,10 +22,16 @@ public class TodayProgramSelectorTests extends CoreTestCase {
     private String activeProgram;
     private String sourceDay;
     private String sourceProgress;
+    private boolean preservePreparedProfile;
+
+    @Before @Override public void setUp() throws Exception {
+        if (Boolean.getBoolean("coach.selector.preparedProfile")) PreparedMobileProfile.assertPreservationAllowed();
+        super.setUp();
+    }
 
     @Override protected void cleanupSessionForNextTest() {
         if (today != null) today.dismissSelectorIfOpen();
-        super.cleanupSessionForNextTest();
+        if (!preservePreparedProfile) super.cleanupSessionForNextTest();
     }
 
     private void prepare() {
@@ -40,6 +46,18 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         today = new iOSProgramSelectorPageObject(driver);
         today.openTodayTab();
         activeProgram = today.getActiveProgramName();
+    }
+
+    private void prepareReadOnly() {
+        if (!Boolean.getBoolean("coach.selector.preparedProfile")) {
+            prepare();
+            return;
+        }
+        requireIOSPlatform();
+        preservePreparedProfile = true;
+        PreparedMobileProfile.verifyFromToday(CoachFlowPageObjectFactory.get(driver));
+        today = new iOSProgramSelectorPageObject(driver);
+        today.openTodayTab();
     }
 
     private void prepareProgramChange(String caseKey) throws Exception {
@@ -151,7 +169,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
 
     @Test @Issue("COA-8228")
     public void testCoa8228SwipeDownClosesSelector() throws Exception {
-        prepare();
+        prepareReadOnly();
         today.openProgramSelector();
         Rectangle card = today.firstCardBounds();
         try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8228")) {
@@ -162,7 +180,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
 
     @Test @Issue("COA-8230")
     public void testCoa8230ProgramsScrollVertically() {
-        prepare();
+        prepareReadOnly();
         today.openProgramSelector();
         today.assertProgramsScrollVertically();
         today.closeProgramSelector();
