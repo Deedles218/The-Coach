@@ -20,6 +20,7 @@ import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.Description;
 
 import java.util.Locale;
 import java.util.Map;
@@ -251,14 +252,44 @@ public class BookmarksTests extends CoreTestCase {
     public void deletingLastBookmarkShowsEmptyState() throws Exception {
         String tooltip = required("tooltipText");
         String lesson = required("lessonTitle");
-        prepare(UPDATE);
-        RestoringTestAction.run(() -> {
+        prepare(BASELINE);
+        bookmarks.openFromToday();
+        bookmarks.assertEmptyState();
+        bookmarks.backFromBookmarks();
+        runRestoringScenario("deleteLastBookmark", () -> {
+            prepareSavedContent(lesson, required("lessonFirstSlideText"));
             bookmarks.openFromToday();
+            bookmarks.assertCard(lesson);
+            bookmarks.dismissTooltipIfVisible(tooltip);
+            bookmarks.assertTooltipAbsent(tooltip);
+            io.qameta.allure.Allure.addAttachment("Last-bookmark fixture",
+                    "Initially empty BASELINE fixture; one lesson bookmark created through UI.");
             bookmarks.openRemovalDialog(lesson);
             bookmarks.confirmRemoval();
             bookmarks.assertEmptyState();
             bookmarks.assertTooltipAbsent(tooltip);
-        }, () -> prepareSavedContent(lesson, required("lessonFirstSlideText")));
+        }, () -> {
+            bookmarks.closeOpenedContentIfPresent();
+            bookmarks.openFromToday();
+            if (bookmarks.hasCard(lesson)) {
+                bookmarks.openRemovalDialog(lesson);
+                bookmarks.confirmRemoval();
+            }
+            bookmarks.assertEmptyState();
+        });
+    }
+
+    private void runRestoringScenario(String name, RestoringTestAction.CheckedAction action,
+                                      RestoringTestAction.CheckedAction restore) throws Exception {
+        RestoringTestAction.run(() -> {
+            try {
+                action.run();
+            } catch (Exception | AssertionError failure) {
+                captureFailureArtifacts(failure,
+                        Description.createTestDescription(getClass(), name + "BeforeRestore"));
+                throw failure;
+            }
+        }, restore);
     }
 
     @Test @Issue("COA-9657")
@@ -297,6 +328,7 @@ public class BookmarksTests extends CoreTestCase {
         prepare(fixtureRole("completionAccountRole", CONTENT));
         String program = optional("completionProgramTitle");
         selectFixtureProgram(program);
+        selectFixtureContentDay(optional("fixtureContentDay"));
         bookmarks.assertDailyPlanItemNotCompleted(lesson);
         prepareSavedContent(lesson, savedSlide);
         bookmarks.openFromToday();
@@ -324,10 +356,13 @@ public class BookmarksTests extends CoreTestCase {
     public void kegelAndKegelSportCannotBeBookmarked() {
         prepare(fixtureRole("kegelAccountRole", CONTENT));
         selectFixtureProgram(optional("kegelProgramTitle"));
+        selectFixtureContentDay(optional("fixtureContentDay"));
         bookmarks.openContentWithoutBookmarkFromToday(required("kegelTitle"));
+        bookmarks.assertNoPaywall();
         bookmarks.assertOpenedContentCannotBeSaved();
         bookmarks.closeOpenedContent();
         bookmarks.openContentWithoutBookmarkFromToday(required("kegelSportTitle"));
+        bookmarks.assertNoPaywall();
         bookmarks.assertOpenedContentCannotBeSaved();
     }
 
@@ -354,6 +389,7 @@ public class BookmarksTests extends CoreTestCase {
         String network = TestData.bookmarksNetworkLogPath();
         long checkpoint = BookmarksEvidence.checkpoint(network);
         selectFixtureProgram(optional("recurringProgramTitle"));
+        selectFixtureContentDay(recurring("programDay"));
         bookmarks.openContentFromToday(required("recurringPracticeTitle"));
         bookmarks.ensureOpenedContentIsNotSaved();
         bookmarks.swipeLeftToSlide(recurring("practiceSavedSlideText"));
@@ -370,11 +406,21 @@ public class BookmarksTests extends CoreTestCase {
         String savedDay = required("savedDayTitle");
         String previousDay = required("previousDayTitle");
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
+        selectFixtureProgram(optional("recurringProgramTitle"));
+        new iOSProgramSelectorPageObject(driver).selectObservedDay(savedDay);
         dailyPlan.assertCurrentDayMatches(savedDay);
+        bookmarks.assertDailyPlanItemNotCompleted(practice);
         bookmarks.assertRecurringPreviousDayFixture(practice, savedDay, previousDay);
+        // Bind the bookmark to the verified saved day on this dedicated fixture.
+        bookmarks.openContentFromToday(practice);
+        bookmarks.ensureOpenedContentIsNotSaved();
+        bookmarks.saveOpenedContent();
+        bookmarks.closeOpenedContent();
         bookmarks.openFromToday();
         bookmarks.openCard(practice);
         bookmarks.finishFromBookmarks(optional("recurringCompletionAnswer"));
+        bookmarks.backFromBookmarks();
+        dailyPlan.openTodayTab();
         dailyPlan.assertCurrentDayMatches(savedDay);
         bookmarks.assertDailyPlanItemCompleted(practice);
         bookmarks.assertPreviousDayItemNotCompleted(practice, previousDay);
@@ -441,13 +487,23 @@ public class BookmarksTests extends CoreTestCase {
     }
 
     @Test @Issue("COA-9667")
+    @io.qameta.allure.Description("Available lesson Save/open with configured access; defaults to the no-subscription fixture. An explicit active-subscription variant additionally requires Premium in Profile. Trial eligibility is not inferred from a paid subscription.")
     public void availableLessonCanBeBookmarkedWithoutSubscription() throws Exception {
-        prepare(NO_SUBSCRIPTION);
+        prepare(fixtureRole("availableAccountRole", NO_SUBSCRIPTION));
+        String accessVariant = optional("accessVariant");
+        if (accessVariant != null) {
+            Assert.assertEquals("Unsupported explicit access variant", "active-subscription", accessVariant);
+            coach.openProfile();
+            new lib.ui.ios.iOSSubscriptionPageObject(driver).assertPremiumAccessIsDisplayed();
+            coach.openToday();
+        }
+        io.qameta.allure.Allure.addAttachment("Bookmarks available-content access variant",
+                accessVariant == null ? "base/no-subscription fixture; content must be available before Save" : accessVariant);
         String lesson = required("lessonTitle");
         boolean[] createdByTest = {false};
         RestoringTestAction.run(() -> {
             bookmarks.openFromToday();
-            bookmarks.assertEmptyState();
+            bookmarks.assertCardAbsent(lesson);
             bookmarks.backFromBookmarks();
             openFixtureContentFromToday(lesson);
             bookmarks.assertNoPaywall();
@@ -468,7 +524,7 @@ public class BookmarksTests extends CoreTestCase {
                 bookmarks.openFromToday();
                 bookmarks.openRemovalDialog(lesson);
                 bookmarks.confirmRemoval();
-                bookmarks.assertEmptyState();
+                bookmarks.assertCardAbsent(lesson);
             }
         });
     }
@@ -524,7 +580,7 @@ public class BookmarksTests extends CoreTestCase {
         bookmarks.closeOpenedContent();
     }
 
-    private void openFixtureContentFromToday(String title) {
+    protected void openFixtureContentFromToday(String title) {
         if (bookmarks.isScreenVisible()) bookmarks.backFromBookmarks();
         coach.openToday();
         String program;
@@ -536,7 +592,18 @@ public class BookmarksTests extends CoreTestCase {
             program = optional("lessonProgramTitle");
         }
         selectFixtureProgram(program);
+        selectFixtureContentDay(optional("fixtureContentDay"));
         bookmarks.openContentFromToday(title);
+    }
+
+    private void selectFixtureContentDay(String day) {
+        if (day != null) {
+            Assert.assertTrue("Fixture content day must be a positive number", day.matches("[1-9][0-9]*"));
+            iOSProgramSelectorPageObject today = new iOSProgramSelectorPageObject(driver);
+            String current = today.getCurrentDayLabel().trim();
+            Assert.assertTrue("Unreadable fixture day: " + current, current.matches("(Day|Stage) [0-9]+( of [0-9]+)?"));
+            today.selectObservedDay(current.replaceFirst("[0-9]+", day));
+        }
     }
 
     protected void selectFixtureProgram(String program) {

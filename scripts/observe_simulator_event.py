@@ -6,6 +6,7 @@ the verified test UID. Persists only minimal non-credential evidence, never the
 event payload, user properties or raw analytics database.
 """
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -30,14 +31,24 @@ def validate_program_expectation(event, expected_program_id):
         raise RuntimeError("Expected program_id is supported only for ProgramModalSelect")
 
 
-def observe(database, expected_uid, event, output, timeout=40, expected_program_id=None):
+def observe(database, expected_uid, event, output, timeout=40, expected_program_id=None, snapshot=None):
     validate_program_expectation(event, expected_program_id)
-    connection = sqlite3.connect(Path(database).resolve().as_uri() + "?mode=ro", uri=True, timeout=2)
-    uid = connection.execute("SELECT value FROM store WHERE key='user_id'").fetchone()
-    if not uid or uid[0] != expected_uid:
-        connection.close()
-        raise RuntimeError("Analytics UID is not the expected dedicated test account")
-    baseline_rows = connection.execute("SELECT id,event FROM events").fetchall()
+    @contextmanager
+    def local_database():
+        yield database
+
+    def read_rows():
+        with (snapshot or local_database)() as current:
+            connection = sqlite3.connect(Path(current).resolve().as_uri() + "?mode=ro", uri=True, timeout=2)
+            try:
+                uid = connection.execute("SELECT value FROM store WHERE key='user_id'").fetchone()
+                if not uid or uid[0] != expected_uid:
+                    raise RuntimeError("Analytics UID is not the expected dedicated test account")
+                return connection.execute("SELECT id,event FROM events ORDER BY id").fetchall()
+            finally:
+                connection.close()
+
+    baseline_rows = read_rows()
     baseline = max((row[0] for row in baseline_rows), default=0)
     baseline_keys = {event_key(payload) for _, payload in baseline_rows}
     armed_at = int(time.time() * 1000)
@@ -48,8 +59,8 @@ def observe(database, expected_uid, event, output, timeout=40, expected_program_
         evidence["expectedEventProperties"] = {"program_id": expected_program_id}
         evidence["programIdMismatchCount"] = 0
     mismatched_keys = set()
-    config_db = Path(database).parent / "Application Support/Google/RemoteConfig/RemoteConfig.sqlite3"
-    if config_db.exists():
+    config_db = Path(database).parent / "Application Support/Google/RemoteConfig/RemoteConfig.sqlite3" if database else None
+    if config_db is not None and config_db.exists():
         config = sqlite3.connect(config_db.as_uri() + "?mode=ro", uri=True)
         try:
             row = config.execute("SELECT value FROM main_active WHERE key='abtest_complete_to_unlock_popup'").fetchone()
@@ -63,7 +74,7 @@ def observe(database, expected_uid, event, output, timeout=40, expected_program_
     try:
         while time.monotonic() < deadline:
             evidence["pollCount"] += 1
-            rows = connection.execute("SELECT id,event FROM events ORDER BY id").fetchall()
+            rows = read_rows()
             if not rows:
                 evidence["queueDrained"] = True
             for row_id, payload in rows:
@@ -101,14 +112,16 @@ def observe(database, expected_uid, event, output, timeout=40, expected_program_
             time.sleep(0.01)
         return False
     finally:
-        connection.close()
         Path(output).parent.mkdir(parents=True, exist_ok=True)
         Path(output).write_text(json.dumps(evidence, indent=2) + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--database", required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--database")
+    source.add_argument("--device")
+    parser.add_argument("--bundle")
     parser.add_argument("--output", required=True)
     parser.add_argument("--event", choices=["ToolTipPostponeActivity shown", "ProgramModalOpen", "ProgramModalSelect"], required=True)
     parser.add_argument("--expected-program-id", help="Exact event_properties.program_id for ProgramModalSelect")
@@ -116,6 +129,12 @@ def main():
     uid = os.environ.get("COACH_EXPECTED_ANALYTICS_UID")
     if not uid:
         raise RuntimeError("Expected test UID is required")
+    if args.device:
+        from ios_device_evidence import amplitude_snapshot, validate_device
+        validate_device(args.device, args.bundle)
+        return 0 if observe(None, uid, args.event, args.output,
+                            expected_program_id=args.expected_program_id,
+                            snapshot=lambda: amplitude_snapshot(args.device, args.bundle)) else 1
     return 0 if observe(args.database, uid, args.event, args.output,
                         expected_program_id=args.expected_program_id) else 1
 

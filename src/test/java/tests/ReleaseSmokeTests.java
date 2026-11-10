@@ -21,14 +21,13 @@ import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.factories.DailyPlanPageObjectFactory;
 import lib.ui.factories.ExplorePageObjectFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 @Epic(value = "The Coach Release Smoke")
 public class ReleaseSmokeTests extends CoreTestCase {
     @Test
     @Features(value = {@Feature(value = "Navigation"), @Feature(value = "Main tabs")})
-    @Issue("COA-8178")
+    @Issue("COA-9757")
     @DisplayName("Release smoke: Today, Explore and Shop are the only main tabs")
     @Description("Verifies the authorized app exposes the current three-tab navigation and that Today, Explore and Shop open successfully. Feed is not part of the release smoke contract.")
     @Step("Start test testMainThreeTabNavigation")
@@ -101,7 +100,6 @@ public class ReleaseSmokeTests extends CoreTestCase {
     }
 
     @Test
-    @Ignore("Blocked until the dedicated no-PDF entitlement account and fixture are provisioned")
     @Features(value = {@Feature(value = "My Workbook"), @Feature(value = "PDF paywall")})
     @Issue("COA-8870")
     @DisplayName("Release smoke: My Workbook shows PDF paywall for a non-entitled user")
@@ -128,6 +126,10 @@ public class ReleaseSmokeTests extends CoreTestCase {
     @Severity(value = SeverityLevel.BLOCKER)
     public void testUpdatePreservesAuthorizationAndProgress() throws Exception {
         requireIOSPlatform();
+        if (lib.TestFlightHandoff.enabled()) {
+            updateThroughTestFlight();
+            return;
+        }
 
         requireUpdateConfiguration();
         java.util.Map<String,Object> oldBuild = UpdateEvidence.iosBuild(Platform.getInstance().getIOSAppPath());
@@ -165,10 +167,51 @@ public class ReleaseSmokeTests extends CoreTestCase {
         UpdateEvidence.attachBuild("ios after update", (String)newBuild.get("CFBundleShortVersionString"), (String)newBuild.get("CFBundleVersion"));
     }
 
+    private void updateThroughTestFlight() throws Exception {
+        lib.RestoringTestAction.run(() -> {
+            lib.TestFlightHandoff.perform(driver, "install-previous");
+            TestData.TestAccount account = TestData.existingProgressAccount();
+            CoachFlowPageObject coach = authorizedCoachFlow(account);
+            lib.ui.ios.iOSCoachFlowPageObject identity = (lib.ui.ios.iOSCoachFlowPageObject) coach;
+            lib.ui.ios.iOSSubscriptionPageObject subscription = new lib.ui.ios.iOSSubscriptionPageObject(driver);
+            coach.openProfile();
+            identity.assertAuthenticatedProfileForEmail(account.getEmail());
+            subscription.assertPremiumAccessIsDisplayed();
+            String beforeUid = lib.SimulatorTestIdentity.currentUid();
+            coach.openToday();
+            DailyPlanPageObject today = DailyPlanPageObjectFactory.get(driver);
+            String program = today.getActiveProgramName();
+            String day = today.getCurrentDayLabel();
+            String progress = today.getProgramProgressValue();
+
+            lib.TestFlightHandoff.perform(driver, "install-rc");
+            coach.activateAppIfPossible();
+            coach.closePdfGuideUpsellIfPresent();
+            coach.closeNotificationPromptIfPresent();
+            coach.closeConnectEmailPromptIfPresent();
+            coach.waitForAuthorizedDashboard();
+            coach.assertAuthorizedDashboardIsDisplayed();
+            coach.openToday();
+            coach.assertMainTabsAreDisplayed();
+            today.assertDailyPlanDaySwitcherIsDisplayed();
+            Assert.assertEquals("TestFlight update changed selected program", program, today.getActiveProgramName());
+            Assert.assertEquals("TestFlight update changed viewed day", day, today.getCurrentDayLabel());
+            Assert.assertEquals("TestFlight update changed progress", progress, today.getProgramProgressValue());
+            today.assertDailyPracticeIsDisplayed();
+            coach.openProfile();
+            identity.assertAuthenticatedProfileForEmail(account.getEmail());
+            subscription.assertPremiumAccessIsDisplayed();
+            Assert.assertTrue("TestFlight update changed the UI-verified account UID",
+                    beforeUid.equals(lib.SimulatorTestIdentity.currentUid()));
+            io.qameta.allure.Allure.addAttachment("Physical update account and progress verification",
+                    "Verified account UID unchanged; Premium Subscriber visible before and after update."
+                            + "\nProgram=" + program + "\nDay=" + day + "\nProgress=" + progress);
+        }, () -> lib.TestFlightHandoff.perform(driver, "ensure-rc"));
+    }
+
     private CoachFlowPageObject authorizedCoachFlow(TestData.TestAccount account) {
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
-        TestData.deterministicFixture();
         coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         return coachFlow;
     }

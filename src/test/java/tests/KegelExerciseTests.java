@@ -44,6 +44,7 @@ public class KegelExerciseTests extends CoreTestCase {
         coachFlow.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         verifyAndroidMutableFixture();
         dailyPlan.openTodayTab();
+        prepareKegelProgram();
         dailyPlan.openKegelExerciseFromDailyPlan();
         dailyPlan.assertKegelStartScreenIsDisplayed();
         dailyPlan.startKegelExercise();
@@ -105,12 +106,24 @@ public class KegelExerciseTests extends CoreTestCase {
             @Feature(value = "Exercise intensity")
     })
     @DisplayName("Kegel completion feedback allows changing exercise intensity")
-    @Description("Checks all post-workout intensity options and selects Too Hard when completion feedback is available for the progress account.")
+    @Description("Checks all post-workout intensity options and selects Too Hard. An explicitly enabled disposable fixture completes a workout first when feedback is not already present.")
     @Step("Start test test04KegelCompletionIntensityCanBeChanged")
     @Severity(value = SeverityLevel.NORMAL)
     public void test04KegelCompletionIntensityCanBeChanged() {
         DailyPlanPageObject dailyPlan = openDailyPlan();
 
+        if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()
+                && Boolean.getBoolean("coach.kegel.completeWorkoutForFeedback")) {
+            // Opt in only for a disposable fixture: completing the workout
+            // changes its progress and the selected feedback changes intensity.
+            dailyPlan.openKegelExerciseFromDailyPlan();
+            dailyPlan.assertKegelStartScreenIsDisplayed();
+            dailyPlan.startKegelExercise();
+            dailyPlan.assertKegelPlayerIsDisplayed();
+            dailyPlan.closeKegelPlayerInstructionsIfPresent();
+            dailyPlan.createWait(300).withMessage("Completed workout did not show intensity feedback")
+                    .until(d -> dailyPlan.isKegelCompletionIntensityFeedbackDisplayed());
+        }
         Assert.assertTrue(
                 "Kegel completion intensity feedback is not available for the current progress-account state.",
                 dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()
@@ -126,7 +139,7 @@ public class KegelExerciseTests extends CoreTestCase {
             @Feature(value = "Exercise instruction")
     })
     @DisplayName("Kegel exercise instruction shows steps and supports intensity selection")
-    @Description("Opens an exercise instruction, verifies its image, title, three steps, and adjust controls, changes intensity, restores it, and returns to the Kegel start page.")
+    @Description("Opens an exercise instruction, verifies its image, title, reviewed step count, and adjust controls, changes intensity, restores it, and returns to the Kegel start page.")
     @Step("Start test test05KegelExerciseInstructionPages")
     @Severity(value = SeverityLevel.CRITICAL)
     public void test05KegelExerciseInstructionPages() {
@@ -134,6 +147,10 @@ public class KegelExerciseTests extends CoreTestCase {
 
         dailyPlan.openFirstKegelExerciseInstruction();
         dailyPlan.assertKegelExerciseInstructionIsDisplayed();
+        if (Boolean.getBoolean("coach.kegel.inspectInstruction")) {
+            io.qameta.allure.Allure.addAttachment("Regular Kegel instruction reference", "application/xml",
+                    TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+        }
         dailyPlan.selectNextKegelExerciseInstructionIntensity();
         dailyPlan.restorePreviousKegelExerciseInstructionIntensity();
         dailyPlan.returnFromKegelExerciseInstruction();
@@ -175,8 +192,16 @@ public class KegelExerciseTests extends CoreTestCase {
         verifyAndroidMutableFixture();
         if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()) {
             dailyPlan.openTodayTab();
+            prepareKegelProgram();
         }
         return dailyPlan;
+    }
+
+    private void prepareKegelProgram() {
+        String program = System.getProperty("coach.kegelPlayer.program");
+        if (Platform.getInstance().isIOS() && program != null && !program.trim().isEmpty()) {
+            new lib.ui.ios.iOSProgramSelectorPageObject(driver).ensureWorkoutProgramSelected(program.trim());
+        }
     }
     private void verifyAndroidMutableFixture() {
         if (!Platform.getInstance().isAndroid()) return;

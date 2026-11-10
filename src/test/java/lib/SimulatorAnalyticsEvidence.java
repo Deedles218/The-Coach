@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/** Local iOS-Simulator evidence source; never accepts a pre-existing log file. */
+/** Fresh local iOS evidence source; never accepts a pre-existing log file. */
 public final class SimulatorAnalyticsEvidence implements AutoCloseable {
     private final Process observer;
     private final Path evidence;
@@ -40,8 +40,16 @@ public final class SimulatorAnalyticsEvidence implements AutoCloseable {
         Assert.assertNotNull("Fresh analytics verification needs the dedicated fixture UID", uid);
         evidence = Paths.get("target", "test-model-evidence", caseKey + "-" + System.currentTimeMillis(), "analytics.json");
         ProcessBuilder builder = new ProcessBuilder("python3", "scripts/observe_simulator_event.py",
-                "--database", SimulatorTestIdentity.databasePath().toString(),
                 "--event", event, "--output", evidence.toString()).redirectErrorStream(true);
+        if (SimulatorTestIdentity.isPhysicalDevice()) {
+            builder.command().add("--device");
+            builder.command().add(SimulatorTestIdentity.deviceUdid());
+            builder.command().add("--bundle");
+            builder.command().add(Platform.getInstance().getIOSBundleId());
+        } else {
+            builder.command().add("--database");
+            builder.command().add(SimulatorTestIdentity.databasePath().toString());
+        }
         if (expectedProgramId != null) {
             builder.command().add("--expected-program-id");
             builder.command().add(expectedProgramId);
@@ -52,7 +60,8 @@ public final class SimulatorAnalyticsEvidence implements AutoCloseable {
         try {
             Future<String> ready = reader.submit(() -> new BufferedReader(new InputStreamReader(
                     observer.getInputStream(), StandardCharsets.UTF_8)).readLine());
-            Assert.assertEquals("Analytics observer failed to arm", "READY", ready.get(10, TimeUnit.SECONDS));
+            Assert.assertEquals("Analytics observer failed to arm", "READY", ready.get(
+                    SimulatorTestIdentity.isPhysicalDevice() ? 25 : 10, TimeUnit.SECONDS));
         } catch (Throwable failure) {
             observer.destroyForcibly();
             throw failure;
@@ -62,10 +71,11 @@ public final class SimulatorAnalyticsEvidence implements AutoCloseable {
     }
 
     public void assertObserved() throws Exception {
-        Assert.assertTrue("Analytics observer did not finish", observer.waitFor(45, TimeUnit.SECONDS));
+        Assert.assertTrue("Analytics observer did not finish", observer.waitFor(
+                SimulatorTestIdentity.isPhysicalDevice() ? 65 : 45, TimeUnit.SECONDS));
         if (Files.exists(evidence)) {
             try (java.io.InputStream data = Files.newInputStream(evidence)) {
-                Allure.addAttachment("Fresh simulator analytics evidence", "application/json", data, "json");
+                Allure.addAttachment("Fresh iOS analytics evidence", "application/json", data, "json");
             }
         }
         Assert.assertEquals("Current-run analytics event was not observed; see " + evidence,

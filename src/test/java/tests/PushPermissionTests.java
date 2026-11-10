@@ -54,7 +54,7 @@ public class PushPermissionTests extends CoreTestCase {
         String appPath = Platform.getInstance().getIOSAppPath();
         Assert.assertTrue(
                 "A real reinstall requires -Dios.app=/path/to/The-Coach.app or IOS_APP",
-                appPath != null && !appPath.trim().isEmpty()
+                lib.TestFlightHandoff.enabled() || appPath != null && !appPath.trim().isEmpty()
         );
         Assert.assertTrue("The current driver must support app install/remove", driver instanceof InteractsWithApps);
 
@@ -64,13 +64,14 @@ public class PushPermissionTests extends CoreTestCase {
         allowInAppAndSystemPermission(coachFlow);
 
         InteractsWithApps apps = (InteractsWithApps) driver;
-        apps.terminateApp(Platform.getInstance().getIOSBundleId());
-        Assert.assertTrue(
-                "The existing app could not be removed before reinstall",
-                apps.removeApp(Platform.getInstance().getIOSBundleId())
-        );
-        apps.installApp(appPath);
-
+        if (lib.TestFlightHandoff.enabled()) {
+            lib.TestFlightHandoff.perform(driver, "reinstall-rc");
+        } else {
+            apps.terminateApp(Platform.getInstance().getIOSBundleId());
+            Assert.assertTrue("The existing app could not be removed before reinstall",
+                    apps.removeApp(Platform.getInstance().getIOSBundleId()));
+            apps.installApp(appPath);
+        }
         apps.activateApp(Platform.getInstance().getIOSBundleId());
         coachFlow.waitForStartScreen();
         coachFlow.assertStartButtonIsEnabled();
@@ -104,6 +105,10 @@ public class PushPermissionTests extends CoreTestCase {
     }
 
     private void requireCleanInstallConfiguration() {
+        if (lib.TestFlightHandoff.enabled()) {
+            lib.TestFlightHandoff.perform(driver, "prepare-clean-rc");
+            return;
+        }
         Assert.assertTrue(
                 "Push permission suite requires -Dios.fullReset=true and -Dios.noReset=false (or IOS_FULL_RESET=true / IOS_NO_RESET=false)",
                 Platform.getInstance().isCleanInstallConfigured()
@@ -112,5 +117,10 @@ public class PushPermissionTests extends CoreTestCase {
                 "A clean-install permission test requires the app artifact: set -Dios.app=/path/to/The-Coach.app or IOS_APP",
                 Platform.getInstance().getIOSAppPath() != null && !Platform.getInstance().getIOSAppPath().trim().isEmpty()
         );
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        lib.TestFlightHandoff.ensureRCIfEnabled(driver);
+        super.cleanupSessionForNextTest();
     }
 }

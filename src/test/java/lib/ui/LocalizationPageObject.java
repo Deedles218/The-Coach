@@ -35,13 +35,17 @@ public class LocalizationPageObject extends MainPageObject {
         String country = fixture.region(language);
         if (android) {
             LocalizationDeviceState.setAndroidLocale(language, country);
-        } else {
+        } else if (!LocalizationDeviceState.usesIOSLaunchArguments()) {
             Map<String, Object> args = new HashMap<>();
             args.put("language", Collections.singletonMap("name", language));
             args.put("locale", Collections.singletonMap("name", language + "_" + country));
             driver.executeScript("mobile: configureLocalization", args);
         }
         this.language = expectedAppLanguage;
+        if (LocalizationDeviceState.usesIOSLaunchArguments()) {
+            Assert.assertEquals("Process launch cannot test an explicit app/system language conflict",
+                    language, expectedAppLanguage);
+        }
         restart();
     }
 
@@ -49,7 +53,25 @@ public class LocalizationPageObject extends MainPageObject {
         InteractsWithApps apps = (InteractsWithApps) driver;
         String id = android ? Platform.getInstance().getAndroidAppPackage() : Platform.getInstance().getIOSBundleId();
         apps.terminateApp(id);
-        apps.activateApp(id);
+        if (LocalizationDeviceState.usesIOSLaunchArguments()) {
+            Map<String,Object> args = new HashMap<>();
+            args.put("bundleId",id);
+            args.put("arguments",Arrays.asList("-AppleLanguages","(" + language + ")",
+                    "-NSLanguages","(" + language + ")","-AppleLocale",language + "_" + fixture.region(language)));
+            driver.executeScript("mobile: launchApp",args);
+        } else apps.activateApp(id);
+    }
+
+    public void restoreProcessLanguage() {
+        if (!LocalizationDeviceState.usesIOSLaunchArguments()) return;
+        String id = Platform.getInstance().getIOSBundleId();
+        ((InteractsWithApps)driver).terminateApp(id);
+        Map<String,Object> args = new HashMap<>();
+        args.put("bundleId",id);
+        args.put("arguments",Collections.emptyList());
+        driver.executeScript("mobile: launchApp",args);
+        io.qameta.allure.Allure.addAttachment("Localization process restoration",
+                "App relaunched with empty process arguments; system/app language preferences were not changed.");
     }
 
     private String androidId(String suffix) {

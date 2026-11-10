@@ -19,6 +19,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 @Epic("Daily Plan")
 @Feature("COA-9549 program switch tooltip")
 public class ProgramSwitchFeatureTests extends CoreTestCase {
+    private boolean physicalFreshPrepared;
     @Override
     protected RemoteWebDriver createDriver() throws Exception {
         Platform platform = Platform.getInstance();
@@ -30,11 +31,17 @@ public class ProgramSwitchFeatureTests extends CoreTestCase {
                 platform.isAndroid() ? platform.isFreshAndroidInstallConfigured()
                         : (platform.isCleanInstallConfigured() && platform.getIOSAppPath() != null)
                             || Boolean.getBoolean("coach.program.freshStartPrepared")
-                            || Boolean.getBoolean("coach.program.preparedToday"));
+                            || Boolean.getBoolean("coach.program.preparedToday")
+                            || (lib.TestFlightHandoff.enabled() && platform.isTestFlightAttachConfigured()));
         return super.createDriver();
     }
 
     private ProgramSwitchFeaturePageObject completeFirstItem() {
+        if (lib.TestFlightHandoff.enabled() && !physicalFreshPrepared) {
+            lib.TestFlightHandoff.perform(driver, "prepare-clean-rc");
+            lib.ui.factories.CoachFlowPageObjectFactory.get(driver).activateAppIfPossible();
+            physicalFreshPrepared = true;
+        }
         OnboardingGoal goal = OnboardingGoal.fromConfiguredValue(Platform.getInstance().getOnboardingGoal());
         if (Platform.getInstance().isIOS() && Boolean.getBoolean("coach.program.preparedToday")) {
             // A TestFlight installation can be prepared as a new 0-progress
@@ -104,18 +111,28 @@ public class ProgramSwitchFeatureTests extends CoreTestCase {
     @Test @Issue("COA-9549")
     public void testFirstTooltipForFreshAnonymousAccountAfterReinstall() {
         Platform platform = Platform.getInstance();
-        Assert.assertNotNull("Automated reinstall requires -Dios.app or -Dandroid.app; "
-                + "TestFlight-only installs need a manual reinstall protocol", platform.isAndroid()
-                ? platform.getAndroidAppPath() : platform.getIOSAppPath());
+        if (!lib.TestFlightHandoff.enabled()) {
+            Assert.assertNotNull("Automated reinstall requires -Dios.app or -Dandroid.app", platform.isAndroid()
+                    ? platform.getAndroidAppPath() : platform.getIOSAppPath());
+        }
         ProgramSwitchFeaturePageObject flow = completeFirstItem();
         flow.dismissFirstTooltip();
         Assert.assertTrue("Reinstall requires an Appium mobile driver", driver instanceof InteractsWithApps);
         String appId = platform.isAndroid() ? platform.getAndroidAppPackage() : platform.getIOSBundleId();
         String appPath = platform.isAndroid() ? platform.getAndroidAppPath() : platform.getIOSAppPath();
         InteractsWithApps apps = (InteractsWithApps) driver;
-        Assert.assertTrue("Could not uninstall feature build", apps.removeApp(appId));
-        apps.installApp(appPath);
+        if (lib.TestFlightHandoff.enabled()) {
+            lib.TestFlightHandoff.perform(driver, "reinstall-rc");
+        } else {
+            Assert.assertTrue("Could not uninstall feature build", apps.removeApp(appId));
+            apps.installApp(appPath);
+        }
         apps.activateApp(appId);
         completeFirstItem();
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        lib.TestFlightHandoff.ensureRCIfEnabled(driver);
+        super.cleanupSessionForNextTest();
     }
 }

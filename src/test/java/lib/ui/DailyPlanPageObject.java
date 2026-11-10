@@ -610,12 +610,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         this.waitForElementPresent(PRACTICE_SCREEN_GOAL_TITLE, "Kegel goal title is not displayed", 10);
         this.waitForElementPresent(KEGEL_START_SCREEN_DESCRIPTION, "Kegel goal description is not displayed", 10);
         this.waitForElementPresent(PRACTICE_SCREEN_EXERCISES_TITLE, "Kegel exercises title is not displayed", 10);
-        this.waitForElementPresent(KEGEL_START_SCREEN_STRETCHING_TITLE, "Kegel stretching option is not displayed", 10);
-        this.waitForElementPresent(
-                KEGEL_START_SCREEN_STRETCHING_DESCRIPTION,
-                "Kegel stretching explanation is not displayed",
-                10
-        );
+        this.assertKegelStretchingInformation();
         this.waitForElementPresent(KEGEL_START_SCREEN_EXERCISE_TITLE, "Kegel exercise title is not displayed", 10);
         Assert.assertTrue(
                 "Kegel start screen should contain more than one exercise",
@@ -624,6 +619,15 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         Assert.assertTrue(
                 "Kegel exercise intensity and duration metadata is not displayed",
                 this.getAmountElements(KEGEL_START_SCREEN_EXERCISE_METADATA) > 0
+        );
+    }
+
+    protected void assertKegelStretchingInformation() {
+        this.waitForElementPresent(KEGEL_START_SCREEN_STRETCHING_TITLE, "Kegel stretching option is not displayed", 10);
+        this.waitForElementPresent(
+                KEGEL_START_SCREEN_STRETCHING_DESCRIPTION,
+                "Kegel stretching explanation is not displayed",
+                10
         );
     }
 
@@ -644,18 +648,27 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Verify Kegel exercise instruction page")
     public void assertKegelExerciseInstructionIsDisplayed() {
+        int expectedSteps = Integer.getInteger("coach.kegel.instructionStepCount", 3);
+        Assert.assertTrue("Configure a reviewed instruction step count between 1 and 10",
+                expectedSteps > 0 && expectedSteps <= 10);
         this.waitForElementPresent(KEGEL_INSTRUCTION_BACK_BUTTON, "Kegel instruction back button is not displayed", 10);
         this.waitForElementPresent(KEGEL_INSTRUCTION_TITLE, "Kegel instruction exercise title is not displayed", 10);
+        String expectedTitle = System.getProperty("coach.kegel.instructionTitle");
+        if (expectedTitle != null) {
+            Assert.assertEquals("Instruction fixture belongs to a different exercise", expectedTitle,
+                    getElementAccessibleName(waitForElementPresent(KEGEL_INSTRUCTION_TITLE,
+                            "Kegel instruction exercise title is not displayed", 10)));
+        }
         this.waitForElementPresent(KEGEL_INSTRUCTION_IMAGE, "Kegel instruction image is not displayed", 10);
         this.waitForElementPresent(KEGEL_INSTRUCTION_HEADING, "Kegel instruction heading is not displayed", 10);
         Assert.assertEquals(
-                "Kegel instruction should contain three numbered steps",
-                3,
+                "Kegel instruction should contain the reviewed number of steps",
+                expectedSteps,
                 this.getAmountElements(KEGEL_INSTRUCTION_STEP_NUMBERS)
         );
         Assert.assertEquals(
-                "Kegel instruction should contain text for all three steps",
-                3,
+                "Kegel instruction should contain text for every reviewed step",
+                expectedSteps,
                 this.getAmountElements(KEGEL_INSTRUCTION_STEP_TEXTS)
         );
         this.waitForElementPresent(KEGEL_INSTRUCTION_ADJUST_HEADING, "Kegel instruction adjust heading is not displayed", 10);
@@ -672,7 +685,8 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Cannot get current Kegel instruction intensity",
                 10
         );
-        String selectionOrder = "HARD".equals(currentIntensity) ? "previous" : "next";
+        String selectionOrder = ("HARD".equals(currentIntensity) || "VERY HARD".equals(currentIntensity))
+                ? "previous" : "next";
         this.instructionIntensityRestoreOrder = "next".equals(selectionOrder) ? "previous" : "next";
         this.tapElementCenter(
                 KEGEL_INSTRUCTION_INTENSITY_VALUE,
@@ -1385,17 +1399,20 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Cannot tap Daily Plan right arrow",
                 10
         );
-        if (this.isLockedNextDayPopupDisplayed()) {
-            this.closeLockedNextDayPopup();
-            Assert.assertEquals(
-                    "Daily Plan day changed after tapping locked right arrow",
-                    dayBeforeTap,
-                    this.getCurrentDayLabel()
-            );
-        } else {
-            System.out.println("Next Daily Plan stage was available; locked-next-day assertion is not applicable for this account state.");
+        try {
+            this.createWait(10).until(ignored -> this.isLockedNextDayPopupDisplayed()
+                    || !dayBeforeTap.equals(this.getCurrentDayLabel()));
+        } catch (TimeoutException noPopupOrNavigation) {
             this.assertDailyPlanDaySwitcherIsDisplayed();
         }
+        if (this.isLockedNextDayPopupDisplayed()) {
+            this.closeLockedNextDayPopup();
+        }
+        Assert.assertEquals(
+                "Daily Plan day changed after tapping locked right arrow",
+                dayBeforeTap,
+                this.getCurrentDayLabel()
+        );
     }
 
     @Step("Close locked next day popup")

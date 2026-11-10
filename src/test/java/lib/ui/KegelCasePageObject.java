@@ -170,7 +170,16 @@ public final class KegelCasePageObject extends MainPageObject {
             selector.waitForSelectedProgram(current);
         }
         originalProgram = programState();
+        if (custom && "explore".equals(selectors.getProperty("custom.entry"))) {
+            Assert.assertTrue("Explore Custom Kegel preparation is iOS-only", Platform.getInstance().isIOS());
+            kegelProgram = programState();
+            return;
+        }
         selectProgram(required(custom ? "custom.program" : "regular.program"));
+        if (!custom && selectors.containsKey("regular.day")) {
+            Assert.assertTrue("Explicit regular-workout day is iOS-only", Platform.getInstance().isIOS());
+            new iOSProgramSelectorPageObject(driver).selectObservedDay(required("regular.day"));
+        }
         kegelProgram = programState();
     }
 
@@ -217,10 +226,17 @@ public final class KegelCasePageObject extends MainPageObject {
 
     public void startRegularPlayer() {
         requireKeys("regular.stretching", "regular.start", "player.pause", "player.paused");
-        WebElement stretching = visible("regular.stretching");
-        originalStretching = stretching.getAttribute(Platform.getInstance().isIOS() ? "value" : "checked");
-        Assert.assertTrue("Unknown stretching switch state", Arrays.asList("0", "1", "true", "false").contains(originalStretching));
-        if ("1".equals(originalStretching) || "true".equals(originalStretching)) tap("regular.stretching");
+        if (Boolean.parseBoolean(selectors.getProperty("regular.stretchingExpected", "true"))) {
+            WebElement stretching = visible("regular.stretching");
+            originalStretching = stretching.getAttribute(Platform.getInstance().isIOS() ? "value" : "checked");
+            Assert.assertTrue("Unknown stretching switch state", Arrays.asList("0", "1", "true", "false").contains(originalStretching));
+            if ("1".equals(originalStretching) || "true".equals(originalStretching)) tap("regular.stretching");
+        } else {
+            Assert.assertEquals("Configured no-Stretching workout unexpectedly exposes its switch",
+                    0, getAmountElements(required("regular.stretching")));
+            io.qameta.allure.Allure.addAttachment("Regular workout preparation",
+                    "This reviewed workout has no Stretching option; player/Info/Guide assertions remain required.");
+        }
         tap("regular.start");
         // Match DailyPlan's existing player-loading budget; the native shell can
         // appear before the downloaded exercise controls become available.
@@ -262,14 +278,24 @@ public final class KegelCasePageObject extends MainPageObject {
             daily.closeKegelExerciseFlowIfPresent();
             daily.openTodayTab();
             selectProgram(originalProgram[0]);
+            if (Platform.getInstance().isIOS() && !originalProgram[1].equals(daily.getCurrentDayLabel())) {
+                new iOSProgramSelectorPageObject(driver).selectObservedDay(originalProgram[1]);
+            }
             Assert.assertArrayEquals("Original program/day/progress was not restored", originalProgram, programState());
         }
     }
 
-    /** Cleanup only; the Guide test itself still requires the cross to return directly. */
+    /** Close a Guide left open by a failed scenario, including its conditional exit dialog. */
     public void closeGuideIfOpen() {
         if (selectors.containsKey("guide.close") && isElementVisible(required("guide.close"))) tap("guide.close");
+        confirmGuideExitIfPresent();
+    }
+
+    /** An unfinished Guide can ask for confirmation before returning to the workout. */
+    public void confirmGuideExitIfPresent() {
         if (selectors.containsKey("guide.quit") && isElementVisible(required("guide.quit"))) {
+            io.qameta.allure.Allure.addAttachment("Observed unfinished Guide exit confirmation",
+                    "The configured Quit dialog was visible after closing the Guide; it was acknowledged before checking workout identity and paused phase.");
             tap("guide.quit.confirm");
             waitForFirstElementPresent(new String[]{required("player.pause"), required("player.paused")},
                     "Workout did not return after leaving Guide", 30);
@@ -277,6 +303,10 @@ public final class KegelCasePageObject extends MainPageObject {
     }
 
     public void openWorkout(boolean custom) {
+        if (custom && "explore".equals(selectors.getProperty("custom.entry"))) {
+            Assert.assertTrue("Explore Custom Kegel entry is iOS-only", Platform.getInstance().isIOS());
+            lib.ui.factories.ExplorePageObjectFactory.get(driver).openExploreTab();
+        }
         String key = custom ? "custom.card" : "regular.card";
         swipeUpToFindFirstVisibleElement(new String[]{required(key)}, "Prepared workout is unavailable", 8);
         tap(key);
@@ -295,6 +325,17 @@ public final class KegelCasePageObject extends MainPageObject {
         String value = visible(key).getText().trim();
         Assert.assertFalse("Empty UI content: " + key, value.isEmpty());
         return value;
+    }
+
+    public void assertInformationContent(String exercise, String content) {
+        Assert.assertTrue("Expected current-exercise instructions are absent",
+                content.contains(required("info.expectedContent." + exercise)));
+        String pattern = "info.expectedPattern." + exercise;
+        if (selectors.containsKey(pattern)) {
+            Assert.assertTrue("Information contradicts the independently reviewed exercise instructions",
+                    Pattern.compile(required(pattern), Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
+                            .matcher(content).find());
+        }
     }
 
     public void assertStartEnabled(boolean expected) {

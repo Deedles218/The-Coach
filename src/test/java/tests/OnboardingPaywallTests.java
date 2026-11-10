@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Step;
@@ -21,6 +22,7 @@ import org.junit.Test;
 @Epic("The Coach new-user onboarding paywall")
 public class OnboardingPaywallTests extends CoreTestCase {
     @Test
+    @Issue("COA-9759")
     @Features({@Feature("New user"), @Feature("Questionnaire"), @Feature("Top subscription")})
     @DisplayName("Case 1: New user purchases the top paywall subscription")
     @Description("Creates a new anonymous user, starts with the first Start now button, selects a goal, completes the long questionnaire, selects the top plan and confirms it in the platform test store.")
@@ -36,6 +38,7 @@ public class OnboardingPaywallTests extends CoreTestCase {
     }
 
     @Test
+    @Issue("COA-9759")
     @Features({@Feature("New user"), @Feature("Questionnaire"), @Feature("Bottom subscription")})
     @DisplayName("Case 2: New user purchases the bottom paywall subscription")
     @Description("Creates a new anonymous user, completes onboarding, selects the bottom plan and confirms it in the platform test store.")
@@ -51,6 +54,7 @@ public class OnboardingPaywallTests extends CoreTestCase {
     }
 
     @Test
+    @Issue("COA-9759")
     @Features({@Feature("New user"), @Feature("Paywall"), @Feature("Terms & Privacy")})
     @DisplayName("Case 3: Terms & Privacy opens from onboarding paywall")
     @Description("Completes new-user onboarding up to the paywall and verifies that the Terms & Privacy destination opens.")
@@ -63,6 +67,7 @@ public class OnboardingPaywallTests extends CoreTestCase {
     }
 
     @Test
+    @Issue("COA-9759")
     @Features({@Feature("New user"), @Feature("Paywall"), @Feature("Subscription disclosure")})
     @DisplayName("Case 4: Paywall shows the exact renewal, privacy and terms disclosure")
     @Description("Verifies: Subscription renews automatically. Cancel anytime. Privacy Policy & Terms of Service")
@@ -74,6 +79,7 @@ public class OnboardingPaywallTests extends CoreTestCase {
     }
 
     @Test
+    @Issue("COA-9759")
     @Features({@Feature("New user"), @Feature("Paywall"), @Feature("Restore")})
     @DisplayName("Case 5: Restore is available and returns an explicit result")
     @Description("Verifies Restore is visible, enabled and responds with restored access or an explicit no-purchase/error result.")
@@ -108,6 +114,10 @@ public class OnboardingPaywallTests extends CoreTestCase {
             );
             return;
         }
+        if (lib.TestFlightHandoff.enabled()) {
+            lib.TestFlightHandoff.perform(driver, "prepare-clean-rc");
+            lib.ui.factories.CoachFlowPageObjectFactory.get(driver).activateAppIfPossible();
+        }
         Assert.assertTrue(
                 "iOS paywall tests attach to the installed TestFlight build by bundle ID: omit ios.app and use ios.noReset=true, ios.fullReset=false",
                 Platform.getInstance().isTestFlightAttachConfigured()
@@ -123,5 +133,10 @@ public class OnboardingPaywallTests extends CoreTestCase {
                 "Purchase confirmation is disabled by default; explicitly enable test transactions with -Dpurchase.allow=true",
                 Platform.getInstance().isTestPurchaseAllowed()
         );
+    }
+
+    @Override protected void cleanupSessionForNextTest() {
+        lib.TestFlightHandoff.ensureRCIfEnabled(driver);
+        super.cleanupSessionForNextTest();
     }
 }

@@ -34,7 +34,9 @@ public class StoreKitPurchaseTests extends CoreTestCase {
         SubscriptionPageObject subscription = openConfiguredPaywall();
         subscription.openSelectedSubscriptionPeriod();
         subscription.startStoreKitPurchase();
+        ((lib.ui.ios.iOSSubscriptionPageObject) subscription).assertFreeTrialIsOffered();
         subscription.confirmStoreKitPurchase();
+        subscription.assertPurchaseCompleted();
 
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         coachFlow.openProfile();
@@ -61,8 +63,13 @@ public class StoreKitPurchaseTests extends CoreTestCase {
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
 
         coachFlow.ensureLoggedOutOnStartScreen();
-        coachFlow.openStartFlow();
-        coachFlow.runConfiguredOnboardingSteps(Platform.getInstance().getIOSOnboardingStepLocators());
+        if (Platform.getInstance().getIOSOnboardingStepLocators().length == 0) {
+            lib.ui.factories.OnboardingPageObjectFactory.get(driver).completeNewUserJourneyToPaywall(
+                    lib.ui.OnboardingGoal.fromConfiguredValue(Platform.getInstance().getOnboardingGoal()));
+        } else {
+            coachFlow.openStartFlow();
+            coachFlow.runConfiguredOnboardingSteps(Platform.getInstance().getIOSOnboardingStepLocators());
+        }
 
         SubscriptionPageObject subscription = SubscriptionPageObjectFactory.get(driver);
         Assert.assertNotNull("Subscription page object is not available for current platform", subscription);

@@ -426,13 +426,15 @@ public class TestModelAutomationTests extends CoreTestCase {
                 .replaceAll("\\s+", " ")
                 .trim();
         List<String> knownPrograms = Arrays.asList(
+                // Retain is a distinct catalog entry, including "Last Longer: Retain".
+                "RETAIN",
                 "LAST LONGER",
                 "KEEP IT HARD",
                 "OVERALL HEALTH",
+                "SEX IS A SKILL (LGBTQ+)",
                 "SEX IS A SKILL",
                 "UNHOOKED",
-                "KEGEL CHALLENGE",
-                "RETAIN"
+                "KEGEL CHALLENGE"
         );
         for (String knownProgram : knownPrograms) {
             if (normalized.contains(knownProgram)) {

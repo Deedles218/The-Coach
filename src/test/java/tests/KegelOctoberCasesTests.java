@@ -33,12 +33,14 @@ public class KegelOctoberCasesTests extends CoreTestCase {
         DailyPlanPageObject daily = openRegularPlayer(ui, "COA-8096");
         String workout = ui.text("workout.identity");
         String phase = ui.text("player.phase");
-        RestoringTestAction.run(() -> {
+        runRestoring(() -> {
             ui.tap("guide.open");
             ui.visible("guide.screen");
             ui.tap("guide.close");
+            ui.confirmGuideExitIfPresent();
             ui.gone("guide.screen");
-            ui.visible("player.paused");
+            ui.waitForElementVisible(ui.required("player.paused"),
+                    "Regular Kegel player did not return paused after Guide closed", 30);
             Assert.assertEquals("Guide returned to a different workout", workout, ui.text("workout.identity"));
             Assert.assertEquals("Guide changed the paused exercise", phase, ui.text("player.phase"));
         }, () -> {
@@ -57,15 +59,14 @@ public class KegelOctoberCasesTests extends CoreTestCase {
         DailyPlanPageObject daily = openRegularPlayer(ui, "COA-8094");
         String phase = ui.text("player.phase");
         // Exact mapping comes from the reviewed content for this build, never from the modal under test.
-        String exercise = ui.text("workout.identity");
+        String exercise = ui.text("workout.identity").toUpperCase(java.util.Locale.ROOT);
         String expectedTitle = ui.required("info.expectedTitle." + exercise);
-        String expectedContent = ui.required("info.expectedContent." + exercise);
-        RestoringTestAction.run(() -> {
+        ui.required("info.expectedContent." + exercise);
+        runRestoring(() -> {
             ui.tap("info.open");
             ui.visible("info.screen");
             Assert.assertEquals("Information is for another exercise", expectedTitle, ui.text("info.title"));
-            Assert.assertTrue("Expected current-exercise instructions are absent",
-                    ui.text("info.content").contains(expectedContent));
+            ui.assertInformationContent(exercise, ui.text("info.content"));
             ui.tap("info.close");
             ui.gone("info.screen");
             ui.visible("player.paused");
@@ -87,7 +88,7 @@ public class KegelOctoberCasesTests extends CoreTestCase {
         openWorkout(ui, "COA-8170", true);
         List<Exercise> before = ui.snapshot();
         Assert.assertFalse("Dedicated Custom Kegel fixture needs an exercise", before.isEmpty());
-        RestoringTestAction.run(() -> {
+        runRestoring(() -> {
             ui.requestFirstRemoval();
             ui.cancelRemoval();
             Assert.assertEquals("Cancel changed exercise names, count, order or settings", before, ui.snapshot());
@@ -104,7 +105,7 @@ public class KegelOctoberCasesTests extends CoreTestCase {
         openWorkout(ui, "COA-8171", true);
         List<Exercise> before = ui.snapshot();
         Assert.assertFalse("Dedicated Custom Kegel fixture needs an exercise", before.isEmpty());
-        RestoringTestAction.run(() -> {
+        runRestoring(() -> {
             ui.assertStartEnabled(true);
             ui.removeAll();
             ui.assertStartEnabled(false);
@@ -167,6 +168,19 @@ public class KegelOctoberCasesTests extends CoreTestCase {
         DailyPlanPageObject daily = openWorkout(ui, key, false);
         ui.startRegularPlayer();
         return daily;
+    }
+
+    private void runRestoring(RestoringTestAction.CheckedAction scenario,
+                              RestoringTestAction.CheckedAction restore) throws Exception {
+        RestoringTestAction.run(() -> {
+            try {
+                scenario.run();
+            } catch (Exception | Error failure) {
+                captureFailureArtifacts(failure, org.junit.runner.Description.createTestDescription(
+                        getClass(), "beforeFixtureRestoration"));
+                throw failure;
+            }
+        }, restore);
     }
 
     private DailyPlanPageObject openWorkout(KegelCasePageObject ui, String key, boolean custom) {

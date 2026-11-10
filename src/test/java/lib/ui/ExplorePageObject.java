@@ -131,19 +131,19 @@ abstract public class ExplorePageObject extends MainPageObject {
                 "Cannot tap Explore tab",
                 10
         );
-        dismissExploreWelcomeIfPresent();
-        this.waitForFirstElementPresent(
-                new String[]{TEST_ID_EXPLORE_SELECTED, SELECTED_EXPLORE_TAB},
-                "Explore tab is not selected after a single tap",
-                10
-        );
+        // The introduction can appear after the selected-tab marker first renders.
+        // Keep handling it while waiting for the actual catalog to become usable.
+        this.createWait(15).withMessage("Explore selection and content did not load after a single tap")
+                .until(ignored -> {
+                    dismissExploreWelcomeIfPresent();
+                    return (isElementVisible(TEST_ID_EXPLORE_SELECTED) || isElementVisible(SELECTED_EXPLORE_TAB))
+                            && (isElementVisible(RECOMMENDED_SECTION) || isElementVisible(EXPLORE_PROGRAM_ITEMS));
+                });
         this.waitForLoadingToDisappearIfPresent(
                 TEST_ID_LOADING,
                 "Explore loading indicator is still displayed",
                 20
         );
-        this.waitForFirstElementPresent(new String[]{RECOMMENDED_SECTION, EXPLORE_PROGRAM_ITEMS},
-                "Explore content did not load", 15);
     }
 
     protected void dismissExploreWelcomeIfPresent() {

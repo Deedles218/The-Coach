@@ -10,6 +10,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Quotes;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -221,12 +222,22 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
     }
 
     private List<int[]> iosClockLabels() {
+        return iosClockLabels(iosPlayerDocument());
+    }
+
+    private org.w3c.dom.Document iosPlayerDocument() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            NodeList labels = factory.newDocumentBuilder()
-                    .parse(new InputSource(new StringReader(driver.getPageSource())))
-                    .getElementsByTagName("XCUIElementTypeStaticText");
+            return factory.newDocumentBuilder().parse(new InputSource(new StringReader(driver.getPageSource())));
+        } catch (Exception invalidSource) {
+            throw new IllegalStateException("Cannot parse iOS player accessibility snapshot", invalidSource);
+        }
+    }
+
+    private List<int[]> iosClockLabels(org.w3c.dom.Document source) {
+        try {
+            NodeList labels = source.getElementsByTagName("XCUIElementTypeStaticText");
             List<int[]> clocks = new ArrayList<int[]>();
             int screenHeight = driver.manage().window().getSize().height;
             for (int i = 0; i < labels.getLength(); i++) {
@@ -255,6 +266,33 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         }
     }
 
+    /** Pause immediately from the boundary snapshot, before another UI lookup can consume the remaining video. */
+    private Integer pauseReachedIosBoundary(int duration, double fraction) {
+        org.w3c.dom.Document source = iosPlayerDocument();
+        List<int[]> clocks = iosClockLabels(source);
+        if (clocks.size() < 2) return null;
+        int position = clocks.get(0)[4];
+        if (position < Math.ceil(duration * fraction) || position > duration) return null;
+        NodeList buttons = source.getElementsByTagName("XCUIElementTypeButton");
+        for (int index = 0; index < buttons.getLength(); index++) {
+            org.w3c.dom.Element button = (org.w3c.dom.Element) buttons.item(index);
+            if (!"true".equals(button.getAttribute("visible"))) continue;
+            if ("PlayVideoButtonIcon".equals(button.getAttribute("name"))) return position;
+            if (!"PauseVideoButtonIcon".equals(button.getAttribute("name"))) continue;
+            Map<String,Object> tap = new HashMap<String,Object>();
+            tap.put("x", Integer.parseInt(button.getAttribute("x"))
+                    + Integer.parseInt(button.getAttribute("width")) / 2);
+            tap.put("y", Integer.parseInt(button.getAttribute("y"))
+                    + Integer.parseInt(button.getAttribute("height")) / 2);
+            ((JavascriptExecutor)driver).executeScript("mobile: tap", tap);
+            io.qameta.allure.Allure.addAttachment("Paused at observed video boundary",
+                    "position=" + position + "; duration=" + duration
+                            + "; PauseVideoButtonIcon coordinates from the same native snapshot");
+            return position;
+        }
+        return null;
+    }
+
     public void pause() {
         showControls();
         if (android) {
@@ -277,6 +315,18 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         }
     }
 
+    public void resume() {
+        showControls();
+        if (android) {
+            waitForElementAndClick("id:" + ANDROID_ID + "exo_play_pause", "Cannot resume video", 10);
+            createWait(10).until(d -> "Pause".equalsIgnoreCase(driver.findElement(
+                    By.id(ANDROID_ID + "exo_play_pause")).getAttribute("content-desc")));
+        } else {
+            waitForElementAndClick("id:PlayVideoButtonIcon", "Cannot resume video", 10);
+            waitForElementVisible("id:PauseVideoButtonIcon", "Video did not resume", 10);
+        }
+    }
+
     public void assertCurrentLesson(String lessonTitle) {
         if (android) return;
         Assert.assertTrue("Expected video lesson is no longer open: " + lessonTitle,
@@ -285,6 +335,15 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
     }
 
     public void seekToFraction(double fraction) {
+        seekToFraction(fraction, false);
+    }
+
+    /** Capture the boundary in the same poll before completion can replace the player. */
+    public int seekToAtLeastFraction(double fraction) {
+        return seekToFraction(fraction, true);
+    }
+
+    private int seekToFraction(double fraction, boolean strictBoundary) {
         Assert.assertTrue("Seek fraction must be inside video", fraction >= 0 && fraction <= 1);
         Rectangle track = seekTrack();
         Map<String,Object> args = new HashMap<String,Object>();
@@ -292,7 +351,12 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         args.put("y", track.y + track.height / 2);
         if (android) {
             ((JavascriptExecutor)driver).executeScript("mobile: clickGesture", args);
-            return;
+            if (!strictBoundary) return -1;
+            final int duration = durationSeconds();
+            return createWait(10).withMessage("Seek did not reach the requested video boundary").until(d -> {
+                int position = positionSeconds();
+                return position >= Math.ceil(duration * fraction) && position <= duration ? position : null;
+            });
         }
         int duration = durationSeconds();
         for (int attempt = 0; attempt < 3; attempt++) {
@@ -300,14 +364,19 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
             // on the same coordinate seeks. Read the result before retrying.
             ((JavascriptExecutor)driver).executeScript("mobile: tap", args);
             try {
-                createWait(5).until(d -> atSeekTarget(positionSeconds(), duration, fraction));
-                return;
+                return createWait(5).until(d -> {
+                    if (strictBoundary) return pauseReachedIosBoundary(duration, fraction);
+                    int position = positionSeconds();
+                    boolean reached = atSeekTarget(position, duration, fraction);
+                    return reached ? position : null;
+                });
             } catch (TimeoutException seekNotApplied) {
                 // The tap may only have revealed a hidden control panel.
             }
         }
         Assert.fail("iOS tap seek stayed at " + positionSeconds() + "/" + duration
                 + " instead of fraction " + fraction + " at " + args.get("x") + "," + args.get("y"));
+        throw new AssertionError("Unreachable after failed seek assertion");
     }
 
     public void dragSeekToFraction(double fraction) {
@@ -422,6 +491,17 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         returnToTodayFromLesson();
     }
 
+    /** A completed video can show lesson feedback before session logout starts. */
+    public void closeLessonFlowIfOpen() {
+        if (android) return;
+        if (isElementVisible("xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']")) {
+            closePlayer();
+        } else if (isElementVisible("id:How would you rate the lesson?")
+                || isElementVisible("id:LessonVideoView") || isElementVisible("id:Quit")) {
+            returnToTodayFromLesson();
+        }
+    }
+
     private void returnToTodayFromLesson() {
         if (android) return;
         for (int step = 0; step < 6; step++) {
@@ -456,9 +536,40 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         }
         String nextTitle = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @visible='true'"
                 + " and @label!='" + lessonTitle + "']";
+        String expectedReader = System.getProperty("coach.video.nextLessonTitle");
+        String player = "xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']";
+        String completedCard = "xpath://XCUIElementTypeOther[@name='DailyPlanItem' and @visible='true']"
+                + "[.//XCUIElementTypeStaticText[@name=" + Quotes.escape(lessonTitle) + "]]"
+                + "//XCUIElementTypeImage[@name='dailyCompletedCheckmark' and @visible='true']";
         createWait(10).withMessage("Forward 15 neither reached the end of " + lessonTitle
-                + " nor opened the next lesson").until(d -> {
-            int[] clocks = clockValues();
+                + " nor showed its completion").until(d -> {
+            if (isElementVisible("id:How would you rate the lesson?")) {
+                io.qameta.allure.Allure.addAttachment("Post-video completion feedback", lessonTitle);
+                return true;
+            }
+            if (isElementVisible("id:LessonVideoView")) return true;
+            boolean videoOpen = isElementVisible(player);
+            if (!videoOpen && isElementVisible("id:Today") && isElementVisible(completedCard)) {
+                io.qameta.allure.Allure.addAttachment("Post-video completion on Today", lessonTitle);
+                return true;
+            }
+            if (!videoOpen && expectedReader != null && !expectedReader.trim().isEmpty()
+                    && !lessonTitle.equals(expectedReader)
+                    && isElementVisible("xpath://XCUIElementTypeStaticText[@visible='true' and @name="
+                        + Quotes.escape(expectedReader) + "]")
+                    && isElementVisible("id:CONTINUE") && isElementVisible("id:ic outline close")) {
+                io.qameta.allure.Allure.addAttachment("Post-video continuation", expectedReader);
+                return true;
+            }
+            // A completed video may have opened an article. Only reveal video
+            // controls while the native player is still on screen.
+            if (!videoOpen) return false;
+            int[] clocks = iosClockSnapshot();
+            if (clocks == null) {
+                showControls();
+                clocks = iosClockSnapshot();
+            }
+            if (clocks == null) return false;
             if (clocks[1] == duration)
                 return clocks[0] >= duration - Math.max(3, (int)Math.ceil(duration * .02))
                         && clocks[0] <= duration;
