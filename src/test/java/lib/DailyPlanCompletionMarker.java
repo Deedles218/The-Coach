@@ -8,10 +8,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/** Recognizes the rendered white tick when the live iOS indicator has no accessibility name. */
+/** Recognizes a rendered completion tick when the indicator has no accessibility name. */
 public final class DailyPlanCompletionMarker {
     private static final int GRID = 32;
-    private static final boolean[] EXPECTED = mask(readReference());
+    private static final boolean[] IOS_TICK = mask(readReference("male-completed"));
+    private static final boolean[] ANDROID_TICK = mask(readReference("android-completed"));
 
     private DailyPlanCompletionMarker() { }
 
@@ -32,11 +33,15 @@ public final class DailyPlanCompletionMarker {
         if (indicator == null || indicator.getWidth() < 12 || indicator.getHeight() < 12
                 || Math.abs(1 - indicator.getWidth() / (double) indicator.getHeight()) > .15) return false;
         boolean[] actual = mask(indicator);
+        return matches(actual, IOS_TICK) || matches(actual, ANDROID_TICK);
+    }
+
+    private static boolean matches(boolean[] actual, boolean[] expected) {
         int intersection = 0, union = 0, different = 0;
         for (int i = 0; i < actual.length; i++) {
-            if (actual[i] && EXPECTED[i]) intersection++;
-            if (actual[i] || EXPECTED[i]) union++;
-            if (actual[i] != EXPECTED[i]) different++;
+            if (actual[i] && expected[i]) intersection++;
+            if (actual[i] || expected[i]) union++;
+            if (actual[i] != expected[i]) different++;
         }
         // Compare the tick's shape, not the male/female circle color. A blank region,
         // an arrow, or a solid circle cannot satisfy both shape and overlap checks.
@@ -57,9 +62,9 @@ public final class DailyPlanCompletionMarker {
         return result;
     }
 
-    private static BufferedImage readReference() {
+    private static BufferedImage readReference(String name) {
         try (InputStream input = DailyPlanCompletionMarker.class.getResourceAsStream(
-                "/bookmarks/completion/male-completed.png")) {
+                "/bookmarks/completion/" + name + ".png")) {
             if (input == null) throw new IOException("Completion tick reference is missing");
             BufferedImage image = ImageIO.read(input);
             if (image == null) throw new IOException("Completion tick reference is unreadable");

@@ -56,8 +56,10 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
     }
     @Override public String getActiveProgramName() {
         scrollQuestionsToTopIfPresent();
-        return waitForElementVisible("xpath://*[@resource-id='" + ID_PREFIX + "headerContainer']//*[@resource-id='" + ID_PREFIX + "tvGroupName']",
+        String name = waitForElementVisible("xpath://*[@resource-id='" + ID_PREFIX + "headerContainer']//*[@resource-id='" + ID_PREFIX + "tvGroupName']",
                 "Today program name is absent", 10).getText();
+        // Android can expose the trailing program selector icon as a replacement character.
+        return name.replaceFirst("[ \u00A0]*\uFFFC$", "");
     }
     @Override public String getProgramProgressValue() {
         scrollQuestionsToTopIfPresent();

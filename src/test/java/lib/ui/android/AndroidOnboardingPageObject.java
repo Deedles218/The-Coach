@@ -297,7 +297,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 + ID_PREFIX + "tvHeader' and @text=" + xpathLiteral(header) + "]";
     }
 
-    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
+    public int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
             if (destinationVisible.getAsBoolean()) return paywallsClosed;

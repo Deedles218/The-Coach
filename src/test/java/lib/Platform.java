@@ -119,7 +119,7 @@ public class Platform {
         capabilities.setCapability("deviceName", this.getConfig("ios.deviceName", "IOS_DEVICE_NAME", DEFAULT_IOS_DEVICE_NAME));
         capabilities.setCapability("platformVersion", this.getConfig("ios.platformVersion", "IOS_PLATFORM_VERSION", DEFAULT_IOS_PLATFORM_VERSION));
         capabilities.setCapability("automationName","XCUITest");
-        capabilities.setCapability("bundleId", this.getIOSBundleId());
+        capabilities.setCapability("bundleId", this.getConfig("ios.sessionBundleId", "IOS_SESSION_BUNDLE_ID", this.getIOSBundleId()));
         capabilities.setCapability("udid", this.getConfig("ios.udid", "IOS_UDID", DEFAULT_IOS_UDID));
         capabilities.setCapability("noReset", this.getBooleanConfig("ios.noReset", "IOS_NO_RESET", true));
         capabilities.setCapability("fullReset", this.getBooleanConfig("ios.fullReset", "IOS_FULL_RESET", false));

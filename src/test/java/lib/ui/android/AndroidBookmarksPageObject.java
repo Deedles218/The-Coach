@@ -118,8 +118,8 @@ public class AndroidBookmarksPageObject extends BookmarksPageObject {
                 + "lpProgressContainer' and (@content-desc='100%' or @selected='true' or @checked='true'))]";
     }
 
-    @Override protected boolean isDailyPlanItemCompleted(String title, boolean attachEvidence) {
-        return isElementVisible(completedMarkerFor(title));
+    @Override protected String dailyPlanCompletionIndicatorFor(String title) {
+        return dailyPlanCardFor(title) + "//*[@resource-id='" + P + "ivLearnMore']";
     }
 
     @Override protected boolean isContentPaywallVisible() {

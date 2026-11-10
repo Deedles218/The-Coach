@@ -2,6 +2,7 @@ package lib.ui;
 
 import io.appium.java_client.HasSettings;
 import lib.Platform;
+import lib.ui.factories.BookmarksPageObjectFactory;
 import lib.ui.android.AndroidProgramSelectorPageObject;
 import lib.ui.ios.iOSProgramSelectorPageObject;
 import org.junit.Assert;
@@ -89,6 +90,10 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
     }
 
     public void completeDailyPlanItem(String title) {
+        completeDailyPlanItem(title, () -> {});
+    }
+
+    public void completeDailyPlanItem(String title, Runnable beforeReturningToToday) {
         Assert.assertTrue("Daily Plan item title cannot contain a quote in this fixture",
                 title == null || !title.contains("'"));
         String item = title != null && android
@@ -106,20 +111,39 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
             for (int swipe = 0; swipe < 10 && !isElementVisible(item); swipe++) today.mobileSwipeUp();
         }
         waitForElementAndClick(item, "Configured Daily Plan item is absent: " + title, 15);
+        BookmarksPageObject content = BookmarksPageObjectFactory.get(driver);
         String continueButton = android ? "id:" + ANDROID_ID + "bContinueLesson" : "id:CONTINUE";
         String finishButton = android ? continueButton : "id:FINISH";
         for (int page = 0; page < 20; page++) {
+            assertContentAccessible(content);
             if (isElementVisible(finishButton)
                     && (!android || "FINISH".equalsIgnoreCase(waitForElementVisible(finishButton,
                     "Finish button is absent", 3).getText()))) {
                 waitForElementAndClick(finishButton, "Cannot finish Daily Plan item", 10);
                 break;
             }
-            waitForElementAndClick(continueButton, "Cannot advance Daily Plan item", 15);
+            WebElement next = waitForElementEnabled(continueButton, "Cannot advance Daily Plan item", 15);
+            assertContentAccessible(content);
+            String before = driver.getPageSource();
+            next.click();
+            createWait(10).withMessage("Daily Plan content did not advance; check its answer fixture")
+                    .until(ignored -> {
+                        assertContentAccessible(content);
+                        return !before.equals(driver.getPageSource());
+                    });
             if (page == 19) Assert.fail("Daily Plan item did not reach FINISH within 20 pages");
         }
-        if (android && isElementVisible("id:" + ANDROID_ID + "rvFeedBackDetails"))
-            waitForElementAndClick(continueButton, "Cannot finish Daily Plan feedback", 10);
+        if (android) {
+            String rating = "id:" + ANDROID_ID + "rvFeedBackDetails";
+            String reaction = "id:" + ANDROID_ID + "button_like";
+            String todayTab = "id:" + ANDROID_ID + "nav_graph_daily";
+            waitForFirstElementPresent(new String[]{rating, reaction, todayTab},
+                    "Android did not open Today or optional feedback after Finish", 15);
+            if (isElementVisible(rating) || isElementVisible(reaction)) {
+                waitForElementAndClick("id:" + ANDROID_ID + "btnClose", "Cannot close optional lesson feedback", 10);
+                waitForElementPresent(todayTab, "Today did not return after closing lesson feedback", 10);
+            }
+        }
         if (!android && isElementVisible("xpath://XCUIElementTypeStaticText[@name='How would you rate the lesson?' and @visible='true']")) {
             waitForElementAndClick("xpath:(//XCUIElementTypeButton[@name='RatingStarClear' and @visible='true'])[5]",
                     "Cannot rate completed lesson", 10);
@@ -127,7 +151,13 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
             waitForElementNotPresent("xpath://XCUIElementTypeStaticText[@name='How would you rate the lesson?' and @visible='true']",
                     "Lesson rating remained after submission", 10);
         }
+        beforeReturningToToday.run();
         today.openTodayTab();
+    }
+
+    private void assertContentAccessible(BookmarksPageObject content) {
+        Assert.assertFalse("Subscription paywall blocks the Daily Plan item; prepare an entitled fixture",
+                content.isContentPaywallVisible());
     }
 
     public void openSelector() { today.openProgramSelector(); }

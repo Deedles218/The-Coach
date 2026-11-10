@@ -25,28 +25,34 @@ import lib.TestData;
 public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     private int selectorTop;
     private String openedLessonTitle;
-    private static final String DAILY_FIRST_LESSON_TITLE = "xpath://XCUIElementTypeCollectionView"
+    private boolean soloPracticeReader;
+    private static final String LEGACY_LESSON_TITLES = "//XCUIElementTypeCollectionView"
             + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']"
             + " and not(.//XCUIElementTypeStaticText[starts-with(@name,'Module ')])]"
-            + "//XCUIElementTypeCell//XCUIElementTypeStaticText"
-            + "[following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText"
-            + "[@name='Lesson 1' or @name='How it all works']]";
-    private static final String MODULE_LESSON_NUMBER = "starts-with(@name,'Lesson ')"
-            + " and number(substring-after(@name,'Lesson '))>0"
-            + " and translate(substring-after(@name,'Lesson '),'0123456789','')=''";
+            + "//XCUIElementTypeCell//XCUIElementTypeStaticText";
+    private static final String LEGACY_LESSON_TYPE = "@name='Lesson 1' or @name='How it all works'";
+    private static final String MODULE_LESSON_NUMBER = "starts-with(normalize-space(@name),'Lesson ')"
+            + " and number(substring-after(normalize-space(@name),'Lesson '))>0"
+            + " and translate(substring-after(normalize-space(@name),'Lesson '),'0123456789','')=''";
     // Module lesson numbers continue across stages. Reuse DailyPlanItem and the
     // nearest section-heading contract used by dailyPlanCardLocator below.
-    private static final String MODULE_FIRST_LESSON_TITLE = "(//XCUIElementTypeCollectionView"
+    private static final String NUMBERED_LESSON_TITLES = "//XCUIElementTypeCollectionView"
             + "[.//XCUIElementTypeOther[@name='DailyDaySwitcherView']"
-            + " and .//XCUIElementTypeStaticText[starts-with(@name,'Module ')]]"
+            + " and .//XCUIElementTypeStaticText[starts-with(@name,'Module ')"
+            + " or starts-with(@name,'Day ')]]"
             + "//XCUIElementTypeOther[@name='DailyPlanItem'"
             + " and ancestor::XCUIElementTypeCell/preceding-sibling::XCUIElementTypeCell"
             + "[.//XCUIElementTypeStaticText[@name='TitleBlock.Title']][1]"
-            + "//XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='DAILY LESSONS']]"
-            + "//XCUIElementTypeStaticText[string-length(normalize-space(@name))>0"
-            + " and following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText["
-            + MODULE_LESSON_NUMBER + "]])[1]";
+            + "//XCUIElementTypeStaticText[@label='DAILY LESSONS']]"
+            + "//XCUIElementTypeStaticText[normalize-space(@name)]";
+    private static final String LESSON_METADATA = "following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText";
     private static final String SELECTOR_CARDS = "id:ProgramSelectionCardView";
+    private static final String SOLO_PRACTICE_TITLE = "(//XCUIElementTypeOther[@name='DailyPlanItem'"
+            + " and ancestor::XCUIElementTypeCell/preceding-sibling::XCUIElementTypeCell"
+            + "[.//XCUIElementTypeStaticText[@name='TitleBlock.Title']][1]"
+            + "//XCUIElementTypeStaticText[@label='DAILY PRACTICE']]"
+            + "//XCUIElementTypeStaticText[normalize-space(@name)!='' and following-sibling::XCUIElementTypeOther"
+            + "//XCUIElementTypeStaticText[@name='Solo Practice' or @name='Practice']])[1]";
     private static final String SELECTOR_TITLES = "xpath://XCUIElementTypeOther[@name='ProgramSelectionCardView']//XCUIElementTypeStaticText[@name='TitleBlock.Title']";
     private static final String SELECTOR_COLLECTION = "xpath:(//XCUIElementTypeScrollView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']] | //XCUIElementTypeCollectionView[.//XCUIElementTypeOther[@name='ProgramSelectionCardView']])[last()]";
     private static final String LESSON_EXIT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' "
@@ -68,18 +74,19 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         RIGHT_SWITCHER_ARROW = "id:rightSwitcherArrow";
 
         DAILY_LESSONS_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY LESSONS']";
-        FIRST_LESSON_TITLE = DAILY_FIRST_LESSON_TITLE + " | " + MODULE_FIRST_LESSON_TITLE;
-        FIRST_LESSON_TYPE = "xpath:(" + FIRST_LESSON_TITLE.substring("xpath:".length())
-                + ")/following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText"
-                + "[@name='How it all works' or (" + MODULE_LESSON_NUMBER + ")]";
+        FIRST_LESSON_TITLE = firstLessonTitleLocator();
+        FIRST_LESSON_TYPE = "xpath:(" + LEGACY_LESSON_TITLES + "/" + LESSON_METADATA + "[" + LEGACY_LESSON_TYPE
+                + "] | " + NUMBERED_LESSON_TITLES + "/" + LESSON_METADATA + "[" + MODULE_LESSON_NUMBER + "])[1]";
         LESSON_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Starting Point' or @name='Getting started' or @name='The Basics of Sexual Desire']";
         LESSON_SCREEN_CONTENT = "xpath://XCUIElementTypeStaticText[string-length(@name) > 20 and @name!='The Basics of Sexual Desire']";
         LESSON_SCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='ProgramCloseButtonIcon' or @name='BackButton' or @name='Close' or @name='Back' or @name='ic outline close']";
 
         DAILY_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@label='DAILY PRACTICE']";
-        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout' or @name='Mindful Eating']";
+        FIRST_PRACTICE_TITLE = "xpath://XCUIElementTypeStaticText[@name='Unlock Your Pelvic Floor' or @name='Pelvic Floor Assessment' or @name='Your First Kegel Workout' or @name='Finding Pelvic Floor' or @name='Morning Kegel Workout' or @name='Mindful Eating']"
+                + " | " + SOLO_PRACTICE_TITLE;
         FIRST_PRACTICE_TYPE = "xpath://XCUIElementTypeStaticText[@name='Guide' or @name='Daily workout' or contains(@name, 'day in total') or contains(@name, 'days in total') "
-                + "or (@name='Level 1' and ancestor::XCUIElementTypeOther[@name='DailyPlanItem'][.//XCUIElementTypeStaticText[@name='Mindful Eating']])]";
+                + "or (@name='Level 1' and ancestor::XCUIElementTypeOther[@name='DailyPlanItem'][.//XCUIElementTypeStaticText[@name='Mindful Eating']])]"
+                + " | " + SOLO_PRACTICE_TITLE + "/following-sibling::XCUIElementTypeOther//XCUIElementTypeStaticText[@name='Solo Practice' or @name='Practice']";
         CUSTOMIZATION_CATCH_UP_SECTION = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='TO CATCH-UP' and @visible='true']";
         CUSTOMIZATION_CATCH_UP_CARD = "id:daily_plan_catch_up_card";
         CUSTOMIZATION_POSTPONED_ICON = "id:ItemMovedForward";
@@ -97,7 +104,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_START_SCREEN_DESCRIPTION = "xpath://XCUIElementTypeOther[@name='Description']//XCUIElementTypeStaticText[@visible='true']";
         KEGEL_START_SCREEN_LEVEL = "xpath://XCUIElementTypeStaticText[contains(@name, 'Kegel') and contains(@name, 'Level') and @visible='true']";
         KEGEL_START_SCREEN_DURATION = "xpath://XCUIElementTypeStaticText[@name='Duration:' and @visible='true']";
-        KEGEL_START_SCREEN_DURATION_VALUE = "xpath://XCUIElementTypeStaticText[contains(@name, 'min') and contains(@name, 'sec') and @visible='true']";
+        KEGEL_START_SCREEN_DURATION_VALUE = kegelStartDurationValueLocator();
         KEGEL_START_SCREEN_INTENSITY = "xpath://XCUIElementTypeStaticText[@name='Intensity:' and @visible='true']";
         KEGEL_START_SCREEN_INTENSITY_VALUE = "xpath://XCUIElementTypeStaticText[@name='Intensity:']/following-sibling::XCUIElementTypeStaticText[1]";
         KEGEL_START_SCREEN_STRETCHING_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Stretching PF') and @visible='true']";
@@ -114,7 +121,7 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         KEGEL_INSTRUCTION_STEP_TEXTS = "xpath://XCUIElementTypeOther[@name='NumberedTextLabelView']/XCUIElementTypeStaticText[string-length(@name)>1]";
         KEGEL_INSTRUCTION_ADJUST_HEADING = "xpath://XCUIElementTypeStaticText[@name='TitleBlock.Title' and @label='ADJUST:']";
         KEGEL_INSTRUCTION_INTENSITY_LABEL = "id:Intensity";
-        KEGEL_INSTRUCTION_INTENSITY_VALUE = "xpath://XCUIElementTypeStaticText[(@name='EASY' or @name='MEDIUM' or @name='HARD') and @visible='true']";
+        KEGEL_INSTRUCTION_INTENSITY_VALUE = "xpath://XCUIElementTypeStaticText[(@name='VERY EASY' or @name='EASY' or @name='MEDIUM' or @name='HARD' or @name='VERY HARD') and @visible='true']";
         KEGEL_INSTRUCTION_INTENSITY_PICKER = "xpath://XCUIElementTypePickerWheel[@visible='true']";
         KEGEL_INSTRUCTION_INTENSITY_SELECT_BUTTON = "id:SELECT";
         KEGEL_INSTRUCTION_SAVE_BUTTON = "id:SAVE";
@@ -174,7 +181,14 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
     }
 
     public static String firstLessonTitleLocator() {
-        return DAILY_FIRST_LESSON_TITLE + " | " + MODULE_FIRST_LESSON_TITLE;
+        return "xpath:(" + LEGACY_LESSON_TITLES + "[" + LESSON_METADATA + "[" + LEGACY_LESSON_TYPE
+                + "]] | " + NUMBERED_LESSON_TITLES + "[" + LESSON_METADATA + "[" + MODULE_LESSON_NUMBER + "]] )[1]";
+    }
+
+    public static String kegelStartDurationValueLocator() {
+        return "xpath://XCUIElementTypeStaticText[@name='Duration:' and @visible='true']"
+                + "/following-sibling::XCUIElementTypeStaticText[1][@visible='true'"
+                + " and (contains(@name,'min') or contains(@name,'sec'))]";
     }
 
     public static String lessonExitConfirmationLocator() {
@@ -214,6 +228,44 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
             }
             return false;
         });
+    }
+
+    @Override
+    public void openFirstDailyPractice() {
+        if (!isElementVisible("xpath:" + SOLO_PRACTICE_TITLE)
+                || !getElementAccessibleName(waitForElementPresent(FIRST_PRACTICE_TITLE,
+                        "First practice title is missing", 10)).equals(getElementAccessibleName(
+                        waitForElementPresent("xpath:" + SOLO_PRACTICE_TITLE, "Reader practice is missing", 10)))) {
+            super.openFirstDailyPractice();
+            return;
+        }
+        assertDailyPracticeIsDisplayed();
+        WebElement title = waitForElementVisible("xpath:" + SOLO_PRACTICE_TITLE, "Solo Practice is not visible", 10);
+        openedLessonTitle = getElementAccessibleName(title);
+        title.click();
+        waitForElementNotVisible("id:Today", "Solo Practice did not replace Today", 15);
+        waitForOpenedLessonTitle();
+        soloPracticeReader = true;
+    }
+
+    @Override
+    public void assertDailyPracticeScreenIsDisplayed() {
+        if (soloPracticeReader) {
+            assertDailyLessonScreenIsDisplayed();
+            waitForElementEnabled("id:CONTINUE", "Solo Practice reader cannot advance", 10);
+        } else {
+            super.assertDailyPracticeScreenIsDisplayed();
+        }
+    }
+
+    @Override
+    public void returnFromDailyPracticeToDailyPlan() {
+        if (soloPracticeReader) {
+            returnFromDailyLessonToDailyPlan();
+            soloPracticeReader = false;
+        } else {
+            super.returnFromDailyPracticeToDailyPlan();
+        }
     }
 
     protected static boolean isLessonBodyText(String text, String selectedTitle) {
@@ -275,6 +327,20 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
             "xpath://XCUIElementTypeOther[@name='KegelComponentViewSwitcherView']//XCUIElementTypeSwitch";
 
     @Override
+    protected void assertKegelStretchingInformation() {
+        if ("false".equals(System.getProperty("coach.kegel.stretchingExpected"))) {
+            Assert.assertEquals("Fixture expects a workout without the stretching option",
+                    0, getAmountElements(STRETCHING_SWITCH));
+            Assert.assertFalse("Unexpected stretching video in the configured fixture",
+                    isKegelStretchingVideoExpected());
+            Allure.addAttachment("Kegel stretching applicability",
+                    "The reviewed workout fixture has no stretching component; other start-screen fields remain required.");
+            return;
+        }
+        super.assertKegelStretchingInformation();
+    }
+
+    @Override
     protected boolean isKegelStretchingVideoExpected() {
         if (getAmountElements(STRETCHING_SWITCH) == 0) {
             waitForElementVisible(PRACTICE_SCREEN_START_BUTTON, "Kegel workout start control is missing", 10);
@@ -327,8 +393,28 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
             Assert.assertNotEquals("Fixture day total differs from the selected program", targetNumber, currentNumber);
             waitForElementAndClick(currentNumber < targetNumber ? RIGHT_SWITCHER_ARROW : LEFT_SWITCHER_ARROW,
                     "Cannot navigate to the configured Daily Plan day", 10);
-            createWait(15).withMessage("Daily Plan did not leave " + before).until(ignored ->
-                    !before.equals(getCurrentDayLabel().trim().replaceAll("\\s+", " ")));
+            createWait(15).withMessage("Daily Plan did not leave " + before).until(ignored -> {
+                if (isLockedNextDayPopupDisplayed() || isLockedModulePopupDisplayed()) return true;
+                for (WebElement day : driver.findElements(getLocatorByString(CURRENT_DAY_LABEL))) {
+                    try {
+                        if (day.isDisplayed() && !before.equals(getElementAccessibleName(day).trim()
+                                .replaceAll("\\s+", " "))) return true;
+                    } catch (org.openqa.selenium.StaleElementReferenceException transitioningDay) {
+                        return false;
+                    }
+                }
+                return false;
+            });
+            boolean lockedDay = isLockedNextDayPopupDisplayed();
+            if (lockedDay || isLockedModulePopupDisplayed()) {
+                Allure.addAttachment("Configured fixture day is locked", "application/xml",
+                        TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+                if (lockedDay) closeLockedNextDayPopup();
+                else closeLockedModulePopup();
+                Assert.assertEquals("Locked fixture navigation changed the current day", before, getCurrentDayLabel());
+                Assert.fail("Configured fixture day " + target + " is locked at " + before
+                        + "; known popup dismissed without completing activities");
+            }
         }
         Assert.fail("Configured Daily Plan day is not reachable: " + target);
     }
@@ -401,6 +487,8 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
 
     boolean isDailyLessonVisible() {
         return (isElementVisible(LESSON_SCREEN_TITLE) && isElementVisible(LESSON_SCREEN_BACK_BUTTON))
+                || (!isElementVisible("id:Today") && isElementVisible("id:ic outline close")
+                    && isElementVisible("id:empty bookmark") && isElementVisible("id:CONTINUE"))
                 || isLessonExitConfirmationVisible();
     }
 
@@ -481,7 +569,12 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
 
     @Override
     public void openProgramSelector() {
-        super.openProgramSelector();
+        try {
+            super.openProgramSelector();
+        } catch (org.openqa.selenium.TimeoutException timeout) {
+            if (!new iOSCoachFlowPageObject(driver).returnFromExternalAppIfVisible()) throw timeout;
+            if (!isElementVisible(SELECTOR_CARDS)) super.openProgramSelector();
+        }
         selectorTop = waitForElementPresent(SELECTOR_CARDS, "Program selector cards did not appear", 10).getRect().y;
     }
 

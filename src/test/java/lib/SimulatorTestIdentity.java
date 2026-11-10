@@ -46,10 +46,22 @@ public final class SimulatorTestIdentity {
 
     /** Call only after UI verification of the requested fixture account. */
     public static String currentUid() throws Exception {
-        String uid = command("sqlite3", "-readonly", databasePath().toString(),
-                "SELECT value FROM store WHERE key='user_id';").trim();
+        String uid = isPhysicalDevice()
+                ? command("python3", "scripts/ios_device_evidence.py", "--udid", deviceUdid(),
+                    "--bundle", Platform.getInstance().getIOSBundleId()).trim()
+                : command("sqlite3", "-readonly", databasePath().toString(),
+                    "SELECT value FROM store WHERE key='user_id';").trim();
         if (!uid.matches("[A-Za-z0-9_-]{20,128}")) throw new IllegalStateException("Missing analytics UID");
         return uid;
+    }
+
+    public static String deviceUdid() {
+        return System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+    }
+
+    public static boolean isPhysicalDevice() {
+        String udid = deviceUdid();
+        return udid != null && udid.matches("[A-Fa-f0-9]{8}-[A-Fa-f0-9]{16}");
     }
 
     public static Path databasePath() throws Exception {

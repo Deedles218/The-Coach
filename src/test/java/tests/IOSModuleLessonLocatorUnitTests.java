@@ -16,6 +16,8 @@ public class IOSModuleLessonLocatorUnitTests {
     private static final class Locators extends iOSDailyPlanPageObject {
         Locators() { super(null); }
         String metadata() { return FIRST_LESSON_TYPE; }
+        String practiceTitle() { return FIRST_PRACTICE_TITLE; }
+        String practiceMetadata() { return FIRST_PRACTICE_TYPE; }
     }
 
     private String header(String section) {
@@ -117,5 +119,31 @@ public class IOSModuleLessonLocatorUnitTests {
                 false, true, new Locators().metadata());
         Assert.assertEquals(1, found.getLength());
         Assert.assertEquals("How it all works", found.item(0).getAttributes().getNamedItem("name").getNodeValue());
+    }
+
+    @Test public void observedPaddedLessonNumberRetainsItsTitleAndMetadata() throws Exception {
+        String cards = header("DAILY LESSONS") + card("Mastering Her Orgasm", "Lesson 1  ");
+        NodeList title = select(cards, true, true);
+        Assert.assertEquals(1, title.getLength());
+        Assert.assertEquals("Mastering Her Orgasm", title.item(0).getAttributes().getNamedItem("name").getNodeValue());
+        Assert.assertEquals(1, select(cards, true, true, new Locators().metadata()).getLength());
+    }
+
+    @Test public void observedReaderPracticeHasMatchingTitleAndType() throws Exception {
+        for (String type : new String[]{"Practice", "Solo Practice"}) {
+            String cards = header("DAILY PRACTICE") + card("Pleasure Spot Mapping", type);
+            NodeList title = select(cards, true, true, new Locators().practiceTitle());
+            Assert.assertEquals(1, title.getLength());
+            Assert.assertEquals("Pleasure Spot Mapping", title.item(0).getAttributes().getNamedItem("name").getNodeValue());
+            Assert.assertEquals(1, select(cards, true, true, new Locators().practiceMetadata()).getLength());
+        }
+    }
+
+    @Test public void readerPracticeCannotBeTakenFromLessonsOrCatchUp() throws Exception {
+        for (String section : new String[]{"DAILY LESSONS", "TO CATCH-UP"}) {
+            String cards = header("DAILY PRACTICE") + header(section) + card("Wrong section", "Practice");
+            Assert.assertEquals(0, select(cards, true, true, new Locators().practiceTitle()).getLength());
+            Assert.assertEquals(0, select(cards, true, true, new Locators().practiceMetadata()).getLength());
+        }
     }
 }

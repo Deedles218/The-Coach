@@ -22,10 +22,16 @@ public class TodayProgramSelectorTests extends CoreTestCase {
     private String activeProgram;
     private String sourceDay;
     private String sourceProgress;
+    private boolean preservePreparedProfile;
+
+    @Before @Override public void setUp() throws Exception {
+        if (Boolean.getBoolean("coach.selector.preparedProfile")) PreparedMobileProfile.assertPreservationAllowed();
+        super.setUp();
+    }
 
     @Override protected void cleanupSessionForNextTest() {
         if (today != null) today.dismissSelectorIfOpen();
-        super.cleanupSessionForNextTest();
+        if (!preservePreparedProfile) super.cleanupSessionForNextTest();
     }
 
     private void prepare() {
@@ -40,6 +46,18 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         today = new iOSProgramSelectorPageObject(driver);
         today.openTodayTab();
         activeProgram = today.getActiveProgramName();
+    }
+
+    private void prepareReadOnly() {
+        if (!Boolean.getBoolean("coach.selector.preparedProfile")) {
+            prepare();
+            return;
+        }
+        requireIOSPlatform();
+        preservePreparedProfile = true;
+        PreparedMobileProfile.verifyFromToday(CoachFlowPageObjectFactory.get(driver));
+        today = new iOSProgramSelectorPageObject(driver);
+        today.openTodayTab();
     }
 
     private void prepareProgramChange(String caseKey) throws Exception {
@@ -84,7 +102,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
                 String uid = SimulatorTestIdentity.currentUid();
                 try (SimulatorAnalyticsEvidence analytics = new SimulatorAnalyticsEvidence(
                         "COA-8232", "ProgramModalSelect", uid, "keep_it_hard");
-                     SimulatorModalMotion recording = new SimulatorModalMotion("COA-8232")) {
+                     SimulatorModalMotion recording = new SimulatorModalMotion("COA-8232", driver)) {
                     long actionBoundary = System.currentTimeMillis();
                     today.selectProgram("Keep It Hard");
                     today.waitForSelectedProgram("Keep It Hard");
@@ -132,7 +150,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
                 today.assertActiveProgramIsFirst("Last Longer");
                 SimulatorModalMotion.assertOrangeOutline(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES),
                         today.firstCardBounds(), driver.manage().window().getSize().width);
-                try (SimulatorModalMotion recording = new SimulatorModalMotion("COA-8231")) {
+                try (SimulatorModalMotion recording = new SimulatorModalMotion("COA-8231", driver)) {
                     today.selectProgram("Keep It Hard");
                     today.waitForSelectedProgram("Keep It Hard");
                     recording.finishRecording();
@@ -151,10 +169,10 @@ public class TodayProgramSelectorTests extends CoreTestCase {
 
     @Test @Issue("COA-8228")
     public void testCoa8228SwipeDownClosesSelector() throws Exception {
-        prepare();
+        prepareReadOnly();
         today.openProgramSelector();
         Rectangle card = today.firstCardBounds();
-        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8228")) {
+        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8228", driver)) {
             today.swipeSelectorDown();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, false);
         }
@@ -162,7 +180,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
 
     @Test @Issue("COA-8230")
     public void testCoa8230ProgramsScrollVertically() {
-        prepare();
+        prepareReadOnly();
         today.openProgramSelector();
         today.assertProgramsScrollVertically();
         today.closeProgramSelector();
@@ -175,7 +193,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         // Identity is read only after the existing fixture login verifies its email.
         String uid = SimulatorTestIdentity.currentUid();
         try (SimulatorAnalyticsEvidence analytics = new SimulatorAnalyticsEvidence("COA-8227", "ProgramModalOpen", uid);
-             SimulatorModalMotion motion = new SimulatorModalMotion("COA-8227")) {
+             SimulatorModalMotion motion = new SimulatorModalMotion("COA-8227", driver)) {
             today.openProgramSelector();
             Rectangle card = today.firstCardBounds();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, true);
@@ -192,7 +210,7 @@ public class TodayProgramSelectorTests extends CoreTestCase {
         today.closeProgramSelector();
         today.openProgramSelector();
         Rectangle card = today.firstCardBounds();
-        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8229")) {
+        try (SimulatorModalMotion motion = new SimulatorModalMotion("COA-8229", driver)) {
             today.closeProgramSelector();
             motion.assertVerticalMotion(card, driver.manage().window().getSize().width, false);
         }

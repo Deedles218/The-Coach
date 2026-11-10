@@ -78,7 +78,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     protected String exploreBookmarksEntry() { return BOOKMARKS_ENTRY; }
 
-    private void tapBookmarksEntry(String entry) {
+    protected void tapBookmarksEntry(String entry) {
         waitForElementAndClick(entry, "Bookmarks entry point is not displayed", 15);
     }
 
@@ -195,6 +195,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Verify bookmark card: {title}")
     public void assertCard(String title) {
+        ensureBookmarkCardVisible(title);
         waitForElementPresent(exactText(title), "Bookmark card is absent: " + title, 15);
         assertNotEmpty();
     }
@@ -207,7 +208,20 @@ public abstract class BookmarksPageObject extends MainPageObject {
         return isElementVisible(exactText(title));
     }
 
+    protected void ensureBookmarkCardVisible(String title) {
+        String control = cardBookmarkFor(title);
+        for (String direction : new String[]{"up", "down"}) {
+            for (int attempt = 0; attempt < 8; attempt++) {
+                if (isElementVisible(control)) return;
+                swipe(direction);
+            }
+        }
+        Assert.assertTrue("Bookmark card control is not visible after scrolling: " + title,
+                isElementVisible(control));
+    }
+
     public void assertCardComposition(String title) {
+        ensureBookmarkCardVisible(title);
         String card = cardFor(title);
         waitForElementPresent(card, "Bookmark card container is absent: " + title, 10);
         waitForElementPresent(cardImageFor(title), "Bookmark card has no image: " + title, 10);
@@ -221,6 +235,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void assertCardGroupAndCategory(String title, String group, String category) {
+        ensureBookmarkCardVisible(title);
         waitForElementPresent(cardCategoryFor(title, category),
                 "Bookmark card is in the wrong category: " + title + " / " + category, 10);
         waitForElementPresent(cardGroupFor(title, group),
@@ -248,6 +263,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open bookmark card: {title}")
     public void openCard(String title) {
+        ensureBookmarkCardVisible(title);
         waitForElementAndClick(exactText(title), "Cannot open bookmark card: " + title, 10);
         createWait(20).withMessage("Bookmark card did not open content").until(ignored ->
                 isElementVisible(INACTIVE_BOOKMARK) || isElementVisible(ACTIVE_BOOKMARK)
@@ -270,6 +286,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open removal dialog for card: {title}")
     public void openRemovalDialog(String title) {
+        ensureBookmarkCardVisible(title);
         String control = cardBookmarkFor(title);
         waitForElementAndClick(control, "Cannot open bookmark removal dialog for: " + title, 10);
         waitForElementPresent(CANCEL, "Removal dialog has no CANCEL action", 10);
@@ -279,11 +296,13 @@ public abstract class BookmarksPageObject extends MainPageObject {
     public void cancelRemoval() {
         waitForElementAndClick(CANCEL, "Cannot cancel bookmark removal", 10);
         waitForElementNotVisible(CANCEL, "Bookmark removal dialog stayed open", 10);
+        waitForElementVisible(BOOKMARKS_TITLE, "My Bookmarks did not return after CANCEL", 10);
     }
 
     public void confirmRemoval() {
         waitForElementAndClick(REMOVE, "Cannot confirm bookmark removal", 10);
         waitForElementNotVisible(REMOVE, "Bookmark removal dialog stayed open", 10);
+        waitForElementVisible(BOOKMARKS_TITLE, "My Bookmarks did not return after REMOVE", 10);
     }
 
     public void assertTooltipVisible(String text) {
@@ -292,6 +311,11 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     public void assertTooltipAbsent(String text) {
         Assert.assertFalse("Bookmarks tooltip must not be displayed", isElementPresent(exactText(text)));
+    }
+
+    @Step("Dismiss the observed Bookmarks tooltip during fixture preparation")
+    public void dismissTooltipIfVisible(String text) {
+        if (isElementVisible(exactText(text))) dismissTooltipByBlankArea(text);
     }
 
     public void dismissTooltipByBlankArea(String text) {
@@ -306,14 +330,15 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void dismissTooltipByBookmark(String title, String text) {
-        openRemovalDialog(title);
+        ensureBookmarkCardVisible(title);
+        waitForElementAndClick(cardBookmarkFor(title), "Cannot tap bookmark icon under tooltip", 10);
         waitForElementNotVisible(exactText(text), "Tooltip stayed visible after bookmark tap", 10);
-        cancelRemoval();
+        if (isElementVisible(CANCEL)) cancelRemoval();
     }
 
     public void dismissTooltipByNavigation(String text) {
-        backFromBookmarks();
-        Assert.assertFalse("Tooltip survived navigation", isElementPresent(exactText(text)));
+        waitForElementAndClick(BOOKMARKS_BACK, "Cannot tap navigation under tooltip", 10);
+        waitForElementNotVisible(exactText(text), "Tooltip survived navigation tap", 10);
     }
 
     public void reopenAndAssertTooltipAbsent(String text) {
@@ -422,8 +447,7 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void assertPreviousDayItemNotCompleted(String title, String previousDayTitle) {
-        waitForElementAndClick(previousDayControl(), "Cannot open previous Daily Plan day", 10);
-        waitForElementPresent(exactText(previousDayTitle), "Previous Daily Plan day did not open", 15);
+        selectRecurringDay(previousDayTitle, true);
         assertVisibleDayItemNotCompleted(title,
                 "Finishing the saved occurrence also completed the previous day");
     }
@@ -432,25 +456,30 @@ public abstract class BookmarksPageObject extends MainPageObject {
                                                   String previousDayTitle) throws Exception {
         boolean[] previousOpened = {false};
         RestoringTestAction.run(() -> {
-            waitForElementAndClick(previousDayControl(), "Cannot inspect the previous occurrence fixture", 10);
             previousOpened[0] = true;
-            waitForElementPresent(exactText(previousDayTitle), "Previous fixture day did not open", 15);
+            selectRecurringDay(previousDayTitle, true);
             assertVisibleDayItemNotCompleted(title,
                     "Recurring fixture previous occurrence is already completed; restore its account snapshot");
         }, () -> {
             if (previousOpened[0]) {
-                waitForElementAndClick(nextDayControl(), "Cannot restore the saved occurrence day", 10);
-                waitForElementPresent(exactText(savedDayTitle), "Saved occurrence day did not restore", 15);
+                selectRecurringDay(savedDayTitle, false);
             }
         });
+    }
+
+    protected void selectRecurringDay(String expectedDay, boolean previous) {
+        waitForElementAndClick(previous ? previousDayControl() : nextDayControl(),
+                "Cannot navigate to the configured recurring occurrence", 10);
+        waitForElementPresent(exactText(expectedDay), "Configured recurring day did not open", 15);
     }
 
     private void assertVisibleDayItemNotCompleted(String title, String message) {
         String titleLocator = exactText(title);
         swipeUpToFindFirstVisibleElement(new String[]{titleLocator},
                 "Recurring practice is absent on previous day: " + title, 8);
-        String completed = completedMarkerFor(title);
-        Assert.assertFalse(message, isElementVisible(completed));
+        Assert.assertEquals("Recurring fixture must identify one Daily Plan card", 1,
+                getAmountElements(dailyPlanCardFor(title)));
+        Assert.assertFalse(message, isDailyPlanItemCompleted(title, false));
     }
 
     public void assertNoPaywall() {

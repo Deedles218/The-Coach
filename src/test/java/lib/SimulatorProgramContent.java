@@ -28,17 +28,24 @@ public final class SimulatorProgramContent {
         Assert.assertNotNull("Current program content requires a dedicated fixture UID", uid);
         Files.createDirectories(Paths.get("target"));
         String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));
-        Assert.assertNotNull("Current program content requires an explicit simulator UDID", udid);
+        Assert.assertNotNull("Current program content requires an explicit iOS UDID", udid);
         Path folder = Files.createTempDirectory(Paths.get("target"), caseKey + "-content-");
         Path result = folder.resolve("content.json"), log = folder.resolve("reader.log");
         ProcessBuilder builder = new ProcessBuilder("python3", "scripts/read_simulator_program_content.py",
                 "--udid", udid, "--program-id", programId,
                 "--not-before-ms", Long.toString(actionBoundary), "--output", result.toString());
+        boolean physicalDevice = SimulatorTestIdentity.isPhysicalDevice();
+        if (physicalDevice) {
+            builder.command().add("--device");
+            builder.command().add("--bundle");
+            builder.command().add(Platform.getInstance().getIOSBundleId());
+        }
         if (incompleteModule) builder.command().add("--require-incomplete-module");
         builder.environment().put("COACH_EXPECTED_PROGRAM_UID", uid);
         Process reader = builder.redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
-            Assert.assertTrue("Current Today response reader timed out", reader.waitFor(20, TimeUnit.SECONDS));
+            Assert.assertTrue("Current Today response reader timed out",
+                    reader.waitFor(physicalDevice ? 45 : 20, TimeUnit.SECONDS));
             Allure.addAttachment("Current Today response reader", new String(Files.readAllBytes(log), StandardCharsets.UTF_8));
             Assert.assertEquals("No verified response from current UI action; see " + log, 0, reader.exitValue());
             try (InputStream in = Files.newInputStream(result)) {

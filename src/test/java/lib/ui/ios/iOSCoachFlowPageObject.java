@@ -25,7 +25,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private boolean preparingExistingProgressAccount;
     private static final String EXPLORE_WELCOME = "id:Welcome to Explore ✨";
     private static final String EXPLORE_WELCOME_CONFIRM = "id:SOUNDS GREAT";
+    private static final String EXPLORE_WELCOME_FALLBACK =
+            "xpath://XCUIElementTypeStaticText[starts-with(@name, 'Welcome to Explore')]";
     private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String LESSON_FEEDBACK_TITLE = "id:How would you rate the lesson?";
     public static final String PARTNER_PROMO_TITLE =
             "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner'"
                     + " or @name='More pleasure for both of you']";
@@ -34,7 +37,8 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private static final String ANONYMOUS_ACCOUNT_NETWORK_ERROR =
             "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
                     + " and contains(@name,'Network error')]";
-    static final String MASTERCLASS_PROMO_TITLE = "id:Master the Art of Sensual Touch";
+    static final String CONTENT_PROMO_TITLE = "xpath://XCUIElementTypeStaticText[@visible='true' and (@name='Master the Art of Sensual Touch'"
+            + " or @name='Your Personal Guide Along the Way')]";
     public static final String WELCOME_START_BUTTON =
             "xpath://XCUIElementTypeButton[@name='START NOW' or @name='Get Started']";
     public static final String WELCOME_LOGIN_BUTTON =
@@ -50,7 +54,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         SHOP_CONTENT_MARKER = "id:shop_screen";
         // The Store link is actual rendered content in the observed native
         // accessibility tree. Neither alternative accepts the tab itself.
-        SHOP_CONTENT_FALLBACK = "xpath://XCUIElementTypeLink[@name='The Coach Store' and @visible='true']";
+        SHOP_CONTENT_FALLBACK = "xpath://XCUIElementTypeLink[@name='The Coach Store' and @visible='true']"
+                + " | //XCUIElementTypeWebView//XCUIElementTypeLink[@name='For Him' and @visible='true'"
+                + " and ../XCUIElementTypeLink[@name='For Her'] and ../XCUIElementTypeLink[@name='For Two']]";
         TAB_FEED = "id:Feed";
         FEED_SCREEN_TITLE = "xpath://XCUIElementTypeStaticText[@name='Feed']";
         FEED_DEPRECATION_POPUP_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'Feed will be removed')]";
@@ -92,13 +98,18 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                 + "//XCUIElementTypeButton[@name='Close' or @name='Закрыть']"
                 + " | //XCUIElementTypeButton[@name='Close' or @name='Done' or @name='Закрыть'"
                 + " or @name='profile_browser_close']";
-        PROFILE_SUBSCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@name='BackButton' or @name='Daily Plan' or @name='Today' or @name='Back']";
+        PROFILE_SUBSCREEN_BACK_BUTTON = "xpath://XCUIElementTypeButton[@visible='true' and "
+                + "(@name='BackButton' or @name='navBarRoundBack' or @name='Back')]"
+                + " | //XCUIElementTypeNavigationBar//XCUIElementTypeButton[@visible='true' "
+                + "and (@name='Daily Plan' or @name='Today' or @name='Profile')]";
         DELETE_ACCOUNT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Delete my account' or @name='Delete My Data' or @name='Delete my data']";
         DELETE_ACCOUNT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[contains(@name, 'It will be impossible to restore the progress')]";
         DELETE_ACCOUNT_CANCEL_BUTTON = "id:CANCEL";
         LOG_OUT_BUTTON = "xpath://XCUIElementTypeStaticText[@name='Log Out']";
         LOG_OUT_CONFIRM_TITLE = "xpath://XCUIElementTypeStaticText[@name='Log out of your account?' "
-                + "or starts-with(@name, 'Your account is currently anonymous because')]";
+                + "or @label='Log out of your account?' "
+                + "or starts-with(@name, 'Your account is currently anonymous because') "
+                + "or starts-with(@label, 'Your account is currently anonymous because')]";
         LOG_OUT_CONFIRM_BUTTON = "xpath://*[@name='YES'] "
                 + "| //XCUIElementTypeButton[@name='LOG OUT' and @visible='true']";
 
@@ -200,12 +211,17 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     // No @Step: the argument is a credential and must not enter Allure parameters.
     public void assertAuthenticatedProfileForEmail(String email) {
+        assertProfileForEmail(email, true);
+    }
+
+    // A web-paid deferred session may still require email confirmation (COA-6802).
+    public void assertProfileForEmail(String email, boolean requireConfirmedEmail) {
         String nickname = email.substring(0, email.indexOf('@'));
         waitForElementVisible("xpath://XCUIElementTypeStaticText[@name="
                         + org.openqa.selenium.support.ui.Quotes.escape(nickname) + "]",
                 "The configured account identity did not restore in Profile", 30);
         Assert.assertFalse("Profile is still anonymous after OTP; restore the account fixture",
-                isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
+                isElementVisible("id:CONNECT") || (requireConfirmedEmail && isElementVisible("id:CONFIRM")));
     }
 
     @Override
@@ -264,14 +280,18 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void ensureLoggedOutOnStartScreen() {
+        clearPendingTestFlightReport();
         activateAppIfPossible();
+        declineTrackingPermissionIfPresent();
         closeProfileBrowserIfPresent();
+        closeLessonFeedbackIfPresent();
         if (isElementVisible(LOG_OUT_CONFIRM_TITLE)) {
             confirmLogoutIfNeeded();
         }
         // A cold simulator launch can render the subscription error after the
         // first optional-popup check. Wait for an actionable entry surface.
         createWait(30).withMessage("No actionable screen after launching Coach").until(ignored -> {
+            closeLessonFeedbackIfPresent();
             Assert.assertFalse("iOS startup is blocked by an anonymous-account network error; check network access",
                     isElementVisible(ANONYMOUS_ACCOUNT_NETWORK_ERROR));
             return isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
@@ -280,10 +300,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         || isElementVisible(PDF_GUIDE_UPSELL_TITLE) || isElementVisible(NOTIFICATION_PROMPT_TITLE)
                         || isElementVisible(CONNECT_EMAIL_PROMPT_TITLE)
                         || new iOSOnboardingPageObject(driver).isPaywallVisible()
-                        || isElementVisible(EXPLORE_WELCOME)
+                        || isExploreWelcomeVisible()
                         || isElementVisible(PROGRAM_DISCOVERY_HINT)
                         || isElementVisible("id:ProgramSelectionCardView")
-                        || isElementVisible(MASTERCLASS_PROMO_TITLE)
+                        || isElementVisible(CONTENT_PROMO_TITLE)
                         || new iOSDailyPlanPageObject(driver).isDailyLessonVisible()
                         || new iOSDailyPlanPageObject(driver).isKegelExerciseFlowVisible()
                         || isElementVisible(PROFILE_FAQ_SCREEN) || isElementVisible(PROFILE_TERMS_SCREEN)
@@ -298,12 +318,73 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override
     public void cleanupForNextTest() {
+        clearPendingTestFlightReport();
+        activateAppIfPossible();
+        declineTrackingPermissionIfPresent();
         closeProgramScreensIfPresent();
         if (Boolean.getBoolean("coach.ios.quizProfileLogin")) {
             quizProfileFlow().ensureLoggedOutOnObservedStart(this);
             return;
         }
+        returnFromUnfinishedQuestionnaireIfPresent();
         super.cleanupForNextTest();
+    }
+
+    private void declineTrackingPermissionIfPresent() {
+        String text;
+        try {
+            text = driver.switchTo().alert().getText();
+        } catch (org.openqa.selenium.NoAlertPresentException absent) {
+            return;
+        }
+        String normalized = text == null ? "" : text.toLowerCase(Locale.US).replaceAll("\\s+", " ");
+        if (!normalized.contains("the coach")
+                || !normalized.contains("track your activity across other companies")) return;
+        Map<String,Object> args = new HashMap<>();
+        args.put("action", "getButtons");
+        List<?> buttons = (List<?>) driver.executeScript("mobile: alert", args);
+        Assert.assertTrue("Observed tracking prompt has no supported decline action",
+                buttons.contains("Ask App Not to Track"));
+        args.put("action", "dismiss");
+        args.put("buttonLabel", "Ask App Not to Track");
+        driver.executeScript("mobile: alert", args);
+        io.qameta.allure.Allure.addAttachment("Declined observed Coach tracking prompt", text);
+        createWait(10).withMessage("Tracking permission dialog did not close")
+                .until(ExpectedConditions.not(ExpectedConditions.alertIsPresent()));
+    }
+
+    private void returnFromUnfinishedQuestionnaireIfPresent() {
+        String questionnaire = "xpath://XCUIElementTypeStaticText[@visible='true' and "
+                + "(@name='QUIZ' or @name='GOALS' or @name='WHAT ELSE DO YOU WANT TO ACHIEVE?')]";
+        for (int step = 0; step < 12 && isElementVisible(questionnaire)
+                && isElementVisible(ONBOARDING_BACK_BUTTON); step++) {
+            String before = driver.getPageSource();
+            waitForElementAndClick(ONBOARDING_BACK_BUTTON,
+                    "Cannot return from the observed unfinished questionnaire", 10);
+            createWait(10).withMessage("Questionnaire Back did not change the screen")
+                    .until(ignored -> !before.equals(driver.getPageSource()));
+        }
+        Assert.assertFalse("Unfinished questionnaire did not return to an entry screen within 12 steps",
+                isElementVisible(questionnaire) && isElementVisible(ONBOARDING_BACK_BUTTON));
+    }
+
+    private void clearPendingTestFlightReport() {
+        if (!Boolean.getBoolean("coach.ios.testFlightReports")) return;
+        String text;
+        try {
+            text = driver.switchTo().alert().getText();
+        } catch (org.openqa.selenium.NoAlertPresentException noAlert) {
+            return;
+        }
+        if (!(text.contains("The Coach: Mens Health & Kegel") || text.contains("The Coach For Her: Kegel"))
+                || !text.contains("Crashed") || !text.contains("share additional information")) return;
+        io.qameta.allure.Allure.addAttachment("TestFlight crash dialog", "image/png",
+                new java.io.ByteArrayInputStream(driver.getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
+        io.qameta.allure.Allure.addAttachment("TestFlight report at session boundary", text);
+        Map<String,Object> options = new HashMap<>();
+        options.put("action", "dismiss");
+        options.put("buttonLabel", "No Thanks");
+        driver.executeScript("mobile: alert", options);
     }
 
     @Override
@@ -398,7 +479,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                         ? "the web document is still loading"
                         : "the expected Terms content is not visible";
                 throw new TimeoutException("Terms browser opened, but " + state
-                        + "; expected Terms content within 20 seconds. See the browser screenshot and page source.",
+                        + "; expected Terms content within " + profileWebLoadSeconds() + " seconds. See the browser screenshot and page source.",
                         failure);
             }
             throw failure;
@@ -409,6 +490,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         // Persistent tabs also exist beneath auth/navigation overlays. Require
         // rendered Today content and its Profile control before leaving OTP.
         return !isElementVisible(OTP_SCREEN_TITLE) && !isElementVisible(LOGIN_SCREEN_TITLE)
+                && !isElementVisible(LESSON_FEEDBACK_TITLE)
                 && !isElementVisible(START_SCREEN_TITLE)
                 && (isElementVisible(PROFILE_BUTTON) || isElementVisible(PROFILE_BUTTON_FEMALE)
                     || isElementVisible(PROFILE_BUTTON_LEGACY))
@@ -416,7 +498,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closePostAuthPopupsIfPresent() {
-        closeMasterclassPromoIfPresent();
+        closeContentPromoIfPresent();
         closePartnerPromoIfPresent();
         if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
         if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
@@ -431,15 +513,16 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closeLessonFeedbackIfPresent();
         closeProfileBrowserIfPresent();
+        closeExploreWelcomeIfPresent();
         closeProgramDiscoveryHintIfPresent();
         closeProgramSelectorIfPresent();
-        closeMasterclassPromoIfPresent();
+        closeContentPromoIfPresent();
         iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
         daily.closeDailyLessonIfPresent();
         daily.closeCompletedPracticeIfPresent();
         if (daily.isKegelExerciseFlowVisible()) daily.closeKegelExerciseFlowIfPresent();
-        if (isElementVisible(EXPLORE_WELCOME)) dismissExploreWelcomeIfPresent();
         closePartnerPromoIfPresent();
         iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
         if (onboarding.isPaywallVisible()) {
@@ -463,10 +546,23 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         }
     }
 
+    @Step("Close completed lesson feedback before session recovery")
+    protected void closeLessonFeedbackIfPresent() {
+        if (!isElementVisible(LESSON_FEEDBACK_TITLE)) return;
+        waitForElementAndClick("id:ic outline close", "Cannot close completed lesson feedback", 10);
+        waitForElementNotVisible(LESSON_FEEDBACK_TITLE, "Completed lesson feedback remained open", 10);
+    }
+
     @Override
     @Step("Close the iOS Profile browser and verify return to Profile")
     public void closeProfileBrowser() {
         dismissProfileBrowser();
+        for (int attempt = 0; attempt < 4 && isElementPresent(PROFILE_PREMIUM_BADGE)
+                && !isElementVisible(PROFILE_PREMIUM_BADGE); attempt++) {
+            Map<String, Object> scroll = new HashMap<>();
+            scroll.put("direction", "down");
+            ((JavascriptExecutor) driver).executeScript("mobile: swipe", scroll);
+        }
         assertProfileScreenIsDisplayed();
     }
 
@@ -516,12 +612,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     public void dismissExploreWelcomeIfPresent() {
         createWait(10).withMessage("Neither Explore selection nor its introduction appeared").until(ignored ->
-                isElementVisible(EXPLORE_WELCOME) || isElementVisible(TAB_EXPLORE_SELECTED)
+                isExploreWelcomeVisible() || isElementVisible(TAB_EXPLORE_SELECTED)
                         || isElementVisible(TEST_ID_EXPLORE_SELECTED));
-        if (isElementVisible(EXPLORE_WELCOME)) {
-            waitForElementAndClick(EXPLORE_WELCOME_CONFIRM, "Cannot acknowledge the Explore introduction", 10);
-            waitForElementNotVisible(EXPLORE_WELCOME, "Explore introduction did not close", 10);
-        }
+        closeExploreWelcomeIfPresent();
     }
 
     @Override
@@ -539,13 +632,35 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     public void openProfile() {
         closeProgramDiscoveryHintIfPresent();
         closeProgramSelectorIfPresent();
-        closeMasterclassPromoIfPresent();
+        closeContentPromoIfPresent();
         closePartnerPromoIfPresent();
-        tapHittableControl(new String[]{PROFILE_BUTTON, PROFILE_BUTTON_FEMALE, PROFILE_BUTTON_LEGACY},
-                "Profile control is not hittable", 10);
-        waitForElementVisible(PROFILE_SCREEN, "Profile screen did not open", 10);
+        createWait(10).withMessage("Profile button did not become available after Explore welcome")
+                .until(webDriver -> {
+                    closeExploreWelcomeIfPresent();
+                    return isElementVisible(PROFILE_BUTTON)
+                            || isElementVisible(PROFILE_BUTTON_FEMALE)
+                            || isElementVisible(PROFILE_BUTTON_LEGACY);
+                });
+        String[] controls = {PROFILE_BUTTON, PROFILE_BUTTON_FEMALE, PROFILE_BUTTON_LEGACY};
+        tapHittableControl(controls, "Profile control is not hittable", 10);
+        try {
+            waitForElementVisible(PROFILE_SCREEN, "Profile screen did not open", 10);
+        } catch (TimeoutException timeout) {
+            if (!returnFromExternalAppIfVisible()) throw timeout;
+            if (!isElementVisible(PROFILE_SCREEN)) {
+                tapHittableControl(controls, "Profile control is not hittable", 10);
+                waitForElementVisible(PROFILE_SCREEN, "Profile screen did not open after returning from the external application", 10);
+            }
+        }
         createWait(30).withMessage("Profile container opened but its content did not load")
                 .until(ignored -> isProfileContentReady());
+    }
+
+    boolean returnFromExternalAppIfVisible() {
+        if (!isElementVisible("id:Mail.conversationView.Toolbar.ArchiveButton")
+                && !isElementVisible("id:What’s New in Calendar")) return false;
+        activateAppIfPossible();
+        return true;
     }
 
     protected boolean isProfileContentReady() {
@@ -555,11 +670,25 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                     || isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
     }
 
+    private boolean isExploreWelcomeVisible() {
+        return isElementVisible(EXPLORE_WELCOME) || isElementVisible(EXPLORE_WELCOME_FALLBACK);
+    }
+
+    private void closeExploreWelcomeIfPresent() {
+        boolean preferred = isElementVisible(EXPLORE_WELCOME);
+        String title = preferred ? EXPLORE_WELCOME : EXPLORE_WELCOME_FALLBACK;
+        if (!isElementVisible(title)) return;
+        String confirm = preferred ? EXPLORE_WELCOME_CONFIRM
+                : title + "/../XCUIElementTypeButton[@name='SOUNDS GREAT']";
+        waitForElementAndClick(confirm, "Cannot dismiss Explore welcome", 10);
+        waitForElementNotVisible(title, "Explore welcome remains visible", 10);
+    }
+
     @Override
     public void openToday() {
         closeProgramDiscoveryHintIfPresent();
         closeProgramSelectorIfPresent();
-        closeMasterclassPromoIfPresent();
+        closeContentPromoIfPresent();
         closePartnerPromoIfPresent();
         super.openToday();
         closeProgramDiscoveryHintIfPresent();
@@ -589,13 +718,13 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         waitForElementNotVisible(PARTNER_PROMO_TITLE, "Partner promo remains visible", 10);
     }
 
-    @Step("Close optional Sensual Touch masterclass promo if displayed")
-    public void closeMasterclassPromoIfPresent() {
-        if (!isElementVisible(MASTERCLASS_PROMO_TITLE)) return;
+    @Step("Close the optional content promo")
+    public void closeContentPromoIfPresent() {
+        if (!isElementVisible(CONTENT_PROMO_TITLE)) return;
         // This observed modal exposes an unnamed X beside its title and CTA.
-        String close = "xpath://XCUIElementTypeStaticText[@name='Master the Art of Sensual Touch']"
+        String close = CONTENT_PROMO_TITLE
                 + "/../XCUIElementTypeButton[not(@name) and @visible='true']";
-        waitForElementAndClick(close, "Cannot close the optional masterclass promo", 10);
-        waitForElementNotVisible(MASTERCLASS_PROMO_TITLE, "Masterclass promo remains visible", 10);
+        waitForElementAndClick(close, "Cannot close the optional content promo", 10);
+        waitForElementNotVisible(CONTENT_PROMO_TITLE, "Content promo remains visible", 10);
     }
 }

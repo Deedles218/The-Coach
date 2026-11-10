@@ -44,9 +44,7 @@ public class iOSPartnerAccessPageObject extends MainPageObject {
         onboarding.openStartFlow();
         onboarding.selectGoal(goal);
         onboarding.completeQuestionnaire();
-        onboarding.closePaywallsWithoutConsumingSlides(new String[]{
-                "Get an access for your partner", "More pleasure for both of you"
-        });
+        onboarding.closePaywallsBeforePartnerOffer();
         waitForLaunchSurface();
     }
 
@@ -56,9 +54,7 @@ public class iOSPartnerAccessPageObject extends MainPageObject {
             if (isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)) return true;
             iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
             if (onboarding.isPaywallVisible()) {
-                onboarding.closePaywallsWithoutConsumingSlides(new String[]{
-                        "Get an access for your partner", "More pleasure for both of you"
-                });
+                onboarding.closePaywallsBeforePartnerOffer();
             }
             String liveCoach = text("Your Personal Guide Along the Way");
             if (isElementVisible(liveCoach)) {
@@ -66,7 +62,7 @@ public class iOSPartnerAccessPageObject extends MainPageObject {
                         "Cannot close the observed For Her live-coach introduction", 10);
                 waitForElementNotVisible(liveCoach, "Live-coach introduction remained above Today", 10);
             }
-            if (isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) coach.closeMasterclassPromoIfPresent();
+            coach.closeContentPromoIfPresent();
             if (isElementVisible("id:PDFGuideUpsellCloseImage")) coach.closePdfGuideUpsellIfPresent();
             if (coach.isNotificationPromptDisplayed()) coach.closeNotificationPromptIfPresent();
             if (isElementVisible(text("Connect you email to save the progress."))

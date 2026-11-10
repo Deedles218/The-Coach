@@ -10,6 +10,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.ExploreStateRestorer;
 import lib.TestData;
 import lib.RestoringTestAction;
 import lib.ui.CoachFlowPageObject;
@@ -57,7 +58,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Description("Verifies that the current Daily Plan stage stays selected after tapping the next-day arrow; closes the locked next-day popup if the build shows it.")
     @Step("Start test test02DailyPlanLockedNextDayAndFirstDayLeftArrow")
     @Severity(value = SeverityLevel.CRITICAL)
-    public void test02DailyPlanLockedNextDayAndFirstDayLeftArrow() {
+    public void test02DailyPlanLockedNextDayAndFirstDayLeftArrow() throws Exception {
         requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
@@ -65,8 +66,26 @@ public class DailyPlanTests extends CoreTestCase {
 
         ensureExistingProgressDailyPlanState();
         dailyPlan.openTodayTab();
-        dailyPlan.assertDailyPlanDaySwitcherIsDisplayed();
-        dailyPlan.assertRightArrowDoesNotChangeCurrentDayWhenLocked();
+        onProgramFixture("coach.dailyPlan.lockedDayProgram", "coach.dailyPlan.lockedDay", () -> {
+            dailyPlan.assertDailyPlanDaySwitcherIsDisplayed();
+            lib.ui.BookmarksPageObject access = null;
+            if (Platform.getInstance().isIOS()) {
+                access = lib.ui.factories.BookmarksPageObjectFactory.get(driver);
+                access.assertNoPaywall();
+                String pending = System.getProperty("coach.dailyPlan.lockedDayPendingTitle");
+                if (pending != null) {
+                    access.assertDailyPlanItemNotCompleted(pending);
+                    io.qameta.allure.Allure.addAttachment("Unfinished locked-day activity", "application/xml",
+                            TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+                    new lib.ui.ios.iOSKegelCustomizationPageObject(driver).returnToDayHeader();
+                    io.qameta.allure.Allure.addAttachment("Locked-day fixture before tap",
+                            dailyPlan.getActiveProgramName() + "; " + dailyPlan.getCurrentDayLabel()
+                                    + "; verified unfinished: " + pending);
+                }
+            }
+            dailyPlan.assertRightArrowDoesNotChangeCurrentDayWhenLocked();
+            if (access != null) access.assertNoPaywall();
+        });
     }
 
     @Test
@@ -78,7 +97,7 @@ public class DailyPlanTests extends CoreTestCase {
     @Description("Starts from the progress-dependent Daily Plan, opens the first available Daily Lesson when the current program day exposes one, verifies content, and returns to Daily Plan.")
     @Step("Start test test03DailyPlanLessonOpensAndReturns")
     @Severity(value = SeverityLevel.CRITICAL)
-    public void test03DailyPlanLessonOpensAndReturns() {
+    public void test03DailyPlanLessonOpensAndReturns() throws Exception {
         requireMobilePlatform();
 
         DailyPlanPageObject dailyPlan = DailyPlanPageObjectFactory.get(driver);
@@ -86,13 +105,15 @@ public class DailyPlanTests extends CoreTestCase {
 
         ensureExistingProgressDailyPlanState();
         dailyPlan.openTodayTab();
-        Assert.assertTrue(
-                "Current existing-progress Daily Plan state does not expose Daily Lessons; lesson-opening coverage needs a day/program fixture with a visible lesson.",
-                dailyPlan.hasDailyLessonsAvailable()
-        );
-        dailyPlan.openFirstDailyLesson();
-        dailyPlan.assertDailyLessonScreenIsDisplayed();
-        dailyPlan.returnFromDailyLessonToDailyPlan();
+        onLessonFixture(() -> {
+            Assert.assertTrue(
+                    "Current existing-progress Daily Plan state does not expose Daily Lessons; lesson-opening coverage needs a day/program fixture with a visible lesson.",
+                    dailyPlan.hasDailyLessonsAvailable()
+            );
+            dailyPlan.openFirstDailyLesson();
+            RestoringTestAction.run(dailyPlan::assertDailyLessonScreenIsDisplayed,
+                    dailyPlan::returnFromDailyLessonToDailyPlan);
+        });
     }
 
     @Test
@@ -212,7 +233,37 @@ public class DailyPlanTests extends CoreTestCase {
         ensureExistingProgressDailyPlanState();
         iOSDailyPlanPageObject daily = new iOSDailyPlanPageObject(driver);
         daily.openTodayTab();
-        RestoringTestAction.run(daily::assertDailyLessonCannotBeCustomized, daily::dismissCustomizationIfPresent);
+        onLessonFixture(() -> RestoringTestAction.run(daily::assertDailyLessonCannotBeCustomized, daily::dismissCustomizationIfPresent));
+    }
+
+    private void onLessonFixture(RestoringTestAction.CheckedAction check) throws Exception {
+        if (System.getProperty("coach.dailyPlan.lessonProgram") != null) {
+            Assert.assertNotNull("Configure the lesson fixture day", System.getProperty("coach.dailyPlan.lessonDay"));
+        }
+        onProgramFixture("coach.dailyPlan.lessonProgram", "coach.dailyPlan.lessonDay", check);
+    }
+
+    private void onProgramFixture(String programProperty, String dayProperty,
+                                  RestoringTestAction.CheckedAction check) throws Exception {
+        String program = System.getProperty(programProperty);
+        if (program == null) {
+            check.run();
+            return;
+        }
+        iOSProgramSelectorPageObject selector = new iOSProgramSelectorPageObject(driver);
+        ExploreStateRestorer original = ExploreStateRestorer.capture(driver);
+        RestoringTestAction.run(() -> {
+            try {
+                selector.ensureProgramSelected(program);
+                String day = System.getProperty(dayProperty);
+                if (day != null) selector.selectObservedDay(day);
+                check.run();
+            } catch (Exception | AssertionError failure) {
+                captureFailureArtifacts(failure, org.junit.runner.Description.createTestDescription(
+                        getClass(), "beforeProgramFixtureRestore"));
+                throw failure;
+            }
+        }, original::restore);
     }
 
     private void ensureExistingProgressDailyPlanState() {

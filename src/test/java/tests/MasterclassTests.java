@@ -2,6 +2,7 @@ package tests;
 
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import lib.CoreTestCase;
 import lib.ui.MasterclassPageObject;
 import org.junit.Assert;
@@ -66,7 +67,7 @@ public class MasterclassTests extends CoreTestCase {
         if (course != null) course.closePlayerIfPresent();
     }
 
-    @Test public void testUnpaidCourseOpensAndReturns() {
+    @Test @Issue("COA-9633") public void testUnpaidCourseOpensAndReturns() {
         requireEntitlement("unpaid");
         course.assertUnpaid();
         course.backToExplore();
@@ -75,7 +76,7 @@ public class MasterclassTests extends CoreTestCase {
         course.backToExplore();
     }
 
-    @Test public void testPurchasedAccessSurvivesReopenAndRestart() {
+    @Test @Issue("COA-9635") public void testPurchasedAccessSurvivesReopenAndRestart() {
         requireEntitlement("purchased");
         course.assertPurchased();
         course.backToExplore();
@@ -94,7 +95,7 @@ public class MasterclassTests extends CoreTestCase {
         course.backToExplore();
     }
 
-    @Test public void testPlaybackPauseResumeAndForward() throws InterruptedException {
+    @Test @Issue("COA-9636") public void testPlaybackPauseResumeAndForward() throws InterruptedException {
         requireEntitlement("purchased");
         course.assertPurchased();
         course.startPlayer();

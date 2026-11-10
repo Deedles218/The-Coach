@@ -15,6 +15,7 @@ public class ModulesTests extends CoreTestCase {
     private ModulesPageObject modules;
     private ModuleStage original;
     private String program;
+    private ExploreStateRestorer originalSelection;
 
     @Override protected boolean isPlatformSupported() {
         return (Platform.getInstance().isIOS() || Platform.getInstance().isAndroid())
@@ -22,7 +23,7 @@ public class ModulesTests extends CoreTestCase {
     }
 
     @Override protected String unsupportedPlatformMessage() {
-        return "Modules require iOS Simulator or Android test emulator and -Dcoach.modules.enabled=true; see docs/modules-automation.md";
+        return "Modules require iOS or Android and -Dcoach.modules.enabled=true; see docs/modules-automation.md";
     }
 
     @Before @Override public void setUp() throws Exception {
@@ -31,8 +32,11 @@ public class ModulesTests extends CoreTestCase {
             TestData.testModelAccount("COA-9044");
             Assert.assertNotNull("Dedicated modules UID is required", System.getenv("COACH_COA9044_UID"));
             if (Platform.getInstance().isIOS()) {
-                Assert.assertEquals("iOS module evidence supports preprod only", "com.vamapps.preprod.The-Coach",
-                        Platform.getInstance().getIOSBundleId());
+                String bundle = Platform.getInstance().getIOSBundleId();
+                Assert.assertTrue("iOS module evidence requires a supported Coach bundle",
+                        "com.vamapps.preprod.The-Coach".equals(bundle)
+                                || "com.vamapps.The-Coach".equals(bundle)
+                                || "com.vamapps.The-Coach-for-her".equals(bundle));
             } else {
                 Assert.assertEquals("Android module evidence supports the approved manProd build",
                         "com.vamapps.thecoach", Platform.getInstance().getAndroidAppPackage());
@@ -53,6 +57,13 @@ public class ModulesTests extends CoreTestCase {
                         ? AndroidModuleEvidence.currentUid() : SimulatorTestIdentity.currentUid());
         modules = ModulesPageObjectFactory.get(driver);
         modules.openTodayTab();
+        String title = System.getProperty("coach.modules.programTitle");
+        if (title != null) {
+            Assert.assertTrue("Explicit module program selection currently supports iOS",
+                    Platform.getInstance().isIOS());
+            originalSelection = ExploreStateRestorer.capture(driver);
+            new lib.ui.ios.iOSProgramSelectorPageObject(driver).ensureProgramSelected(title);
+        }
         original = modules.position();
         Assert.assertEquals("New isolated fixture must start in module 1", 1, original.module);
         Assert.assertEquals("New isolated fixture must start at stage 1", 1, original.stage);
@@ -95,10 +106,12 @@ public class ModulesTests extends CoreTestCase {
                 throw failure;
             }
         }, () -> {
-            if (original != null) {
-                modules.restore(original);
-                Allure.addAttachment("Modules fixture restoration", original.toString());
-            }
+            RestoringTestAction.run(() -> {
+                if (original != null) {
+                    modules.restore(original);
+                    Allure.addAttachment("Modules fixture restoration", original.toString());
+                }
+            }, () -> { if (originalSelection != null) originalSelection.restore(); });
         });
     }
 
@@ -108,7 +121,7 @@ public class ModulesTests extends CoreTestCase {
     }
 
     @Test @Issue("COA-9014")
-    @io.qameta.allure.Description("Partial visual coverage: header bounds and peer overlap only; no glyph clipping or safe-area oracle.")
+    @io.qameta.allure.Description("Header bounds and peer overlap; iOS also checks rounded bottom corners and fading neutral shadow against independent COA-8772 reference. Android remains geometry-only.")
     public void testHeaderBoundsAndPeerOverlap() throws Exception {
         runScenario("headerBounds", () -> modules.assertHeaderBounds());
     }

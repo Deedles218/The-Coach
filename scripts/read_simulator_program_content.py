@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read current-action Today content from the iOS simulator's URL cache.
+"""Read current-action Today content from an iOS app's read-only URL cache.
 
 No network requests or cache mutations. COACH_EXPECTED_PROGRAM_UID identifies
 the dedicated, already verified account. The request JWT is checked for that
@@ -31,6 +31,11 @@ import urllib.parse
 
 BUNDLE = "com.vamapps.preprod.The-Coach"
 HOST = "coach-preprod-cf87bfd42b85.herokuapp.com"
+BUNDLE_HOSTS = {
+    BUNDLE: HOST,
+    "com.vamapps.The-Coach": "content.the.coach",
+    "com.vamapps.The-Coach-for-her": "content.the.coach",
+}
 ROUTE = "/api/v1/daily_program/v2/"
 CF_EPOCH_SECONDS = 978307200
 MAX_BODY_BYTES = 10 * 1024 * 1024
@@ -44,15 +49,15 @@ def _number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def _route_matches(url):
+def _route_matches(url, host=HOST):
     if not isinstance(url, str):
         return False
     parsed = urllib.parse.urlsplit(url)
-    return (parsed.scheme == "https" and parsed.netloc == HOST
+    return (parsed.scheme == "https" and parsed.netloc == host
             and parsed.path == ROUTE and not parsed.fragment)
 
 
-def _plist(blob, label):
+def _plist(blob, label, host=HOST):
     try:
         value = plistlib.loads(blob)
     except Exception:
@@ -63,13 +68,13 @@ def _plist(blob, label):
         raise EvidenceError("Unsupported cached " + label + " metadata version")
     urls = [v.get("_CFURLString") for v in value["Array"]
             if isinstance(v, dict) and "_CFURLString" in v]
-    if len(urls) != 1 or not _route_matches(urls[0]):
-        raise EvidenceError("Cached " + label + " URL is not the preprod Today endpoint")
+    if len(urls) != 1 or not _route_matches(urls[0], host):
+        raise EvidenceError("Cached " + label + " URL is not the approved Today endpoint")
     return value["Array"]
 
 
-def _verify_request(blob, expected_uid, now):
-    items = _plist(blob, "request")
+def _verify_request(blob, expected_uid, now, host=HOST):
+    items = _plist(blob, "request", host)
     headers = [v for v in items if isinstance(v, dict) and "Authorization" in v]
     if len(headers) != 1 or not isinstance(headers[0]["Authorization"], str):
         raise EvidenceError("Cached Today request has no unambiguous authorization")
@@ -91,8 +96,8 @@ def _verify_request(blob, expected_uid, now):
         raise EvidenceError("Cached Today request JWT has expired or has no valid expiry")
 
 
-def _response_time(blob, now):
-    items = _plist(blob, "response")
+def _response_time(blob, now, host=HOST):
+    items = _plist(blob, "response", host)
     if (len(items) < 5 or not _number(items[1]) or items[3] != 200
             or not isinstance(items[4], dict)):
         raise EvidenceError("Unsupported cached Today response time/status metadata")
@@ -112,18 +117,23 @@ def _response_time(blob, now):
     return stamp
 
 
+def _stored_filename(stored):
+    try:
+        name = stored.decode("utf-8") if isinstance(stored, bytes) else stored
+    except UnicodeError:
+        raise EvidenceError("Invalid cached Today body filename") from None
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", name):
+        raise EvidenceError("Unsafe cached Today body filename")
+    return name
+
+
 def _body(cache_dir, stored, on_filesystem):
     if on_filesystem not in (0, 1):
         raise EvidenceError("Unsupported cached Today body storage")
     if on_filesystem:
-        try:
-            name = stored.decode("utf-8") if isinstance(stored, bytes) else stored
-        except UnicodeError:
-            raise EvidenceError("Invalid cached Today body filename") from None
         # The observed cache stores UUID basenames under fsCachedData. Do not
         # follow arbitrary paths from a corrupt database or escape its folder.
-        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", name):
-            raise EvidenceError("Unsafe cached Today body filename")
+        name = _stored_filename(stored)
         folder = cache_dir / "fsCachedData"
         if folder.is_symlink() or folder.resolve().parent != cache_dir.resolve():
             raise EvidenceError("Cached Today body directory is unsafe")
@@ -216,9 +226,11 @@ def _oracle(payload, expected_program, require_incomplete_module=False):
 
 
 def read_content(database, expected_uid, expected_program, not_before_ms, now=None,
-                 require_incomplete_module=False):
+                 require_incomplete_module=False, host=HOST, body_loader=_body):
     """Return only allowed oracle fields, or fail without an old-cache fallback."""
     now = time.time() if now is None else now
+    if host not in BUNDLE_HOSTS.values():
+        raise EvidenceError("Unsupported Coach content host")
     if not isinstance(expected_uid, str) or not re.fullmatch(r"[A-Za-z0-9_-]{20,128}", expected_uid):
         raise EvidenceError("Expected dedicated account UID is required")
     if not isinstance(expected_program, str) or not re.fullmatch(r"[a-z0-9_]{1,80}", expected_program):
@@ -227,7 +239,7 @@ def read_content(database, expected_uid, expected_program, not_before_ms, now=No
         raise EvidenceError("A valid current-action not-before timestamp is required")
     database = Path(database).resolve()
     if not database.is_file():
-        raise EvidenceError("Simulator URL cache database is absent")
+        raise EvidenceError("iOS URL cache database is absent")
     with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True, timeout=2)) as connection:
         connection.execute("PRAGMA query_only=ON")
         rows = connection.execute(
@@ -235,14 +247,14 @@ def read_content(database, expected_uid, expected_program, not_before_ms, now=No
             "FROM cfurl_cache_response r JOIN cfurl_cache_blob_data b ON r.entry_ID=b.entry_ID "
             "JOIN cfurl_cache_receiver_data d ON r.entry_ID=d.entry_ID "
             "WHERE r.request_key LIKE ? ORDER BY r.entry_ID DESC",
-            ("https://" + HOST + ROUTE + "%",)).fetchall()
+            ("https://" + host + ROUTE + "%",)).fetchall()
     candidates = []
     failures = []
     for url, request, response, stored, on_filesystem in rows:
-        if not _route_matches(url):
+        if not _route_matches(url, host):
             continue
         try:
-            stamp = _response_time(response, now)
+            stamp = _response_time(response, now, host)
             if stamp * 1000 < not_before_ms:
                 raise EvidenceError("Cached Today response predates the current UI action")
             candidates.append((stamp, request, stored, on_filesystem))
@@ -261,29 +273,59 @@ def read_content(database, expected_uid, expected_program, not_before_ms, now=No
     newest = candidates[0]
     if len(candidates) > 1 and candidates[1][0] == newest[0]:
         raise EvidenceError("Multiple cached Today responses have the same newest timestamp")
-    _verify_request(newest[1], expected_uid, now)
-    return _oracle(_body(database.parent, newest[2], newest[3]), expected_program,
+    _verify_request(newest[1], expected_uid, now, host)
+    return _oracle(body_loader(database.parent, newest[2], newest[3]), expected_program,
                    require_incomplete_module=require_incomplete_module)
+
+
+def read_device_content(udid, bundle, expected_uid, expected_program, not_before_ms,
+                        require_incomplete_module=False):
+    from ios_device_evidence import copy_file, url_cache_snapshot
+    if bundle not in BUNDLE_HOSTS:
+        raise EvidenceError("Unsupported Coach content bundle")
+    with url_cache_snapshot(udid, bundle) as database:
+        # Fetch only the body selected by the same strict identity/freshness
+        # oracle as the simulator. Never copy unrelated cached content.
+        def load_body(cache, stored, on_filesystem):
+            if on_filesystem == 1:
+                name = _stored_filename(stored)
+                relative = "Library/Caches/" + bundle + "/fsCachedData/" + name
+                root = cache.parents[2]
+                copy_file(root, relative, udid, bundle)
+            return _body(cache, stored, on_filesystem)
+        return read_content(database, expected_uid, expected_program, not_before_ms,
+                            require_incomplete_module=require_incomplete_module,
+                            host=BUNDLE_HOSTS[bundle], body_loader=load_body)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--udid", required=True)
+    parser.add_argument("--device", action="store_true")
+    parser.add_argument("--bundle", default=BUNDLE, choices=tuple(BUNDLE_HOSTS))
     parser.add_argument("--program-id", required=True)
     parser.add_argument("--not-before-ms", required=True, type=int)
     parser.add_argument("--output", required=True)
     parser.add_argument("--require-incomplete-module", action="store_true")
     args = parser.parse_args()
+    if args.device:
+        result = read_device_content(args.udid, args.bundle, os.environ.get("COACH_EXPECTED_PROGRAM_UID"),
+                                     args.program_id, args.not_before_ms, args.require_incomplete_module)
+        output = Path(args.output).resolve()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+        print("Current-action device Today content verified for " + args.program_id)
+        return 0
     if not re.fullmatch(r"[A-Fa-f0-9-]{36}", args.udid):
         raise EvidenceError("An explicit iOS simulator UDID is required")
-    completed = subprocess.run(["xcrun", "simctl", "get_app_container", args.udid, BUNDLE, "data"],
+    completed = subprocess.run(["xcrun", "simctl", "get_app_container", args.udid, args.bundle, "data"],
                                capture_output=True, text=True, check=False)
     if completed.returncode:
         raise EvidenceError("Cannot locate the preprod app's simulator data container")
-    database = Path(completed.stdout.strip()) / "Library/Caches" / BUNDLE / "Cache.db"
+    database = Path(completed.stdout.strip()) / "Library/Caches" / args.bundle / "Cache.db"
     result = read_content(database, os.environ.get("COACH_EXPECTED_PROGRAM_UID"),
                           args.program_id, args.not_before_ms,
-                          require_incomplete_module=args.require_incomplete_module)
+                          require_incomplete_module=args.require_incomplete_module, host=BUNDLE_HOSTS[args.bundle])
     output = Path(args.output).resolve()
     if output == database.resolve() or database.parent.resolve() in output.parents:
         raise EvidenceError("The evidence output must be outside the app URL cache")
@@ -301,5 +343,5 @@ if __name__ == "__main__":
         sys.exit(1)
     except Exception as error:
         # plist/sqlite/OS exceptions can contain filenames or payload fragments.
-        print("Simulator content evidence failed (" + type(error).__name__ + ")", file=sys.stderr)
+        print("iOS content evidence failed (" + type(error).__name__ + ")", file=sys.stderr)
         sys.exit(2)

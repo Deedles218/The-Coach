@@ -25,6 +25,11 @@ public class DailyPlanCompletionMarkerUnitTests {
         Assert.assertFalse(DailyPlanCompletionMarker.isCompleted(fixture("female-arrow")));
     }
 
+    @Test public void distinguishesTheAndroidCompletionTickFromTheUnfinishedArrow() throws Exception {
+        Assert.assertTrue(DailyPlanCompletionMarker.isCompleted(fixture("android-completed")));
+        Assert.assertFalse(DailyPlanCompletionMarker.isCompleted(fixture("android-arrow")));
+    }
+
     @Test public void rejectsBlankSolidAndWrongGlyph() {
         BufferedImage image = new BufferedImage(90, 90, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();

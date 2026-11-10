@@ -230,7 +230,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         super(driver);
     }
 
-    @Step("Verify Android Profile belongs to the configured account")
+    // No @Step: do not include the fixture email in Allure parameters.
     public void assertAuthenticatedProfileForEmail(String email) {
         waitForElementNotVisible(androidId("pbLoading"), "Profile account state is still loading", 20);
         Assert.assertFalse("Profile is anonymous", isAnonymousProfileDisplayed());

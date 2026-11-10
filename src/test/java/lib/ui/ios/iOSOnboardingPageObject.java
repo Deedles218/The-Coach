@@ -38,6 +38,12 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     private static final String WORKBOOK_CLOSE =
             "xpath://XCUIElementTypeButton[@name='PDFGuideUpsellCloseImage' or @name='PDFGuideUpsellCloseImageFemale']";
     private static final String TODAY_TAB = "id:Today";
+    private static final String EMAIL_SKIP_WARNING =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and starts-with(@name,"
+                    + "'If you continue without attaching email,')]";
+    private static final String GRAPHICAL_CLOSENESS_QUESTION =
+            "id:How close do you currently feel to your partner?";
+    private static final String SATISFACTION_QUESTION = "id:How satisfied are you with your intimate life?";
     private static final By PROGRAM_PICKER_CARD = By.xpath(
             "//XCUIElementTypeOther[@name='ProgramSelectionCardView' and @visible='true']"
     );
@@ -122,7 +128,9 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             return;
         }
         waitForElementAndClick(START_BUTTON, "Cannot tap the first iOS Start now button", 20);
-        waitForElementPresent(GOAL_TITLE, "iOS onboarding goal screen did not open", 20);
+        createWait(20).withMessage("iOS Start now opened neither a goal nor a resumed onboarding destination")
+                .until(ignored -> isElementVisible(GOAL_TITLE) || questionnaireOrDestinationIsVisible()
+                        || isPreQuestionnairePromptVisible());
     }
 
     @Override
@@ -181,11 +189,17 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
             if (dismissProgramPickerIfPresent()) {
                 continue;
             }
+            if (isElementVisible(ADDITIONAL_GOALS_TITLE)) {
+                completeAdditionalGoalsIfPresent();
+                continue;
+            }
             if (isPaywallVisible() || isElementVisible(TODAY_TAB)
-                    || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
+                    || isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)
+                    || isElementVisible(iOSCoachFlowPageObject.CONTENT_PROMO_TITLE)) {
                 return;
             }
             if (completeVariantQuestionnaireScreen()) continue;
+            if (selectSatisfactionRatingIfPresent() || selectGraphicalClosenessAnswerIfPresent()) continue;
 
             WebElement action = firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP);
             if (action == null) {
@@ -207,7 +221,10 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                         .until(ignored -> notificationPermissionPromptIsVisible()
                                 || isElementVisible(WORKBOOK_CLOSE)
                                 || isPaywallVisible() || isElementVisible(TODAY_TAB)
-                                || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)
+                                || isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)
+                                || isElementVisible(iOSCoachFlowPageObject.CONTENT_PROMO_TITLE)
+                                || isElementVisible(GRAPHICAL_CLOSENESS_QUESTION)
+                                || isElementVisible(SATISFACTION_QUESTION)
                                 || firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION) != null
                                 || firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP) != null
                                 || firstDisplayedEnabled(NATIVE_QUESTIONNAIRE_ANSWER) != null
@@ -219,11 +236,14 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                             + ". No semantic action or selectable WebView answer is exposed.",
                     action
             );
+            String beforeAnswer = safePageSource();
             if (requiresCoordinateTap(action)) {
                 tapElementCenterAndWaitForStateChange(action, 8);
             } else {
                 clickAndWaitForStateChange(action, 8);
             }
+            Assert.assertFalse("The selected questionnaire answer did not change the screen; inspect its semantic locator",
+                    beforeAnswer.equals(safePageSource()));
         }
 
         Assert.fail(
@@ -234,6 +254,50 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
 
     /** Optional variant-specific screen; the default questionnaire flow is unchanged. */
     protected boolean completeVariantQuestionnaireScreen() { return false; }
+
+    @Step("Choose the first visual answer in the iOS closeness questionnaire")
+    public boolean selectGraphicalClosenessAnswerIfPresent() {
+        if (!isElementVisible(GRAPHICAL_CLOSENESS_QUESTION)) return false;
+        WebElement heading = firstDisplayedEnabled(By.xpath(
+                "//XCUIElementTypeWebView//XCUIElementTypeOther[@visible='true' "
+                        + "and @name='How close do you currently feel to your partner?' "
+                        + "and contains(@traits,'Header')]"));
+        Assert.assertNotNull("The visual question has no stable heading anchor", heading);
+        Rectangle bounds = heading.getRect();
+        // This TestFlight WebView exposes neither the seven picture answers nor a
+        // web context. The observed first answer is 60 pt below the heading box.
+        // Keep this fallback limited to this exact question and require transition.
+        Map<String,Object> tap = new HashMap<>();
+        tap.put("x", bounds.x + bounds.width / 2);
+        tap.put("y", bounds.y + bounds.height + 60);
+        Assert.assertTrue("Visual answer lies outside the portrait viewport",
+                bounds.width > 0 && bounds.y + bounds.height + 60 < driver.manage().window().getSize().height);
+        ((JavascriptExecutor) driver).executeScript("mobile: tap", tap);
+        waitForElementNotPresent(GRAPHICAL_CLOSENESS_QUESTION,
+                "The graphical closeness answer did not advance the questionnaire", 12);
+        io.qameta.allure.Allure.addAttachment("Graphical closeness question answered",
+                "The exact visual question was observed, its anchored first answer was tapped, and the question disappeared.");
+        return true;
+    }
+
+    public static String satisfactionRatingAnswerLocator() {
+        return "xpath://XCUIElementTypeWebView[.//XCUIElementTypeStaticText"
+                + "[@name='How satisfied are you with your intimate life?']"
+                + " and .//XCUIElementTypeStaticText[@name='Rate from 1 to 5:']]"
+                + "//XCUIElementTypeStaticText[@name='1' and @visible='true' and @enabled='true']";
+    }
+
+    @Step("Answer the observed 1–5 satisfaction scale")
+    public boolean selectSatisfactionRatingIfPresent() {
+        if (!isElementVisible(SATISFACTION_QUESTION)) return false;
+        WebElement answer = waitForElementPresent(satisfactionRatingAnswerLocator(),
+                "The satisfaction scale does not expose its first numeric answer", 10);
+        tapElementCenterAndWaitForStateChange(answer, 8);
+        waitForElementNotPresent(SATISFACTION_QUESTION, "The numeric rating did not advance the questionnaire", 12);
+        io.qameta.allure.Allure.addAttachment("Numeric satisfaction question answered",
+                "The observed 1–5 question advanced after selecting its visible numeric answer, without a vertical coordinate filter.");
+        return true;
+    }
 
     @Override
     @Step("Close iOS onboarding paywalls and optional popups")
@@ -259,15 +323,25 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         });
     }
 
+    int closePaywallsBeforePartnerOffer() {
+        return closePaywallsAndPopupsUntil(() -> false, true);
+    }
+
     private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
+        return closePaywallsAndPopupsUntil(destinationVisible, false);
+    }
+
+    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible, boolean preservePartnerOffer) {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
-            if (destinationVisible.getAsBoolean()) {
+            if (destinationVisible.getAsBoolean()
+                    || (preservePartnerOffer && isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE))) {
                 return paywallsClosed;
             }
             if (acceptSystemAlertIfPresent()) {
                 continue;
             }
+            if (dismissOptionalEmailWarningIfPresent()) continue;
             if (notificationPermissionPromptIsVisible()) {
                 new iOSCoachFlowPageObject(driver).closeNotificationPromptIfPresent();
                 continue;
@@ -276,8 +350,14 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 new iOSCoachFlowPageObject(driver).closePdfGuideUpsellIfPresent();
                 continue;
             }
-            if (isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)) {
-                new iOSCoachFlowPageObject(driver).closeMasterclassPromoIfPresent();
+            if (isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)) {
+                // The offer can appear after the stop check at the start of this iteration.
+                if (preservePartnerOffer) return paywallsClosed;
+                new iOSCoachFlowPageObject(driver).closePartnerPromoIfPresent();
+                continue;
+            }
+            if (isElementVisible(iOSCoachFlowPageObject.CONTENT_PROMO_TITLE)) {
+                new iOSCoachFlowPageObject(driver).closeContentPromoIfPresent();
                 continue;
             }
             if (dismissProgramPickerIfPresent()) {
@@ -340,7 +420,9 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
     @Step("Wait for iOS Today")
     public void waitForToday() {
         createWait(30).withMessage("iOS Today tab did not open after onboarding").until(webDriver -> {
-            new iOSCoachFlowPageObject(driver).closeMasterclassPromoIfPresent();
+            if (dismissOptionalEmailWarningIfPresent()) return false;
+            new iOSCoachFlowPageObject(driver).closeContentPromoIfPresent();
+            new iOSCoachFlowPageObject(driver).closePartnerPromoIfPresent();
             WebElement notificationClose = firstDisplayedEnabled(By.xpath(
                     "//XCUIElementTypeStaticText[@name='Allow notifications to stay on track' and @visible='true']"
                             + "/../XCUIElementTypeButton[1]"));
@@ -352,11 +434,22 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         });
     }
 
+    @Step("Acknowledge the optional email warning during fixture setup")
+    public boolean dismissOptionalEmailWarningIfPresent() {
+        if (!isElementVisible(EMAIL_SKIP_WARNING)
+                || !isElementVisible("id:Enter my email")
+                || !isElementVisible("id:Continue without email")) return false;
+        waitForElementAndClick("id:Continue without email", "Cannot acknowledge the optional email warning", 5);
+        waitForElementNotPresent(EMAIL_SKIP_WARNING, "Optional email warning did not close", 10);
+        return true;
+    }
+
     private boolean questionnaireOrDestinationIsVisible() {
         return notificationPermissionPromptIsVisible()
                 || isElementVisible(WORKBOOK_CLOSE)
                 || isPaywallVisible()
-                || isElementVisible(iOSCoachFlowPageObject.MASTERCLASS_PROMO_TITLE)
+                || isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)
+                || isElementVisible(iOSCoachFlowPageObject.CONTENT_PROMO_TITLE)
                 || isElementVisible(TODAY_TAB)
                 || isProgramPickerVisible()
                 || !driver.findElements(By.xpath("//XCUIElementTypeWebView[@visible='true']")).isEmpty()

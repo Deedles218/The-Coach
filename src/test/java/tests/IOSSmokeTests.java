@@ -3,6 +3,8 @@ package tests;
 import io.qameta.allure.*;
 import lib.CoreTestCase;
 import lib.Platform;
+import lib.ExploreStateRestorer;
+import lib.RestoringTestAction;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.DailyPlanPageObject;
@@ -31,26 +33,28 @@ public class IOSSmokeTests extends CoreTestCase {
         coach.assertAuthorizedDashboardIsDisplayed();
         coach.openToday();
     }
-    @Test @Issue("COA-8178") public void test03MainThreeTabNavigation() {
+    @Test @Issue("COA-9757") public void test03MainThreeTabNavigation() {
         CoachFlowPageObject coach = authorizedCoach();
         coach.assertMainTabsAreDisplayed();
         coach.openToday();
         coach.openExplore();
         coach.openShop();
     }
-    @Test @Issue("COA-8087") public void test04DailyPracticeOpensCustomKegelStartScreen() {
+    @Test @Issue("COA-8087") public void test04DailyPracticeOpensCustomKegelStartScreen() throws Exception {
         authorizedCoach(TestData.kegelPlayerAccount()).openToday();
         DailyPlanPageObject today = DailyPlanPageObjectFactory.get(driver);
         today.openTodayTab();
-        new iOSProgramSelectorPageObject(driver).ensureWorkoutProgramSelected(
-                System.getProperty("coach.kegelPlayer.program"));
-        today.assertDailyPlanDaySwitcherIsDisplayed();
-        today.assertDailyPracticeIsDisplayed();
-        today.openKegelExerciseFromDailyPlan();
-        today.assertKegelStartScreenIsDisplayed();
-        today.closeKegelExerciseFlowIfPresent();
+        ExploreStateRestorer original = ExploreStateRestorer.capture(driver);
+        RestoringTestAction.run(() -> {
+            new iOSProgramSelectorPageObject(driver).ensureWorkoutProgramSelected(
+                    System.getProperty("coach.kegelPlayer.program"));
+            today.assertDailyPlanDaySwitcherIsDisplayed();
+            today.assertDailyPracticeIsDisplayed();
+            today.openKegelExerciseFromDailyPlan();
+            today.assertKegelStartScreenIsDisplayed();
+        }, () -> RestoringTestAction.run(today::closeKegelExerciseFlowIfPresent, original::restore));
     }
-    @Test @Issue("COA-8500") public void test05ProfileAndLogout() {
+    @Test @Issue("COA-9758") public void test05ProfileAndLogout() {
         CoachFlowPageObject coach = authorizedCoach();
         coach.openToday();
         coach.openProfile();

@@ -46,6 +46,22 @@ public class SelectorMotionUnitTests {
         SimulatorModalMotion.assertOrangeOutline(cardImage(new Color(255, 130, 50), true),
                 new Rectangle(20, 340, 120, 350), 390);
     }
+    @Test public void acceptsForHerCoralOnAllFourEdges() throws Exception {
+        SimulatorModalMotion.assertAccentOutline(cardImage(new Color(232, 118, 107), true),
+                new Rectangle(20, 340, 120, 350), 390, true);
+    }
+    @Test(expected = AssertionError.class) public void rejectsCoralArtworkWithoutOutline() throws Exception {
+        SimulatorModalMotion.assertAccentOutline(cardImage(new Color(232, 118, 107), false),
+                new Rectangle(20, 340, 120, 350), 390, true);
+    }
+    @Test(expected = AssertionError.class) public void rejectsGreenForHerOutline() throws Exception {
+        SimulatorModalMotion.assertAccentOutline(cardImage(Color.GREEN, true),
+                new Rectangle(20, 340, 120, 350), 390, true);
+    }
+    @Test(expected = AssertionError.class) public void rejectsMaleOrangeForHerOutline() throws Exception {
+        SimulatorModalMotion.assertAccentOutline(cardImage(new Color(255, 130, 50), true),
+                new Rectangle(20, 340, 120, 350), 390, true);
+    }
     @Test(expected = AssertionError.class) public void rejectsOrangeArtworkWithoutOutline() throws Exception {
         SimulatorModalMotion.assertOrangeOutline(cardImage(new Color(255, 130, 50), false),
                 new Rectangle(20, 340, 120, 350), 390);
