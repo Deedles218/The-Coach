@@ -45,6 +45,38 @@ final class iOSProgramListReader extends MainPageObject {
         throw new AssertionError("Program list did not reach its end after 25 overlapping scrolls");
     }
 
+    /** Reveal the whole next card, rather than treating a clipped carousel preview as readable. */
+    WebElement revealFullCard(String card, String container) {
+        for (int attempt = 0; attempt < 10; attempt++) {
+            WebElement collection = waitForElementVisible(container, "Program carousel is not visible", 5);
+            List<WebElement> candidates = driver.findElements(getLocatorByString(card));
+            WebElement item = candidates.stream().filter(WebElement::isDisplayed).findFirst().orElse(null);
+            if (item == null) {
+                drag(collection, true, false);
+                continue;
+            }
+            Rectangle c = collection.getRect(), r = item.getRect();
+            int left = Math.max(0, c.x), right = Math.min(driver.manage().window().getSize().width, c.x + c.width);
+            Assert.assertTrue("Program card cannot fit within the visible carousel", r.width > 0 && r.width <= right - left);
+            if (r.x >= left && r.x + r.width <= right) return item;
+            int shift = (left + right - r.width) / 2 - r.x;
+            int distance = Math.min(Math.abs(shift), right - left - 36);
+            Assert.assertTrue("No room for a carousel drag", distance > 0);
+            int from = shift < 0 ? right - 18 : left + 18;
+            Map<String, Object> args = new HashMap<>();
+            args.put("pressDuration", .15);
+            args.put("holdDuration", .35);
+            args.put("velocity", 220);
+            args.put("fromX", from);
+            args.put("toX", from + (shift < 0 ? -distance : distance));
+            args.put("fromY", c.y + c.height / 2);
+            args.put("toY", c.y + c.height / 2);
+            // Release at rest so deceleration cannot carry the target off the opposite edge.
+            ((JavascriptExecutor) driver).executeScript("mobile: dragFromToWithVelocity", args);
+        }
+        throw new AssertionError("A program card could not be brought fully into the carousel viewport");
+    }
+
     void rewind(String titles, String container) {
         String previous = null;
         for (int i = 0; i < 25; i++) {

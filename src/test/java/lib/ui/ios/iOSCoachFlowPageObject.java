@@ -200,12 +200,17 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     // No @Step: the argument is a credential and must not enter Allure parameters.
     public void assertAuthenticatedProfileForEmail(String email) {
+        assertProfileForEmail(email, true);
+    }
+
+    // A web-paid deferred session may still require email confirmation (COA-6802).
+    public void assertProfileForEmail(String email, boolean requireConfirmedEmail) {
         String nickname = email.substring(0, email.indexOf('@'));
         waitForElementVisible("xpath://XCUIElementTypeStaticText[@name="
                         + org.openqa.selenium.support.ui.Quotes.escape(nickname) + "]",
                 "The configured account identity did not restore in Profile", 30);
         Assert.assertFalse("Profile is still anonymous after OTP; restore the account fixture",
-                isElementVisible("id:CONFIRM") || isElementVisible("id:CONNECT"));
+                isElementVisible("id:CONNECT") || (requireConfirmedEmail && isElementVisible("id:CONFIRM")));
     }
 
     @Override

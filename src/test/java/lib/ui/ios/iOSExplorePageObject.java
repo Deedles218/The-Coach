@@ -1,13 +1,18 @@
 package lib.ui.ios;
 
 import lib.ui.ExplorePageObject;
+import lib.AppearanceSnapshot;
+import lib.DailyPlanCompletionMarker;
 import lib.Platform;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 
@@ -144,6 +149,10 @@ public class iOSExplorePageObject extends ExplorePageObject {
     @Override
     protected void dismissExploreWelcomeIfPresent() {
         new iOSCoachFlowPageObject(driver).dismissExploreWelcomeIfPresent();
+        if (usesMaleProductionContract() && isElementVisible(EXPLORE_HEADING)
+                && !isElementVisible(RECOMMENDED_SECTION)) {
+            rewindConfiguredCatalog();
+        }
     }
 
     private static final String EXPLORE_HEADING = "xpath://XCUIElementTypeStaticText[@name='Explore' and @visible='true']";
@@ -235,11 +244,74 @@ public class iOSExplorePageObject extends ExplorePageObject {
         if (usesMaleProductionContract()) assertSectionsAreAbsent(new String[]{"COURSES"});
         else assertRemovedCoursesAndPracticesAreAbsent();
     }
+    @Override public void assertActiveProgramBlockIsAbsent() {
+        assertSectionsAreAbsent(new String[]{"ACTIVE PROGRAM", "Активная программа"});
+    }
     @Override public void assertBrowseProgramsReplacesLegacyBlock() {
         waitForElementVisible("id:Browse Programs", "Explore v7 must show Browse Programs", 10);
         assertElementNotPresent("id:ALL PROGRAMS", "Explore v7 must not show the legacy ALL PROGRAMS heading");
         assertMainProgramsRecommendedSection();
         assertRetiredExploreUiIsAbsent();
+    }
+
+    @io.qameta.allure.Step("Check readable title and description on the Browse Programs cards")
+    public void assertBrowseProgramsCardsAreReadable() {
+        rewindConfiguredCatalog();
+        waitForElementVisible("id:Browse Programs", "Browse Programs is absent from the loaded Explore screen", 10);
+        String collection = programCollectionLocator(), titles = programTitlesLocator();
+        iOSProgramListReader reader = new iOSProgramListReader(driver);
+        reader.rewind(titles, collection);
+        List<String> discovered = reader.collect(titles, collection, true);
+        reader.rewind(titles, collection);
+        for (String title : discovered) {
+            String target = "xpath:" + PROGRAM_CARDS + "[./XCUIElementTypeStaticText[@label="
+                    + org.openqa.selenium.support.ui.Quotes.escape(title) + "]]";
+            WebElement card = reader.revealFullCard(target, collection);
+            List<WebElement> fields = card.findElements(By.xpath("./XCUIElementTypeStaticText[@visible='true']"));
+            Assert.assertEquals("A full program card must expose its title and description", 2, fields.size());
+            Assert.assertEquals("The carousel exposed another card", title, getElementAccessibleName(fields.get(0)).trim());
+            List<WebElement> content = new ArrayList<>(fields);
+            content.addAll(card.findElements(By.xpath(".//XCUIElementTypeButton[@visible='true']")));
+            assertCardFieldsFit(card.getRect(), content);
+        }
+    }
+
+    @io.qameta.allure.Step("Verify the observed relationship coaching card renders its photo, text and action")
+    public void assertCoachingCardIsReadable() throws java.io.IOException {
+        revealConfiguredSection(coachingSectionTitle());
+        String locator = configuredCards(coachingSectionTitle())
+                + "//XCUIElementTypeOther[@name='ExploreExerciseCoachSessionCellView'"
+                + " and ./XCUIElementTypeStaticText[@label='Relationships: 1:1 Session']]";
+        swipeUpToFindFirstVisibleElement(new String[]{locator}, "The reviewed coaching card is not visible", 5);
+        WebElement card = waitForElementVisible(locator, "The reviewed coaching card is absent", 10);
+        List<WebElement> fields = card.findElements(By.xpath("./XCUIElementTypeStaticText[@visible='true']"
+                + " | ./XCUIElementTypeButton[@name='BOOK' and @visible='true']"));
+        Assert.assertEquals("Coaching card must show its title, expert and Book action", 3, fields.size());
+        Assert.assertTrue("Coaching card did not show the selected expert", fields.stream()
+                .anyMatch(field -> "Connell Barrett".equals(getElementAccessibleName(field))));
+        List<WebElement> images = card.findElements(By.xpath("./XCUIElementTypeImage[@visible='true']"));
+        Assert.assertEquals("Coaching card must expose its own image", 1, images.size());
+        WebElement image = images.get(0);
+        assertCardFieldsFit(card.getRect(), fields);
+        Assert.assertTrue("Coaching card image has not rendered", AppearanceSnapshot.hasVisibleContrast(
+                DailyPlanCompletionMarker.crop(driver.getScreenshotAs(OutputType.BYTES), image.getRect(),
+                        driver.manage().window().getSize().width)));
+    }
+
+    private void assertCardFieldsFit(Rectangle card, List<WebElement> fields) {
+        List<Rectangle> previous = new ArrayList<>();
+        for (WebElement field : fields) {
+            Rectangle r = field.getRect();
+            Assert.assertTrue("Card text or control is empty", field.isDisplayed()
+                    && !getElementAccessibleName(field).trim().isEmpty() && r.width > 0 && r.height > 0);
+            Assert.assertTrue("Card text or control extends outside its card", r.x >= card.x && r.y >= card.y
+                    && r.x + r.width <= card.x + card.width && r.y + r.height <= card.y + card.height);
+            for (Rectangle old : previous) {
+                Assert.assertFalse("Card text or controls overlap", r.x < old.x + old.width && old.x < r.x + r.width
+                        && r.y < old.y + old.height && old.y < r.y + r.height);
+            }
+            previous.add(r);
+        }
     }
     @Override public void assertConfiguredCardTemplates() {
         for (String title : configuredSectionTitles()) {

@@ -23,9 +23,13 @@ public final class TestData {
 
     public static TestAccount existingProgressAccount() {
         return new TestAccount(
-                required("coach.existingProgress.email", "COACH_EXISTING_PROGRESS_EMAIL"),
+                existingProgressAccountEmail(),
                 required("coach.existingProgress.otp", "COACH_EXISTING_PROGRESS_OTP")
         );
+    }
+
+    public static String existingProgressAccountEmail() {
+        return required("coach.existingProgress.email", "COACH_EXISTING_PROGRESS_EMAIL");
     }
 
     public static TestAccount testModelAccount(String caseKey) {
@@ -216,7 +220,8 @@ public final class TestData {
 
         String sanitized = sanitizeConfiguredUids(text);
         for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518", "COA9044", "COA9551",
-                "COA8094", "COA8096", "COA8170", "COA8171", "COA7937"}) {
+                "COA8094", "COA8096", "COA8170", "COA8171", "COA7937",
+                "COA7917", "COA7980"}) {
             for (String field : new String[]{"email", "otp", "link"}) {
                 String value = configured("coach." + key.toLowerCase(Locale.ROOT) + "." + field,
                         "COACH_" + key + "_" + field.toUpperCase(Locale.ROOT));

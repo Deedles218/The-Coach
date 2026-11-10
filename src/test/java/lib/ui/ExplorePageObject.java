@@ -104,6 +104,7 @@ abstract public class ExplorePageObject extends MainPageObject {
 
     public abstract void assertConfiguredSectionsAreDisplayed();
     public abstract void assertCoursesSectionIsRemoved();
+    public abstract void assertActiveProgramBlockIsAbsent();
     public abstract void assertBrowseProgramsReplacesLegacyBlock();
     public abstract void assertConfiguredCardTemplates();
     public abstract void assertConfiguredCardTitlesAreNonEmpty();

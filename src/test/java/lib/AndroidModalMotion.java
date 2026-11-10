@@ -14,17 +14,19 @@ import java.util.concurrent.TimeUnit;
 /** Real Android screen recording; the shared image oracle checks intermediate motion. */
 public final class AndroidModalMotion implements AutoCloseable {
     private final CanRecordScreen recorder;
+    private final String device;
     private final Path folder;
     private boolean stopped;
     private final Map<String,String> animationSettings=new LinkedHashMap<String,String>();
     public AndroidModalMotion(RemoteWebDriver driver, String key) throws Exception {
         recorder=(CanRecordScreen)driver;
+        device = AndroidDevice.uiSettingsSerial(driver);
         folder=Files.createTempDirectory(Paths.get("target"),key+"-android-motion-");
         try {
             for(String setting:new String[]{"window_animation_scale","transition_animation_scale","animator_duration_scale"}) {
-                String value=AndroidDevice.adb("shell","settings","get","global",setting).trim();
+                String value=AndroidDevice.adbForSerial(device,"shell","settings","get","global",setting).trim();
                 animationSettings.put(setting,value);
-                AndroidDevice.adb("shell","settings","put","global",setting,"1");
+                AndroidDevice.adbForSerial(device,"shell","settings","put","global",setting,"1");
             }
             recorder.startRecordingScreen();
         } catch(Exception | AssertionError failure) {
@@ -61,8 +63,8 @@ public final class AndroidModalMotion implements AutoCloseable {
     }
     private void restoreAnimations() throws Exception {
         for(Map.Entry<String,String> entry:animationSettings.entrySet()) {
-            if("null".equals(entry.getValue())) AndroidDevice.adb("shell","settings","delete","global",entry.getKey());
-            else AndroidDevice.adb("shell","settings","put","global",entry.getKey(),entry.getValue());
+            if("null".equals(entry.getValue())) AndroidDevice.adbForSerial(device,"shell","settings","delete","global",entry.getKey());
+            else AndroidDevice.adbForSerial(device,"shell","settings","put","global",entry.getKey(),entry.getValue());
         }
         animationSettings.clear();
     }

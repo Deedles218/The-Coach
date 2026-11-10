@@ -28,6 +28,8 @@ import java.util.Set;
 /** COA-9551 video lesson player, separate from the Kegel workout player. */
 public final class VideoLessonPlayerPageObject extends MainPageObject {
     private static final String ANDROID_ID = Platform.getInstance().getAndroidAppPackage() + ":id/";
+    private static final String ANDROID_PLAYER = "id:" + ANDROID_ID + "viewPlayer";
+    private static final String ANDROID_FULLSCREEN_HINT = "id:com.android.systemui:id/immersive_cling_title";
     private static final List<String> SPEEDS = Arrays.asList("x0.5", "x0.75", "x1", "x1.25", "x1.5", "x2");
     private final boolean android;
     private final DailyPlanPageObject today;
@@ -69,18 +71,33 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
         } else {
             // Some Android lessons open an article first and expose the video
             // as a dedicated card; do not click an unrelated practice player.
-            waitForFirstElementPresent(new String[]{"id:" + ANDROID_ID + "viewPlayer",
-                            "id:" + ANDROID_ID + "vPlayer"},
+            String legacyPlayerCard = "id:" + ANDROID_ID + "vPlayer";
+            String title = org.openqa.selenium.support.ui.Quotes.escape(lessonTitle);
+            String detail = "//*[@resource-id='" + ANDROID_ID + "rvLessonDetail'";
+            String videoCard = "//*[@resource-id='" + ANDROID_ID + "cvVideoHolder'";
+            String inlinePlayerCard = "xpath:" + detail + "]" + videoCard + " and .//*[@resource-id='"
+                    + ANDROID_ID + "videoText' and @text=" + title + "]]";
+            String untitledPlayerCard = "xpath:" + detail + " and count(." + videoCard + "])=1"
+                    + " and //*[@resource-id='" + ANDROID_ID + "tvControlHeader' and @text=" + title + "]]"
+                    + videoCard + " and @clickable='true' and not(.//*[@resource-id='"
+                    + ANDROID_ID + "videoText' and normalize-space(@text)])]";
+            WebElement entry = waitForFirstElementPresent(
+                    new String[]{ANDROID_PLAYER, inlinePlayerCard, legacyPlayerCard, untitledPlayerCard},
                     "Configured Android lesson has no video player", 20);
-            if (!isElementVisible("id:" + ANDROID_ID + "viewPlayer")) {
-                waitForElementAndClick("id:" + ANDROID_ID + "vPlayer",
-                        "Configured Android lesson has no video player card", 10);
-            }
+            if (!isElementVisible(ANDROID_PLAYER)) entry.click();
         }
         waitUntilReady();
     }
 
     public void waitUntilReady() {
+        if (android) {
+            waitForFirstElementPresent(new String[]{ANDROID_FULLSCREEN_HINT, ANDROID_PLAYER},
+                    "Android video lesson player did not open", 20);
+            if (isElementVisible(ANDROID_FULLSCREEN_HINT)) {
+                waitForElementAndClick("id:com.android.systemui:id/ok", "Cannot dismiss the full-screen system hint", 10);
+                waitForElementNotVisible(ANDROID_FULLSCREEN_HINT, "The full-screen system hint remained open", 10);
+            }
+        }
         showControls();
         waitForElementVisible(android ? "id:" + ANDROID_ID + "exo_duration"
                         : "xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']",
@@ -135,17 +152,22 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
     }
 
     public void selectSpeed(String speed) {
-        Assert.assertTrue("Unsupported speed in fixture", SPEEDS.contains(speed));
         if (!android) {
+            Assert.assertTrue("Unsupported speed in fixture", SPEEDS.contains(speed));
             for (int n = 0; n < 8 && !speed.equals(currentSpeed()); n++) advanceIosSpeed();
             Assert.assertEquals("Selected speed was not applied", speed, currentSpeed());
             return;
         }
+        tapAndroidSpeedOption(speed);
+        createWait(10).withMessage("Selected speed was not applied: " + speed)
+                .until(d -> speed.equals(currentSpeed()));
+    }
+
+    public void tapAndroidSpeedOption(String speed) {
+        Assert.assertTrue("Unsupported speed in fixture", SPEEDS.contains(speed));
         String locator = "xpath://android.widget.TextView[@resource-id='" + ANDROID_ID
                 + "title' and @text='" + speed + "']";
         waitForElementAndClick(locator, "Speed choice is absent: " + speed, 10);
-        createWait(10).withMessage("Selected speed was not applied: " + speed)
-                .until(d -> speed.equals(currentSpeed()));
     }
 
     private void advanceIosSpeed() {
