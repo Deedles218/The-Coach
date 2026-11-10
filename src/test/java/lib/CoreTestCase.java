@@ -377,9 +377,9 @@ public class CoreTestCase {
                 rawPageSource = driver.getPageSource();
                 FailureClassifier.addPageEvidence(throwable, rawPageSource);
                 pageSource = TestData.sanitizeSensitiveData(rawPageSource);
-                if (rawPageSource.contains("ENTER SECURITY CODE")) {
+                if (isOtpScreenSource(rawPageSource)) {
                     // OTP may be exposed as four independent accessibility nodes.
-                    pageSource = pageSource.replaceAll("((?:name|label|value)=\")[0-9](\")", "$1*$2");
+                    pageSource = pageSource.replaceAll("((?:name|label|value|text)=\")[0-9](\")", "$1*$2");
                 }
                 pageSource = pageSource.replace("<redacted-email>", "&lt;redacted-email&gt;")
                         .replace("<redacted-otp>", "&lt;redacted-otp&gt;");
@@ -440,7 +440,7 @@ public class CoreTestCase {
         }
 
         boolean credentialScreen = !rawPageSource.equals(sanitizedPageSource)
-                || rawPageSource.contains("ENTER SECURITY CODE");
+                || isOtpScreenSource(rawPageSource);
         byte[] screenshotBytes;
         String attachmentName;
         String fileName;
@@ -450,7 +450,7 @@ public class CoreTestCase {
             fileName = testName + ".png";
         } else if ((rawPageSource.contains("ENTER THE MAIL THAT IS LINKED TO YOUR ACCOUNT")
                 || rawPageSource.contains("ENTER YOUR EMAIL TO SYNC YOUR PROGRESS AND SETTINGS"))
-                && !rawPageSource.contains("ENTER SECURITY CODE")) {
+                && !isOtpScreenSource(rawPageSource)) {
             screenshotBytes = LoginFailureScreenshot.redact(
                     rawScreenshot,
                     rawPageSource
@@ -471,6 +471,12 @@ public class CoreTestCase {
         Path screenshotPath = screenshotsDirectory.resolve(fileName);
         Files.write(screenshotPath, screenshotBytes);
         addAllureAttachment(attachmentName, "image/png", screenshotBytes, "png");
+    }
+
+    private static boolean isOtpScreenSource(String source) {
+        return source.contains("ENTER SECURITY CODE")
+                || source.contains("An email with a code has been sent to:")
+                || source.contains(":id/smsVerifyView");
     }
 
     private void attachArtifactCaptureError(String artifact, Exception failure) {
