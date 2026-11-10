@@ -207,6 +207,15 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         waitForOpenedLessonTitle();
     }
 
+    @Step("Open the configured Daily Lesson card: {title}")
+    public void openDailyLessonCard(String title) {
+        String card = dailyPlanCardLocator("DAILY LESSONS", title);
+        swipeUpToFindFirstVisibleElement(new String[]{card}, "Configured Daily Lesson is absent: " + title, 8);
+        openedLessonTitle = title;
+        waitForElementAndClick(card, "Cannot open configured Daily Lesson: " + title, 10);
+        // A non-premium account can navigate to a paywall instead of the reader.
+    }
+
     @Override
     public void assertDailyLessonScreenIsDisplayed() {
         waitForOpenedLessonTitle();

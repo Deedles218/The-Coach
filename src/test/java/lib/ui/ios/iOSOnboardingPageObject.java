@@ -115,6 +115,10 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         );
     }
 
+    public boolean isGoalSelectionDisplayed() {
+        return isElementVisible(GOAL_TITLE);
+    }
+
     @Override
     @Step("Open iOS Start now")
     public void openStartFlow() {
@@ -194,6 +198,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                     || isElementVisible(iOSCoachFlowPageObject.CONTENT_PROMO_TITLE)) {
                 return;
             }
+            if (completeVariantQuestionnaireScreen()) continue;
             if (selectSatisfactionRatingIfPresent() || selectGraphicalClosenessAnswerIfPresent()) continue;
 
             WebElement action = firstDisplayedEnabled(NOTIFICATION_PROMPT_SKIP);
@@ -246,6 +251,9 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                         + " actions without reaching a paywall or Today"
         );
     }
+
+    /** Optional variant-specific screen; the default questionnaire flow is unchanged. */
+    protected boolean completeVariantQuestionnaireScreen() { return false; }
 
     @Step("Choose the first visual answer in the iOS closeness questionnaire")
     public boolean selectGraphicalClosenessAnswerIfPresent() {
@@ -315,10 +323,19 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         });
     }
 
+    int closePaywallsBeforePartnerOffer() {
+        return closePaywallsAndPopupsUntil(() -> false, true);
+    }
+
     private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
+        return closePaywallsAndPopupsUntil(destinationVisible, false);
+    }
+
+    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible, boolean preservePartnerOffer) {
         int paywallsClosed = 0;
         for (int attempt = 0; attempt < MAX_TRANSIENT_SCREENS; attempt++) {
-            if (destinationVisible.getAsBoolean()) {
+            if (destinationVisible.getAsBoolean()
+                    || (preservePartnerOffer && isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE))) {
                 return paywallsClosed;
             }
             if (acceptSystemAlertIfPresent()) {
@@ -334,6 +351,8 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
                 continue;
             }
             if (isElementVisible(iOSCoachFlowPageObject.PARTNER_PROMO_TITLE)) {
+                // The offer can appear after the stop check at the start of this iteration.
+                if (preservePartnerOffer) return paywallsClosed;
                 new iOSCoachFlowPageObject(driver).closePartnerPromoIfPresent();
                 continue;
             }
@@ -602,7 +621,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         }
     }
 
-    private void tapElementCenterAndWaitForStateChange(WebElement element, long timeoutInSeconds) {
+    protected void tapElementCenterAndWaitForStateChange(WebElement element, long timeoutInSeconds) {
         String sourceBeforeTap = safePageSource();
         Rectangle rectangle = element.getRect();
         Map<String, Object> tap = new HashMap<>();

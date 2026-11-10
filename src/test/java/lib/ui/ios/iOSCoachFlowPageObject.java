@@ -29,7 +29,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             "xpath://XCUIElementTypeStaticText[starts-with(@name, 'Welcome to Explore')]";
     private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
     private static final String LESSON_FEEDBACK_TITLE = "id:How would you rate the lesson?";
-    static final String PARTNER_PROMO_TITLE =
+    public static final String PARTNER_PROMO_TITLE =
             "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner'"
                     + " or @name='More pleasure for both of you']";
     private static final String PARTNER_PROMO_CLOSE = PARTNER_PROMO_TITLE
