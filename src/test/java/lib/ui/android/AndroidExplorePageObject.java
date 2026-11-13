@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -20,8 +21,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * Explore contract for the configurable Android catalog shipped in 1.40.x.
@@ -35,8 +38,11 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     private static final String EXPLORE_TITLE = "id:" + ID_PREFIX + "tvLabel";
     private static final String CATALOG_CONTAINER = "id:" + ID_PREFIX + "catalogContainer";
-    private static final String BROWSE_PROGRAMS_TITLE =
-            "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvActiveTitle' and @text='Browse Programs']";
+    private static final boolean FOR_HER = APP_PACKAGE.endsWith(".forher");
+    private static final String PROGRAM_CATALOG_LABEL = FOR_HER ? "All programs" : "Browse Programs";
+    private static final String PROGRAM_CATALOG_TITLE =
+            "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvActiveTitle' and @text='"
+                    + PROGRAM_CATALOG_LABEL + "']";
     private static final String LEGACY_ALL_PROGRAMS_TITLE =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvActiveTitle' and @text='ALL PROGRAMS']";
     private static final String LEGACY_ACTIVE_PROGRAMS_COLLECTION = "id:" + ID_PREFIX + "rvActivePrograms";
@@ -45,29 +51,47 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     private static final String QUICK_TIPS_SECTION_TITLE = sectionTitle("Quick Tips");
     private static final String MASTER_CLASSES_SECTION_TITLE = sectionTitle("Master Classes");
-    private static final String PRIVATE_COACHING_SECTION_TITLE = sectionTitle("Private coaching session");
+    private static final String[] PRIVATE_COACHING_SECTIONS = {"Private coaching session", "Private Coaching Sessions"};
+    private static final String PRIVATE_COACHING_SECTION_TITLE = sectionTitle(PRIVATE_COACHING_SECTIONS);
+    private static final String HER_STORIES_SECTION = "Sensual Stories";
+    private static final String[] HER_CONTENT_SECTIONS = {
+            "Self-Exploration", "Partnered Practices", "Aging & Pre-menopause", HER_STORIES_SECTION
+    };
 
     private static final String QUICK_TIPS_CARDS = sectionCards("Quick Tips") + "//androidx.cardview.widget.CardView";
     private static final String MASTER_CLASSES_CARDS = sectionCards("Master Classes") + "//android.widget.LinearLayout[@clickable='true']";
-    private static final String PRIVATE_COACHING_CARDS = sectionCards("Private coaching session") + "//androidx.cardview.widget.CardView";
+    private static final String PRIVATE_COACHING_CARDS = sectionCards(PRIVATE_COACHING_SECTIONS)
+            + "//androidx.cardview.widget.CardView";
 
     private static final String FIRST_QUICK_TIP_CARD = first(QUICK_TIPS_CARDS);
-    private static final String FIRST_MASTER_CLASS_CARD =
-            "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_title' and @text='Sensual Massage Masterclass']/../..";
-    private static final String MASTER_CLASS_BANNER = "id:" + ID_PREFIX + "iv_banner";
-    private static final String PRIVATE_COACHING_AVATAR = "id:" + ID_PREFIX + "iv_avatar";
+    private static final String FINISH_TOO_SOON_CARD = QUICK_TIPS_CARDS
+            + "[.//*[@resource-id='" + ID_PREFIX + "tv_title' and @text='Finish Too Soon']]";
+    private static final String MASSAGE_MASTERCLASS_TITLE = "The Art of Sensual Massage";
+    private static final String LEGACY_MASSAGE_MASTERCLASS_TITLE = "Sensual Massage Masterclass";
+    private static final String MASSAGE_MASTERCLASS_CARD = MASTER_CLASSES_CARDS
+            + "[.//*[@resource-id='" + ID_PREFIX + "tv_title' and (@text=" + xpathValue(MASSAGE_MASTERCLASS_TITLE)
+            + " or @text=" + xpathValue(LEGACY_MASSAGE_MASTERCLASS_TITLE) + ")]]";
     private static final String PRIVATE_COACHING_JOIN_BUTTON = "id:" + ID_PREFIX + "btn_join";
     private static final String CARD_TITLE_NODES =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_title']";
     private static final String EXPLORE_WEBVIEW = "xpath://android.webkit.WebView";
     private static final String EXPLORE_TAB_WEBVIEW = "id:" + ID_PREFIX + "webview_container";
+    private static final String MASTERCLASS_LOAD_ERROR = "xpath://*[@resource-id='" + ID_PREFIX + "webview_container']"
+            + "//*[@resource-id='" + ID_PREFIX + "tvErrorMessage']";
     private static final String VIDEO_PLAYER = "id:" + ID_PREFIX + "viewPlayer";
     private static final String VIDEO_PLAY_PAUSE_BUTTON = "id:" + ID_PREFIX + "exo_play_pause";
+    private static final String LESSON_DETAIL = "id:" + ID_PREFIX + "rvLessonDetail";
+    private static final String LESSON_CLOSE_BUTTON = "id:" + ID_PREFIX + "ivButtonClose";
+    private static final String LESSON_CONTINUE_BUTTON = "id:" + ID_PREFIX + "bContinueLesson";
+    private static final String QUICK_TIP_ARTICLE_TITLE = "xpath://*[@resource-id='" + ID_PREFIX + "rvLessonDetail']"
+            + "//*[@resource-id='" + ID_PREFIX + "tvHeader' and @text='When You’re About to Finish Too Soon']";
+    private static final String QUICK_TIP_ARTICLE_BODY = "xpath://*[@resource-id='" + ID_PREFIX + "rvLessonDetail']"
+            + "//*[@resource-id='" + ID_PREFIX + "tvTextContent' and normalize-space(@text)!='']";
     private static final String TODAY_TAB = "id:" + ID_PREFIX + "nav_graph_daily";
-    private static final String PRIVATE_COACHING_WEBVIEW =
-            "xpath://android.webkit.WebView[contains(@text,'Part of a Last Longer')]";
+    private static final String PRIVATE_COACHING_WEBVIEW_HEADING =
+            webViewText("Bring the passion back, with a coach in your corner");
     private static final String PRIVATE_COACHING_BOOK_BUTTON =
-            "xpath://android.view.View[@content-desc='Book 1:1 a private consultation']";
+            webViewText("Book a private 1:1 session") + "[@clickable='true']";
     private static final String DETAIL_CLOSE_BUTTON = "id:" + ID_PREFIX + "btnClose";
     private static final String DETAIL_NAVIGATE_UP_BUTTON = "id:" + ID_PREFIX + "btnNavigateUp";
     private static final String DETAIL_ACTION_BUTTON = "id:" + ID_PREFIX + "btnAction";
@@ -85,7 +109,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         // callers that inspect the common navigation state.
         TAB_PROGRAMS = "xpath://android.widget.FrameLayout[@content-desc='Programs']";
         TAB_TOOLS = "xpath://android.widget.FrameLayout[@content-desc='Tools']";
-        RECOMMENDED_SECTION = BROWSE_PROGRAMS_TITLE;
+        RECOMMENDED_SECTION = PROGRAM_CATALOG_TITLE;
         RECOMMENDED_COLLECTION = LEGACY_ACTIVE_PROGRAMS_COLLECTION;
         RECOMMENDED_PROGRAM_CARDS = LEGACY_ACTIVE_PROGRAMS_COLLECTION + "//android.view.ViewGroup[@clickable='true']";
         SEXUAL_HEALTH_SECTION = null;
@@ -158,12 +182,14 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     private String visibleProgramViewport() {
         StringBuilder viewport = new StringBuilder();
         for (WebElement title : driver.findElements(getLocatorByString(PROGRAM_TITLES))) {
-            viewport.append(title.getText()).append(title.getRect());
+            Rectangle bounds = title.getRect();
+            viewport.append(title.getText()).append('|').append(bounds.x).append(',').append(bounds.y)
+                    .append(',').append(bounds.width).append(',').append(bounds.height).append('\n');
         }
         return viewport.toString();
     }
     @Override public List<String> getProgramNamesFromExplore() {
-        scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
+        scrollUpToTop();waitForElementVisible(PROGRAM_CATALOG_TITLE,"Explore program catalog title is absent",10);
         // A recycled horizontal carousel retains its previous offset between tab visits.
         for(int n=0;n<15;n++) {
             if(!carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION,"left")) break;
@@ -180,8 +206,17 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         throw new AssertionError("Explore program list did not reach its end");
     }
     @Override public void assertCurrentSectionsAreDisplayed() { super.assertCurrentSectionsAreDisplayed(); }
-    @Override public void assertRemovedCoursesAndPracticesAreAbsent() {
-        assertAbsentAcrossExplore(this::assertRetiredSectionHeadingsAbsent);
+    @Override
+    @Step("Verify the Explore section contract for the Android variant")
+    public void assertRemovedCoursesAndPracticesAreAbsent() {
+        if ("com.vamapps.thecoach".equals(APP_PACKAGE)) {
+            String bodyPractices = sectionTitle("Body Practices");
+            revealConfiguredItem(bodyPractices);
+            waitForElementVisible(bodyPractices, "Body Practices must remain on Explore for Him production", 10);
+            assertRetiredSectionHeadingsAbsent("Courses", "Mind Practices");
+        } else {
+            assertRetiredSectionHeadingsAbsent("Courses", "Body Practices", "Mind Practices");
+        }
     }
     @Override public void assertActiveProgramBlockIsAbsent() {
         waitForElementVisible(CATALOG_CONTAINER, "Explore catalog is not displayed", 10);
@@ -199,9 +234,13 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         }
         throw new AssertionError("Explore bottom was not reached; absence is not proven");
     }
-    private void assertRetiredSectionHeadingsAbsent() {
-        for(String heading:new String[]{"Courses","Body Practices","Mind Practices"})
-            Assert.assertFalse("Retired Explore section reappeared: "+heading,isElementVisible(sectionTitle(heading)));
+    private void assertRetiredSectionHeadingsAbsent(String... headings) {
+        assertAbsentAcrossExplore(() -> {
+            for (String heading : headings) {
+                Assert.assertFalse("Retired Explore section reappeared: " + heading,
+                        isElementVisible(sectionTitle(heading)));
+            }
+        });
     }
     @Override public void assertRetiredExploreUiIsAbsent() {
         assertBrowseProgramsReplacesLegacyBlock();
@@ -209,7 +248,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         Assert.assertFalse("Legacy Programs tab is displayed",isElementVisible(TAB_PROGRAMS));
     }
     @Override public void assertMainProgramsRecommendedSection() {
-        scrollUpToTop();waitForElementVisible(BROWSE_PROGRAMS_TITLE,"Browse Programs absent",10);
+        scrollUpToTop();waitForElementVisible(PROGRAM_CATALOG_TITLE,"Explore program catalog title is absent",10);
         assertBrowseProgramCardsPresent();
     }
 
@@ -218,36 +257,50 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         WebElement image=waitForElementVisible("xpath://*[@resource-id='"+ID_PREFIX+"rvActivePrograms']//*[@resource-id='"+ID_PREFIX+"ivMainImage']","Program image absent",10);
         Assert.assertTrue("Program image is empty",image.getRect().width>0&&image.getRect().height>0);
     }
-    private void openLast(String collection,String titles) {
-        java.util.List<String> before=new java.util.ArrayList<String>();
-        for(int n=0;n<30;n++) {
-            java.util.List<String> names=getElementAccessibleNames(titles);
-            Assert.assertFalse("Carousel has no named cards",names.isEmpty());
-            if(n>0&&names.equals(before)) {
-                java.util.List<WebElement> elements=driver.findElements(getLocatorByString(titles));
-                WebElement last=elements.get(elements.size()-1);String name=last.getText();last.click();
-                assertDestination(name);return;
-            }
-            before=names;carousel(collection,"right");
-        }
-        Assert.fail("Carousel end was not reached");
-    }
     private static String xpathValue(String value) {
         if(!value.contains("'"))return "'"+value+"'";
         if(!value.contains("\""))return "\""+value+"\"";
         return "concat('"+value.replace("'", "',\"'\",'")+"')";
     }
+    @Step("Verify details for the selected program {title}")
     private void assertDestination(String title) {
-        waitForElementNotVisible(BROWSE_PROGRAMS_TITLE,"Card did not leave Explore",15);
-        waitForElementVisible("xpath://*[@text="+xpathValue(title)+"]","Destination title differs from selected card",15);
-        waitForFirstElementPresent(new String[]{"id:"+ID_PREFIX+"rvQuestions","id:"+ID_PREFIX+"rvProgram","id:"+ID_PREFIX+"tvGoalBody","id:"+ID_PREFIX+"rvLessonDetail","xpath://android.webkit.WebView"},"Destination content is absent",15);
+        waitForElementNotVisible(PROGRAM_CATALOG_TITLE, "Card did not leave Explore", 15);
+        waitForFirstElementPresent(new String[]{
+                "id:" + ID_PREFIX + "rvQuestions",
+                "id:" + ID_PREFIX + "rvProgram",
+                "id:" + ID_PREFIX + "tvGoalBody",
+                LESSON_DETAIL,
+                EXPLORE_WEBVIEW
+        }, "Program details did not load for " + title, 30);
+        waitForElementVisible("xpath://*[@text=" + xpathValue(title) + "]",
+                "Program details did not show the selected title: " + title, 25);
     }
     @Override public void openFirstRecommendedProgramAndVerifyDetails() {
         assertMainProgramsRecommendedSection();WebElement title=waitForElementVisible(PROGRAM_TITLES,"Program card absent",10);
         String name=title.getText();title.click();assertDestination(name);
     }
-    @Override public void swipeToAndOpenLastRecommendedProgram() {
-        assertMainProgramsRecommendedSection();openLast(LEGACY_ACTIVE_PROGRAMS_COLLECTION,PROGRAM_TITLES);
+    @Override
+    @Step("Open the last program in the Android Explore catalog")
+    public void swipeToAndOpenLastRecommendedProgram() {
+        assertMainProgramsRecommendedSection();
+        String previousViewport = visibleProgramViewport();
+        boolean stoppedOnPreviousSwipe = false;
+        for (int swipe = 0; swipe < 30; swipe++) {
+            boolean canScrollFurther = carousel(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "right");
+            String currentViewport = visibleProgramViewport();
+            boolean stopped = !canScrollFurther && currentViewport.equals(previousViewport);
+            if (stopped && stoppedOnPreviousSwipe) {
+                String lastTitle = "xpath:(" + PROGRAM_TITLES.substring("xpath:".length()) + ")[last()]";
+                String title = waitForElementVisible(lastTitle, "Last Explore program title is absent", 10).getText();
+                waitForElementAndClick(lastTitle + "/ancestor::*[@clickable='true'][1]",
+                        "Last Explore program card is not clickable: " + title, 10);
+                assertDestination(title);
+                return;
+            }
+            stoppedOnPreviousSwipe = stopped;
+            previousViewport = currentViewport;
+        }
+        Assert.fail("Explore program carousel did not stop at its last card");
     }
     @Override public void closeProgramDetails() {closeAndroidDetail();}
     @Override public void closeCourseDetails() {closeAndroidDetail();}
@@ -281,7 +334,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         waitForElementPresent(CATALOG_CONTAINER, "Android Explore catalog did not load", 20);
         scrollUpToTop();
         waitForFirstElementPresent(
-                new String[]{BROWSE_PROGRAMS_TITLE, PROGRAM_TITLES},
+                new String[]{PROGRAM_CATALOG_TITLE, PROGRAM_TITLES},
                 "Android Explore program catalog did not load",
                 30
         );
@@ -295,6 +348,11 @@ public class AndroidExplorePageObject extends ExplorePageObject {
      */
     public void closeTransientDetailIfPresent() {
         closeExploreTabWebViewIfPresent();
+        if (isElementPresent(LESSON_DETAIL) && isElementVisible(SELECTED_EXPLORE_TAB)
+                && isElementVisible(LESSON_CLOSE_BUTTON)) {
+            closeExploreLesson();
+            return;
+        }
         if (isElementPresent(EXPLORE_TITLE)) {
             return;
         }
@@ -351,22 +409,27 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     @Step("Verify required configurable Explore sections")
     public void assertConfiguredSectionsAreDisplayed() {
         waitForElementPresent(EXPLORE_TITLE, "Explore title is not displayed", 10);
-        waitForElementPresent(QUICK_TIPS_SECTION_TITLE, "Quick Tips section is not displayed", 10);
-        scrollDownUntil(MASTER_CLASSES_SECTION_TITLE, 5);
-        waitForElementPresent(MASTER_CLASSES_SECTION_TITLE, "Master Classes section is not displayed", 10);
-        scrollDownUntil(PRIVATE_COACHING_SECTION_TITLE, 5);
-        waitForElementPresent(PRIVATE_COACHING_SECTION_TITLE, "Private coaching session section is not displayed", 10);
+        revealConfiguredItem(MASTER_CLASSES_SECTION_TITLE);
+        if (FOR_HER) {
+            scrollUpToTop();
+            new AndroidExploreBannerPageObject(driver).waitForBanner();
+            for (String section : HER_CONTENT_SECTIONS) {
+                revealConfiguredItem(sectionTitle(section));
+            }
+        } else {
+            revealConfiguredItem(QUICK_TIPS_SECTION_TITLE);
+            revealConfiguredItem(PRIVATE_COACHING_SECTION_TITLE);
+        }
     }
 
-    @Step("Verify Browse Programs replaces the legacy active-program block")
+    @Step("Verify the configured program catalog on Explore")
     public void assertBrowseProgramsReplacesLegacyBlock() {
-        waitForElementPresent(BROWSE_PROGRAMS_TITLE, "Explore must show the configured Browse Programs title", 10);
-        Assert.assertFalse(
-                "Legacy ALL PROGRAMS title must not be displayed",
-                isElementPresent(LEGACY_ALL_PROGRAMS_TITLE)
-        );
-        // manProd 1.40.21 reuses this resource for the new Browse Programs carousel.
-        waitForElementVisible(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "Browse Programs carousel is absent", 10);
+        waitForElementPresent(PROGRAM_CATALOG_TITLE, "Explore must show the " + PROGRAM_CATALOG_LABEL + " title", 10);
+        if (!FOR_HER) {
+            Assert.assertFalse("Legacy ALL PROGRAMS title must not be displayed",
+                    isElementPresent(LEGACY_ALL_PROGRAMS_TITLE));
+        }
+        waitForElementVisible(LEGACY_ACTIVE_PROGRAMS_COLLECTION, "Explore program carousel is absent", 10);
     }
 
     @Step("Verify Courses section is removed")
@@ -481,30 +544,48 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Verify configured card templates and titles")
     public void assertConfiguredCardTemplates() {
-        waitForElementPresent(QUICK_TIPS_CARDS, "Quick Tips must contain square cards", 10);
-        int quickTipsCardCount = getAmountElements(QUICK_TIPS_CARDS);
-        Assert.assertTrue("Quick Tips must contain at least one square card", quickTipsCardCount > 0);
+        revealConfiguredItem(MASTER_CLASSES_CARDS);
+        assertConfiguredCardImage(MASTER_CLASSES_CARDS, "iv_banner", "Master Class card banner");
+        if (FOR_HER) {
+            assertHerConfiguredCardTemplates();
+        } else {
+            revealConfiguredItem(QUICK_TIPS_CARDS);
+            assertConfiguredCardImage(QUICK_TIPS_CARDS, "iv_background", "Quick Tips card image");
+            revealConfiguredItem(PRIVATE_COACHING_CARDS);
+            waitForElementPresent(PRIVATE_COACHING_CARDS + "//*[@resource-id='" + ID_PREFIX + "btn_join']",
+                    "Private coaching card action is absent", 10);
+            assertConfiguredCardImage(PRIVATE_COACHING_CARDS, "iv_avatar", "Private coaching card avatar");
+        }
+    }
 
-        scrollDownUntil(MASTER_CLASSES_CARDS, 5);
-        waitForElementPresent(MASTER_CLASSES_CARDS, "Master Classes must contain challenge cards", 10);
-        int masterClassCardCount = getAmountElements(MASTER_CLASSES_CARDS);
-        Assert.assertTrue("Master Classes must contain at least one challenge card", masterClassCardCount > 0);
+    private void assertHerConfiguredCardTemplates() {
+        scrollUpToTop();
+        assertImageHasArea(new AndroidExploreBannerPageObject(driver).waitForBannerImage(), "Private coaching banner");
+        for (String section : HER_CONTENT_SECTIONS) {
+            String card = first(sectionCards(section) + "/android.view.ViewGroup[@clickable='true']");
+            String title = card + "//*[@resource-id='" + ID_PREFIX + "tvTitle' and normalize-space(@text)!='']";
+            revealConfiguredItem(title);
+            waitForElementVisible(title, section + " card title is absent", 10);
+            String imageId = HER_STORIES_SECTION.equals(section) ? "ivImage" : "ivMainImage";
+            assertConfiguredCardImage(card, imageId, section + " card image");
+        }
+    }
 
-        scrollDownUntil(PRIVATE_COACHING_JOIN_BUTTON, 5);
-        waitForElementPresent(PRIVATE_COACHING_JOIN_BUTTON, "Private coaching card must contain Learn More", 10);
-        int privateCoachingCardCount = getAmountElements(PRIVATE_COACHING_CARDS);
-        Assert.assertTrue("Private coaching must contain at least one coaching card", privateCoachingCardCount > 0);
+    private void assertConfiguredCardImage(String card, String imageId, String description) {
+        WebElement image = waitForElementVisible(card + "//*[@resource-id='" + ID_PREFIX + imageId + "']",
+                description + " is absent", 10);
+        assertImageHasArea(image, description);
+    }
 
-        WebElement masterBanner = waitForElementPresent(MASTER_CLASS_BANNER, "Challenge card has no banner image", 10);
-        Assert.assertTrue("Challenge card banner must have a visible area", masterBanner.getSize().getWidth() > 0 && masterBanner.getSize().getHeight() > 0);
-        WebElement coachingAvatar = waitForElementPresent(PRIVATE_COACHING_AVATAR, "Coaching card has no avatar image", 10);
-        Assert.assertTrue("Coaching card avatar must have a visible area", coachingAvatar.getSize().getWidth() > 0 && coachingAvatar.getSize().getHeight() > 0);
+    private void assertImageHasArea(WebElement image, String description) {
+        Rectangle bounds = image.getRect();
+        Assert.assertTrue(description + " has no visible area", bounds.width > 0 && bounds.height > 0);
     }
 
     @Step("Verify card titles are available for analytics")
     public void assertConfiguredCardTitlesAreNonEmpty() {
-        scrollDownUntil(MASTER_CLASSES_SECTION_TITLE, 5);
-        List<WebElement> titles = driver.findElements(By.xpath("//android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_title']"));
+        revealConfiguredItem(MASTER_CLASSES_SECTION_TITLE);
+        List<WebElement> titles = driver.findElements(getLocatorByString(CARD_TITLE_NODES));
         Assert.assertFalse("Configured cards must expose at least one title", titles.isEmpty());
         for (WebElement title : titles) {
             Assert.assertFalse("Configured card title must not be empty", title.getText().trim().isEmpty());
@@ -513,11 +594,39 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Open the Quick Tips video card and verify the Android video player")
     public void openQuickTipVideoAndVerifyPlayer() {
-        scrollUpToTop();
-        WebElement card = waitForElementPresent(FIRST_QUICK_TIP_CARD, "Quick Tips card is not displayed", 10);
-        card.click();
+        openQuickTipCard(FIRST_QUICK_TIP_CARD);
         waitForElementPresent(VIDEO_PLAYER, "Quick Tips video card did not open the Android video player", 20);
         assertVideoPlayerControlsAreDisplayed();
+    }
+
+    @Step("Open the configured Quick Tip and verify its destination")
+    public void openConfiguredQuickTipAndVerifyDestination() {
+        if (FOR_HER) {
+            openQuickTipVideoAndVerifyPlayer();
+            return;
+        }
+        openQuickTipCard(FINISH_TOO_SOON_CARD);
+        waitForFirstElementPresent(new String[]{QUICK_TIP_ARTICLE_TITLE, VIDEO_PLAYER},
+                "Finish Too Soon did not open its configured article or video", 20);
+        if (isElementVisible(VIDEO_PLAYER)) {
+            assertVideoPlayerControlsAreDisplayed();
+        } else {
+            assertFinishTooSoonArticle();
+        }
+    }
+
+    private void openQuickTipCard(String card) {
+        revealConfiguredItem(QUICK_TIPS_SECTION_TITLE);
+        revealConfiguredItem(card);
+        waitForElementAndClick(card, "Quick Tips card is not tappable", 10);
+    }
+
+    @Step("Verify the Finish Too Soon article and its controls")
+    private void assertFinishTooSoonArticle() {
+        waitForElementVisible(QUICK_TIP_ARTICLE_TITLE, "Quick Tip article title is absent", 10);
+        waitForElementVisible(QUICK_TIP_ARTICLE_BODY, "Quick Tip article body is absent", 10);
+        waitForElementEnabled(LESSON_CLOSE_BUTTON, "Quick Tip article close control is absent", 10);
+        waitForElementEnabled(LESSON_CONTINUE_BUTTON, "Quick Tip article Continue control is absent", 10);
     }
 
     @Step("Verify Android video player controls")
@@ -541,21 +650,43 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         Assert.assertTrue("Android video player back control must be enabled", navigateUp.isEnabled());
     }
 
-    @Step("Open a Master Class card and verify lesson/WebView navigation")
+    @Override
+    @Step("Open the massage masterclass and verify its destination")
     public void openMasterClassAndVerifyDestination() {
-        scrollDownUntil(FIRST_MASTER_CLASS_CARD, 5);
-        WebElement card = waitForElementPresent(FIRST_MASTER_CLASS_CARD, "Master Classes card is not displayed", 10);
+        revealConfiguredItem(MASSAGE_MASTERCLASS_CARD);
+        WebElement card = waitForElementEnabled(MASSAGE_MASTERCLASS_CARD,
+                "The massage masterclass card is not tappable", 10);
+        String title = card.findElement(By.id(ID_PREFIX + "tv_title")).getText();
         card.click();
-        waitForExploreDestinationAfterCardTap(
-                "Master Classes card must open a lesson or WebView after one tap"
-        );
+        if (LEGACY_MASSAGE_MASTERCLASS_TITLE.equals(title)) {
+            waitForExploreDestinationAfterCardTap("Master Classes card must open a lesson or WebView after one tap");
+            return;
+        }
+        waitForElementVisible(EXPLORE_TAB_WEBVIEW, "The masterclass did not open the Explore WebView", 20);
+        try {
+            waitForElementVisible(webViewText(title), "The masterclass WebView did not show the course title", 35);
+        } catch (TimeoutException timeout) {
+            for (WebElement error : driver.findElements(getLocatorByString(MASTERCLASS_LOAD_ERROR))) {
+                if (error.isDisplayed()) {
+                    throw new AssertionError("The masterclass WebView could not load: " + error.getText(), timeout);
+                }
+            }
+            throw timeout;
+        }
     }
 
-    @Step("Open private coaching card and verify WebView")
+    @Override
+    @Step("Open Private Coaching and verify WebView")
     public void openPrivateCoachingAndVerifyWebView() {
         String configuredTitle = System.getProperty("coach.explore.webview.title");
+        if (FOR_HER && configuredTitle == null) {
+            scrollUpToTop();
+            new AndroidExploreBannerPageObject(driver).openExternalCoachingPage();
+            return;
+        }
+
         String cardAction = PRIVATE_COACHING_JOIN_BUTTON;
-        String heading = PRIVATE_COACHING_WEBVIEW;
+        String heading = PRIVATE_COACHING_WEBVIEW_HEADING;
         String booking = PRIVATE_COACHING_BOOK_BUTTON;
         if (configuredTitle == null) {
             scrollDownUntil(cardAction, 6);
@@ -644,6 +775,13 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         waitForElementPresent(locator, "Cannot find Explore element after scrolling: " + locator, 10);
     }
 
+    private void revealConfiguredItem(String locator) {
+        if (!isElementVisible(locator)) {
+            scrollUpToTop();
+            scrollDownUntil(locator, 8);
+        }
+    }
+
     private void scrollUpToTop() {
         for (int index = 0; index < 5; index++) {
             if (!scrollExplore("up")) {
@@ -690,12 +828,30 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         );
     }
 
-    private static String sectionTitle(String title) {
-        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + title.toLowerCase(java.util.Locale.ROOT) + "']";
+    @Step("Close the Explore lesson")
+    private void closeExploreLesson() {
+        waitForElementAndClick(LESSON_CLOSE_BUTTON, "Cannot close the Android Explore lesson", 10);
+        createWait(10).withMessage("Explore lesson did not close or request exit confirmation")
+                .until(d -> !isElementPresent(LESSON_DETAIL) || isElementVisible(EXIT_ACTIVITY_DIALOG));
+        if (isElementVisible(EXIT_ACTIVITY_DIALOG)) {
+            waitForElementAndClick(EXIT_ACTIVITY_CONFIRM_BUTTON, "Cannot quit the unfinished Explore lesson", 10);
+        }
+        waitForElementNotVisible(LESSON_DETAIL, "Explore lesson is still displayed", 15);
+        waitForElementVisible(EXPLORE_TITLE, "Explore did not return after closing the lesson", 15);
     }
 
-    private static String sectionCards(String title) {
-        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + title.toLowerCase(java.util.Locale.ROOT) + "']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='" + ID_PREFIX + "rv_horizontal_cards']";
+    private static String sectionTitle(String... titles) {
+        StringJoiner matches = new StringJoiner(" or ");
+        for (String title : titles) {
+            String normalized = title.toLowerCase(Locale.ROOT).replace(" ", "");
+            matches.add("translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ ','abcdefghijklmnopqrstuvwxyz')=" + xpathValue(normalized));
+        }
+        return "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tv_section_title' and (" + matches + ")]";
+    }
+
+    private static String sectionCards(String... titles) {
+        return sectionTitle(titles) + "/following-sibling::androidx.recyclerview.widget.RecyclerView"
+                + "[@resource-id='" + ID_PREFIX + "rv_horizontal_cards'][1]";
     }
 
     private static String first(String xpathLocator) {

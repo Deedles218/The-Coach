@@ -4,6 +4,7 @@ import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.ExploreBannerPageObject;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.IOException;
@@ -21,6 +22,14 @@ public final class AndroidExploreBannerPageObject extends ExploreBannerPageObjec
 
     public AndroidExploreBannerPageObject(RemoteWebDriver driver) { super(driver); }
 
+    WebElement waitForBanner() {
+        return waitForElementVisible(BANNER, "The configured Explore banner is absent", 15);
+    }
+
+    WebElement waitForBannerImage() {
+        return waitForElementVisible(BANNER_IMAGE, "The banner image is absent", 10);
+    }
+
     @Override @Step("Open the configured Katy coaching landing page from the Android Explore banner")
     public void openExternalCoachingPage() {
         waitForElementAndClick(BANNER, "The configured Explore banner is not tappable", 15);
@@ -31,8 +40,8 @@ public final class AndroidExploreBannerPageObject extends ExploreBannerPageObjec
 
     @Override @Step("Verify the Android Explore banner image fits between the adjacent sections")
     public void assertImageIsVisibleWithoutOverlap() throws IOException {
-        Rectangle box = waitForElementVisible(BANNER, "The configured Explore banner is absent", 15).getRect();
-        Rectangle picture = waitForElementVisible(BANNER_IMAGE, "The banner image is absent", 10).getRect();
+        Rectangle box = waitForBanner().getRect();
+        Rectangle picture = waitForBannerImage().getRect();
         Rectangle heading = waitForElementVisible("xpath://*[@resource-id='" + ID + "tvLabel' and @text='EXPLORE']",
                 "Explore heading is missing", 10).getRect();
         Rectangle next = waitForFirstElementPresent(new String[]{"id:" + ID + "tvActiveTitle", "id:" + ID + "rvActivePrograms"},

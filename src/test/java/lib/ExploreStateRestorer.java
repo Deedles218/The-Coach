@@ -39,7 +39,7 @@ public final class ExploreStateRestorer {
         AndroidProgramSelectorPageObject today = new AndroidProgramSelectorPageObject(driver);
         return capture(today, title -> {
             today.openProgramSelector();
-            today.selectProgram(title);
+            today.selectExactProgram(title);
         }, ignored -> {
             // Keep Android's existing contract: navigation must not change its selected stage.
         });
