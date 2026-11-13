@@ -15,7 +15,7 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     public AndroidProgramSelectorPageObject(RemoteWebDriver driver) { super(driver); }
     @Override public void openProgramSelector() {
         getActiveProgramName(); // Returns the Today list to its header.
-        waitForElementAndClick("xpath://*[@resource-id='"+PREFIX+"headerContainer']//*[@resource-id='"+PREFIX+"tvGroupName']", "Program selector entry is absent", 10);
+        waitForElementAndClick(TODAY_PROGRAM_HEADING, "Program selector entry is absent", 10);
         waitForElementVisible("id:"+PREFIX+"rvActivePrograms", "Program selector did not open", 10);
         waitForStableViewport();
     }
@@ -76,7 +76,8 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
                 }
                 waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Selector did not close on selection",15);
                 if (handleConfirmation) {
-                    createWait(20).ignoring(StaleElementReferenceException.class).until(d -> {
+                    createWait(20).ignoring(StaleElementReferenceException.class)
+                            .withMessage("Today did not show the confirmed program: " + name).until(d -> {
                         if (isElementVisible("xpath://*[@resource-id='"+PREFIX+"tvDialogtitle' and @text='Switch program?']")) {
                             waitForElementAndClick("id:"+PREFIX+"btnYes", "Cannot confirm program switch",10);
                             return false;
@@ -85,10 +86,14 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
                             waitForElementAndClick("id:"+PREFIX+"btnOk", "Cannot close program hint",10);
                             return false;
                         }
-                        return isElementVisible("xpath://*[@resource-id='"+PREFIX+"headerContainer']//*[@resource-id='"+PREFIX+"tvGroupName' and @text="+org.openqa.selenium.support.ui.Quotes.escape(name)+"]");
+                        return isElementVisible(TODAY_PROGRAM_HEADING)
+                                && name.equalsIgnoreCase(getActiveProgramName());
                     });
+                    waitForElementVisible(CURRENT_DAY_LABEL, "Today day is absent after confirming program selection", 15);
+                } else {
+                    waitForSelectedProgram(name);
                 }
-                waitForSelectedProgram(name); return;
+                return;
             }
             if(reachedEnd) break;
             reachedEnd = !scroll("down");

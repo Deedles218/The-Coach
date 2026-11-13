@@ -26,6 +26,10 @@ import java.util.Map;
 public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
     private static final String APP_PACKAGE = Platform.getInstance().getAndroidAppPackage();
     private static final String ID_PREFIX = APP_PACKAGE + ":id/";
+    protected static final String TODAY_PROGRAM_HEADING =
+            "xpath://*[@resource-id='" + ID_PREFIX + "rvQuestions']"
+                    + "//*[@resource-id='" + ID_PREFIX + "tvGroupName'"
+                    + " and ../*[@resource-id='" + ID_PREFIX + "tvPercentages']]";
 
     private static final String DAILY_PRACTICE_SECTION_TITLE =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvGroupName' and @text='DAILY PRACTICE']";
@@ -56,8 +60,7 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
     }
     @Override public String getActiveProgramName() {
         scrollQuestionsToTopIfPresent();
-        String name = waitForElementVisible("xpath://*[@resource-id='" + ID_PREFIX + "headerContainer']//*[@resource-id='" + ID_PREFIX + "tvGroupName']",
-                "Today program name is absent", 10).getText();
+        String name = waitForElementVisible(TODAY_PROGRAM_HEADING, "Today program name is absent", 10).getText();
         // Android can expose the trailing program selector icon as a replacement character.
         return name.replaceFirst("[ \u00A0]*\uFFFC$", "");
     }

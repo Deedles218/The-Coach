@@ -6,10 +6,12 @@ import lib.CoreTestCase;
 import lib.ExploreStateRestorer;
 import lib.Platform;
 import lib.PreparedMobileProfile;
+import lib.SessionStateRecoveryException;
 import lib.TestData;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.ExploreBannerPageObject;
 import lib.ui.ExplorePageObject;
+import lib.ui.ProgramSwitchFeaturePageObject;
 import lib.ui.android.AndroidExploreBannerPageObject;
 import lib.ui.android.AndroidExplorePageObject;
 import lib.ui.factories.CoachFlowPageObjectFactory;
@@ -35,43 +37,72 @@ public class ConfiguredExploreTests extends CoreTestCase {
 
     private void openExplore() {
         requireMobilePlatform();
-        OnboardingPageObjectFactory.get(driver).closePaywallsAndPopups();
+        boolean android = Platform.getInstance().isAndroid();
+        if (!android) OnboardingPageObjectFactory.get(driver).closePaywallsAndPopups();
         explore = ExplorePageObjectFactory.get(driver);
         CoachFlowPageObject coach = CoachFlowPageObjectFactory.get(driver);
-        if (preparedProfile) {
-            explore.closeTransientDetailIfPresent();
-            PreparedMobileProfile.verifyFromToday(coach);
-        } else {
+        if (preparedProfile) explore.closeTransientDetailIfPresent();
+        if (android) dismissAndroidProgramTooltipsIfPresent();
+        if (!preparedProfile) {
             TestData.TestAccount account = TestData.existingProgressAccount();
             coach.ensureExistingProgressUserIsLoggedIn(account.getEmail(), account.getOtp());
         }
+        if (android) OnboardingPageObjectFactory.get(driver).closePaywallsAndPopups();
+        if (preparedProfile) PreparedMobileProfile.verifyFromToday(coach);
         originalState = ExploreStateRestorer.capture(driver);
         explore.openExploreTab();
     }
 
     @After public void closeDestinationAndRestoreProgram() throws Exception {
-        if (explore == null) return;
+        if (explore == null || (Platform.getInstance().isAndroid() && originalState != null)) return;
         if (originalState == null) {
             explore.closeTransientDetailIfPresent();
             return;
         }
-        originalState.restoreAfter(() -> {
-            Allure.addAttachment("Explore before restoration", "image/png",
-                    new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
-                            .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
-            Allure.addAttachment("Explore source before restoration", "application/xml",
-                    TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
-        },
-                explore::closeTransientDetailIfPresent);
+        originalState.restoreAfter(this::attachExploreEvidence, explore::closeTransientDetailIfPresent);
     }
 
     @Override protected void cleanupSessionForNextTest() {
+        if (Platform.getInstance().isAndroid() && originalState != null) restoreTodayAfterExplore();
         if (!preparedProfile) super.cleanupSessionForNextTest();
+    }
+
+    @Step("Restore the original Today state after Explore")
+    private void restoreTodayAfterExplore() {
+        try {
+            originalState.restoreAfter(this::attachAndroidExploreEvidence, explore::closeTransientDetailIfPresent);
+            dismissAndroidProgramTooltipsIfPresent();
+        } catch (Exception | AssertionError failure) {
+            throw new SessionStateRecoveryException(
+                    "Explore could not restore the original Today program, day and progress", failure);
+        }
+    }
+
+    private void dismissAndroidProgramTooltipsIfPresent() {
+        new ProgramSwitchFeaturePageObject(driver).dismissProgramTooltipsIfPresent();
+    }
+
+    private void attachExploreEvidence() {
+        Allure.addAttachment("Explore before restoration", "image/png",
+                new java.io.ByteArrayInputStream(((org.openqa.selenium.TakesScreenshot) driver)
+                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)), "png");
+        Allure.addAttachment("Explore source before restoration", "application/xml",
+                TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+    }
+
+    private void attachAndroidExploreEvidence() {
+        try {
+            attachExploreEvidence();
+        } catch (RuntimeException failure) {
+            System.err.println("Could not capture Explore before restoration: "
+                    + TestData.sanitizeSensitiveData(failure.getMessage()));
+        }
     }
 
     @Test @Issue("COA-8178") public void testCurrentExploreNavigation() { explore.assertRetiredExploreUiIsAbsent(); }
     @Test @Issue("COA-8181") public void testProgramCatalogContainsCards() { explore.assertMainProgramsRecommendedSection(); }
-    @Test @Issue("COA-8182") @Description("Verify the configured section contract: male iOS production retains Body Practices and removes Courses; other variants retain their existing expectations.")
+    @Test @Issue("COA-8182") @DisplayName("Explore sections match the app variant")
+    @Description("Him production on Android and iOS retains Body Practices; other variants check for its absence. Courses remains absent.")
     public void testRemovedCoursesAndPracticesStayAbsent() { explore.assertRemovedCoursesAndPracticesAreAbsent(); }
     @Test public void testSwipeToLastProgramAndOpenIt() {
         explore.swipeToAndOpenLastRecommendedProgram();
@@ -106,8 +137,9 @@ public class ConfiguredExploreTests extends CoreTestCase {
                     platform.getIOSBundleId());
             return new IOSExploreBannerPageObject(driver);
         }
-        Assert.assertEquals("Use the reviewed male Android Explore fixture", "com.vamapps.thecoach",
-                platform.getAndroidAppPackage());
+        String appPackage = platform.getAndroidAppPackage();
+        Assert.assertTrue("Use a reviewed Android Explore fixture (Him or Her), got " + appPackage,
+                "com.vamapps.thecoach".equals(appPackage) || "com.vamapps.thecoach.forher".equals(appPackage));
         return new AndroidExploreBannerPageObject(driver);
     }
     @Test public void testBrowseProgramsReplacesLegacyBlock() { explore.assertBrowseProgramsReplacesLegacyBlock(); }
@@ -115,8 +147,14 @@ public class ConfiguredExploreTests extends CoreTestCase {
         explore.assertConfiguredCardTemplates();
         explore.assertConfiguredCardTitlesAreNonEmpty();
     }
-    @Test @DisplayName("Quick Tip opens its configured content (article on male iOS production)")
-    public void testQuickTipVideoCardOpensVideoPlayer() { explore.openQuickTipVideoAndVerifyPlayer(); }
+    @Test @DisplayName("Quick Tip opens its configured content")
+    public void testQuickTipVideoCardOpensVideoPlayer() {
+        if (Platform.getInstance().isAndroid()) {
+            ((AndroidExplorePageObject) explore).openConfiguredQuickTipAndVerifyDestination();
+        } else {
+            explore.openQuickTipVideoAndVerifyPlayer();
+        }
+    }
     @Test public void testMasterClassCardOpensLessonOrWebView() { explore.openMasterClassAndVerifyDestination(); }
     @Test @Issue("COA-9329") public void testPrivateCoachingCardOpensWebView() {
         explore.openPrivateCoachingAndVerifyWebView();

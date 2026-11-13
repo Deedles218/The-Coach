@@ -1,6 +1,7 @@
 package lib.ui;
 
 import io.appium.java_client.HasSettings;
+import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.factories.BookmarksPageObjectFactory;
 import lib.ui.android.AndroidProgramSelectorPageObject;
@@ -44,7 +45,7 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
 
     private String secondTooltip() {
         return android
-                ? "xpath://*[@text='To switch back, tap here']"
+                ? "xpath://*[normalize-space(@text)='To switch back, tap here']"
                 : "xpath://XCUIElementTypeStaticText[@name='To switch back, tap here' and @visible='true']";
     }
 
@@ -63,6 +64,7 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
                 "COA-9549: first tooltip is absent. On Android, expose its text/OK in the accessibility tree.", 15);
     }
 
+    @Step("Dismiss the first program switch tooltip")
     public void dismissFirstTooltip() {
         waitForFirstElementAndClick(android
                         ? new String[]{"id:" + ANDROID_ID + "btnOk", "xpath://android.widget.Button[@text='OK']"}
@@ -76,12 +78,18 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
                 "COA-9549: second tooltip is absent. On Android, expose its text/OK in the accessibility tree.", 15);
     }
 
+    @Step("Dismiss the switch-back program tooltip")
     public void dismissSecondTooltip() {
         waitForFirstElementAndClick(android
                         ? new String[]{"id:" + ANDROID_ID + "btnOk", "xpath://android.widget.Button[@text='OK']"}
                         : new String[]{"id:OK"},
                 "COA-9549: second tooltip OK is not accessible", 10);
         waitForElementNotPresent(secondTooltip(), "Second tooltip remained after OK", 10);
+    }
+
+    public void dismissProgramTooltipsIfPresent() {
+        if (isElementVisible(firstTooltip())) dismissFirstTooltip();
+        if (isElementVisible(secondTooltip())) dismissSecondTooltip();
     }
 
     public void assertTooltipsAbsent() {
