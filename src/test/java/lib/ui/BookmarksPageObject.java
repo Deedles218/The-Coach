@@ -263,19 +263,33 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     @Step("Open bookmark card: {title}")
     public void openCard(String title) {
-        ensureBookmarkCardVisible(title);
-        waitForElementAndClick(exactText(title), "Cannot open bookmark card: " + title, 10);
+        tapBookmarkCard(title);
         createWait(20).withMessage("Bookmark card did not open content").until(ignored ->
                 isElementVisible(INACTIVE_BOOKMARK) || isElementVisible(ACTIVE_BOOKMARK)
                         || isContentPaywallVisible());
         if (isContentPaywallVisible()) {
-            // Capture the blocking state before fixture cleanup dismisses it.
-            Allure.addAttachment("Paywall blocking bookmarked content", "application/xml",
-                    TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
-            Allure.addAttachment("Paywall blocking bookmarked content", "image/png",
-                    new ByteArrayInputStream(driver.getScreenshotAs(OutputType.BYTES)), "png");
+            attachPaywallEvidence("Paywall blocking bookmarked content");
             Assert.fail("Subscription paywall blocked bookmarked content: " + title);
         }
+    }
+
+    @Step("Verify that bookmark card shows the subscription paywall: {title}")
+    public void openCardExpectingPaywall(String title) {
+        tapBookmarkCard(title);
+        createWait(20).withMessage("Bookmark card did not show the subscription paywall: " + title)
+                .until(ignored -> isContentPaywallVisible());
+        attachPaywallEvidence("Expected subscription paywall for bookmarked content");
+    }
+
+    private void tapBookmarkCard(String title) {
+        ensureBookmarkCardVisible(title);
+        waitForElementAndClick(exactText(title), "Cannot open bookmark card: " + title, 10);
+    }
+
+    private void attachPaywallEvidence(String name) {
+        Allure.addAttachment(name, "application/xml", TestData.sanitizeSensitiveData(driver.getPageSource()), "xml");
+        Allure.addAttachment(name, "image/png",
+                new ByteArrayInputStream(driver.getScreenshotAs(OutputType.BYTES)), "png");
     }
 
     protected boolean isContentPaywallVisible() {
