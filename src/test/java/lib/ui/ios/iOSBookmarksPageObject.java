@@ -57,6 +57,11 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
     }
 
     @Override
+    public void openCardExpectingPaywall(String title) {
+        inCoachWindow(() -> super.openCardExpectingPaywall(title));
+    }
+
+    @Override
     protected void tapBookmarksEntry(String entry) {
         inCoachWindow(() -> new iOSCoachFlowPageObject(driver).tapHittableControl(
                 new String[]{entry}, "Bookmarks entry is not hittable in Coach", 15));

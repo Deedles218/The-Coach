@@ -487,12 +487,15 @@ public class BookmarksTests extends CoreTestCase {
     }
 
     @Test @Issue("COA-9667")
-    @io.qameta.allure.Description("Available lesson Save/open with configured access; defaults to the no-subscription fixture. An explicit active-subscription variant additionally requires Premium in Profile. Trial eligibility is not inferred from a paid subscription.")
+    @io.qameta.allure.Description("Save the available lesson from Today. The base fixture sees a paywall on the saved card. "
+            + "Active subscription and trial fixtures open the saved lesson at its saved slide.")
     public void availableLessonCanBeBookmarkedWithoutSubscription() throws Exception {
-        prepare(fixtureRole("availableAccountRole", NO_SUBSCRIPTION));
         String accessVariant = optional("accessVariant");
+        boolean activeTrial = "active-trial".equals(accessVariant);
+        Assert.assertTrue("Use active-subscription or active-trial for coach.bookmarks.accessVariant",
+                accessVariant == null || "active-subscription".equals(accessVariant) || activeTrial);
+        prepare(fixtureRole("availableAccountRole", activeTrial ? "ACTIVETRIAL" : NO_SUBSCRIPTION));
         if (accessVariant != null) {
-            Assert.assertEquals("Unsupported explicit access variant", "active-subscription", accessVariant);
             coach.openProfile();
             new lib.ui.ios.iOSSubscriptionPageObject(driver).assertPremiumAccessIsDisplayed();
             coach.openToday();
@@ -501,7 +504,7 @@ public class BookmarksTests extends CoreTestCase {
                 accessVariant == null ? "base/no-subscription fixture; content must be available before Save" : accessVariant);
         String lesson = required("lessonTitle");
         boolean[] createdByTest = {false};
-        RestoringTestAction.run(() -> {
+        runRestoringScenario("availableLessonBookmark", () -> {
             bookmarks.openFromToday();
             bookmarks.assertCardAbsent(lesson);
             bookmarks.backFromBookmarks();
@@ -514,10 +517,14 @@ public class BookmarksTests extends CoreTestCase {
             bookmarks.closeOpenedContent();
             bookmarks.openFromToday();
             bookmarks.assertCard(lesson);
-            bookmarks.openCard(lesson);
-            bookmarks.assertNoPaywall();
-            bookmarks.assertOpenedAtSlide(lesson, required("lessonSavedSlideText"));
-            bookmarks.assertOpenedContentSaved();
+            if (accessVariant == null) {
+                bookmarks.openCardExpectingPaywall(lesson);
+            } else {
+                bookmarks.openCard(lesson);
+                bookmarks.assertNoPaywall();
+                bookmarks.assertOpenedAtSlide(lesson, required("lessonSavedSlideText"));
+                bookmarks.assertOpenedContentSaved();
+            }
         }, () -> {
             if (createdByTest[0]) {
                 bookmarks.closeOpenedContentIfPresent();

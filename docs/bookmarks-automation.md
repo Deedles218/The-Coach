@@ -1,8 +1,10 @@
 # Bookmarks automation
 
-`BookmarksTests` contains 21 scenarios linked to Xray cases COA-9647 through COA-9666 and the available base-lesson save check from COA-9667. A linked method alone does not establish complete coverage of every variant in its Xray case; required fixture states and the assertions below must also be verified. Trial variants from COA-9667 and COA-9668 (expired subscription) remain outside this run. The suite is iOS-only because the source cases are labelled iOS and the verified accessibility identifiers come from the iOS build.
+`BookmarksTests` contains 21 scenarios linked to Xray cases COA-9647 through COA-9667. Full acceptance requires verifying each scenario with its target fixture. The trial variant of COA-9667 still needs a live run. COA-9668 is marked `automation-blocked` in Jira. The suite is iOS-only because the source cases are labelled iOS and the verified accessibility identifiers come from the iOS build.
 
-The current [COA-9667](https://the-coach.atlassian.net/browse/COA-9667) requires saving and reopening a bookmarkable lesson that is already available to the account, including an available base lesson without a paid subscription. The test verifies the empty initial list, opens that lesson without a paywall, saves it, reopens it from Bookmarks at the saved slide, and removes the created bookmark during cleanup. It does not infer a paywall at the Bookmarks entry point from the absence of a subscription. An unavailable base lesson is a fixture/access blocker, not permission to change account entitlements.
+For [COA-9667](https://the-coach.atlassian.net/browse/COA-9667), the basic fixture opens and saves the program's first available lesson from Today. Tapping the saved card in My Bookmarks shows the subscription paywall. With an active subscription or trial, the saved card opens the lesson at its saved slide. Cleanup removes the test bookmark.
+
+To select a paid-access variant, set `coach.bookmarks.accessVariant` to `active-subscription` or `active-trial` and use `coach.bookmarks.availableAccountRole` to select a prepared account. The trial variant defaults to `ACTIVETRIAL`. Both variants verify the Premium badge after login. Confirm the account's subscription or trial state during fixture preparation.
 
 Expired access has a different product contract and is not represented by the no-subscription test: My Bookmarks opens and displays saved cards, but opening a saved lesson is blocked by the subscription paywall. If COA-9668 is automated later, it must assert both stages instead of expecting the Bookmarks entry point itself to be paywalled.
 
@@ -97,7 +99,7 @@ The active-program reader prefers the app-side identifier, then reads the observ
 
 iOS login waits for a hittable Welcome control and verifies the email form, rather than accepting a successful click alone. Post-OTP readiness requires rendered Today cards and a Profile control with no visible auth form. Opening Profile waits for populated content before the separate, strict account-identity assertion; persistent tabs or an empty navigation container are insufficient. Entry and Profile use one native tap at the observed control's center, sharing the existing iOS browser-close tap implementation.
 
-When a bookmarked card opens a subscription paywall, `openCard` fails explicitly and attaches the blocking XML and screenshot before cleanup. Detection and dismissal reuse the iOS onboarding paywall handlers, including the close/RESTORE marker on both builds. Dismissal runs only in preparation/cleanup; it does not turn a paywalled open into a successful content assertion. The available-base-lesson case removes its own created bookmark after dismissing the blocker.
+`openCard` expects the reader and captures XML and a screenshot if a paywall appears. The basic variant of COA-9667 expects the paywall through `openCardExpectingPaywall` and captures the same evidence. Detection and dismissal reuse the iOS onboarding paywall handlers. Cleanup dismisses the paywall and removes the created bookmark.
 
 ## Completion indicator after FINISH
 
@@ -140,7 +142,7 @@ The current simulator builds (male 1.13.34 and female 2.0.33, iOS 26.5) were che
 
 There were 38 distinct executed UI scenarios and 46 measured attempts including corrections and related checks. Recurring completion (COA-9664) remains the accepted data blocker on each variant. Update/reinstall (COA-9666) is blocked on each variant because both supplied old/current pairs contain the literal `CFBundleVersion=BITRISE_BUILD_NUMBER`; bundle metadata was not edited. These four blocked slots are not passing or skipped JUnit executions.
 
-The remaining two failures are COA-9667's available-base-lesson variant: Starting Point (male) and The Basics of Sexual Desire (female) open from Daily Plan and can be saved, but opening their saved cards shows a subscription paywall. The final attempts fail explicitly with `Subscription paywall blocked bookmarked content`, preserve the blocking XML/screenshot, and successfully restore the empty bookmark fixture. Both final attempts contain zero suppressed cleanup errors. Investigate why access to the same lesson differs between Daily Plan and My Bookmarks; no production application code or entitlements were changed.
+In the October runs, Starting Point (male) and The Basics of Sexual Desire (female) opened from Daily Plan and could be saved. Tapping their saved cards showed the subscription paywall. The attempts failed the earlier assertion and restored the empty bookmark fixture. The November clarification established that the observed paywall is expected for the basic account.
 
 Male Kegel required correcting the restored-program locator and using a native tap on its selector card; the final Kegel checks pass on both variants. Related paid lesson/practice saved-slide checks also pass on both variants after these changes. The female analytics attempt initially captured only BookmarkDeleted during the parallel run. An isolated follow-up with a fresh observer captured all three required events with corroborated account identity and passed the unchanged assertions. The reason for the original incomplete capture is unconfirmed; retain this as an observability instability rather than a proven missing-product-event defect.
 
@@ -163,12 +165,9 @@ newer iOS files with older copies.
   Profile identity verification **without re-login after upgrade**. The later
   reinstall phase explicitly signs in and checks the app-local tooltip state.
   The original iOS numeric-build validation is unchanged.
-- The local Android no-subscription candidate expects a paywall at the Bookmarks
-  entry point. It overrides the inherited method only in the Android subclass
-  and has an explicit Android display name. It does **not** replace the iOS
-  available-base-lesson requirement or turn the known iOS access failure green.
-  This Android expectation still requires Product/QA confirmation before merge;
-  an iOS-labelled Jira case alone does not establish the Android contract.
+- The Android no-subscription candidate checks for a paywall at the Bookmarks
+  entry point. The iOS basic variant checks for the paywall after tapping
+  the saved card.
 
 Start with an already prepared `BASELINE` role and one non-completing method:
 
