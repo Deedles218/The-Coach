@@ -33,6 +33,7 @@ BUNDLE = "com.vamapps.preprod.The-Coach"
 HOST = "coach-preprod-cf87bfd42b85.herokuapp.com"
 BUNDLE_HOSTS = {
     BUNDLE: HOST,
+    "com.vamapps.preprod.The-Coach-for-her": HOST,
     "com.vamapps.The-Coach": "content.the.coach",
     "com.vamapps.The-Coach-for-her": "content.the.coach",
 }
@@ -49,15 +50,15 @@ def _number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def _route_matches(url, host=HOST):
+def _route_matches(url, host=HOST, route=ROUTE):
     if not isinstance(url, str):
         return False
     parsed = urllib.parse.urlsplit(url)
     return (parsed.scheme == "https" and parsed.netloc == host
-            and parsed.path == ROUTE and not parsed.fragment)
+            and parsed.path == route and not parsed.fragment)
 
 
-def _plist(blob, label, host=HOST):
+def _plist(blob, label, host=HOST, route=ROUTE):
     try:
         value = plistlib.loads(blob)
     except Exception:
@@ -68,13 +69,13 @@ def _plist(blob, label, host=HOST):
         raise EvidenceError("Unsupported cached " + label + " metadata version")
     urls = [v.get("_CFURLString") for v in value["Array"]
             if isinstance(v, dict) and "_CFURLString" in v]
-    if len(urls) != 1 or not _route_matches(urls[0], host):
+    if len(urls) != 1 or not _route_matches(urls[0], host, route):
         raise EvidenceError("Cached " + label + " URL is not the approved Today endpoint")
     return value["Array"]
 
 
-def _verify_request(blob, expected_uid, now, host=HOST):
-    items = _plist(blob, "request", host)
+def _verify_request(blob, expected_uid, now, host=HOST, route=ROUTE):
+    items = _plist(blob, "request", host, route)
     headers = [v for v in items if isinstance(v, dict) and "Authorization" in v]
     if len(headers) != 1 or not isinstance(headers[0]["Authorization"], str):
         raise EvidenceError("Cached Today request has no unambiguous authorization")
@@ -96,8 +97,8 @@ def _verify_request(blob, expected_uid, now, host=HOST):
         raise EvidenceError("Cached Today request JWT has expired or has no valid expiry")
 
 
-def _response_time(blob, now, host=HOST):
-    items = _plist(blob, "response", host)
+def _response_time(blob, now, host=HOST, route=ROUTE):
+    items = _plist(blob, "response", host, route)
     if (len(items) < 5 or not _number(items[1]) or items[3] != 200
             or not isinstance(items[4], dict)):
         raise EvidenceError("Unsupported cached Today response time/status metadata")

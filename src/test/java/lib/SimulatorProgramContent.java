@@ -22,9 +22,21 @@ public final class SimulatorProgramContent {
         return read("COA-9044", programId, actionBoundary, true);
     }
 
+    public static Map<String,Object> readProgramSelection(String caseKey, String programId, long actionBoundary) throws Exception {
+        Assert.assertTrue("Unexpected activation content case", java.util.Arrays.asList("COA-9792", "COA-9793", "COA-9797").contains(caseKey));
+        Assert.assertEquals("Bind the task-owned activation fixture", caseKey, System.getenv("COACH_PROGRAM_SELECTION_CASE"));
+        Assert.assertTrue("Activation content evidence requires preprod", Platform.getInstance().getIOSBundleId().startsWith("com.vamapps.preprod."));
+        return read(caseKey, programId, actionBoundary, false, System.getenv("COACH_PROGRAM_SELECTION_UID"));
+    }
+
     private static Map<String,Object> read(String caseKey, String programId, long actionBoundary,
                                            boolean incompleteModule) throws Exception {
         String uid = System.getenv("COACH_" + caseKey.replace("-", "") + "_UID");
+        return read(caseKey, programId, actionBoundary, incompleteModule, uid);
+    }
+
+    private static Map<String,Object> read(String caseKey, String programId, long actionBoundary,
+                                           boolean incompleteModule, String uid) throws Exception {
         Assert.assertNotNull("Current program content requires a dedicated fixture UID", uid);
         Files.createDirectories(Paths.get("target"));
         String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));

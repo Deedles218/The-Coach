@@ -28,6 +28,17 @@ public final class iOSEmailEnforcementPageObject extends iOSCoachFlowPageObject 
         this.fixture = fixture;
     }
 
+    /** Ordinary fixture enrollment; credentials must never be Allure step parameters. */
+    public static void bindNewAddress(RemoteWebDriver driver, String email, String otp) {
+        iOSEmailEnforcementPageObject form = new iOSEmailEnforcementPageObject(driver, null);
+        form.enterEmail(email);
+        form.submit();
+        form.assertSingleOtp(email); // Reject an occupied address; never merge another account as a setup shortcut.
+        form.typeSecurityCode(otp);
+        form.waitForElementVisible("id:Your Email is confirmed!", "New QA email was not confirmed", 30);
+        form.waitForElementAndClick("id:CLOSE", "Cannot close new QA email confirmation", 10);
+    }
+
     @Step("Wait for the app to leave the launch screen before handling paywalls")
     public void waitForLaunchEntry() {
         waitForFirstElementPresent(new String[]{title(), "id:RESTORE", "id:Today",

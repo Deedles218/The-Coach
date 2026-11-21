@@ -6,6 +6,7 @@ import io.qameta.allure.Issue;
 import lib.CoreTestCase;
 import lib.Platform;
 import lib.PreparedMobileProfile;
+import lib.ui.factories.OnboardingPageObjectFactory;
 import lib.ui.ios.IOSMyProgramsPageObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ public class ProgramActivationScenarios extends CoreTestCase {
                 Platform.getInstance().isTestFlightAttachConfigured());
         PreparedMobileProfile.assertPreservationAllowed();
         super.setUp();
+        OnboardingPageObjectFactory.get(driver).closePaywallsAndPopups();
         today = new IOSMyProgramsPageObject(driver);
         today.openTodayTab();
     }
@@ -61,15 +63,35 @@ public class ProgramActivationScenarios extends CoreTestCase {
 
         today.openProgramSelector();
         today.assertActiveProgramMarked(activeProgram);
+        today.scrollToAddProgram();
+        today.openCatalogFromSelector();
+        today.returnToToday();
+        assertDailyPlanUnchanged(activeProgram, initialContent);
+    }
+
+    @Test
+    @Issue("COA-9805")
+    public void scrollingMyProgramsPreservesTheDailyPlan() {
+        String activeProgram = today.getActiveProgramName();
+        List<String> initialContent = dailyPlanContent();
+
+        today.openProgramSelector();
+        today.assertActiveProgramMarked(activeProgram);
+        today.scrollListDownAndBack(activeProgram);
+        today.closeProgramSelector();
+        assertDailyPlanUnchanged(activeProgram, initialContent);
+
+        today.openProgramSelector();
+        today.scrollToAddProgram();
         today.openCatalogFromSelector();
         today.returnToToday();
         assertDailyPlanUnchanged(activeProgram, initialContent);
     }
 
     private List<String> dailyPlanContent() {
-        String firstLesson = today.getFirstDailyLessonTitle();
-        Assert.assertFalse("The first lesson must have a readable title", firstLesson.isEmpty());
-        return Arrays.asList(today.getCurrentDayLabel(), firstLesson);
+        String firstContent = today.getFirstDailyContentTitle();
+        Assert.assertFalse("The first content card must have a readable title", firstContent.isEmpty());
+        return Arrays.asList(today.getCurrentDayLabel(), firstContent);
     }
 
     private void assertDailyPlanUnchanged(String activeProgram, List<String> initialContent) {
