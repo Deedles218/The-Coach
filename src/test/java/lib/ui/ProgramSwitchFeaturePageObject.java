@@ -4,6 +4,7 @@ import io.appium.java_client.HasSettings;
 import io.qameta.allure.Step;
 import lib.Platform;
 import lib.ui.factories.BookmarksPageObjectFactory;
+import lib.ui.factories.CoachFlowPageObjectFactory;
 import lib.ui.android.AndroidProgramSelectorPageObject;
 import lib.ui.ios.iOSProgramSelectorPageObject;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 /** COA-9549 controls observed in the preprod iOS and 1.41.2 Android builds. */
 public final class ProgramSwitchFeaturePageObject extends MainPageObject {
@@ -102,6 +104,16 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
     }
 
     public void completeDailyPlanItem(String title, Runnable beforeReturningToToday) {
+        completeDailyPlanItem(title, beforeReturningToToday, Collections.emptyMap());
+    }
+
+    public void completeDailyPlanItemWithAnswers(String title, Map<String, String> preparedAnswers) {
+        completeDailyPlanItem(title,
+                () -> CoachFlowPageObjectFactory.get(driver).closeNotificationPromptIfPresent(), preparedAnswers);
+    }
+
+    private void completeDailyPlanItem(String title, Runnable beforeReturningToToday,
+                                       Map<String, String> preparedAnswers) {
         Assert.assertTrue("Daily Plan item title cannot contain a quote in this fixture",
                 title == null || !title.contains("'"));
         String item = title != null && android
@@ -124,6 +136,15 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
         String finishButton = android ? continueButton : "id:FINISH";
         for (int page = 0; page < 20; page++) {
             assertContentAccessible(content);
+            for (Map.Entry<String, String> answer : preparedAnswers.entrySet()) {
+                String question = android ? "xpath://*[@text=" + org.openqa.selenium.support.ui.Quotes.escape(answer.getKey()) + "]"
+                        : "id:" + answer.getKey();
+                if (isElementVisible(question)) {
+                    String choice = android ? "xpath://*[@text=" + org.openqa.selenium.support.ui.Quotes.escape(answer.getValue()) + "]"
+                            : "id:" + answer.getValue();
+                    waitForElementAndClick(choice, "The prepared Daily Plan answer is absent", 10);
+                }
+            }
             if (isElementVisible(finishButton)
                     && (!android || "FINISH".equalsIgnoreCase(waitForElementVisible(finishButton,
                     "Finish button is absent", 3).getText()))) {
