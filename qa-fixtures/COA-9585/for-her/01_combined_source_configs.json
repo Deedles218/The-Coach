@@ -1,0 +1,1901 @@
+{
+  "programsTitle": "",
+  "toolsSubtitle": "For you",
+  "metricsId": "explore_for_her",
+  "tools": [],
+  "exerciseSections": [
+    {
+      "title": "Masterclasses",
+      "order": 1,
+      "layout": "challenge_card",
+      "exercises": [
+        {
+          "title": "The Art of Sensual Massage",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789477842/Frame_48095867_srwbg3.png",
+          "description": "The strokes, pressure, and pacing that turn a massage into the hottest part of the night.",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/sensualmassage"
+            }
+          },
+          "product": {
+            "is_native_paywall": true,
+            "purchased_url": "https://masterclass-iota-khaki.vercel.app",
+            "product_id": "male_masterclass_19.99",
+            "course_id": "male_masterclass_19.99"
+          },
+          "required_subscription": false
+        }
+      ]
+    },
+    {
+      "title": "Quick Tips",
+      "order": 2,
+      "layout": "square_ordinary_card",
+      "exercises": [
+        {
+          "title": "Finish Too Soon",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575429/Frame-3_lpyalq.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_finish_too_soon_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Losing Erection",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575431/Frame-4_vwebfr.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_losing_erection_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "She Doesn't Orgasm",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575431/Frame-2_ssdolu.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_she_doesnt_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Pressure to Perform",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-1_sz19t0.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_pressure_to_perform_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Don't Know What She Likes",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-5_jn2z5b.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_dont_know_what_she_likes_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Before Sex Tonight",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575434/Frame-7_x8egpr.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_before_sex_tonight_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "After Sex Didn't Go Well",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-8_jzyo9z.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_after_sex_didnt_go_well_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Not Tonight",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575436/Frame_nuakvt.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_not_tonight_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Not Turned On Yet",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575435/Frame-9_zajnjm.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_not_turned_on_yet_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "After Long Break",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575435/Frame-6_jztfaj.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_after_long_break_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Private Coaching Sessions",
+      "order": 3,
+      "layout": "coaching_session_card",
+      "exercises": [
+        {
+          "title": "Relationships: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "subtitle": "Connell Barrett",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/connell-relationship"
+            }
+          }
+        },
+        {
+          "title": "Keep It Hard: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789051184/Frame_48095860_1_e0nhwt.png",
+          "subtitle": "Natalie Goldberg",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/part_of_keep_it_hard_private"
+            }
+          }
+        },
+        {
+          "title": "Last Longer: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575215/Frame_48095860-2_qrve5a.png",
+          "subtitle": "Katy Orah",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/lastlongerprivate"
+            }
+          }
+        },
+        {
+          "title": "Dating Skills: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover_hg6d1g.png",
+          "subtitle": "Connell Barrett",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/connell-dating"
+            }
+          }
+        },
+        {
+          "title": "Sex Is a Skill: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575215/Frame_48095860-3_ajci0d.png",
+          "subtitle": "Katy Orah",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/sexisaskillprivate"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Body Practices",
+      "order": 4,
+      "layout": "video_card",
+      "exercises": [
+        {
+          "title": "Custom Kegel",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467559/Custom_Kegel_cdmjzb.png",
+          "redirect": {
+            "kegel_workout": {
+              "workout_id": "workout_custom_morning_pe_100"
+            }
+          }
+        },
+        {
+          "title": "Arousal Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467560/Arousal_Control_Exercise_g13fjk.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_arousal_exercise_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Basic Arousal Practice",
+            "goal": "Get comfortable with arousal so it stops running away from you.",
+            "description": "You let arousal build slowly, notice how it feels along the way, and stop before the point of no return. The more you practice, the better you know your own signals, and the more control you have.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464167/arousal_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Jacobson Relaxation",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467560/Jacobson_Relaxation_pp6ofh.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_jacobson_relaxation_technique_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Jacobson Relaxation Exercise",
+            "goal": "Let go of the tension your body holds without you noticing.",
+            "description": "You tense one muscle group at a time, then release it. Simple, but it teaches your body what being relaxed actually feels like, and makes it much easier to get there when you're nervous.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464160/relaxation_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Deep Breathing",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467559/Breath_of_Light_cccksc.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_deep_breathing_technique_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Deep Breathing Practice",
+            "goal": "Calm your body down with your breath.",
+            "description": "Slow breathing from the belly tells your nervous system that everything is fine. Use it before sex, or any time you feel wound up.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464198/breathing_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Body Scan",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790615475/Body_Scanning_Meditation_lpjpvz.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "body_scanning_practice_pe_v4",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Body Scan Practice",
+            "goal": "Get out of your head and back into your body.",
+            "description": "You move your attention slowly from head to toes and just notice what you feel. It quiets your mind and brings you back into the moment.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790615590/Body_Scanning_Meditation_avl2ih.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Self-Exploration",
+      "layout": "vertical",
+      "exercises": [
+        {
+          "title": "Guided Self-Massage",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779280804/card-2_fxarg0.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Guided Self-Massage",
+            "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+            "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+          }
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239427/card-5_ytpgn7.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Guided Fantasy Activation",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239421/card-2_wari6l.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_fantasy_activation_explore",
+              "content_id": "explore6",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/afd05613-e200-4732-8061-718ecf0de7aa/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_fantasy_activation_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_activation_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_fantasy_activation_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_activation_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_fantasy_activation_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_activation_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Guided Fantasy Activation",
+            "goal": "Gently awaken desire using guided imagery and story prompts.",
+            "description": "A structured warm-up that invites arousal through personalized fantasy cues. Choose your vibe, set a scene, and let your mind lead your body into sensation.\n\n🕑 8–12 minutes before self-pleasure",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219036/art-19_toc0f2.png"
+          }
+        },
+        {
+          "title": "Mirror Self Exploration",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239422/card-3_wdrilz.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_mirror_exploration_explore",
+              "content_id": "explore3",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/3844102d-0375-4881-9e16-a47bc09deb3e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_mirror_exploration_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_mirror_exploration_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_mirror_exploration_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_mirror_exploration_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_mirror_exploration_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_mirror_exploration_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Mirror Exploration",
+            "goal": "Build body appreciation and erotic self-trust in front of the mirror.",
+            "description": "A caring, step-by-step practice to notice shape, skin, and movement with softness. Includes affirmations to replace criticism with kindness and curiosity.\n\n🕑 10 minutes, 1–2× weekly",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219038/art-20_licfyd.png"
+          }
+        },
+        {
+          "title": "Erotic Breath Journey",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239422/card-4_e38t7a.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_erotic_breath_journey_explore",
+              "content_id": "explore7",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/ee5aac43-db4f-43fc-bdc5-e8e10b843fab/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_erotic_breath_journey_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_erotic_breath_journey_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_erotic_breath_journey_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_erotic_breath_journey_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_erotic_breath_journey_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_erotic_breath_journey_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Erotic Breath Journey",
+            "goal": "Use breath to amplify sensation and relax into pleasure.",
+            "description": "Learn arousal-friendly breathing patterns that increase blood flow, reduce tension, and heighten sensitivity — without forcing a goal.\n\n🕑 6–10 minutes, anytime",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219038/art-21_og1msy.png"
+          }
+        },
+        {
+          "title": "Cycle, Hormones & Orgasm",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239428/card-6_odgszh.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_your_cycle_hormones_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Vocal Release Session",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239429/card-7_ojpl8l.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_vocal_release_session_explore",
+              "content_id": "explore11",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/27621387-5a9c-4dac-a054-451b4bf96674/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_vocal_release_session_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_vocal_release_session_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_vocal_release_session_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_vocal_release_session_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_vocal_release_session_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_vocal_release_session_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Vocal Release Session",
+            "goal": "Use sound to relax your body and intensify sensation.",
+            "description": "Guided tones and exhales to drop jaw tension, soften the pelvic floor, and increase blood flow. Less holding, more feeling.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219042/art-24_b6toc8.png"
+          }
+        },
+        {
+          "title": "Pelvic Floor Relaxation Ritual",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239432/card-8_zegux8.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+              "content_id": "explore2",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/d344f0d3-1569-4184-a1d9-b318f42c626f/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_pelvic_floor_relaxation_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Pelvic Floor Relaxation Ritual",
+            "goal": "Release hidden tension that can block orgasm.",
+            "description": "Learn to locate your pelvic floor, then practice breath-and-release patterns that improve comfort, sensitivity, and orgasm potential.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219044/art-25_dc8ylh.png"
+          }
+        },
+        {
+          "title": "Body Awakening Ritual",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239471/card_uftsyo.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_body_scan_mp_explore",
+              "content_id": "explore10",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/55d20223-e464-4b7a-ae9e-d62dc14453de/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_body_scan_mp_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_body_scan_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_body_scan_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_body_scan_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_body_scan_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_body_scan_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Body Awakening Ritual",
+            "goal": "Tune into every part of your body with awareness and care.",
+            "description": "A calming guided meditation that travels from head to toe. You’ll release hidden tension, notice subtle sensations, and reconnect with your body as a whole. Use it for grounding, relaxation, or as a warm-up before intimacy.\n\n🕑 10–15 minutes, recommended a few times a week",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219047/art_nybmzr.png"
+          }
+        },
+        {
+          "title": "Solo Sensate Focus",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239421/card-1_y40gy4.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_sensate_focus_mp_explore",
+              "content_id": "explore8",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/d8d26cd8-0dc7-45c2-8398-544d272bd47f/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_sensate_focus_mp_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_sensate_focus_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_sensate_focus_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Solo Sensate Focus",
+            "goal": "Reconnect with your body through mindful, exploratory touch.",
+            "description": "This guided session leads you through a solo sensate focus practice. Step by step, you’ll explore your body with curiosity, naming each area and noticing sensation without pressure or goal. A powerful way to reduce anxiety and rediscover pleasure.\n\n🕑 12–15 minutes, anytime you want to reset",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219034/art-18_mwk1sy.png"
+          }
+        },
+        {
+          "title": "Guided Fantasy Warm-Up",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239433/card-9_aywznv.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_fantasy_warm_up_explore",
+              "content_id": "explore5",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/4b1eac37-002d-44fe-ba33-15147ad0f414/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_fantasy_warm_up_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_warm_up_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_fantasy_warm_up_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_warm_up_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_fantasy_warm_up_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_fantasy_warm_up_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Guided Fantasy Warm-Up",
+            "goal": "Prime arousal with short, sexy prompts tailored to your mood.",
+            "description": "Pick a vibe, set a scene, and build heat with one-line starters. A quick, playful way to get in the mood for solo or partnered intimacy.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219046/art-26_c5k5gt.png"
+          }
+        },
+        {
+          "title": "Self-Aftercare Ritual",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239435/card-10_z9mzwf.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_self_aftercare_ritual_explore",
+              "content_id": "explore1",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/b76096b0-3d7f-4982-8568-defef1469356/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_self_aftercare_ritual_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_self_aftercare_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_self_aftercare_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_self_aftercare_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_self_aftercare_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_self_aftercare_ritual_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Self-Aftercare Ritual",
+            "goal": "Soothe your nervous system and integrate pleasure after solo play.",
+            "description": "A gentle cool-down: breath, warmth, hydration, and reflective prompts to keep your body feeling safe, relaxed, and satisfied.\n\n🕑 5–8 minutes after any practice",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219046/art-27_wgph9m.png"
+          }
+        }
+      ],
+      "order": 5
+    },
+    {
+      "title": "Partnered Practices",
+      "layout": "vertical",
+      "exercises": [
+        {
+          "title": "Partnered Sensate Focus",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239438/card-11_qej2on.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+              "content_id": "explore9",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/698c860a-f2df-4a0d-9a95-a9e22f498635/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_sensate_focus_partnered_mp_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Partnered Sensate Focus",
+            "goal": "Reconnect with each other through mindful, non-sexual touch.",
+            "description": "This guided practice helps couples build intimacy by exploring each other’s bodies with curiosity and care. One partner touches while the other simply notices sensations, then you switch roles. A powerful way to deepen connection without pressure or expectation.\n\n🕑 15–20 minutes, switch roles halfway",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219011/art-1_gwowsr.png"
+          }
+        },
+        {
+          "title": "Hidden Erogenous Zones",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239439/card-12_qtcmk8.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_hidden_erogenous_zones_explore",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/3ecef430-341b-4909-ba3d-dc1158bb124b/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_hidden_erogenous_zones_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Hidden Erogenous Zones",
+            "goal": "Discover overlooked pleasure points together and expand your shared map of touch.",
+            "description": "A guided discovery session to explore lesser-known hotspots on both bodies. Learn gentle techniques, experiment with pressure and pace, and build a more nuanced, playful language of touch.\n\n🕑 Try this as a 15–20 minute exploration",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219023/art-11_vszrzk.png"
+          }
+        },
+        {
+          "title": "Erotic Story Building",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239440/card-13_le8zgx.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_build_your_own_erotic_story_explore",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Build Your Own Erotic Story",
+            "goal": "Co-create a story that reveals each partner’s desires in a playful, low-pressure way.",
+            "description": "An interactive prompt journey that helps you pick a vibe, set the scene, and write short, sexy lines together. Use it as foreplay or to learn what turns each of you on.\n\n🕑 Use before intimacy or as its own date-night game",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-12_v9uxgy.png"
+          }
+        },
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239442/card-14_vbb3n9.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          }
+        },
+        {
+          "title": "The Sensation Map Play",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239447/card-15_xicvsp.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "practice_the_heat_map_play_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "The Sensation Map Play",
+            "goal": "Map where touch feels good, great, or too much — and learn each other’s cues.",
+            "description": "Use a playful body map to rate areas green, amber, or red for different types of touch. Build confidence and reduce guesswork so intimacy feels safer and hotter.\n\n🕑 10–15 minutes, clothes on or off",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773220414/art-2_j6hcnl.jpg"
+          }
+        },
+        {
+          "title": "The “Almost-There“ Play",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239448/card-16_uqsrr8.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "practice_the_almost_play_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "The “Almost-There“ Play",
+            "goal": "Build desire by staying close to the edge without rushing to finish.",
+            "description": "Guided tease-and-pause rounds. Touch slows down right before the peak, then rest and switch. Trains communication, builds anticipation, and deepens sensation.\n\n🕑 12–20 minutes, timed rounds",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219031/art-15_m4bt0r.png"
+          }
+        },
+        {
+          "title": "The Hot & Cold Play",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239451/card-17_lf7fzm.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "practice_the_hot_cold_play_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "The Hot & Cold Play",
+            "goal": "Use simple words — hot or cold — to guide each other to better touch.",
+            "description": "One partner explores while the other gives one-word feedback only. Fast calibration, less overthinking, more pleasure. Swap roles halfway.\n\n🕑 8–12 minutes per role",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219031/art-16_jgrf6b.png"
+          }
+        },
+        {
+          "title": "The Hidden Touch Play",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239454/card-18_fpx0sk.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "practice_blind_guess_play_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "The Hidden Touch Play",
+            "goal": "Sharpen sensation and trust with a playful, eyes-closed touch game.",
+            "description": "With eyes covered, guess what and where your partner is touching. Light, slow, and curious wins. Builds attunement and playful confidence.\n\n🕑 10 minutes, then switch",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219033/art-17_kcbvfy.png"
+          }
+        }
+      ],
+      "order": 6
+    },
+    {
+      "title": "Aging & Pre-menopause",
+      "layout": "vertical",
+      "exercises": [
+        {
+          "title": "Pre-Menopause & Hormones 101",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239455/card-19_sfb6gy.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_pre_menopause_and_hormones_101_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "How Your Body Changes With Age",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239459/card-20_icotkt.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_how_your_body_changes_with_age_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Sexual Pleasure After 40",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239456/card-21_cjts9c.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_orgasms_after_40_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Understanding Vaginal Dryness",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239459/card-22_p3lzi5.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_vaginal_dryness_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Partnered Sex After 40",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239461/card-23_tdkcqp.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_partnered_sex_after_40_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ],
+      "order": 7
+    },
+    {
+      "title": "Sensual Stories",
+      "layout": "square",
+      "exercises": [
+        {
+          "title": "Behind the Door",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239462/card-24_po7pgj.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_behind_closed_door_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246031/Behind_Closed_Door_ut4pd0.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_behind_closed_door_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Behind the Door",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Women Voice, Her+Him.\n\nThis night, she wears her best dress to remind herself who she really is. Random bar, just one drink, then back home, she tells herself. But the glance she catches on her makes her forget everything. A labyrinth of words with this handsome stranger ends with him asking permission to go further, deeper. She’s been craving this for years, and at some point she can’t resist him anymore. She keeps saying yes until the door behind them shuts and there are no more questions left.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219013/art-3_l7dvzm.png"
+          }
+        },
+        {
+          "title": "Passionate Tango",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239465/card-25_aq40yx.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_passionate_tango_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246024/Passionate_Tango_wwpizj.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_passionate_tango_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Passionate Tango",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Woman Voice, Her+Him.\n\nShe books a private tango lesson because she needs a distraction, something that makes her feel alive again. She gets ready slowly, carefully chosen lingerie under her dress just for herself, like a small secret. But the moment he takes her hands to dance, her body starts listening in a way her mind didn’t expect. Every step becomes a tease, every pause becomes a test, and his lead feels too steady to fight. She keeps following until the kiss stops feeling like a lesson and starts feeling like the moment she is truly alive again.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219012/art-4_ycjbpr.png"
+          }
+        },
+        {
+          "title": "Scheduled Meeting",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239466/card-26_z4won2.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_scheduled_meeting_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246022/Meeting_Room_Secrets_hwf5kp.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_scheduled_meeting_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_scheduled_meeting_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_scheduled_meeting_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_scheduled_meeting_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_scheduled_meeting_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_scheduled_meeting_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Scheduled Meeting",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Man Voice, Her+Him.\n\nThis is supposed to be a normal working meeting. Slides, deadlines, polite voices, nothing personal. But he’s been thinking about her for too long, and she sits across from him like she has no idea what she’s doing to him. The room is quiet, too clean, and every pause between them starts to feel loaded. One look lasts a second too long, one small “accident” lands too close, and suddenly the agenda doesn’t matter. He holds it together until the meeting ends, and then the only question left is what happens when she finally gives in.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219018/art-5_qtwm4e.png"
+          }
+        },
+        {
+          "title": "Forbidden Dream",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239467/card-27_ny2ssf.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_forbidden_dream_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246034/Forbidden_Dream_fc3rim.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_forbidden_dream_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_forbidden_dream_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_forbidden_dream_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_forbidden_dream_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_forbidden_dream_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_forbidden_dream_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Forbidden Dream",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Man Voice, Her+Him.\n\nHe meets her in a friend’s company and barely even gets a real moment with her. He tells himself it’s nothing, just a quick impression that will pass. But she follows him home anyway, not in his hands, in his head. Sleep turns it into something bolder, closer, as if the night rewrites itself the way he wished it had gone. He wakes up with his body still convinced she’s there, and he knows one thing for sure: next time, he won’t let it stay a dream.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219013/art-6_zots7t.png"
+          }
+        },
+        {
+          "title": "Gallery Secrets",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239469/card-28_l2gwkn.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_gallery_secrets_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246011/Gallery_Secrets_jfviny.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_gallery_secrets_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_gallery_secrets_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_gallery_secrets_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_gallery_secrets_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_gallery_secrets_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_gallery_secrets_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Gallery Secrets",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Woman Voice, Her+Her.\n\nThis night, she goes to a gallery opening half bored, half hiding, trying to keep it light and meaningless. But then she notices her, a woman who looks like she sees everything and isn’t afraid to come closer. She pulls her into a quiet hallway between paintings, where the air feels warmer and time slows down. It starts with a look that lingers, then a touch that feels too gentle to be innocent. And suddenly she’s not thinking about the art anymore, she’s thinking about how close she’s willing to let her get.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219018/art-7_lndixd.png"
+          }
+        }
+      ],
+      "order": 8
+    }
+  ]
+}

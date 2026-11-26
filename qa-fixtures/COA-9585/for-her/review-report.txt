@@ -1,0 +1,133 @@
+COA-9585 — варианты конфигов для Explore женского iOS-приложения
+Дата: 2026-10-06 (Europe/Samara)
+Задача: https://the-coach.atlassian.net/browse/COA-9585
+Пути исходных данных актуализированы 2026-11-26 для публикации набора.
+Оценки и ограничения ниже относятся к исторической подготовке 2026-10-06;
+новые UI-прогоны или визуальное сравнение при публикации не выполнялись.
+
+1. Executive summary
+Решение: Insufficient evidence для закрытия задачи/релиза.
+Подготовлены данные для проверки всех шести layout из двух приложенных конфигов.
+Матрица из 24 комбинаций изолирует UI-шаблон от вида контента и использует женские lesson/video.
+Фактический прогон iOS и визуальное сравнение с Figma не выполнены. Это не отчёт о pass.
+Начать с 02, затем 03, потом 01 для полного набора исходных карточек.
+
+2. Scope and evidence
+R1 / COA-9585: оба iOS Explore поддерживают все мужские и женские виды карточек.
+R2 / COA-9585: согласованные шрифты, размеры и отступы.
+Комментарий 51318 от 2026-10-05: остаются существующие v7; на Dev общие конфиги.
+Комментарий 51351 от 2026-10-06: женские UI-фикс билды Dev #3499 / Preprod #3500.
+Для женского приложения ключ: abtest_explore_config_v7_for_her. Android — другая задача COA-9626.
+Источник Ж: sources/for-her.json — полный исходный JSON из пользовательского вложения.
+Источник М: sources/for-him.json — полный исходный JSON из пользовательского вложения.
+Ж / строки 2–5: programsTitle="", toolsSubtitle="For you", metricsId="explore_for_her", tools=[].
+Ж / строки 9, 1190: vertical и square; секции без order.
+М / строки 8, 32, 153, 216: challenge_card, square_ordinary_card, coaching_session_card, video_card.
+М / строки 19–25: product, is_native_paywall=true, male_masterclass_19.99, required_subscription=false.
+М / строки 221–224: kegel_workout/workout_custom_morning_pe_100.
+Локальные тесты: src/test/java/tests/ConfiguredExploreTests.java.
+iOS helpers: src/test/java/lib/ui/ios/iOSExplorePageObject.java:140,150,170,177,185,197.
+Изменены только новые файлы qa-fixtures/COA-9585/for-her. Исходные тесты и приложения не менялись.
+
+3. Assumptions and limitations
+Работоспособность исходных конфигов — сообщение пользователя; не результат текущего прогона.
+Сохранены женский root, исходные redirect/ID, rating_page и startScreen.
+В source-комбинации 01 перенесены все 51 исходная карточка; section.order добавлен для согласованного порядка.
+В 02–07 тексты/поля карточек меняются намеренно, но цели переходов не выдумываются.
+Наличие male product_id/workout_id в source payload не подтверждает доступность в женском bundle.
+required_subscription=false не подтверждает обход отдельной покупки через product.is_native_paywall.
+Матрица использует один подтверждённый пользователем женский пример на каждый поток контента.
+Figma node 46653:2529 недоступен для чтения: точные UI-значения и аннотации не проверены.
+Нет требования на максимальные длины/количество карточек, conflict-order, fallback и direct-video.
+COA-9585 не задаёт новый analytics contract: проверка аналитики — отдельная регрессия с действующим контрактом.
+
+4. Overall assessment
+Оценки относятся к текущим материалам; отсутствие evidence не означает доказанное отсутствие качества.
+requirements quality: 3/5 — область понятна, правила границ и UI-цифры не подтверждены.
+risk coverage: 3/5 — все 6 layout и 24 навигационных условия подготовлены; runtime нет.
+test design: 4/5 — baseline, изоляция женского контента, 0/1/несколько, reuse, отдельные exploratory.
+functional coverage: 0/5 — нет фактического прогона на целевой сборке.
+non-functional coverage: 0/5 — visual/accessibility/reliability условия подготовлены, не прогнаны.
+automation architecture: 1/5 для этой матрицы — Page Objects есть, но проверки привязаны к старым названиям.
+reliability/flakiness: 0/5 — нет evidence текущего прогона/повторяемости.
+diagnostics: 3/5 — независимые payload, traceability, ожидаемые targets; runtime traces ещё нет.
+maintainability: 4/5 — одинаковый root, исходные redirects, раздельные файлы, явные ограничения.
+CI/CD: N/A — изменение pipeline не входит в запрос; конфиги не подключены к CI.
+release readiness: 0/5 — визуальные и runtime условия ещё не подтверждены.
+
+5. Coverage map
+R1 / шесть layout -> 01,02 -> ручной UI/в будущем data-driven UI -> planned.
+Навигационная регрессия -> 03 -> 6 × статья/практика/видео/WebView -> planned.
+R2 / размеры, шрифты, отступы -> 01,02,05 -> visual на iOS #3499/#3500 -> planned, Figma gap.
+Регрессия исходных vertical/square -> 00 -> сравнить с исходным Ж -> planned.
+Порядок/переиспользование ячеек -> 04,06 -> проверить exact target и возврат -> planned.
+Тексты/изображения/CTA/subtitle/description -> 05 -> малый экран/крупный шрифт/кеш -> planned.
+Границы числа секций/карточек -> 07,08 -> 1/1, 0; пустой UI требует решения -> planned.
+Приоритет order -> 09 -> exploratory, контракт не определён.
+Видео без startScreen -> 10 -> exploratory, обязательность поля не определена.
+product/kegel_workout -> 01 -> source rendering; SKU/workout female availability не подтверждены.
+Все 24 targets описаны в coverage.json. Каждый runtimeStatus=not_run.
+
+6. Findings
+F01 | test data / access | потенциальная severity high | P1 | confidence high (поля), medium (доступность)
+Evidence: М:19–25,221–224. Риск: недоступный male SKU/workout может выглядеть как баг renderer.
+Рекомендация: сначала 02/03; для платежей и kegel взять подтверждённые женские fixture/entitlement.
+Owner: iOS + backend/product. Effort: S для подтверждения данных, зависит от provisioning.
+
+F02 | automation | severity medium | P1 | confidence high
+Evidence: iOSExplorePageObject.java:140,150,177,185,197.
+Риск: названия Quick Tips / Master Classes / Private coaching session и CTA Learn More захардкожены.
+Рекомендация: текущий suite не считать oracle для этих вариантов; будущие проверки брать из payload/coverage.
+Owner: QA automation. Effort: M для data-driven UI-тестов. Изменения тестов в этом запросе не выполнялись.
+
+F03 | requirements | severity medium | P2 | confidence high
+Evidence: COA-9585; Ж без order, М с order.
+Риск: ложный дефект по неописанному sort/fallback/direct-video поведению.
+Рекомендация: 08–10 выполнять как boundary/exploratory, согласовать oracle перед pass/fail.
+Owner: iOS + product. Effort: S.
+
+F04 | evidence | severity medium | P1 | confidence high
+Evidence: Figma недоступна; текущего UI-прогона нет.
+Риск: наличие JSON не подтверждает консистентность макета.
+Рекомендация: скриншоты каждого layout на #3499/#3500, сверка с node 46653:2529 и дизайнером.
+Owner: QA + design. Effort: S после доступа к макету/сборке.
+
+7. Missing and weak tests
+Missing: прогон всех шести layout на женской iOS-сборке с UI-фиксами.
+Missing: exact destination/startScreen/player и возврат для всех 24 комбинаций.
+Missing: small-screen/large-text, загрузка картинок, повторное использование ячеек и регрессия старого Ж.
+Weak: существующие fixed-name проверки не покрывают эту женскую/общую матрицу.
+Out of R1/R2, но отдельный риск: покупка/restore/subscription, availability male lessons/kegel, analytics.
+Не добавлять все комбинации ошибок поля в обязательный COA-9585 gate без контракта parser.
+
+8. Test architecture assessment
+Статический contract: JSON, перечисление layout, redirect shape, сохранность исходных объектов/ID.
+Integration/UI: фактическая загрузка remote config, layout, tap/CTA, startScreen, player, WebView.
+Visual: сравнение с Figma. Матрица покрывает все layout × четыре потока, а не только pairwise.
+State transition: 00 -> 02 -> 04 -> 05 -> 06 -> 07 -> 08 -> 00 с подтверждением применённого payload.
+Записать build/environment/account-entitlement/config hash. На смене конфига дождаться fetch/activate
+согласно текущему механизму приложения; один перезапуск сам по себе не доказывает применение.
+Навигационные проверки независимы: закрыть detail/player/WebView, вернуться в Explore перед следующим tap.
+Падение: screenshot + UI tree + exact card/target + effective config + релевантный лог без персональных данных.
+Не использовать retries для маскировки падения. Причина flaky не установлена: запусков не было.
+
+9. Release recommendation
+Insufficient evidence.
+JSON пригоден как подготовленные тестовые данные после статической проверки.
+Для пересмотра: подтверждённый effective config на #3499/#3500; все 6 layout видны и совпадают с макетом;
+24 позитивных маршрута открывают exact target; после смены данных/прокрутки нет stale cell content;
+regression 00 проходит. Product/kegel ограничения вынести в отдельные сценарии/согласованные исключения.
+
+10. Prioritized action plan
+immediate | QA | S | загрузить 02 в abtest_explore_config_v7_for_her на Dev/Preprod, проверить 6 layout.
+short-term | QA + iOS | S | 03/04/05/06; подтвердить order/direct-video/empty-state oracle; проверить UI с дизайнером.
+medium-term | QA automation | M | параметризовать oracle по config/coverage; сохранить screenshots/targets для регрессии.
+long-term | QA + CI owner | M | автоматический contract gate для будущих конфигов, когда схема/правила зафиксированы.
+
+11. Concrete test data and execution guide
+11 файлов 00–10; в payload нет QA-полей неизвестной схеме. Ожидания вынесены в coverage.json/этот отчёт.
+Каждый JSON-файл — полное значение одного remote-config ключа. Загружать по одному, без внешней оболочки.
+README.txt содержит назначение каждого варианта. 00 — исходный payload для отката.
+Порядок запуска: 02 -> 03 -> 01 -> 04 -> 05 -> 06 -> 07 -> 08 -> 00; 09/10 отдельно как exploratory.
+Статическая проверка: Node.js, JSON.parse, assert, compare source/root/layout/redirect/startScreen/product/matrix.
+iOS UI tests, StoreKit операции, публикация Firebase/Jira и изменение рабочих конфигов не выполнялись.

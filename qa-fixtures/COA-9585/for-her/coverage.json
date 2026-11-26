@@ -1,0 +1,927 @@
+{
+  "issue": "COA-9585",
+  "issueUrl": "https://the-coach.atlassian.net/browse/COA-9585",
+  "platform": "iOS",
+  "configKey": "abtest_explore_config_v7_for_her",
+  "builds": {
+    "dev": 3499,
+    "preprod": 3500
+  },
+  "asOf": "2026-10-06",
+  "status": {
+    "configurationChecks": "PASS: node qa-fixtures/COA-9585/for-her/validate.mjs (exit 0)",
+    "iosRuntime": "not_run",
+    "figmaVisualComparison": "not_run; design inaccessible"
+  },
+  "observedLayouts": [
+    "vertical",
+    "square",
+    "square_ordinary_card",
+    "challenge_card",
+    "coaching_session_card",
+    "video_card"
+  ],
+  "sources": [
+    {
+      "role": "for_her",
+      "path": "sources/for-her.json",
+      "workingStatus": "user_reported"
+    },
+    {
+      "role": "for_him",
+      "path": "sources/for-him.json",
+      "workingStatus": "user_reported_production"
+    }
+  ],
+  "fixtures": [
+    {
+      "file": "00_original_for_her.json",
+      "purpose": "Исходный женский конфиг для baseline и отката",
+      "expected": [
+        "Без изменений: 4 секции, 30 карточек; vertical и square. Сравнить UI до и после обновления сборки."
+      ],
+      "classification": "positive",
+      "sections": 4,
+      "cards": 30
+    },
+    {
+      "file": "01_combined_source_configs.json",
+      "purpose": "Объединение рабочих конфигов М и Ж под женским корнем",
+      "expected": [
+        "8 секций, 51 карточка, все 6 layout. Исходные карточки, redirect, startScreen, product и required_subscription сохранены.",
+        "Мужские lesson_id, product_id и workout_id в женском приложении не подтверждены. Проверять отображение отдельно от доступности контента и покупки."
+      ],
+      "classification": "positive",
+      "sections": 8,
+      "cards": 51
+    },
+    {
+      "file": "02_all_six_layouts_female_content.json",
+      "purpose": "Все 6 шаблонов с женским контентом",
+      "expected": [
+        "6 секций, 12 карточек. Шаблон определяется layout, а не названием секции.",
+        "challenge_card отображает description; coaching_session_card — subtitle и buttonTitle.",
+        "Переходы и startScreen берутся из рабочего женского конфига. Сравнить изображения, шрифты, размеры, скругления и отступы с макетом."
+      ],
+      "classification": "positive",
+      "sections": 6,
+      "cards": 12
+    },
+    {
+      "file": "03_layout_redirect_matrix.json",
+      "purpose": "Матрица: 6 layout × 4 потока контента",
+      "expected": [
+        "24 комбинации: статья coach_lesson; практика coach_lesson + startScreen; coach_video + startScreen/rating_page; web_view.",
+        "Проверять точные lesson_id, video_url и url; для startScreen — name, goal, description, picture_url, затем запуск контента.",
+        "Для coaching проверить CTA и область карточки согласно макету. После возврата нажать другую карточку и убедиться в правильном переходе.",
+        "URL WebView взят из мужского рабочего конфига; его доступность и поведение в женском билде требуют проверки."
+      ],
+      "classification": "positive",
+      "sections": 6,
+      "cards": 24
+    },
+    {
+      "file": "04_reordered_sections_and_cards.json",
+      "purpose": "Перестановка секций и карточек",
+      "expected": [
+        "Порядок: QA Video Card → QA Coaching Session → QA Challenge → QA Square Ordinary → QA Square → QA Vertical.",
+        "В каждой секции карточки из 02 идут в обратном порядке. Контент и переходы не изменены.",
+        "Массив и order согласованы; тест не предполагает правило обработки конфликта сортировки."
+      ],
+      "classification": "positive",
+      "sections": 6,
+      "cards": 12
+    },
+    {
+      "file": "05_text_and_image_changes.json",
+      "purpose": "Изменение текстов и изображений",
+      "expected": [
+        "6 layout: короткие/длинные title, Unicode, description, subtitle и CTA; imageURL заменены на другие URL из исходных конфигов.",
+        "Проверить на небольшом iPhone и при увеличенном системном шрифте. Переносы и обрезку оценивать по макету: лимит длины в COA-9585 не указан.",
+        "После 02 → 05 должны появиться новые изображения и тексты, без старого кеша.",
+        "startScreen.name оставлен исходным: название карточки отличается от названия контента. Проверять их отдельно."
+      ],
+      "classification": "positive",
+      "sections": 6,
+      "cards": 12
+    },
+    {
+      "file": "06_ten_cards_per_layout.json",
+      "purpose": "По 10 карточек каждого layout",
+      "expected": [
+        "6 секций × 10 карточек = 60. Прокрутить каждую секцию; проверить первую, пятую и последнюю карточки, переход и возврат.",
+        "Нет пропавших/дублированных карточек, перепутанных изображений, CTA и переходов после повторного использования ячеек.",
+        "10 — объём для проверки прокрутки, а не подтверждённый максимальный размер конфигурации."
+      ],
+      "classification": "positive",
+      "sections": 6,
+      "cards": 60
+    },
+    {
+      "file": "07_single_section_single_card.json",
+      "purpose": "Одна новая секция и одна карточка",
+      "expected": [
+        "От exerciseSections остаются только QA One Section и QA One Coaching Lesson.",
+        "coaching_session_card открывает женский урок lesson_why_some_women_dont_orgasm_explore; CTA Open.",
+        "Исходные женские поля верхнего уровня сохранены. Поведение пустого programsTitle не подменяется мужским Browse Programs."
+      ],
+      "classification": "positive",
+      "sections": 1,
+      "cards": 1
+    },
+    {
+      "file": "08_no_exercise_sections.json",
+      "purpose": "Ноль секций",
+      "expected": [
+        "Нет crash/зависания; после подтверждённого применения конфига нет старых exerciseSections.",
+        "Вид empty state и fallback в COA-9585 не описан: согласовать UI-ожидание с разработчиком."
+      ],
+      "classification": "boundary",
+      "sections": 0,
+      "cards": 0
+    },
+    {
+      "file": "09_array_order_vs_order_field.json",
+      "purpose": "Конфликт порядка массива и order — исследовательская проверка",
+      "expected": [
+        "Массив: Vertical → Square → Square Ordinary → Challenge → Coaching Session → Video Card.",
+        "Сортировка по возрастанию order даст обратный порядок.",
+        "Приоритет array/order не описан в COA-9585. Зафиксировать факт и согласовать правило, не считать один из вариантов дефектом без контракта."
+      ],
+      "classification": "exploratory",
+      "sections": 6,
+      "cards": 12
+    },
+    {
+      "file": "10_video_without_start_screen.json",
+      "purpose": "Видео без startScreen — исследовательская проверка",
+      "expected": [
+        "6 layout с исходным женским coach_video/rating_page, но без startScreen.",
+        "Согласовать необязательность startScreen и ожидаемый прямой запуск плеера. В рабочем женском конфиге выбранное видео имеет startScreen.",
+        "Нет crash и зависшего loading; отсутствие startScreen не должно приводить к открытию другого контента."
+      ],
+      "classification": "exploratory",
+      "sections": 6,
+      "cards": 6
+    }
+  ],
+  "navigationCases": [
+    {
+      "layout": "vertical",
+      "cardTitle": "QA vertical -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "vertical",
+      "cardTitle": "QA vertical -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "vertical",
+      "cardTitle": "QA vertical -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "vertical",
+      "cardTitle": "QA vertical -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square",
+      "cardTitle": "QA square -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square",
+      "cardTitle": "QA square -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square",
+      "cardTitle": "QA square -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square",
+      "cardTitle": "QA square -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square_ordinary_card",
+      "cardTitle": "QA square_ordinary_card -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square_ordinary_card",
+      "cardTitle": "QA square_ordinary_card -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square_ordinary_card",
+      "cardTitle": "QA square_ordinary_card -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "square_ordinary_card",
+      "cardTitle": "QA square_ordinary_card -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "challenge_card",
+      "cardTitle": "QA challenge_card -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "challenge_card",
+      "cardTitle": "QA challenge_card -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "challenge_card",
+      "cardTitle": "QA challenge_card -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "challenge_card",
+      "cardTitle": "QA challenge_card -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "coaching_session_card",
+      "cardTitle": "QA coaching_session_card -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "coaching_session_card",
+      "cardTitle": "QA coaching_session_card -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "coaching_session_card",
+      "cardTitle": "QA coaching_session_card -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "coaching_session_card",
+      "cardTitle": "QA coaching_session_card -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "video_card",
+      "cardTitle": "QA video_card -> lesson",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+          "feedback_id": "feedback_explore_article"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "video_card",
+      "cardTitle": "QA video_card -> practice",
+      "redirect": {
+        "coach_lesson": {
+          "program_id": "none",
+          "lesson_id": "yes_no_maybe_practice_1",
+          "feedback_id": "feedback_explore_practice"
+        }
+      },
+      "startScreen": {
+        "name": "Yes/No/Maybe Game",
+        "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+        "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "video_card",
+      "cardTitle": "QA video_card -> video",
+      "redirect": {
+        "coach_video": {
+          "program_id": "sex_skill_app",
+          "lesson_id": "lesson_guided_self_massage_explore",
+          "content_id": "explore12",
+          "content_type": "video",
+          "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+          "rating_page": {
+            "lesson_id": "lesson_guided_self_massage_explore",
+            "text_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 1,
+                "content_type": "header",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 3,
+                "content_type": "header",
+                "text": "Would you like to share your experience?",
+                "Platform": "iOS,Android"
+              }
+            ],
+            "image_content": [],
+            "freetext_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_type": "free_text",
+                "content_order": 4,
+                "question": "Would you like to share your experience?",
+                "Platform": "iOS,Android",
+                "user_feedback": null
+              },
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "email_feedback_2",
+                "content_type": "free_text",
+                "content_order": 6,
+                "question": "default",
+                "Platform": "iOS",
+                "is_email": true,
+                "user_feedback": null
+              }
+            ],
+            "rating_content": [
+              {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "page_id": "feedback_2",
+                "page_order": 1,
+                "content_id": "feedback_2",
+                "content_order": 2,
+                "content_type": "rating",
+                "text": "Did you find this practice helpful?",
+                "Platform": "iOS,Android"
+              }
+            ]
+          }
+        }
+      },
+      "startScreen": {
+        "name": "Guided Self-Massage",
+        "goal": "Turn full-body self-massage into a relaxing ritual for tension release and body connection.",
+        "description": "A calming full-body self-massage practice to help you slow down, release tension, and reconnect with sensation from head to toe.\n\nIn this video, we use our Melt: Massage Oil 🧴. You can find it in the shop.",
+        "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779275217/art_mmsce9.png"
+      },
+      "runtimeStatus": "not_run"
+    },
+    {
+      "layout": "video_card",
+      "cardTitle": "QA video_card -> webview",
+      "redirect": {
+        "web_view": {
+          "url": "https://vamapps.com/connell-relationship"
+        }
+      },
+      "startScreen": null,
+      "runtimeStatus": "not_run"
+    }
+  ],
+  "gaps": [
+    "Приоритет order/порядка массива и fallback пустого списка не определены в COA-9585.",
+    "Женские SKU/entitlement и kegel_workout не предоставлены. male_masterclass_19.99 и workout_custom_morning_pe_100 сохранены только в объединённом source fixture.",
+    "Покупка, restore, подписки и реальная выдача male-only контента требуют отдельных данных/проверок; из UI-поддержки layout их поддержка не следует.",
+    "Числа размеров, отступов, радиусов и правила truncation не извлечены из Figma.",
+    "Новые конфиги не доказывают прохождение UI-тестов."
+  ]
+}
