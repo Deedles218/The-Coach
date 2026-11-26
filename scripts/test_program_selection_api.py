@@ -56,6 +56,15 @@ class FakeSession:
 
 
 class ProgramSelectionSafetyTests(unittest.TestCase):
+    def test_day_progress_is_retained_without_private_or_unrelated_fields(self):
+        row = {'program_id': 'day_program', 'current_program_day': 9,
+               'current_stage': 2, 'total_stages': 5, 'total_program_stages': 35,
+               'authorization': 'must-not-be-reported'}
+        safe = checks.entry(row)
+        self.assertEqual(9, safe['current_program_day'])
+        self.assertEqual(2, safe['current_stage'])
+        self.assertNotIn('authorization', safe)
+
     def test_valid_activation_uses_only_the_observed_bodyless_program_url(self):
         session = self.fresh_ui_session()
         session.uid = session.expected_uid = 'fixtureIdentity123456789'
@@ -155,6 +164,7 @@ class ProgramSelectionSafetyTests(unittest.TestCase):
 
     def test_android_uses_backend_identity_instead_of_equating_ios_and_android_firebase_uids(self):
         session = checks.AndroidSession.__new__(checks.AndroidSession)
+        session.case = 'COA-9795'
         backend = 'ios_fixtureIdentity123456789'
         session.backend_hash = hashlib.sha256(backend.encode()).hexdigest()
         session.expected_email = 'fixture@example.invalid'
@@ -165,6 +175,22 @@ class ProgramSelectionSafetyTests(unittest.TestCase):
         user['user_id'] = 'differentBackendIdentity123456789'
         with self.assertRaisesRegex(AssertionError, 'different backend accounts'):
             session.require_fixture_identity()
+
+    def test_progress_fixture_accepts_only_its_bound_anonymous_backend_identity(self):
+        session = checks.AndroidSession.__new__(checks.AndroidSession)
+        session.case, session.expected_email = 'COA-9794', None
+        user = {'user_id': 'dedicatedProgressBackend12345'}
+        session.backend_hash = hashlib.sha256(user['user_id'].encode()).hexdigest()
+        session.get = lambda route: {'userdata': user}
+        session.require_fixture_identity()
+        user['connected_email'] = {'email': 'registered@example.invalid'}
+        with self.assertRaisesRegex(AssertionError, 'cannot be a registered account'):
+            session.require_fixture_identity()
+
+    def test_observation_preserves_absolute_day_instead_of_only_module_stage(self):
+        self.assertEqual({'program_id': 'main', 'current_program_day': 8, 'current_stage': 3},
+                         checks.entry({'program_id': 'main', 'current_program_day': 8,
+                                       'current_stage': 3, 'unrelated': 'excluded'}))
 
     def test_restores_secondary_and_active_after_rejection(self):
         for operation in checks.OPERATIONS[:2]:

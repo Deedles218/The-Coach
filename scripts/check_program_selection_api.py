@@ -24,7 +24,7 @@ from read_simulator_program_content import EvidenceError as CacheEvidenceError
 ROOT = '/api/v1/coachprogram/'
 ENTRY_FIELDS = ('program_id', 'title', 'membership_status', 'status',
                 'current_module_name', 'current_stage', 'total_stages',
-                'total_program_stages', 'progress_percent', 'is_active')
+                'total_program_stages', 'current_program_day', 'progress_percent', 'is_active')
 OPERATIONS = ('secondary-includes-main', 'activate-unadded', 'complete-without-main')
 CHECKS = OPERATIONS + ('new-onboarding-profile', 'secondary-onboarding-profile', 'observe', 'first-activation')
 
@@ -198,12 +198,13 @@ class AndroidSession(Session):
     def __init__(self, device, package):
         from read_android_email_enforcement import installed_build as android_build, session as android_session, PACKAGES
         from read_android_module_content import adb
-        require(os.environ.get('COACH_PROGRAM_SELECTION_CASE') == 'COA-9795',
-                'Android observations are scoped to the cross-platform QA case')
+        self.case = os.environ.get('COACH_PROGRAM_SELECTION_CASE')
+        require(self.case in ('COA-9794', 'COA-9795'),
+                'Android observations require the progress or cross-platform QA case')
         self.expected_email = os.environ.get('COACH_PROGRAM_SELECTION_EMAIL')
         self.backend_hash = os.environ.get('COACH_PROGRAM_SELECTION_BACKEND_HASH', '')
         expected_apk = os.environ.get('COACH_PROGRAM_SELECTION_ANDROID_APK_SHA256', '')
-        require(self.expected_email and re.fullmatch(r'[a-f0-9]{64}', self.backend_hash)
+        require((self.expected_email or self.case == 'COA-9794') and re.fullmatch(r'[a-f0-9]{64}', self.backend_hash)
                 and re.fullmatch(r'[a-f0-9]{64}', expected_apk),
                 'Cross-platform observations need confirmed email, backend identity and reviewed APK bindings')
         require(package in PACKAGES, 'Unsupported Android program package')
@@ -215,6 +216,14 @@ class AndroidSession(Session):
         actual_hash = adb(device, 'shell', 'sha256sum', paths[0]).decode().split()[0]
         require(actual_hash == expected_apk, 'Installed Android APK differs from the reviewed preprod artifact')
         self.uid, token = android_session(device, package, os.environ.get('COACH_PROGRAM_SELECTION_ANDROID_UID'))
+        if self.case == 'COA-9794':
+            require(self.uid == os.environ.get('COACH_PROGRAM_SELECTION_ANDROID_UID'),
+                    'Progress observations require the dedicated Android UID binding')
+            if not self.expected_email:
+                import base64
+                claims = json.loads(base64.urlsafe_b64decode(token.split('.')[1] + '=' * (-len(token.split('.')[1]) % 4)))
+                require(claims.get('firebase', {}).get('sign_in_provider') == 'anonymous',
+                        'Unregistered progress fixtures must use their own anonymous SDK session')
         self.host, self.read_only = PREPROD_HOST, False
         self.opener = urllib.request.build_opener(NoRedirect())
         self.headers = {'Authorization': 'FirebaseToken ' + token, 'AppVersion': build['version'],
@@ -233,6 +242,10 @@ class AndroidSession(Session):
                 and hashlib.sha256(user['user_id'].encode()).hexdigest() == self.backend_hash,
                 'Android and iOS belong to different backend accounts')
         connected = user.get('connected_email') or {}
+        if self.case == 'COA-9794' and not self.expected_email:
+            require(not connected.get('email') and not (user.get('analytics_profile') or {}).get('email'),
+                    'The anonymous progress fixture cannot be a registered account')
+            return user
         require(isinstance(connected.get('email'), str)
                 and connected['email'].casefold() == self.expected_email.casefold()
                 and connected.get('verified') is True and connected.get('user_confirmed') is True,

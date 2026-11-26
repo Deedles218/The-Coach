@@ -58,8 +58,7 @@ public class ProgramContentAccessTests extends CoreTestCase {
         IOSMyProgramsPageObject today = new IOSMyProgramsPageObject(driver);
         IOSProgramCatalogPageObject page = new IOSProgramCatalogPageObject(driver);
         today.openTodayTab();
-        page.openFromSelector();
-        page.openUnaddedProgram(title);
+        page.openUnaddedFromExplore(title);
         assertPlayersAbsent(page, f);
         // Preview is distinct from lesson/practice players. Exercise the supplied ordinary preview when present.
         if (f.optional("preview.open") != null) {
@@ -83,8 +82,7 @@ public class ProgramContentAccessTests extends CoreTestCase {
             }
             today.openTodayTab();
         }
-        page.openFromSelector();
-        page.openUnaddedProgram(title);
+        page.openUnaddedFromExplore(title);
         page.addAndStart(title);
         ProgramSelectionState added = ProgramSelectionApi.read();
         List<String> secondary = new ArrayList<>(before.secondaryIds());

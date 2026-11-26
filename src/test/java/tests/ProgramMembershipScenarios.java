@@ -151,10 +151,10 @@ public class ProgramMembershipScenarios extends CoreTestCase {
     }
 
     @Test @Issue("COA-9797")
-    public void exploreAddsOneSecondaryAndActivatesItsDailyPlan() throws Exception { addFromCatalog(false); }
+    public void exploreAddsOneSecondaryAndActivatesItsDailyPlan() throws Exception { addFromExplore(); }
 
     @Test @Issue("COA-9797")
-    public void selectorAddAddsOneSecondaryAndActivatesItsDailyPlan() throws Exception { addFromCatalog(true); }
+    public void selectorAddAddsOneSecondaryAndReturnsToExpandedSelector() throws Exception { addSelectedFromSelector(true); }
 
     @Test @Issue("COA-9797")
     public void firstValidActivationWithoutMainCreatesMainAndActiveWithNoSecondary() throws Exception {
@@ -165,7 +165,7 @@ public class ProgramMembershipScenarios extends CoreTestCase {
         after.assertActive(id);
     }
 
-    private void addFromCatalog(boolean fromSelector) throws Exception {
+    private void addFromExplore() throws Exception {
         MobileCaseFixture f = prepare("COA-9797");
         ProgramSelectionState before = ProgramSelectionApi.read();
         before.assertRoles(f.required("main.id"), ProgramOnboardingScenarios.ids(f, "secondary.ids"));
@@ -176,10 +176,7 @@ public class ProgramMembershipScenarios extends CoreTestCase {
         String title = ProgramOnboardingScenarios.title(ProgramSelectionApi.catalog(), added);
         IOSProgramCatalogPageObject catalog = new IOSProgramCatalogPageObject(driver);
         today.openTodayTab();
-        if (fromSelector) {
-            catalog.openFromSelector();
-            catalog.openUnaddedProgram(title);
-        } else catalog.openUnaddedFromExplore(title);
+        catalog.openUnaddedFromExplore(title);
         long action = System.currentTimeMillis();
         catalog.addAndStart(title);
         Map<String, Object> exchange = ProgramSelectionApi.exchange(added + "/add_and_activate/", action);
@@ -202,6 +199,72 @@ public class ProgramMembershipScenarios extends CoreTestCase {
         today.openProgramSelector();
         today.assertMatchesState(after);
         today.closeProgramSelector();
+    }
+
+    @Test @Issue("COA-9797")
+    public void allProgramsAddsTwoAtOnceAndReturnsToExpandedSelector() throws Exception {
+        addSelectedFromSelector(false);
+    }
+
+    private void addSelectedFromSelector(boolean viaAddProgram) throws Exception {
+        MobileCaseFixture f = prepare("COA-9797");
+        ProgramSelectionState before = ProgramSelectionApi.read();
+        before.assertRoles(f.required("main.id"), ProgramOnboardingScenarios.ids(f, "secondary.ids"));
+        List<String> additions = viaAddProgram ? Collections.singletonList(f.required("added.id"))
+                : ProgramOnboardingScenarios.ids(f, "added.ids");
+        Assert.assertEquals("Fixture has the wrong number of unadded programs", viaAddProgram ? 1 : 2, additions.size());
+        for (String id : additions) Assert.assertEquals("Target must be unadded", "none",
+                ((Map<?, ?>) before.raw().get("catalog_membership")).get(id));
+        List<Map<String, Object>> programs = ProgramSelectionApi.catalog();
+        IOSProgramCatalogPageObject catalog = new IOSProgramCatalogPageObject(driver);
+        today.openTodayTab();
+        today.openProgramSelector();
+        if (viaAddProgram) today.openCatalogFromAddProgram();
+        else today.openCatalogFromSelector();
+        catalog.assertMembershipAndOrder(programs, before);
+        catalog.selectForAddition(ProgramOnboardingScenarios.titles(programs, additions), before);
+        ProgramSelectionApi.read().assertExactlyEquals(before);
+        long action = System.currentTimeMillis();
+        catalog.addSelectedAndReturnToSelector(additions.size());
+        List<String> expected = new ArrayList<>(before.secondaryIds());
+        expected.addAll(additions);
+        Map<String, Object> request = (Map<String, Object>) ProgramSelectionApi.exchange("secondary_programs/", action).get("request");
+        List<String> sent = (List<String>) request.get("program_ids");
+        Assert.assertEquals("Multiselect request contains duplicates", expected.size(), sent.size());
+        Assert.assertEquals("Multiselect request lost saved programs", new LinkedHashSet<>(expected), new LinkedHashSet<>(sent));
+        ProgramSelectionState after = ProgramSelectionApi.read();
+        after.assertRoles(before.mainId(), expected);
+        after.assertActive(before.active());
+        after.assertSameProgress(before);
+        Assert.assertEquals("Adding programs changed completed content", before.raw().get("achievements"), after.raw().get("achievements"));
+        today.assertMatchesState(after);
+        today.closeProgramSelector();
+    }
+
+    @Test @Issue("COA-9793")
+    public void everySavedCounterUsesTheSameUnitAndPositionAsItsOwnDailyPlan() throws Exception {
+        MobileCaseFixture f = prepare("COA-9793");
+        ProgramSelectionState before = ProgramSelectionApi.read();
+        before.assertRoles(f.required("main.id"), ProgramOnboardingScenarios.ids(f, "secondary.ids"));
+        before.assertActive(before.mainId());
+        today.openTodayTab();
+        boolean firstSwitch = true;
+        for (Map<String, Object> program : before.programs()) {
+            String title = (String) program.get("title");
+            if (!title.equals(today.getActiveProgramName())) {
+                today.openProgramSelector();
+                today.selectSavedProgram(title, firstSwitch && bool(f, "confirmation"));
+                firstSwitch = false;
+            }
+            today.openProgramSelector();
+            today.assertMatchesState(ProgramSelectionApi.read());
+            today.closeProgramSelector();
+        }
+        if (!before.main().get("title").equals(today.getActiveProgramName())) {
+            today.openProgramSelector();
+            today.selectSavedProgram((String) before.main().get("title"), false);
+        }
+        ProgramSelectionApi.read().assertExactlyEquals(before);
     }
 
     @Test @Issue("COA-9802")

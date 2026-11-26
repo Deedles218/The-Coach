@@ -37,6 +37,7 @@ public class ProgramSecondarySelectionTests extends CoreTestCase {
         PreparedMobileProfile.assertPreservationAllowed();
         super.setUp();
         selection = new IOSProgramSelectionPageObject(driver);
+        selection.activatePreparedApplication();
         Assert.assertEquals("Bind the dedicated Secondary test profile to COA-9790", "COA-9790",
                 System.getenv("COACH_PROGRAM_SELECTION_CASE"));
         String uid = System.getenv("COACH_PROGRAM_SELECTION_UID");

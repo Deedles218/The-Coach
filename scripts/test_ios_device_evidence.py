@@ -17,6 +17,16 @@ UID = "dedicated-physical-test-account"
 
 
 class DeviceEvidenceTest(unittest.TestCase):
+    def test_her_preprod_uses_only_its_exact_container(self):
+        bundle = 'com.vamapps.preprod.The-Coach-for-her'
+        with tempfile.TemporaryDirectory() as directory, patch('ios_device_evidence.subprocess.run') as run:
+            run.return_value.returncode = 0
+            copy_file(directory, 'Library/com.amplitude.database', UDID, bundle)
+            command = run.call_args.args[0]
+            self.assertEqual(bundle, command[command.index('--domain-identifier') + 1])
+        with self.assertRaises(ValueError):
+            validate_device(UDID, bundle + '.other')
+
     def test_invalid_device_bundle_or_path_rejected_before_command(self):
         for udid, bundle in [("", BUNDLE), ("simulator", BUNDLE), (UDID, "com.other.app")]:
             with self.assertRaises(ValueError):

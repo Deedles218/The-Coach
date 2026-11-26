@@ -14,7 +14,7 @@ import tempfile
 
 ALLOWED_BUNDLES = {
     "com.vamapps.The-Coach", "com.vamapps.The-Coach-for-her",
-    "com.vamapps.preprod.The-Coach",
+    "com.vamapps.preprod.The-Coach", "com.vamapps.preprod.The-Coach-for-her",
 }
 
 

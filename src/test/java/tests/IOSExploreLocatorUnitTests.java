@@ -29,9 +29,13 @@ public class IOSExploreLocatorUnitTests {
     }
 
     private String[] variantLocators(boolean forHer) {
+        return variantLocators(forHer ? "com.vamapps.The-Coach-for-her" : "com.vamapps.The-Coach");
+    }
+
+    private String[] variantLocators(String bundle) {
         String previous = System.getProperty("ios.bundleId");
         try {
-            System.setProperty("ios.bundleId", forHer ? "com.vamapps.The-Coach-for-her" : "com.vamapps.The-Coach");
+            System.setProperty("ios.bundleId", bundle);
             Locators page = new Locators();
             return new String[]{iOSExplorePageObject.programTitlesLocator(),
                     iOSExplorePageObject.programCollectionLocator(), page.readiness(),
@@ -90,6 +94,13 @@ public class IOSExploreLocatorUnitTests {
         Assert.assertEquals("Sex Is a Skill", titles.item(0).getAttributes().getNamedItem("label").getNodeValue());
         for (int index = 1; index < locators.length; index++)
             Assert.assertEquals("For Her locator " + index, 1, select(FOR_HER_CAROUSEL, locators[index]).getLength());
+    }
+
+    @Test public void preprodHerUsesTheSameHeadinglessProgramContract() throws Exception {
+        for (String locator : variantLocators("com.vamapps.preprod.The-Coach-for-her"))
+            Assert.assertEquals(1, select(FOR_HER_CAROUSEL, locator).getLength());
+        for (String locator : variantLocators("com.vamapps.preprod.The-Coach"))
+            Assert.assertEquals(0, select(FOR_HER_CAROUSEL, locator).getLength());
     }
 
     @Test public void maleStillRequiresItsExpectedCatalogHeading() throws Exception {

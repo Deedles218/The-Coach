@@ -10,19 +10,24 @@ import java.util.*;
 /** Selector resources verified from manProd APK and the live bottom sheet. */
 public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject {
     private static final String PREFIX = Platform.getInstance().getAndroidAppPackage() + ":id/";
-    private static final By LIST = By.id(PREFIX + "rvActivePrograms");
-    private static final By TITLES = By.xpath("//*[@resource-id='"+PREFIX+"rvActivePrograms']//*[@resource-id='"+PREFIX+"tvTitle']");
+    protected static final String LIST_QUERY = "//*[@resource-id='"+PREFIX+"rvActivePrograms']"
+            + " | //*[@resource-id='"+PREFIX+"design_bottom_sheet']//*[@resource-id='"+PREFIX+"scrollView']";
+    protected static final String TITLES_QUERY = "("+LIST_QUERY+")//*[@resource-id='"+PREFIX+"tvTitle']";
+    private static final String LIST_LOCATOR = "xpath:"+LIST_QUERY;
+    private static final By LIST = By.xpath(LIST_QUERY);
+    private static final By TITLES = By.xpath(TITLES_QUERY);
     public AndroidProgramSelectorPageObject(RemoteWebDriver driver) { super(driver); }
     @Override public void openProgramSelector() {
+        new lib.ui.ProgramSwitchFeaturePageObject(driver).dismissProgramTooltipsIfPresent();
         getActiveProgramName(); // Returns the Today list to its header.
         waitForElementAndClick(TODAY_PROGRAM_HEADING, "Program selector entry is absent", 10);
-        waitForElementVisible("id:"+PREFIX+"rvActivePrograms", "Program selector did not open", 10);
+        waitForElementVisible(LIST_LOCATOR, "Program selector did not open", 10);
         waitForStableViewport();
     }
     @Override public void closeProgramSelector() {
         // Native back dismisses the modal without selecting a program.
         driver.navigate().back();
-        waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Selector is still displayed", 10);
+        waitForElementNotVisible(LIST_LOCATOR, "Selector is still displayed", 10);
         assertDailyPlanDaySwitcherIsDisplayed();
     }
     public void dismissSelectorIfOpen() { if (!driver.findElements(LIST).isEmpty()) closeProgramSelector(); }
@@ -74,7 +79,7 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
                     waitForElementVisible("id:"+PREFIX+"pbLoading", "Today loading indicator was not observed after selection", 3);
                     waitForElementNotVisible("id:"+PREFIX+"pbLoading", "Today loading did not finish", 20);
                 }
-                waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Selector did not close on selection",15);
+                waitForElementNotVisible(LIST_LOCATOR, "Selector did not close on selection",15);
                 if (handleConfirmation) {
                     createWait(20).ignoring(StaleElementReferenceException.class)
                             .withMessage("Today did not show the confirmed program: " + name).until(d -> {
@@ -106,7 +111,7 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     }
     public Rectangle firstCardBounds() {
         WebElement title=driver.findElements(TITLES).stream().filter(WebElement::isDisplayed).findFirst().orElseThrow(() -> new AssertionError("No selector card"));
-        return driver.findElement(By.xpath("(//*[@resource-id='"+PREFIX+"rvActivePrograms']//*[@resource-id='"+PREFIX+"tvTitle'])[1]/ancestor::*[@clickable='true'][1]")).getRect();
+        return driver.findElement(By.xpath("("+TITLES_QUERY+")[1]/ancestor::*[@clickable='true'][1]")).getRect();
     }
     public void assertActiveProgramIsFirst(String expected) {
         Assert.assertEquals("Active program is not first",expected.toLowerCase(Locale.ROOT),viewport().keySet().iterator().next().toLowerCase(Locale.ROOT));
@@ -125,14 +130,22 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
         Assert.assertTrue("Program list did not scroll vertically",moved || !before.keySet().equals(after.keySet()));
     }
     public void swipeSelectorDown() {
-        WebElement handle=waitForElementVisible("id:"+PREFIX+"vSwap", "Selector drag handle absent",10);
-        Rectangle r=handle.getRect();
+        int x,y;
+        if(isElementVisible("id:"+PREFIX+"vSwap")) {
+            Rectangle r=waitForElementVisible("id:"+PREFIX+"vSwap", "Selector drag handle absent",10).getRect();
+            x=r.x+r.width/2;y=r.y+r.height/2;
+        } else {
+            Rectangle sheet=waitForElementVisible("id:"+PREFIX+"design_bottom_sheet", "Selector sheet absent",10).getRect();
+            Rectangle heading=waitForElementVisible("xpath://*[@resource-id='"+PREFIX+"design_bottom_sheet']//*[@text='My programs']", "Selector heading absent",10).getRect();
+            Assert.assertTrue("Selector has no handle region above its heading",heading.y>sheet.y);
+            x=sheet.x+sheet.width/2;y=(sheet.y+heading.y)/2;
+        }
         Map<String,Object> args=new HashMap<String,Object>();
-        args.put("startX",r.x+r.width/2); args.put("endX",r.x+r.width/2);
-        args.put("startY",r.y+r.height/2); args.put("endY",driver.manage().window().getSize().height-30);
+        args.put("startX",x); args.put("endX",x);
+        args.put("startY",y); args.put("endY",driver.manage().window().getSize().height-30);
         args.put("speed",1000);
         ((JavascriptExecutor)driver).executeScript("mobile: dragGesture",args);
-        waitForElementNotVisible("id:"+PREFIX+"rvActivePrograms", "Swipe did not close selector",10);
+        waitForElementNotVisible(LIST_LOCATOR, "Swipe did not close selector",10);
         assertDailyPlanDaySwitcherIsDisplayed();
     }
 
