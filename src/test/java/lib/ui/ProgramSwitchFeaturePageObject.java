@@ -13,6 +13,7 @@ import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.Quotes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
 
     private String firstTooltip() {
         return android
-                ? "xpath://*[@text='Tap to explore other programs']"
+                ? "xpath://*[normalize-space(@text)='Tap to explore other programs']"
                 : "xpath://XCUIElementTypeStaticText[@name='Tap to explore more programs' and @visible='true']";
     }
 
@@ -94,6 +95,10 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
         if (isElementVisible(secondTooltip())) dismissSecondTooltip();
     }
 
+    public boolean isProgramTooltipVisible() {
+        return isElementVisible(firstTooltip()) || isElementVisible(secondTooltip());
+    }
+
     public void assertTooltipsAbsent() {
         Assert.assertFalse("First tooltip repeated", isElementVisible(firstTooltip()));
         Assert.assertFalse("Second tooltip repeated", isElementVisible(secondTooltip()));
@@ -109,19 +114,21 @@ public final class ProgramSwitchFeaturePageObject extends MainPageObject {
 
     public void completeDailyPlanItemWithAnswers(String title, Map<String, String> preparedAnswers) {
         completeDailyPlanItem(title,
-                () -> CoachFlowPageObjectFactory.get(driver).closeNotificationPromptIfPresent(), preparedAnswers);
+                () -> {
+                    if (!android) CoachFlowPageObjectFactory.get(driver).closeNotificationPromptIfPresent();
+                }, preparedAnswers);
     }
 
     private void completeDailyPlanItem(String title, Runnable beforeReturningToToday,
                                        Map<String, String> preparedAnswers) {
-        Assert.assertTrue("Daily Plan item title cannot contain a quote in this fixture",
-                title == null || !title.contains("'"));
+        Assert.assertTrue("An explicit Daily Plan item title must not be blank",
+                title == null || !title.trim().isEmpty());
         String item = title != null && android
                 ? "xpath://*[@resource-id='" + ANDROID_ID + "cvLessonContainer']"
-                    + "//*[@resource-id='" + ANDROID_ID + "tvLessonName' and @text='" + title + "']"
+                    + "//*[@resource-id='" + ANDROID_ID + "tvLessonName' and @text=" + Quotes.escape(title) + "]"
                 : title != null
                     ? "xpath://XCUIElementTypeOther[@name='DailyPlanItem']"
-                        + "//XCUIElementTypeStaticText[@name='" + title + "']"
+                        + "//XCUIElementTypeStaticText[@name=" + Quotes.escape(title) + "]"
                     : android
                         ? "xpath:(//*[@resource-id='" + ANDROID_ID + "cvLessonContainer' and .//*[@resource-id='" + ANDROID_ID
                             + "tvTagText' and starts-with(@text,'Lesson 1')]])[1]//*[@resource-id='" + ANDROID_ID + "tvLessonName']"

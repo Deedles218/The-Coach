@@ -41,6 +41,7 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         PreparedMobileProfile.assertPreservationAllowed();
         super.setUp();
         selection = new IOSProgramSelectionPageObject(driver);
+        selection.activatePreparedApplication();
     }
 
     @Override protected void cleanupSessionForNextTest() {
@@ -98,36 +99,39 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
 
     @Test @Issue("COA-9791")
     public void editSecondaryReplacesTheWholeSetAndClearsItPermanently() throws Exception {
+        replaceSecondaryDraft(false);
+    }
+
+    @Test @Issue("COA-9791")
+    public void clearingSecondaryDraftBeforeSummaryPersistsTheEmptySet() throws Exception {
+        replaceSecondaryDraft(true);
+    }
+
+    private void replaceSecondaryDraft(boolean clear) throws Exception {
         MobileCaseFixture f = prepare("COA-9791");
         String mainId = f.required("main.id"), replacement = f.required("replacement.id");
         List<String> initial = ids(f, "secondary.ids");
         Assert.assertEquals("Edit fixture needs B and C", 2, initial.size());
         Assert.assertFalse("Replacement must be initially unselected", initial.contains(replacement));
         ProgramSelectionState before = ProgramSelectionApi.read();
-        before.assertRoles(mainId, initial);
+        Assert.assertEquals("Draft has the wrong saved Main", mainId, before.mainId());
         List<Map<String, Object>> catalog = ProgramSelectionApi.catalog();
         String main = title(catalog, mainId);
         List<String> available = secondaryTitles(catalog, mainId);
-        selection.assertSummary(main, titles(catalog, initial), available);
-        selection.editSecondary();
         selection.assertSelection(main, titles(catalog, initial));
-        List<String> changed = Arrays.asList(initial.get(1), replacement);
+        List<String> changed = clear ? Collections.emptyList() : Arrays.asList(initial.get(1), replacement);
         selection.selectOnly(titles(catalog, changed));
+        ProgramSelectionApi.read().assertExactlyEquals(before);
         long action = System.currentTimeMillis();
         selection.openSummary();
         assertSecondarySaved(action, changed);
-        ProgramSelectionApi.read().assertRoles(mainId, changed);
+        ProgramSelectionState saved = ProgramSelectionApi.read();
+        saved.assertRoles(mainId, changed);
+        Assert.assertEquals("Changing the draft changed completed content", before.raw().get("achievements"), saved.raw().get("achievements"));
         selection.assertSummary(main, titles(catalog, changed), available);
-        selection.editSecondary();
-        selection.selectOnly(Collections.emptyList());
-        action = System.currentTimeMillis();
-        selection.openSummary();
-        assertSecondarySaved(action, Collections.emptyList());
-        ProgramSelectionApi.read().assertRoles(mainId, Collections.emptyList());
-        selection.assertSummary(main, Collections.emptyList(), available);
-        selection.editSecondary();
-        selection.assertSelection(main, Collections.emptyList());
-        ProgramSelectionApi.read().assertRoles(mainId, Collections.emptyList());
+        // Summary has no edit action in v3. A separate fresh fixture covers clearing.
+        closeAndReopenCoachApplication();
+        ProgramSelectionApi.read().assertExactlyEquals(saved);
     }
 
     @Test @Issues({@Issue("COA-9792"), @Issue("COA-9787")})
@@ -165,8 +169,7 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         closeAndReopenCoachApplication();
         selection.closeOptionalStartupPrompts();
         today.openTodayTab();
-        Assert.assertFalse("Recommendation repeated after Start", selection.isElementVisible("id:" + IOSProgramSelectionPageObject.RECOMMENDATION_TITLE));
-        Assert.assertFalse("Summary repeated after Start", selection.isElementVisible("id:Your plan is ready"));
+        selection.assertProgramSelectionAbsent();
         ProgramSelectionState reopened = ProgramSelectionApi.read();
         reopened.assertExactlyEquals(saved);
         today.openProgramSelector();
@@ -189,8 +192,7 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         closeAndReopenCoachApplication();
         selection.closeOptionalStartupPrompts();
         today.openTodayTab();
-        Assert.assertFalse("Recommendation repeated after completion", selection.isElementVisible("id:" + IOSProgramSelectionPageObject.RECOMMENDATION_TITLE));
-        Assert.assertFalse("Summary repeated after completion", selection.isElementVisible("id:Your plan is ready"));
+        selection.assertProgramSelectionAbsent();
         ProgramSelectionState reopened = ProgramSelectionApi.read();
         reopened.assertExactlyEquals(saved);
         today.openProgramSelector();
@@ -238,6 +240,13 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         selection.assertMainCatalog(catalog, recommended);
         ProgramSelectionApi.read().assertExactlyEquals(before);
         Assert.assertFalse("Preview saved Main and opened Secondary", selection.isElementVisible("id:What else would you like to work on?"));
+        Assert.assertNotEquals("Go back fixture needs an alternative", recommended, previewId);
+        selection.toggle(title(catalog, previewId));
+        ProgramSelectionApi.read().assertExactlyEquals(before);
+        selection.returnToRecommendation();
+        selection.assertText(title(catalog, recommended));
+        Assert.assertEquals("Go back changed the recommendation", recommended, ProgramSelectionApi.recommendation().get("program_id"));
+        ProgramSelectionApi.read().assertExactlyEquals(before);
     }
 
     private void preview(MobileCaseFixture f, String title, String prefix, boolean trailer) {
@@ -248,6 +257,12 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         if (trailer) selection.openCardTrailer(title); else selection.openCardDetails(title);
         selection.waitForElementVisible(ready, "Wrong program preview opened", 20);
         if (!trailer) selection.assertText(title);
+        if (!trailer) {
+            Assert.assertFalse("Onboarding Learn More must not launch or choose a program",
+                    selection.isElementVisible("id:Add and start today")
+                            || selection.isElementVisible("id:Add to Daily Plan")
+                            || selection.isElementVisible("id:MAKE IT MY MAIN JOURNEY"));
+        }
         selection.waitForElementAndClick(close, "Cannot close program preview", 10);
         selection.waitForElementNotVisible(ready, "Preview remained open", 10);
     }

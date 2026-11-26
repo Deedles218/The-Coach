@@ -44,7 +44,8 @@ public final class ProgramSelectionApi {
             Assert.assertTrue("A dedicated QA UID binding is required", uid != null
                     && uid.matches("[A-Za-z0-9_-]{20,128}"));
         } else {
-            Assert.assertEquals("Android program observations are scoped to COA-9795", "COA-9795", caseKey);
+            Assert.assertTrue("Android observations require a reviewed progress or cross-platform fixture",
+                    Arrays.asList("COA-9794", "COA-9795").contains(caseKey));
             Assert.assertNotNull("Bind Android to the iOS backend identity", System.getenv("COACH_PROGRAM_SELECTION_BACKEND_HASH"));
         }
         read(); // The session reader verifies the device and API identities against the binding.

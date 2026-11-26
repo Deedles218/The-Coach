@@ -42,6 +42,15 @@ public class IOSMyProgramsScrollUnitTests {
     }
 
     @Test
+    public void addProgramRevealsTheCtaAndOpensAllPrograms() {
+        ScrollDriver driver = new ScrollDriver();
+        new IOSMyProgramsPageObject(driver).openCatalogFromAddProgram();
+        Assert.assertEquals(1, driver.gestures);
+        Assert.assertTrue(driver.catalogOpen);
+        Assert.assertFalse(driver.selectorOpen);
+    }
+
+    @Test
     public void aReportedVisibleButClippedCtaStillRequiresFurtherScrolling() {
         ScrollDriver driver = new ScrollDriver();
         driver.ctaY = 1000;
@@ -116,6 +125,7 @@ public class IOSMyProgramsScrollUnitTests {
         boolean moveSheet;
         boolean moveOutsideOnly;
         boolean selectorOpen = true;
+        boolean catalogOpen;
         boolean otherApplication;
         int nativeTaps;
         boolean nativeHeader;
@@ -166,9 +176,13 @@ public class IOSMyProgramsScrollUnitTests {
                 xpath = locator.substring("By.xpath: ".length());
             } else throw new AssertionError("Unexpected locator: " + locator);
             String xml = "<App>"
+                    + (catalogOpen ? node("XCUIElementTypeStaticText", "All Programs", 260, 22) : "")
                     + node("XCUIElementTypeStaticText", "Unrelated Today title", 650 + outsideOffset, 24)
                     + "<XCUIElementTypeStaticText name='active_program_name' label='Sex Is a Skill'"
                     + " visible='true' x='16' y='60' width='200' height='20'/>"
+                    + "<XCUIElementTypeOther name='DailyDaySwitcherView'>"
+                    + node("XCUIElementTypeStaticText", "Stage 1 of 8", 120, 20)
+                    + "</XCUIElementTypeOther>"
                     + (nativeHeader ? "<XCUIElementTypeOther><XCUIElementTypeOther><XCUIElementTypeOther>"
                     + "<XCUIElementTypeStaticText name='Sex Is a Skill' visible='true' x='16' y='56' width='129' height='24'/>"
                     + "<XCUIElementTypeImage visible='true' x='152' y='56' width='25' height='24'/>"
@@ -194,7 +208,7 @@ public class IOSMyProgramsScrollUnitTests {
                 NodeList nodes = (NodeList) XPathFactory.newInstance().newXPath()
                         .evaluate(xpath, document, XPathConstants.NODESET);
                 List<WebElement> elements = new ArrayList<>();
-                for (int i = 0; i < nodes.getLength(); i++) elements.add(new XmlElement((Element) nodes.item(i)));
+                for (int i = 0; i < nodes.getLength(); i++) elements.add(new XmlElement((Element) nodes.item(i), this));
                 return elements;
             } catch (Exception failure) {
                 throw new AssertionError(failure);
@@ -209,8 +223,14 @@ public class IOSMyProgramsScrollUnitTests {
 
     private static final class XmlElement extends RemoteWebElement {
         private final Element node;
+        private final ScrollDriver driver;
 
-        XmlElement(Element node) { this.node = node; }
+        XmlElement(Element node, ScrollDriver driver) { this.node = node; this.driver = driver; }
+        @Override public void click() {
+            Assert.assertEquals("Unexpected control click", "Add a program", node.getAttribute("name"));
+            driver.catalogOpen = true;
+            driver.selectorOpen = false;
+        }
         @Override public boolean isDisplayed() { return true; }
         @Override public boolean isEnabled() { return true; }
         @Override public String getAttribute(String name) { return node.getAttribute(name); }

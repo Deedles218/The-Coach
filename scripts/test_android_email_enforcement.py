@@ -41,6 +41,33 @@ class AndroidEmailEvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 decode_session(xml, expected)
 
+    def with_sdk_token_response(self, user_xml, response_xml, record_uid='testFirebaseIdentity12345678'):
+        root = ET.fromstring(user_xml)
+        response_user = json.loads(ET.fromstring(response_xml)[0].text)
+        item = ET.SubElement(root, 'string', name='com.google.firebase.auth.GET_TOKEN_RESPONSE.' + record_uid)
+        item.text = response_user['cachedTokenState']
+        return ET.tostring(root)
+
+    def test_refreshed_sdk_record_supersedes_expired_user_snapshot(self):
+        xml = self.with_sdk_token_response(self.token_xml(expires=1), self.token_xml())
+        self.assertEqual(decode_session(xml, 'testFirebaseIdentity12345678')[0],
+                         'testFirebaseIdentity12345678')
+
+    def test_token_response_for_another_uid_is_not_used(self):
+        xml = self.with_sdk_token_response(self.token_xml(expires=1), self.token_xml(), 'otherFirebaseIdentity12345')
+        with self.assertRaises(ValueError):
+            decode_session(xml)
+
+    def test_refreshed_token_identity_and_expiry_remain_required(self):
+        for response in (self.token_xml(sub='different'), self.token_xml(expires=1)):
+            with self.assertRaises(ValueError):
+                decode_session(self.with_sdk_token_response(self.token_xml(), response))
+
+    def test_duplicate_sdk_token_responses_are_rejected(self):
+        xml = self.with_sdk_token_response(self.token_xml(), self.token_xml())
+        with self.assertRaises(ValueError):
+            decode_session(self.with_sdk_token_response(xml, self.token_xml()))
+
     def test_distinct_firebase_and_backend_ids_are_both_preserved(self):
         user = {'user_id': 'android-backend-id', 'analytics_profile': {}, 'subscription': {'active': True}}
         progress = {'lessons_completed': 0, 'exercises_completed': 0, 'longest_streak': 0}

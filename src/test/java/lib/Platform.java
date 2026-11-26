@@ -201,6 +201,13 @@ public class Platform {
                 && !this.getAndroidAppPath().trim().isEmpty();
     }
 
+    public boolean isAndroidAttachConfigured()
+    {
+        return this.isAndroid() && this.getAndroidAppPath() == null
+                && this.getBooleanConfig("android.noReset", "ANDROID_NO_RESET", true)
+                && !this.getBooleanConfig("android.fullReset", "ANDROID_FULL_RESET", false);
+    }
+
     public String getPostAuthQuestionnaireGoal()
     {
         return this.getConfig("postAuth.questionnaire.goal", "POST_AUTH_QUESTIONNAIRE_GOAL", null);

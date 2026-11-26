@@ -32,6 +32,7 @@ public class ProgramPaywallEntryTests extends CoreTestCase {
         super.setUp();
         purchase = new IOSProgramPurchasePageObject(driver);
         selection = new IOSProgramSelectionPageObject(driver);
+        selection.activatePreparedApplication();
     }
 
     @Override protected void cleanupSessionForNextTest() {
@@ -84,8 +85,6 @@ public class ProgramPaywallEntryTests extends CoreTestCase {
     }
 
     private void assertOnboardingNotRepeated() {
-        Assert.assertFalse("Recommendation is displayed unexpectedly",
-                selection.isElementVisible("id:" + IOSProgramSelectionPageObject.RECOMMENDATION_TITLE));
-        Assert.assertFalse("Summary is displayed unexpectedly", selection.isElementVisible("id:Your plan is ready"));
+        selection.assertProgramSelectionAbsent();
     }
 }

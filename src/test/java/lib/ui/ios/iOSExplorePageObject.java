@@ -38,7 +38,9 @@ public class iOSExplorePageObject extends ExplorePageObject {
             + " and XCUIElementTypeStaticText[1][normalize-space(@name)!='' or normalize-space(@label)!='']]";
 
     private static boolean isForHer() {
-        return "com.vamapps.The-Coach-for-her".equals(Platform.getInstance().getIOSBundleId());
+        String bundle = Platform.getInstance().getIOSBundleId();
+        return "com.vamapps.The-Coach-for-her".equals(bundle)
+                || "com.vamapps.preprod.The-Coach-for-her".equals(bundle);
     }
 
     private static String programCardsXPath() {

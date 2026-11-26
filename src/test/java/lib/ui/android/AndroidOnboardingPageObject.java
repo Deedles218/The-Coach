@@ -72,11 +72,26 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Verify Android fresh Start screen")
     public void assertFreshStartIsDisplayed() {
-        waitForElementPresent(
-                START_BUTTON,
-                "Android is not on the fresh new-user Start screen. Run with fullReset=true and noReset=false.",
-                20
-        );
+        createWait(20).withMessage(
+                "Android is not on the fresh new-user Start screen. Run with fullReset=true and noReset=false.")
+                .until(ignored -> {
+                    if (dismissOptionalNotificationPermissionIfPresent()) return false;
+                    return isElementVisible(START_BUTTON);
+                });
+    }
+
+    /** Samsung may show POST_NOTIFICATIONS before Welcome despite autoGrantPermissions. */
+    protected boolean dismissOptionalNotificationPermissionIfPresent() {
+        WebElement deny = firstDisplayedEnabled(By.id(
+                "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button"));
+        if (deny == null) deny = firstDisplayedEnabled(By.id(
+                "com.android.permissioncontroller:id/permission_deny_button"));
+        if (deny == null) return false;
+        WebElement message = firstDisplayedEnabled(By.id("com.android.permissioncontroller:id/permission_message"));
+        Assert.assertTrue("Unexpected Android permission prompt before Welcome",
+                message != null && message.getText().toLowerCase(Locale.ROOT).contains("notification"));
+        clickAndWaitForStateChange(deny, 8);
+        return true;
     }
 
     @Override

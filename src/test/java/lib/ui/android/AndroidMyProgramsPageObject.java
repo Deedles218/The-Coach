@@ -21,6 +21,8 @@ public final class AndroidMyProgramsPageObject extends AndroidDailyPlanPageObjec
     private final String prefix = Platform.getInstance().getAndroidAppPackage() + ":id/";
     private final MobileCaseFixture fixture;
 
+    public AndroidMyProgramsPageObject(RemoteWebDriver driver) { this(driver, null); }
+
     public AndroidMyProgramsPageObject(RemoteWebDriver driver, MobileCaseFixture fixture) {
         super(driver);
         this.fixture = fixture;
@@ -28,8 +30,19 @@ public final class AndroidMyProgramsPageObject extends AndroidDailyPlanPageObjec
 
     @Override public void openProgramSelector() {
         getActiveProgramName();
-        waitForElementAndClick(TODAY_PROGRAM_HEADING, "Cannot open Android My Programs", 10);
-        waitForElementVisible("id:" + prefix + "containerMain", "ON Main Journey container is absent", 15);
+        ProgramSwitchFeaturePageObject tutorial = new ProgramSwitchFeaturePageObject(driver);
+        String sheet = "id:" + prefix + "containerMain";
+        tutorial.dismissProgramTooltipsIfPresent();
+        if (!isElementVisible(sheet)) waitForElementAndClick(TODAY_PROGRAM_HEADING, "Cannot open Android My Programs", 10);
+        createWait(15).withMessage("ON Main Journey container is absent").until(ignored -> {
+            if (isElementVisible(sheet)) return true;
+            // The first-switch hint can arrive after the header has become tappable.
+            if (tutorial.isProgramTooltipVisible()) {
+                tutorial.dismissProgramTooltipsIfPresent();
+                if (!isElementVisible(sheet)) waitForElementAndClick(TODAY_PROGRAM_HEADING, "Cannot open Android My Programs after the hint", 10);
+            }
+            return isElementVisible(sheet);
+        });
     }
 
     @Override public void closeProgramSelector() {
@@ -48,7 +61,7 @@ public final class AndroidMyProgramsPageObject extends AndroidDailyPlanPageObjec
         Assert.assertEquals("Android Main Journey differs", state.main().get("title"),
                 waitForElementVisible("xpath://*[@resource-id='" + prefix + "containerMain']//*[@resource-id='"
                         + prefix + "tvTitle']", "Android Main title is absent", 10).getText());
-        if (!state.secondary().isEmpty()) {
+        if (!state.secondary().isEmpty() && fixture != null) {
             List<String> secondaries = driver.findElements(getLocatorByString(fixture.selector("selector.secondary.titles")))
                     .stream().map(WebElement::getText).collect(Collectors.toList());
             Assert.assertEquals("Android Secondary roles differ", state.secondary().stream().map(p -> p.get("title"))
@@ -58,9 +71,10 @@ public final class AndroidMyProgramsPageObject extends AndroidDailyPlanPageObjec
                 .stream().filter(WebElement::isDisplayed).count());
         for (Map<String, Object> program : state.programs()) {
             String id = (String) program.get("program_id"), row = row((String) program.get("title"));
-            Assert.assertEquals("Android stage differs from the reviewed saved position", fixture.required(id + ".subtitle"),
+            Assert.assertEquals("Android progress label differs from the saved program's unit and position",
+                    state.progressLabel(id).toUpperCase(java.util.Locale.ROOT),
                     waitForElementVisible("xpath:" + row + "//*[@resource-id='" + prefix + "tvSubtitle']",
-                            "Android program subtitle is absent", 10).getText());
+                            "Android program subtitle is absent", 10).getText().toUpperCase(java.util.Locale.ROOT));
             String ring = waitForElementVisible("xpath:" + row + "//*[@resource-id='" + prefix + "progressRing']",
                     "Android program progress is absent", 10).getText();
             state.assertDisplayedPercent(id, ring);
@@ -68,6 +82,40 @@ public final class AndroidMyProgramsPageObject extends AndroidDailyPlanPageObjec
                     .stream().anyMatch(WebElement::isDisplayed);
             Assert.assertEquals("Android active mark is on the wrong row", id.equals(state.active()), marked);
         }
+    }
+
+    public void assertPrograms(String main, List<String> secondary, String active) {
+        String mainTitle = "xpath://*[@resource-id='" + prefix + "containerMain']//*[@resource-id='" + prefix + "tvTitle']";
+        Assert.assertEquals("Wrong Main Journey", main, waitForElementVisible(mainTitle, "Main Journey is absent", 10).getText());
+        List<String> names = driver.findElements(By.xpath("//*[@resource-id='" + prefix
+                + "scrollView']//*[@resource-id='" + prefix + "tvTitle']"))
+                .stream().map(WebElement::getText).collect(Collectors.toList());
+        Set<String> expected = new LinkedHashSet<>(); expected.add(main); expected.addAll(secondary);
+        Assert.assertEquals("My programs contains duplicates", names.size(), new LinkedHashSet<>(names).size());
+        Assert.assertEquals("My programs has missing or unadded programs", expected, new LinkedHashSet<>(names));
+        Assert.assertEquals("My programs must have one active mark", 1L,
+                driver.findElements(By.id(prefix + "ivSelected")).stream().filter(WebElement::isDisplayed).count());
+        Assert.assertTrue("Active mark is on the wrong program", isElementVisible(
+                "xpath:" + row(active) + "//*[@resource-id='" + prefix + "ivSelected']"));
+    }
+
+    public void assertProgressLabels(Map<String, String> expected) {
+        Assert.assertFalse("Prepare independent Daily Plan labels", expected.isEmpty());
+        for (Map.Entry<String, String> entry : expected.entrySet()) {
+            Assert.assertTrue("Daily Plan must expose Day or Stage: " + entry.getValue(),
+                    entry.getValue().matches("(?i)(DAY|STAGE) \\d+ OF \\d+"));
+            String actual = waitForElementVisible("xpath:" + row(entry.getKey())
+                            + "//*[@resource-id='" + prefix + "tvSubtitle']",
+                    "My programs subtitle is absent: " + entry.getKey(), 10).getText();
+            Assert.assertEquals("My programs unit or counter differs from this program's Daily Plan: " + entry.getKey(),
+                    entry.getValue().toUpperCase(java.util.Locale.ROOT), actual.toUpperCase(java.util.Locale.ROOT));
+        }
+    }
+
+    public void openAllPrograms() {
+        waitForElementAndClick("id:" + prefix + "tvAll", "ALL is absent in My programs", 10);
+        waitForElementVisible("xpath://*[@resource-id='" + prefix + "tvTitle' and @text='All Programs']",
+                "ALL did not open All Programs", 15);
     }
 
     public void selectSavedProgram(String title, boolean confirmation) {

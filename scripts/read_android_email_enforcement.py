@@ -28,18 +28,30 @@ def installed_build(device, package):
 
 
 def decode_session(xml, expected_uid=None):
-    users = [json.loads(e.text) for e in ET.fromstring(xml)
+    entries = list(ET.fromstring(xml))
+    users = [json.loads(e.text) for e in entries
              if e.get('name') == 'com.google.firebase.auth.FIREBASE_USER']
     if len(users) != 1:
         raise ValueError('Expected one Firebase session')
     user = users[0]
     token = json.loads(user['cachedTokenState'])['access_token']
     payload = token.split('.')[1]
+    cached_claims = json.loads(base64.urlsafe_b64decode(payload + '=' * (-len(payload) % 4)))
+    uid = cached_claims.get('user_id')
+    # Firebase persists refreshed tokens separately from the FIREBASE_USER snapshot.
+    # Read only this user's SDK record; never refresh credentials in the observer.
+    refreshed = [e for e in entries
+                 if e.get('name') == 'com.google.firebase.auth.GET_TOKEN_RESPONSE.' + str(uid)]
+    if len(refreshed) > 1:
+        raise ValueError('Expected one Firebase token response for the session')
+    if refreshed:
+        token = json.loads(refreshed[0].text)['access_token']
+    payload = token.split('.')[1]
     claims = json.loads(base64.urlsafe_b64decode(payload + '=' * (-len(payload) % 4)))
-    uid = claims.get('user_id')
     identities = [json.loads(e) if isinstance(e, str) else e for e in user['userInfos']]
     if (not isinstance(uid, str) or not re.fullmatch(r'[A-Za-z0-9_-]{20,128}', uid)
-            or claims.get('sub') != uid or claims.get('exp', 0) <= time.time()
+            or claims.get('user_id') != uid or claims.get('sub') != uid
+            or claims.get('exp', 0) <= time.time()
             or not any(e.get('userId') == uid for e in identities)
             or (expected_uid and expected_uid != uid)):
         raise ValueError('Firebase identity/expiry verification failed')

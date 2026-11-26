@@ -28,11 +28,13 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
     private static final String ACTIVE_MARK = "xpath://XCUIElementTypeStaticText[@name='✓' and @visible='true']";
     private static final String ADD_PROGRAM = "id:Add a program";
     private static final String CATALOG_TITLE = "id:All Programs";
+    private static final String ALL_PROGRAMS = "id:ALL";
     private static final String CATALOG_BACK = "id:ic outline chevron left";
     private static final String HEADER_CHEVRON = "xpath://XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']"
             + "/parent::XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]"
             + "/XCUIElementTypeImage[@visible='true']";
     private static final String PROGRAM_LIST = "xpath://XCUIElementTypeScrollView[.//XCUIElementTypeStaticText[@name='MAIN JOURNEY']]";
+    private final Map<String, String> dailyCounters = new HashMap<>();
 
     public IOSMyProgramsPageObject(RemoteWebDriver driver) {
         super(driver);
@@ -42,6 +44,7 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
     @Step("Open My Programs from Today")
     public void openProgramSelector() {
         assertCoachForeground();
+        dailyCounters.put(getActiveProgramName(), getCurrentDayLabel());
         if (isElementVisible(TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR)) {
             new iOSCoachFlowPageObject(driver).tapHittableControl(new String[]{TEST_ID_DAILY_PLAN_PROGRAM_SELECTOR},
                     "Cannot tap the identified program selector", 10);
@@ -91,16 +94,18 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
     @Step("Compare My Programs roles, active mark and displayed stages with the server")
     public void assertMatchesState(ProgramSelectionState state) {
         waitForElementVisible(SELECTOR_TITLE, "My Programs is not open", 10);
+        Assert.assertNotNull("Observe the Active Program's Daily Plan on this page object before opening My Programs",
+                dailyCounters.get((String) state.program(state.active()).get("title")));
         String titles = PROGRAM_LIST + "//XCUIElementTypeOther[XCUIElementTypeStaticText["
-                + "contains(@name,'STAGE ') or @name='Completed']]/XCUIElementTypeStaticText[1]";
+                + "starts-with(@name,'STAGE ') or starts-with(@name,'DAY ') or @name='Completed']]/XCUIElementTypeStaticText[1]";
         List<String> names = getElementAccessibleNames(titles);
         Set<String> expected = state.programs().stream().map(p -> (String) p.get("title"))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         Assert.assertEquals("My Programs has duplicate rows", names.size(), new LinkedHashSet<>(names).size());
         Assert.assertEquals("My Programs contains missing or unadded programs", expected, new LinkedHashSet<>(names));
         int mainY = waitForElementPresent(MAIN_JOURNEY, "Main Journey heading is absent", 10).getRect().y;
-        List<WebElement> secondary = driver.findElements(getLocatorByString("id:SECONDARY"));
-        if (!state.secondary().isEmpty()) Assert.assertEquals("Secondary heading is absent or duplicated", 1, secondary.size());
+        List<WebElement> secondary = driver.findElements(getLocatorByString("id:ADDITIONAL"));
+        Assert.assertEquals("Additional heading differs from the saved set", state.secondary().isEmpty() ? 0 : 1, secondary.size());
         int secondaryY = secondary.isEmpty() ? Integer.MAX_VALUE : secondary.get(0).getRect().y;
         for (Map<String, Object> row : state.programs()) {
             String title = (String) row.get("title");
@@ -110,11 +115,10 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
             Assert.assertTrue("Program is in the wrong section: " + title, main
                     ? name.getRect().y > mainY && name.getRect().y < secondaryY
                     : name.getRect().y > secondaryY);
-            String detail = "completed".equals(row.get("status")) ? "Completed"
-                    : (row.get("current_module_name") + " · Stage " + integer(row.get("current_stage"))
-                    + " of " + integer(row.get("total_stages"))).toUpperCase(Locale.ROOT);
-            waitForElementPresent(titleLocator + "/parent::XCUIElementTypeOther/XCUIElementTypeStaticText[@name="
-                    + Quotes.escape(detail) + "]", "Program module/stage differs from server: " + title, 10);
+            List<String> details = getElementAccessibleNames(titleLocator + "/parent::XCUIElementTypeOther/"
+                    + "XCUIElementTypeStaticText[starts-with(@name,'STAGE ') or starts-with(@name,'DAY ') or @name='Completed']");
+            Assert.assertEquals("Program must have exactly one counter or Completed label: " + title, 1, details.size());
+            assertCounterMatchesProgram(details.get(0), row, dailyCounters.get(title));
         }
         assertActiveProgramMarked((String) state.program(state.active()).get("title"));
     }
@@ -141,9 +145,25 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
         waitForElementNotVisible(SELECTOR_TITLE, "Switch did not dismiss My Programs", 20);
     }
 
-    private String integer(Object value) {
+    private static String integer(Object value) {
         Assert.assertTrue("Stage metadata is not numeric", value instanceof Number);
         return String.valueOf(((Number) value).intValue());
+    }
+
+    /** Daily Plan determines the unit; module metadata alone must never turn Day into Stage. */
+    public static void assertCounterMatchesProgram(String displayed, Map<String, Object> row, String dailyPlan) {
+        if ("completed".equals(row.get("status"))) {
+            Assert.assertEquals("Completed program has a numeric counter", "Completed", displayed);
+            return;
+        }
+        if (dailyPlan != null) Assert.assertEquals("Selector counter differs from the same program's Daily Plan",
+                dailyPlan.toUpperCase(Locale.ROOT), displayed);
+        Assert.assertTrue("Program counter must be Day or Stage", displayed.matches("(?:DAY|STAGE) [0-9]+ OF [0-9]+"));
+        boolean day = displayed.startsWith("DAY ");
+        String expected = (day ? "DAY " : "STAGE ")
+                + integer(row.get(day ? "current_program_day" : "current_stage")) + " OF "
+                + integer(row.get(day ? "total_program_stages" : "total_stages"));
+        Assert.assertEquals("Program counter differs from the saved position", expected, displayed);
     }
 
     public void assertTooltipAtSelector(String text, String headerSelector) {
@@ -190,8 +210,15 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
         waitForElementNotVisible(SELECTOR_TITLE, "My Programs remained open after swiping down", 10);
     }
 
-    @Step("Open the program catalog with Add a program")
+    @Step("Open All Programs with ALL")
     public void openCatalogFromSelector() {
+        waitForElementAndClick(ALL_PROGRAMS, "ALL is not visible in My Programs", 10);
+        waitForElementVisible(CATALOG_TITLE, "ALL did not open All Programs", 15);
+    }
+
+    @Step("Open All Programs with Add a program")
+    public void openCatalogFromAddProgram() {
+        scrollToAddProgram();
         waitForElementAndClick(ADD_PROGRAM, "Add a program is not visible in My Programs", 10);
         waitForElementVisible(CATALOG_TITLE, "Add a program did not open All Programs", 15);
     }
@@ -317,11 +344,13 @@ public final class IOSMyProgramsPageObject extends iOSDailyPlanPageObject {
         Assert.assertEquals("Today response belongs to another program", expectedId, content.get("programId"));
         Assert.assertEquals("Today header differs from its response", content.get("headline"), getActiveProgramName());
         Map<String, Object> metadata = (Map<String, Object>) content.get("sectionMetadata");
-        if (metadata.containsKey("module_name")) {
+        String counter = getCurrentDayLabel();
+        if (counter.startsWith("Stage ")) {
             waitForElementVisible("id:" + metadata.get("module_name"), "Today module differs from its response", 15);
             Assert.assertEquals("Today stage differs from its response", "Stage " + integer(metadata.get("module_current_day"))
-                    + " of " + integer(metadata.get("module_total_days")), getCurrentDayLabel());
-        }
+                    + " of " + integer(metadata.get("module_total_days")), counter);
+        } else Assert.assertEquals("Today day differs from its response", "Day " + integer(content.get("day"))
+                + " of " + integer(content.get("totalDays")), counter);
         List<Map<String, Object>> questions = (List<Map<String, Object>>) content.get("questions");
         Assert.assertFalse("Current Today response has no content", questions.isEmpty());
         int swipes = 0;

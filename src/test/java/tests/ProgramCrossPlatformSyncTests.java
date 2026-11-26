@@ -77,6 +77,11 @@ public class ProgramCrossPlatformSyncTests extends CoreTestCase {
                 "-Dcoach.mobileCases.fixture=" + f.required("android.fixture"),
                 "-cp", System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")),
                 ProgramCrossPlatformProbe.class.getName(), baseline.toString(), result.toString()));
+        for (String property : System.getProperties().stringPropertyNames()) {
+            if (property.startsWith("coach.programProgress.unit.")) {
+                command.add(1, "-D" + property + "=" + System.getProperty(property));
+            }
+        }
         ProcessBuilder child = new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(folder.resolve("android.log").toFile());
         child.environment().remove("ANDROID_APP");
         child.environment().put("COACH_PROGRAM_SELECTION_BACKEND_HASH", (String) before.raw().get("backend_identity"));
