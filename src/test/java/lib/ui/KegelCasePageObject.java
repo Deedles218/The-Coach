@@ -37,7 +37,8 @@ public final class KegelCasePageObject extends MainPageObject {
         super(driver);
         String path = System.getProperty("coach.kegelUi.fixture");
         if (path == null || path.trim().isEmpty()) {
-            throw new IllegalStateException("Supply -Dcoach.kegelUi.fixture=<observed build selectors.properties>; see docs/kegel-october-cases-setup.md");
+            throw new IllegalStateException("Supply -Dcoach.kegelUi.fixture=<observed build selectors.properties>; see docs/kegel-october-cases-setup.md"
+                    + " and docs/kegel-october-cases.md");
         }
         try (Reader reader = Files.newBufferedReader(Paths.get(path), StandardCharsets.UTF_8)) {
             selectors.load(reader);
