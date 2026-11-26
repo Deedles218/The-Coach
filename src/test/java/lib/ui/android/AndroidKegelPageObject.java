@@ -47,12 +47,16 @@ public class AndroidKegelPageObject extends AndroidDailyPlanPageObject {
         ((JavascriptExecutor)driver).executeScript("mobile: scrollGesture",args);
     }
     @Override public void openKegelExerciseFromDailyPlan() {
-        String card=GENERATED_KEGEL_CARD;
+        String card=generatedWorkoutCard(System.getProperty("coach.kegelPlayer.workout"));
         for(int n=0;n<10;n++) {
             if(isElementVisible(card)) { waitForElementAndClick(card,"Cannot open Custom Kegel",10);assertKegelStartScreenIsDisplayed();return; }
             scroll("rvQuestions","down");
         }
         Assert.fail("Dedicated Kegel fixture has no generated Kegel workout on this day");
+    }
+    protected static String generatedWorkoutCard(String workout) {
+        Assert.assertTrue("The reviewed workout title must not be blank",workout==null||!workout.trim().isEmpty());
+        return GENERATED_KEGEL_CARD+(workout==null?"":"[@text="+org.openqa.selenium.support.ui.Quotes.escape(workout)+"]");
     }
     @Override public void assertKegelStartScreenIsDisplayed() {
         Assert.assertTrue("Wrong Kegel start screen",visible("tvTitle").getText().toUpperCase(Locale.ROOT).contains("KEGEL"));
@@ -72,13 +76,25 @@ public class AndroidKegelPageObject extends AndroidDailyPlanPageObject {
         Assert.assertFalse("Exercise duration/intensity metadata absent",driver.findElements(By.id(P+"tvValue")).isEmpty());
     }
     @Override public void openFirstKegelExerciseInstruction() {
-        waitForElementAndClick(START_EXERCISE_TITLES, "Cannot open exercise instruction",10);
+        String title=System.getProperty("coach.kegel.instructionTitle");
+        Assert.assertTrue("The reviewed instruction title must not be blank",title==null||!title.trim().isEmpty());
+        String instruction=START_EXERCISE_TITLES+(title==null?"":"[@text="+org.openqa.selenium.support.ui.Quotes.escape(title)+"]");
+        waitForElementAndClick(instruction, "Cannot open exercise instruction",10);
         assertKegelExerciseInstructionIsDisplayed();
     }
     @Override public void assertKegelExerciseInstructionIsDisplayed() {
-        visible("tvName");visible("ivInstructionImage");visible("rvInstr");visible("tvAdjust");
+        int expectedSteps;
+        try {expectedSteps=Integer.parseInt(System.getProperty("coach.kegel.instructionStepCount","3"));}
+        catch(NumberFormatException invalid) {throw new AssertionError("Instruction step count must be a reviewed integer");}
+        Assert.assertTrue("Configure a reviewed instruction step count between 1 and 10",expectedSteps>0&&expectedSteps<=10);
+        String expectedTitle=System.getProperty("coach.kegel.instructionTitle");
+        String title=visible("tvName").getText();
+        if(expectedTitle!=null)Assert.assertEquals("Instruction fixture belongs to a different exercise",expectedTitle,title);
+        visible("ivInstructionImage");visible("rvInstr");visible("tvAdjust");
         List<WebElement> steps=driver.findElements(By.xpath("//*[@resource-id='"+P+"rvInstr']//*[@resource-id='"+P+"tvText']"));
-        Assert.assertEquals("Instruction needs three steps",3,steps.size());
+        Assert.assertEquals("Instruction step count differs from the reviewed exercise: "+title,expectedSteps,steps.size());
+        if(expectedTitle!=null)Assert.assertEquals("Each instruction step needs its number",expectedSteps,
+                driver.findElements(By.xpath("//*[@resource-id='"+P+"rvInstr']//*[@resource-id='"+P+"cvNumber']")).size());
         for(WebElement step:steps)Assert.assertFalse("Empty instruction step",step.getText().trim().isEmpty());
         visible("tvSelectedIntens");
     }
@@ -188,6 +204,36 @@ public class AndroidKegelPageObject extends AndroidDailyPlanPageObject {
     }
     @Override public boolean isKegelCompletionIntensityFeedbackDisplayed() {
         return isElementVisible("xpath://*[@text='Too Hard' or @text='Too hard']");
+    }
+    public boolean isKegelCompletionQuestionnaireDisplayed() {
+        return shown("rvFeedBackDetails")&&isElementVisible(id("etAnswerField"));
+    }
+    @Step("Verify and submit the three-question Kegel completion feedback")
+    public void submitKegelCompletionQuestionnaire() {
+        visible("rvFeedBackDetails");
+        By fields=By.xpath("//*[@resource-id='"+P+"rvFeedBackDetails']//*[@resource-id='"+P+"etAnswerField']");
+        By headings=By.xpath("//*[@resource-id='"+P+"rvFeedBackDetails']//*[@resource-id='"+P+"tvHeader']");
+        By prompts=By.xpath("//*[@resource-id='"+P+"rvFeedBackDetails']//*[@resource-id='"+P+"tvTextContent']");
+        Assert.assertEquals("Kegel feedback must have three answer fields",3,driver.findElements(fields).size());
+        List<WebElement> labels=driver.findElements(headings),questions=driver.findElements(prompts);
+        Assert.assertEquals("Kegel feedback must have three numbered questions",3,labels.size());
+        Assert.assertEquals("Kegel feedback must have text for each question",3,questions.size());
+        for(int n=0;n<3;n++) {
+            Assert.assertEquals("Wrong feedback question order","Question "+(n+1),labels.get(n).getText());
+            Assert.assertFalse("Feedback question is empty",questions.get(n).getText().trim().isEmpty());
+        }
+        String[] answers={"QA check: exercise completed comfortably.","QA check: all exercise steps completed.","QA check: no additional comments."};
+        for(int n=0;n<answers.length;n++) {
+            WebElement field=driver.findElements(fields).get(n);field.clear();field.sendKeys(answers[n]);
+            if(((io.appium.java_client.HasOnScreenKeyboard)driver).isKeyboardShown())
+                ((io.appium.java_client.HidesKeyboard)driver).hideKeyboard();
+        }
+        for(int n=0;n<answers.length;n++)
+            Assert.assertEquals("Feedback answer was not retained",answers[n],driver.findElements(fields).get(n).getText());
+        WebElement finish=waitForElementEnabled(id("bContinueLesson"),"Kegel feedback FINISH is disabled",10);
+        Assert.assertEquals("Wrong feedback submit action","FINISH",finish.getText());finish.click();
+        waitForElementNotVisible(id("rvFeedBackDetails"),"Submitted Kegel feedback remained open",20);
+        waitForElementVisible(id("rvQuestions"),"Feedback submission did not return to Today",20);
     }
     @Override public void selectTooHardKegelCompletionIntensityFeedback() {
         for(String label:new String[]{"Too Easy","Great","Too Hard"})waitForElementVisible("xpath://*[translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"+label.toLowerCase(Locale.ROOT)+"']","Intensity feedback missing: "+label,10);

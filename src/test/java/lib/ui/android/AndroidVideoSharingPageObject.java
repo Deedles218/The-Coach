@@ -37,18 +37,21 @@ public final class AndroidVideoSharingPageObject extends MainPageObject implemen
     private final VideoLessonPlayerPageObject video;
 
     public AndroidVideoSharingPageObject(RemoteWebDriver driver) {
-        super(driver);
+        this(driver, new VideoLessonPlayerPageObject(driver));
         // Playback keeps the accessibility tree busy while the controls auto-hide.
         ((AndroidDriver) driver).setSetting("waitForIdleTimeout", 1000);
-        video = new VideoLessonPlayerPageObject(driver);
+    }
+
+    AndroidVideoSharingPageObject(RemoteWebDriver driver, VideoLessonPlayerPageObject video) {
+        super(driver);
+        this.video = video;
     }
 
     @Override @Step("Exit Android video before the end of {lesson}")
     public void openByExitingVideo(String lesson) {
         openVideo(lesson);
         Assert.assertTrue("The video must still be playing before its end", video.positionSeconds() < video.durationSeconds());
-        exitVideo();
-        if (isElementVisible(LESSON) && !isElementVisible(PARTNER)) exitLesson();
+        exitVideoAndLesson();
         assertSharingPopup();
     }
 
@@ -62,6 +65,31 @@ public final class AndroidVideoSharingPageObject extends MainPageObject implemen
                 .withMessage("SharingVideo did not appear after natural Android playback completion")
                 .until(ignored -> isElementVisible(PARTNER));
         assertSharingPopup();
+    }
+
+    @Override @Step("Exit the unconfigured Android video {lesson} without SharingVideo")
+    public void assertNoSharingPopupAfterVideoExit(String lesson) {
+        openVideo(lesson);
+        Assert.assertTrue("Exit must occur before natural completion", video.positionSeconds() < video.durationSeconds());
+        exitVideoAndLesson();
+        Assert.assertFalse("SharingVideo appeared after exiting the unconfigured Android video",
+                isElementVisible(PARTNER) || isElementVisible(FRIEND));
+        waitForElementNotVisible(LESSON, "The unconfigured lesson is still open", 15);
+        waitForElementVisible(TODAY_CONTENT, "The video exit did not return to Today", 15);
+        long observeUntil = System.nanoTime() + Duration.ofSeconds(4).toNanos();
+        createWait(5).until(ignored -> {
+            Assert.assertFalse("SharingVideo appeared after exiting the unconfigured Android video",
+                    isElementVisible(PARTNER) || isElementVisible(FRIEND));
+            return System.nanoTime() >= observeUntil;
+        });
+    }
+
+    void exitVideoAndLesson() {
+        exitVideo();
+        waitForElementNotVisible(PLAYER, "The Android video player is still open after exit", 15);
+        waitForFirstElementPresent(new String[]{LESSON, TODAY_CONTENT, PARTNER, FRIEND},
+                "The video exit did not return to the lesson, Today or SharingVideo", 15);
+        if (isElementVisible(LESSON) && !isElementVisible(PARTNER) && !isElementVisible(FRIEND)) exitLesson();
     }
 
     private void openVideo(String lesson) {

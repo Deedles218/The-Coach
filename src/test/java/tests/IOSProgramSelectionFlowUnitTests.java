@@ -80,6 +80,31 @@ public class IOSProgramSelectionFlowUnitTests {
         new IOSProgramSelectionPageObject(driver).assertMainCatalog(mainCatalog(), "main");
     }
 
+    @Test public void informationalDetailsRejectEveryAssignmentRouteIgnoringCase() {
+        for (String action : Arrays.asList("Add and start today", "add to daily plan",
+                "Make It My Main Journey", "sTaRt WiTh Last Longer")) {
+            FlowDriver driver = new FlowDriver();
+            driver.informationAction = action;
+            try {
+                new IOSProgramSelectionPageObject(driver).assertInformationalDetails();
+                Assert.fail("An informational preview accepted an assignment action");
+            } catch (AssertionError expected) {
+                Assert.assertTrue(expected.getMessage().contains("Learn More must not launch or choose"));
+            }
+        }
+    }
+
+    @Test public void informationalDetailsAllowLearnMoreWithoutAssignment() {
+        new IOSProgramSelectionPageObject(new FlowDriver()).assertInformationalDetails();
+    }
+
+    @Test public void hiddenAssignmentActionIsNotAnAvailableInformationControl() {
+        FlowDriver driver = new FlowDriver();
+        driver.informationAction = "START WITH Last Longer";
+        driver.informationActionVisible = false;
+        new IOSProgramSelectionPageObject(driver).assertInformationalDetails();
+    }
+
     private static List<Map<String, Object>> mainCatalog() {
         List<Map<String, Object>> rows = new ArrayList<>();
         for (String title : Arrays.asList("Main", "Alternative")) {
@@ -99,6 +124,8 @@ public class IOSProgramSelectionFlowUnitTests {
         boolean mainPicker;
         String mainChoice = "Main";
         String savedWith;
+        String informationAction;
+        boolean informationActionVisible = true;
 
         @Override public WebElement findElement(By by) {
             List<WebElement> found = findElements(by);
@@ -139,6 +166,7 @@ public class IOSProgramSelectionFlowUnitTests {
                     xml.append(node("XCUIElementTypeStaticText", "ADDED", true));
                 }
                 xml.append(node("XCUIElementTypeButton", "GO TO MY DAILY PLAN", true));
+                xml.append(node("XCUIElementTypeStaticText", "You can change your journeys at any time.", true));
             } else {
                 xml.append(node("XCUIElementTypeStaticText", "What else would you like to work on?", true));
                 for (String title : Arrays.asList("Program B", "Program C")) {
@@ -155,6 +183,10 @@ public class IOSProgramSelectionFlowUnitTests {
                         : "Continue " + selected.size() + " selected", !selected.isEmpty() || emptyContinueEnabled));
                 xml.append(node("XCUIElementTypeButton", "SKIP", true));
             }
+            if (informationAction != null) {
+                String action = node("XCUIElementTypeButton", informationAction, true);
+                xml.append(informationActionVisible ? action : action.replace("visible='true'", "visible='false'"));
+            }
             xml.append("</App>");
             try {
                 Object document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
@@ -164,7 +196,7 @@ public class IOSProgramSelectionFlowUnitTests {
                 for (int i = 0; i < nodes.getLength(); i++) {
                     final Element node = (Element) nodes.item(i);
                     found.add(new RemoteWebElement() {
-                        @Override public boolean isDisplayed() { return true; }
+                        @Override public boolean isDisplayed() { return !"false".equals(node.getAttribute("visible")); }
                         @Override public boolean isEnabled() { return "true".equals(node.getAttribute("enabled")); }
                         @Override public String getAttribute(String key) { return node.getAttribute(key); }
                         @Override public void click() {

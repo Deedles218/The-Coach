@@ -56,5 +56,58 @@ class AndroidAnalyticsTest(unittest.TestCase):
             self.assertEqual([],observer.events('emulator-5554',stats))
         self.assertEqual(1,stats['nonArrayPayloads']);self.assertEqual(1,stats['fileReads'])
         self.assertNotIn('PRIVATE-USER',json.dumps(stats));self.assertNotIn('DO-NOT-PERSIST',json.dumps(stats))
+    def queue(self,name,payload,stats=None):
+        with patch.dict('os.environ',{'COACH_ANDROID_EVIDENCE_PACKAGE':'com.vamapps.thecoach'},clear=True), \
+                patch.object(observer,'adb',side_effect=[(name+'\n').encode(),payload]):
+            return observer.events('Samsung',stats)
+    def test_complete_records_in_an_open_sdk_batch_are_read(self):
+        raw=json.dumps([self.event]).encode()[:-1];stats={}
+        self.assertEqual([self.event],self.queue('batch.tmp',raw,stats))
+        self.assertEqual(1,stats['openBatchSnapshots'])
+    def test_a_partial_event_in_an_open_batch_is_not_accepted(self):
+        self.assertEqual([],self.queue('batch.tmp',b'[{"event_type":"ProgramModalOpen"'))
+    def test_an_open_non_temporary_file_is_not_repaired(self):
+        self.assertEqual([],self.queue('batch.json',json.dumps([self.event]).encode()[:-1]))
+    def test_malformed_complete_payload_is_not_repaired(self):
+        self.assertEqual([],self.queue('batch.tmp',json.dumps([self.event]).encode()+b'garbage'))
+    def test_preexisting_open_batch_event_remains_in_the_baseline(self):
+        rows=self.queue('batch.tmp',json.dumps([self.event]).encode()[:-1])
+        self.assertFalse(self.matches(baseline={fingerprint(x) for x in rows}))
+    def test_open_batch_diagnostics_do_not_store_event_values(self):
+        stats={};self.queue('batch.tmp',json.dumps([self.event]).encode()[:-1],stats)
+        self.assertNotIn('fixture',json.dumps(stats));self.assertNotIn('keep_it_hard',json.dumps(stats))
+    def test_incomplete_later_record_does_not_export_the_complete_prefix(self):
+        prefix=json.dumps([self.event]).encode()[:-1]
+        for suffix in (b',', b',{"user_id":"PRIVATE', b',{"nested":[1,2', b',{"value":tru'):
+            with self.subTest(suffix=suffix):
+                stats={}
+                self.assertEqual([],self.queue('batch.tmp',prefix+suffix,stats))
+                self.assertEqual(1,stats['unparsedFiles'])
+                self.assertNotIn('PRIVATE',json.dumps(stats))
+    def test_non_json_constants_are_rejected_without_exporting_the_prefix(self):
+        prefix=json.dumps([self.event]).encode()[:-1]
+        for constant in (b'NaN', b'Infinity', b'-Infinity'):
+            for suffix in (b'', b']'):
+                with self.subTest(constant=constant,suffix=suffix):
+                    self.assertEqual([],self.queue('batch.tmp',prefix+b',{"time":'+constant+b'}'+suffix))
+    def test_broken_utf8_does_not_hide_a_later_valid_queue_file(self):
+        stats={}
+        with patch.dict('os.environ',{},clear=True),patch.object(observer,'adb',side_effect=[
+                b'broken.tmp\nvalid.json\n', b'[{"private":"\xff"}', json.dumps([self.event]).encode()]):
+            self.assertEqual([self.event],observer.events('emulator-5554',stats))
+        self.assertEqual(1,stats['unparsedFiles'])
+        self.assertEqual(2,stats['fileReads'])
+    def test_malformed_complete_objects_and_trailing_content_are_rejected(self):
+        prefix=json.dumps([self.event]).encode()[:-1]
+        for suffix in (b',{"value":}', b',{"value":1,}', b']\n{"secret":"PRIVATE"}', b',{}]garbage'):
+            with self.subTest(suffix=suffix):
+                self.assertEqual([],self.queue('batch.tmp',prefix+suffix))
+    def test_whitespace_around_a_complete_open_batch_is_allowed(self):
+        self.assertEqual([self.event],self.queue('batch.tmp',b' \n'+json.dumps([self.event]).encode()[:-1]+b' \n'))
+    def test_failed_open_batch_diagnostics_do_not_persist_secrets(self):
+        stats={}
+        self.assertEqual([],self.queue('batch.tmp',b'[{"token":"DO-NOT-PERSIST","user_id":"PRIVATE-USER"',stats))
+        self.assertEqual(1,stats['unparsedFiles'])
+        self.assertNotIn('PRIVATE-USER',json.dumps(stats));self.assertNotIn('DO-NOT-PERSIST',json.dumps(stats))
 
 if __name__=='__main__':unittest.main()

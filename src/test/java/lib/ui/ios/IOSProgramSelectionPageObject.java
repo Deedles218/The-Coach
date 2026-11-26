@@ -314,10 +314,19 @@ public final class IOSProgramSelectionPageObject extends MainPageObject {
         waitForElementVisible("id:MAIN JOURNEY", "Summary has no Main Journey badge", 10);
         waitForElementEnabled("id:GO TO MY DAILY PLAN", "Summary has no Go to my Daily Plan action", 10);
         Assert.assertFalse("Summary must not contain Edit My Programs", isElementPresent("id:Edit My Programs"));
+        waitForElementVisible("id:You can change your journeys at any time.", "Summary footer is absent", 10);
         assertVisibleTitleCount(main, 1);
         Assert.assertEquals("Summary must have one Added badge per Additional Journey", selected.size(),
                 driver.findElements(By.xpath("//XCUIElementTypeStaticText[@name='ADDED']")).size());
         for (String title : available) assertVisibleTitleCount(title, selected.contains(title) ? 1 : 0);
+    }
+
+    public void assertInformationalDetails() {
+        String upper = "translate(@name,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')";
+        Assert.assertFalse("Onboarding Learn More must not launch or choose a program", isElementVisible(
+                "xpath://XCUIElementTypeButton[" + upper + "='ADD AND START TODAY' or "
+                        + upper + "='ADD TO DAILY PLAN' or " + upper + "='MAKE IT MY MAIN JOURNEY' or "
+                        + "starts-with(" + upper + ",'START WITH ')]"));
     }
 
     boolean selected(String title) {

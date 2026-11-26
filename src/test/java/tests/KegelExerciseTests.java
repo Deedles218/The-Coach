@@ -105,12 +105,29 @@ public class KegelExerciseTests extends CoreTestCase {
             @Feature(value = "Kegel exercises"),
             @Feature(value = "Exercise intensity")
     })
-    @DisplayName("Kegel completion feedback allows changing exercise intensity")
-    @Description("Checks all post-workout intensity options and selects Too Hard. An explicitly enabled disposable fixture completes a workout first when feedback is not already present.")
+    @DisplayName("Kegel completion follows the configured feedback contract (updated)")
+    @Description("Preserves the legacy intensity choices. The explicit Android questionnaire contract verifies three questions, retains typed answers, submits FINISH and returns to Today on a dedicated fixture.")
     @Step("Start test test04KegelCompletionIntensityCanBeChanged")
     @Severity(value = SeverityLevel.NORMAL)
     public void test04KegelCompletionIntensityCanBeChanged() {
+        String feedback=System.getProperty("coach.kegel.completionFeedback","intensity");
+        Assert.assertTrue("coach.kegel.completionFeedback must be intensity or questionnaire",
+                "intensity".equals(feedback)||"questionnaire".equals(feedback));
+        if("questionnaire".equals(feedback)) {
+            Assert.assertTrue("The questionnaire feedback contract is reviewed for Android",Platform.getInstance().isAndroid());
+            Assert.assertTrue("Completing a workout requires the explicit disposable fixture opt-in",
+                    Boolean.getBoolean("coach.kegel.completeWorkoutForFeedback"));
+        }
         DailyPlanPageObject dailyPlan = openDailyPlan();
+        if("questionnaire".equals(feedback)) {
+            lib.ui.android.AndroidKegelPageObject android=(lib.ui.android.AndroidKegelPageObject)dailyPlan;
+            android.openKegelExerciseFromDailyPlan();android.assertKegelStartScreenIsDisplayed();
+            android.startKegelExercise();android.assertKegelPlayerIsDisplayed();android.closeKegelPlayerInstructionsIfPresent();
+            android.createWait(300).withMessage("Completed workout did not show the reviewed questionnaire")
+                    .until(d -> android.isKegelCompletionQuestionnaireDisplayed());
+            android.submitKegelCompletionQuestionnaire();android.assertDailyPracticeIsDisplayed();
+            return;
+        }
 
         if (!dailyPlan.isKegelCompletionIntensityFeedbackDisplayed()
                 && Boolean.getBoolean("coach.kegel.completeWorkoutForFeedback")) {

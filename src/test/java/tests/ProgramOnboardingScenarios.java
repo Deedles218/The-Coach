@@ -258,10 +258,7 @@ public class ProgramOnboardingScenarios extends CoreTestCase {
         selection.waitForElementVisible(ready, "Wrong program preview opened", 20);
         if (!trailer) selection.assertText(title);
         if (!trailer) {
-            Assert.assertFalse("Onboarding Learn More must not launch or choose a program",
-                    selection.isElementVisible("id:Add and start today")
-                            || selection.isElementVisible("id:Add to Daily Plan")
-                            || selection.isElementVisible("id:MAKE IT MY MAIN JOURNEY"));
+            selection.assertInformationalDetails();
         }
         selection.waitForElementAndClick(close, "Cannot close program preview", 10);
         selection.waitForElementNotVisible(ready, "Preview remained open", 10);
