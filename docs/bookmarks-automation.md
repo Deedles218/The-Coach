@@ -1,12 +1,26 @@
 # Bookmarks automation
 
-`BookmarksTests` contains 21 scenarios linked to Xray cases COA-9647 through COA-9667. Full acceptance requires verifying each scenario with its target fixture. The trial variant of COA-9667 still needs a live run. COA-9668 is marked `automation-blocked` in Jira. The suite is iOS-only because the source cases are labelled iOS and the verified accessibility identifiers come from the iOS build.
+`BookmarksTests` contains 30 UI methods linked to 21 unique Xray cases, COA-9647 through COA-9667. `BookmarksExpiryTests` adds a dedicated run for COA-9668. Additional methods are variants, not additional Xray Tests. A linked method alone does not establish complete coverage of every variant in its Xray case; required fixture states and the assertions below must also be verified. The trial variant from COA-9667 and live acceptance of COA-9668 still require controlled entitlement fixtures. The source cases are labelled iOS; `AndroidBookmarksTests` inherits the shared scenarios with the candidate-contract limitations below.
 
-For [COA-9667](https://the-coach.atlassian.net/browse/COA-9667), the basic fixture opens and saves the program's first available lesson from Today. Tapping the saved card in My Bookmarks shows the subscription paywall. With an active subscription or trial, the saved card opens the lesson at its saved slide. Cleanup removes the test bookmark.
+For paid access, set `coach.bookmarks.accessVariant=active-subscription` or `active-trial` and select a prepared account through `coach.bookmarks.availableAccountRole`. The default roles are `ACTIVESUBSCRIPTION` and `ACTIVETRIAL`; both variants verify the Premium badge after login. Confirm the subscription or trial state during fixture preparation.
 
-To select a paid-access variant, set `coach.bookmarks.accessVariant` to `active-subscription` or `active-trial` and use `coach.bookmarks.availableAccountRole` to select a prepared account. The trial variant defaults to `ACTIVETRIAL`. Both variants verify the Premium badge after login. Confirm the account's subscription or trial state during fixture preparation.
+For [COA-9667](https://the-coach.atlassian.net/browse/COA-9667), the base account opens and saves the program's first lesson from Today without a paywall. Tapping its saved card in My Bookmarks shows the subscription paywall. With an active subscription or trial, the saved card opens the lesson at its saved slide. Start with an empty list or declare all existing bookmark titles, separated by `|`, in `COACH_BOOKMARKS_AVAILABLE_INITIAL_CARDS` / `coach.bookmarks.availableInitialCards`. The test checks the initial and resulting lists. Cleanup removes the created bookmark and checks the full initial list again.
 
-Expired access has a different product contract and is not represented by the no-subscription test: My Bookmarks opens and displays saved cards, but opening a saved lesson is blocked by the subscription paywall. If COA-9668 is automated later, it must assert both stages instead of expecting the Bookmarks entry point itself to be paywalled.
+The [COA-9668](https://the-coach.atlassian.net/browse/COA-9668) test saves the available lesson while access is active and verifies account identity and subscription state through read-only `/user/` evidence. After the fixture's expiry transition, My Bookmarks and its saved card remain accessible without a paywall; tapping that card must show the subscription paywall. Cleanup restores the entitlement snapshot, removes the test bookmark, and verifies the empty list. This follows main's expired-access contract and is separate from the no-subscription entry-point variant.
+
+### Dedicated expiry run
+
+Prepare an iOS Him build on a dedicated Simulator or a paired test iPhone and an approved account with a restorable active subscription or trial. The selected Today stage must contain the configured lesson. Start with an empty My Bookmarks list and previously dismissed tooltip. Give the test the dedicated credentials through `COACH_EXISTING_PROGRESS_EMAIL` and `COACH_EXISTING_PROGRESS_OTP`, the UID through `COACH_EXPECTED_ACCOUNT_UID`, and the UI strings through `COACH_BOOKMARKS_LESSON_TITLE` and `COACH_BOOKMARKS_TOOLTIP_TEXT`. On a physical iPhone the reader uses the installed version and build from the device selected by Appium. It verifies the session UID and the response UID before using the subscription status.
+
+`COACH_BOOKMARKS_EXPIRY_CONTROL` points to an executable supplied by the fixture owner. It receives `<expire|restore> <ios-device-udid> <bundle-id>` and inherits `COACH_EXPECTED_ACCOUNT_UID`. Scope both actions to that approved UID and environment. `expire` takes the entitlement through expiry while preserving the bookmark and sign-in. `restore` reinstates the original entitlement snapshot and must tolerate a partially failed expiry. Each action exits successfully only after its result is available for read-back. The test independently checks `subscriptionActive` on the same UID before and after the transition and after restoration.
+
+```bash
+TEST_ISOLATION_MODE=logout mvn -q test \
+  -Dtest=tests.BookmarksExpiryTests#bookmarkSurvivesExpiryAndOpeningLessonShowsPaywall \
+  -Dplatform=ios -Dios.udid='<ios-device-udid>' -Dios.bundleId=com.vamapps.The-Coach \
+  -Dappium.url='<appium-url>' -Dios.noReset=true -Dios.fullReset=false \
+  -Dcoach.ios.postAuthGoal='<fixture-matching primary goal>'
+```
 
 ## Runner
 
@@ -18,18 +32,21 @@ mvn -Dtest=tests.BookmarksTests#emptyListNeverShowsTooltip \
   -Dios.udid=<UDID> \
   -Dios.deviceName=<device-name> \
   -Dios.bundleId=<bundle-id> \
+  -Dcoach.ios.postAuthGoal='<fixture-matching primary goal>' \
   test
 ```
 
-For a complete run, use the regression controller with the four Bookmarks jobs:
+The regression controller separates Bookmarks into nine installation jobs.
 
 ```bash
 python3 scripts/ios_regression/run_regression.py --config <local-config.json> \
   --only BookmarksTests --only BookmarksTooltipFirstEntry \
-  --only BookmarksTooltipDismissal --only BookmarksUpdate
+  --only BookmarksTooltipNonEmptyFirstEntry --only BookmarksTooltipDismissal \
+  --only BookmarksTooltipDismissalCard --only BookmarksTooltipDismissalBookmark \
+  --only BookmarksTooltipDismissalNavigation --only BookmarksUpdate --only BookmarksReinstall
 ```
 
-These jobs select all 21 methods once per configured variant. The two tooltip jobs use fresh installations; the update job starts with `oldApp` and supplies the current `app` as `ios.update.app`. A single `suites.BookmarksSuite` invocation shares one capability configuration and cannot supply these different installation states. Run both variants sequentially through the controller, or use separate simulators, Appium/WDA ports, output directories, and project checkouts for parallel runs.
+These jobs cover the 30 methods per configured app variant, with two executions of COA-9666. Each of the six tooltip jobs uses its own fresh installation. `BookmarksUpdate` starts with `oldApp` and `BookmarksReinstall` starts with the current `app`. Both supply the current `app` as `ios.update.app`. Run the two jobs with separate prepared installations. The `UPDATE` account must have the lesson and a previously dismissed tooltip at the start of either job. A single `suites.BookmarksSuite` invocation shares one capability configuration and cannot supply the different installation states. Run targeted methods on a dedicated device with the prepared local history and server snapshot.
 
 For an app-only fresh installation on a dedicated simulator that is already booted, use:
 
@@ -52,16 +69,18 @@ The content scenarios reuse seven subscribed account roles per app variant. The 
 | --- | --- |
 | `BASELINE` | Empty list and a saveable lesson; used by empty-state and reversible save/delete checks |
 | `CONTENT` | Saved lesson and bookmarkable practice at known non-default slides; grouping additionally requires multiple programs/modules. A second lesson alone cannot satisfy practice scenarios |
-| `TOOLTIP` | One saved lesson; tooltip has never been shown |
-| `RECURRING` | Repeating content saved from the later day/stage; adjacent-day state is known |
+| `TOOLTIP` | One saved lesson and one saved practice; tooltip has never been shown. Each tooltip variant needs independent local history |
+| `RECURRING` | Known repeating content on earlier/later days. COA-9663 starts without its bookmark; COA-9664 needs a separately prepared saved later occurrence and incomplete days. Restore the matching snapshot between cases |
 | `SWITCHA` | Exactly one bookmark, different from `SWITCHB` |
 | `SWITCHB` | Exactly one bookmark, different from `SWITCHA` |
 | `UPDATE` | Exactly one saved lesson; tooltip already consumed; update build configured |
 | `NOSUBSCRIPTION` | Account with onboarding completed, an empty Bookmarks list, and no active, trial, lifetime, or expired entitlement; the configured base lesson is available without paid access |
 
-Cases that require a bookmarkable practice (`COA-9649`, `COA-9651`, `COA-9657`, `COA-9663`, `COA-9664`) need an actual Practice card with a bookmark control. Last Longer's Stage 1 cards do not meet this prerequisite. The men's Sex Is a Skill program exposes Pleasure Spot Mapping, a bookmarkable six-slide Practice; it can supply the ordinary practice scenarios. This does not establish the separate adjacent-day recurrence fixture required by COA-9664.
+Cases that require a bookmarkable practice (`COA-9649`, `COA-9651`, `COA-9657`, `COA-9663`, `COA-9664`) need an actual Practice card with a bookmark control. Last Longer's Stage 1 cards do not meet this prerequisite. The men's Sex Is a Skill program exposes Pleasure Spot Mapping, a bookmarkable six-slide Practice; it can supply the ordinary practice scenarios. A recurring fixture for COA-9664 requires proof that the practice occurs on both configured days.
 
-The one `TOOLTIP` account is sufficient for the representative blank-area dismissal in COA-9653. Re-running the tooltip-first scenarios requires resetting the app-local tooltip state or reprovisioning that role; the suite never manufactures extra accounts.
+COA-9652 has separate empty-first and nonempty-first methods. COA-9653 has separate blank, card, bookmark and navigation methods. Before each iOS tooltip method and each Android COA-9652 method, prepare independent app-local tooltip history. For Android COA-9653, select a disposable emulator with `-Dandroid.udid=emulator-<port>` and pass `-Dandroid.tooltip.apk=<path>` for the same package, version and build already installed. Each method records the Bookmarks layout, reinstalls that APK, verifies the same `TOOLTIP` account, and measures one tap on the fresh installation. Both saved cards must exist before the method and after reopening the list.
+
+On a paired test iPhone, pass `-Dcoach.bookmarks.tooltipTestFlightBuild='<version> (<build>)'` or set `COACH_BOOKMARKS_TOOLTIP_TEST_FLIGHT_BUILD` and select one tooltip method per run. The test checks that the exact production build is installed and available in TestFlight, removes Coach from the selected phone, reinstalls that build, and signs in to the specified fixture role. Use this option for a run whose setup includes clearing the app's local data.
 
 Missing CONTENT/SWITCH bookmarks can be prepared explicitly through the existing UI Page Objects, before the measured regression. After `mvn test-compile dependency:build-classpath -Dmdep.outputFile=target/test-classpath.txt`, run the following with the same iOS capabilities and secret-backed role environment as the tests:
 
@@ -77,29 +96,85 @@ java -Dplatform=ios -Dcoach.bookmarks.prepareFixtures=true \
 
 The utility verifies the logged-in Profile identity, adds only a missing bookmark, and confirms its presence in My Bookmarks. It preserves existing bookmarks and their saved positions, does not complete lessons, and does not repair unexpected extra cards. It is not part of the regression matrix and cannot turn a failed account-switch assertion into a pass by seeding the destination after the measured switch. Completion snapshots, program/module selection, and entitlement provisioning remain separate fixture prerequisites.
 
-Saving/removal scenarios restore the declared saved slide through the UI, including after assertion failures. They do not reset completion. COA-9659 requires a lesson that is not completed and an account snapshot/reset between runs; running it after another case completes that lesson is an invalid fixture. Recurring completion similarly requires a saved later occurrence and an incomplete earlier occurrence. Missing practice, program/module, or adjacent-day fixtures remain failures rather than substituted content or skipped cases.
+Ordinary save/removal scenarios restore the declared saved slide through the UI, including after assertion failures. Run COA-9658, COA-9659 and COA-9660 individually with a fixture owner who can restore completion as well as bookmarks. Recurring completion has a separate contract below.
 
-To isolate the completion transition from other cases that finish CONTENT's lesson, set `COACH_BOOKMARKS_COMPLETION_ACCOUNT_ROLE` / `coach.bookmarks.completionAccountRole` to a separately prepared role. For example, `COMPLETION` reads `COACH_BOOKMARKS_COMPLETION_EMAIL/OTP`; an existing role can be reused only if its initial and final state satisfy both scenarios. The incomplete-lesson precondition remains mandatory. Kegel-only fixtures similarly use `COACH_BOOKMARKS_KEGEL_ACCOUNT_ROLE` / `coach.bookmarks.kegelAccountRole`, for example `KEGEL` with `COACH_BOOKMARKS_KEGEL_EMAIL/OTP`. Each defaults to CONTENT for existing configurations. Set optional `COACH_BOOKMARKS_KEGEL_PROGRAM_TITLE` / `coach.bookmarks.kegelProgramTitle` to select its program after login; otherwise the account must already select the required program. Its configured card titles must identify the intended regular and sport variants; two cards in the new `kegel_workout` format alone do not establish legacy variant coverage.
+Set `COACH_BOOKMARKS_COMPLETION_ACCOUNT_ROLE` / `coach.bookmarks.completionAccountRole` to the approved role, for example `COMPLETION` for `COACH_BOOKMARKS_COMPLETION_EMAIL/OTP`. The default `CONTENT` role also needs an approved snapshot for the selected method. Supply its UID in `COACH_EXPECTED_ACCOUNT_UID` and set `COACH_BOOKMARKS_COMPLETION_SNAPSHOT` and `COACH_BOOKMARKS_COMPLETION_CONTROL` to the snapshot ID and owner's executable. The latter two settings also accept the properties `coach.bookmarks.completionSnapshot` and `coach.bookmarks.completionControl`.
 
-COA-9659 can use another UI-verified incomplete lesson on the chosen account: set `COACH_BOOKMARKS_COMPLETION_LESSON_TITLE` / `coach.bookmarks.completionLessonTitle` together with `COACH_BOOKMARKS_COMPLETION_LESSON_SAVED_SLIDE_TEXT` / `coach.bookmarks.completionLessonSavedSlideText`. Both are scoped to this completion test; the other Bookmarks cases keep their ordinary lesson fixture. If the chosen lesson requires a final answer, supply its exact visible text through `COACH_BOOKMARKS_COMPLETION_ANSWER` / `coach.bookmarks.completionAnswer`. A custom lesson does not inherit the ordinary lesson's answer. When no custom title is supplied, the existing lesson, saved-slide and answer configuration remains supported. Select the lesson before the run, verify its initial state in the test, and provision a fresh incomplete lesson or restore its snapshot before another completion run; do not retry a completed lesson as if it were incomplete.
+The executable receives `<verify|restore> <snapshot-id> <app-id> <issue> <variant> <content-title>` and inherits the approved UID and the selected role's email as `COACH_BOOKMARKS_COMPLETION_EMAIL`. Scope both commands to that account, app, and environment. `verify` compares progress, completion, and bookmarks with the named snapshot and verifies the app's selected fixture for the case. `restore` reinstates that snapshot, including after a partial failure. Each command has up to 30 seconds. The test verifies before login and after restoration, and requires the tooltip to have been dismissed during fixture preparation.
+
+| Case | Variant | Snapshot at the start of the run |
+| --- | --- | --- |
+| COA-9658 | `lesson`, `practice` | The selected content is saved and ready to finish from My Bookmarks |
+| COA-9659 | `lesson` | An incomplete, unsaved lesson with one program/day binding |
+| COA-9660 | `list`, `reader` | The selected lesson is saved and incomplete, with one program/day binding. Each method completes it from My Bookmarks before exercising its removal path |
+
+For COA-9661, configure the approved Premium role through `COACH_BOOKMARKS_KEGEL_ACCOUNT_ROLE`, for example `KEGEL` with `COACH_BOOKMARKS_KEGEL_EMAIL/OTP`. The existing default role is CONTENT. Set `COACH_BOOKMARKS_KEGEL_TITLE` and `COACH_BOOKMARKS_KEGEL_SPORT_TITLE` to the visible titles of two incomplete cards. Point `COACH_BOOKMARKS_KEGEL_DAILY_PLAN_CAPTURE` and `COACH_BOOKMARKS_KEGEL_SPORT_DAILY_PLAN_CAPTURE` at local copies of the Daily Plan v2 response bodies for those cards under the approved account and build. Each copy needs `program_section` with the program headline, day or module-stage metadata and the matching entry in `questions`. The test checks the card's `name`, `headline` and the required `link_type.kegel` or `link_type.kegel_sport` before selecting that workout in the UI.
+
+These copies describe expectations and cannot establish current workout type by themselves.
+Include `program_section.section_id` and the global `day_in_program` alongside module-stage metadata.
+After UI selection, `read_bookmarks_kegel.py` verifies the installed build and current SDK UID against
+`COACH_EXPECTED_ACCOUNT_UID`, then checks the configured account email and Premium status through
+read-only `/user/` evidence. A fresh authenticated catalog GET must match the program, global day,
+visible day label, unique title, card ID and legacy link type before the UI assertions continue.
+This is catalog corroboration, not captured app traffic. It uses the existing iOS session readers;
+Android supports the reviewed rooted Him emulator or an explicitly APK-bound preprod debug package.
+No fixture, installation, account, subscription or progress is modified by this evidence reader.
+
+The iOS scenario checks the workout overview, an exercise instruction, stretching screens when enabled, the active and paused player, and the player info sheet. It uses Quit and compares the workout completion marker and program progress after exit, then restores the original program/day selection. Run `tests.BookmarksTests#kegelAndKegelSportCannotBeBookmarked` on the prepared iOS Him fixture.
+
+COA-9659 can use another UI-verified incomplete lesson on the chosen account: set `COACH_BOOKMARKS_COMPLETION_LESSON_TITLE` / `coach.bookmarks.completionLessonTitle` together with `COACH_BOOKMARKS_COMPLETION_LESSON_SAVED_SLIDE_TEXT` / `coach.bookmarks.completionLessonSavedSlideText`. Both are scoped to this completion test; the other Bookmarks cases keep their ordinary lesson fixture. If the chosen lesson requires a final answer, supply its exact visible text through `COACH_BOOKMARKS_COMPLETION_ANSWER` / `coach.bookmarks.completionAnswer`. A custom lesson does not inherit the ordinary lesson's answer. When no custom title is supplied, the existing lesson, saved-slide and answer configuration remains supported.
 
 For content with a required final question, supply the exact visible answer through `COACH_BOOKMARKS_LESSON_COMPLETION_ANSWER` / `coach.bookmarks.lessonCompletionAnswer`, or `COACH_BOOKMARKS_RECURRING_COMPLETION_ANSWER` / `coach.bookmarks.recurringCompletionAnswer`. The Page Object selects it only when FINISH is disabled, then waits for the button to become enabled. It does not guess an answer or treat a visible disabled button as a missing locator.
 
 For a program without modules, set `COACH_BOOKMARKS_PRACTICE_GROUP_TITLE` / `coach.bookmarks.practiceGroupTitle` to its visible program heading. The grouping check verifies the nearest program/module heading and category preceding the specific card in the observed native list, plus the card composition. A heading or category belonging to another card cannot satisfy it. Without this option, `moduleTitle` remains required. Use the rendered heading text, including capitalization (the current male module headings are uppercase). A pass on Path to Desire, which has no modules, does not establish cross-module coverage of COA-9651. The mixed CONTENT fixture has both Lessons and Practices. The test switches to the separately prepared lesson-only UPDATE role to verify Lessons/card composition and absence of Practices; an arbitrary nonexistent category name cannot satisfy this check. Additional cross-module and practice-only variants still need their own exact fixture sets.
 
+### Full COA-9651 grouping run
+
+Run `tests.BookmarksGroupingTests#cardsMatchApprovedGroupingFixture` for each of `mixed`, `lessons-only` and `practices-only`. Supply the prepared account's email and OTP through `COACH_EXISTING_PROGRESS_EMAIL` and `COACH_EXISTING_PROGRESS_OTP`, its login goal through the ordinary platform configuration, and the tooltip text through `COACH_BOOKMARKS_TOOLTIP_TEXT`. The account starts with the declared cards and the tooltip already dismissed. The test reads the list from top to bottom, checks each card's program, module and category, and leaves saved data in place.
+
+Point `COACH_BOOKMARKS_GROUPING_FIXTURE` at a local UTF-8 properties file. For example, a lessons-only fixture with one card could contain the following fields.
+
+```properties
+variant=lessons-only
+card.count=1
+card.1.title=Starting Point
+card.1.program=Last Longer
+card.1.module=MODULE 1: PF & AROUSAL FUNDAMENTALS
+card.1.category=Lessons
+card.1.cover=references/starting-point.png
+```
+
+The mixed fixture has four entries, with one lesson and one practice in one module, a lesson in another module of that program, and a practice in a second program. The other two variants list every card in the single visible category. Reference paths are relative to the fixture file. Use independently verified cover crops at the size rendered on the selected device and build. The check compares decoded pixels from the specific cover element; review a size or image mismatch against the expected artwork.
+
+```bash
+TEST_ISOLATION_MODE=logout mvn -q test \
+  -Dtest=tests.BookmarksGroupingTests#cardsMatchApprovedGroupingFixture \
+  -Dplatform=ios -Dios.udid='<test-device-udid>' -Dios.bundleId=com.vamapps.The-Coach \
+  -Dappium.url='<appium-url>' -Dios.noReset=true -Dios.fullReset=false \
+  -Dcoach.ios.postAuthGoal='<fixture-matching primary goal>'
+```
+
 Supply only the values needed by the selected method: `COACH_BOOKMARKS_LESSON_TITLE`, `SECOND_LESSON_TITLE`, optional `SECOND_CONTENT_TITLE` (for two-card removal checks), `PRACTICE_TITLE`, `RECURRING_PRACTICE_TITLE`, first/middle/last or saved slide texts, `PROGRAM_TITLE`, `MODULE_TITLE`, `TOOLTIP_TEXT`, `KEGEL_TITLE`, `KEGEL_SPORT_TITLE`, `LESSON_ID`, `SAVED_SLIDE_NUMBER`, `PROGRAM_ID`, `PROGRAM_DAY`, `SAVED_DAY_TITLE`, and `PREVIOUS_DAY_TITLE`. System properties use the equivalent lower-camel names under `coach.bookmarks.*`. Recurring content can override `recurringLessonId`, `recurringProgramId`, `recurringProgramDay`, `recurringSavedSlideNumber`, and `recurringPracticeSavedSlideText` (or their `COACH_BOOKMARKS_RECURRING_*` environment equivalents), so its expected payload is not confused with the ordinary lesson fixture.
 
-COA-9666 requires `IOS_UPDATE_APP`/`ios.update.app` and intentionally removes then reinstalls the app during its reinstall phase. Simulator `.app` updates validate installed and requested `CFBundleVersion` values and require distinct real build numbers. A placeholder such as `BITRISE_BUILD_NUMBER` blocks update verification; changing bundle metadata locally would not prove an application update.
+For COA-9654 and COA-9655, set `COACH_BOOKMARKS_LESSON_SLIDE_MARKERS` and `COACH_BOOKMARKS_PRACTICE_SLIDE_MARKERS` to unique visible reader texts in first-to-last order, separated by `|`. The test advances one slide per action and verifies the visible FINISH control on the final slide. Prepare the CONTENT account with its tooltip dismissed. When the account has additional cards, declare the complete list of bookmark titles with `COACH_BOOKMARKS_CANCEL_INITIAL_CARDS` or `COACH_BOOKMARKS_REMOVAL_INITIAL_CARDS`, also separated by `|`. The default roster consists of the cards used in the two variants of the selected case.
 
-For lesson and practice fixtures in different programs, set `COACH_BOOKMARKS_LESSON_PROGRAM_TITLE` and `COACH_BOOKMARKS_PRACTICE_PROGRAM_TITLE` (or `coach.bookmarks.lessonProgramTitle` and `practiceProgramTitle`). Every open from Today, including restoration of the saved slide, selects the declared program after login. A custom completion lesson retains its own completion program; ordinary fixture options do not redirect it. `COACH_BOOKMARKS_RECURRING_PROGRAM_TITLE` / `coach.bookmarks.recurringProgramTitle` selects the explicitly prepared program for the original-program/day request check. It does not move the current day or prepare the recurring completion fixture. These options are optional and preserve existing program selection when absent.
+For COA-9655, set each `LESSON` and `PRACTICE` fixture's `COACH_BOOKMARKS_<KIND>_REMOVAL_NEIGHBOR_TITLE`, `COACH_BOOKMARKS_<KIND>_REMOVAL_GROUP_TITLE`, and `COACH_BOOKMARKS_<KIND>_REMOVAL_NEIGHBOR_SAVED_SLIDE_TEXT`. Both cards must appear in the same category and module. Supply the selected card's original saved slide through `COACH_BOOKMARKS_<KIND>_SAVED_SLIDE_TEXT`. The test checks both saved positions before the removal, compares the card set after REMOVE and re-save, and reopens the neighbor at its original slide. If the scenario fails before re-saving the selected card, cleanup uses the declared original saved position.
+
+For COA-9657, prepare distinct saved lesson and practice cards with the tooltip dismissed. Use the ordered `COACH_BOOKMARKS_LESSON_SLIDE_MARKERS` and `COACH_BOOKMARKS_PRACTICE_SLIDE_MARKERS` and set the corresponding `COACH_BOOKMARKS_<KIND>_SAVED_SLIDE_TEXT`. The lesson uses an interior slide and the practice uses a different position. The test opens both cards and checks the saved positions without writing bookmarks. It uses `CONTENT` by default and also accepts a prepared role through `COACH_BOOKMARKS_SAVED_SLIDE_ACCOUNT_ROLE` or `coach.bookmarks.savedSlideAccountRole`.
+
+For a direct COA-9666 run, select `-Dcoach.bookmarks.installVariant=update` or `-Dcoach.bookmarks.installVariant=reinstall`. The existing method also supports a sequential run when this property is omitted. Set `IOS_UPDATE_APP` or `ios.update.app` to the requested `.app` for a Simulator or `.ipa` for the explicitly selected physical iPhone. The update checks the newer numeric build and verifies the same Profile account before any fresh login. The reinstall starts on the build it will reinstall, checks that the app is removed, verifies the resulting build, and signs in to the same account to check the returned tooltip and bookmark. CI placeholder build values block verification.
+
+On a paired test iPhone the same method can install the exact production Coach build offered in TestFlight. Set `COACH_BOOKMARKS_TEST_FLIGHT_BUILD` or pass `-Dcoach.bookmarks.testFlightBuild='<version> (<build>)'`. Select the test iPhone by UDID and prepare the `UPDATE` account and tooltip history as usual. For update, start with the older installed build. For reinstall, start with the requested build. The test matches the version, build, and app row in TestFlight before the operation and reads the installed metadata afterwards. The reinstall variant removes the selected Coach app and reinstalls the offered build via TestFlight.
+
+For lesson and practice fixtures in different programs, set `COACH_BOOKMARKS_LESSON_PROGRAM_TITLE` and `COACH_BOOKMARKS_PRACTICE_PROGRAM_TITLE` (or `coach.bookmarks.lessonProgramTitle` and `practiceProgramTitle`). Every open from Today, including restoration of the saved slide, selects the declared program after login. A custom completion lesson retains its own completion program; ordinary fixture options do not redirect it. These options preserve existing program selection when absent.
 
 For a completion lesson in another program, set `COACH_BOOKMARKS_COMPLETION_PROGRAM_TITLE` / `coach.bookmarks.completionProgramTitle`. The test selects that explicit program after ordinary email/OTP login and Profile identity verification, before checking that the lesson is incomplete. This avoids relying on a program choice made before logout; no program is changed when the option is absent. An ordinary completion run must omit `coach.bookmarks.useCurrentAccount` and the local `BOOKMARKS_KEEP_SESSION` runner override.
 
 The active-program reader prefers the app-side identifier, then reads the observed Today header beside the Bookmarks entry. It supports restored program names outside the old label catalog, including the male/female Sexting programs. The older-build label fallback is restricted to selected Today. Selecting a fixture program uses the existing hittable native-tap helper and still requires the selector to close and the expected program to become active.
 
-iOS login waits for a hittable Welcome control and verifies the email form, rather than accepting a successful click alone. Post-OTP readiness requires rendered Today cards and a Profile control with no visible auth form. Opening Profile waits for populated content before the separate, strict account-identity assertion; persistent tabs or an empty navigation container are insufficient. Entry and Profile use one native tap at the observed control's center, sharing the existing iOS browser-close tap implementation.
+iOS login waits for a hittable Welcome control and verifies the email form, rather than accepting a successful click alone. The user confirmed on 18 November that the two native goal questions after OTP are ordinary returning-user login, as on Android. Supply the primary goal matching the selected fixture through `coach.ios.postAuthGoal`; the existing additional-goals handler selects the named Increase self confidence answer. Ordinary login rejects missing goals, resumed secondary-only state, and a full questionnaire after the two questions. Bookmarks controller jobs set `coach.ios.preparePostAuthQuestionnaire=false`; the separate explicit preparation path remains available outside these jobs. Post-OTP readiness requires rendered Today cards and a Profile control with no visible auth form. Opening Profile waits for populated content before the separate, strict account-identity assertion; persistent tabs or an empty navigation container are insufficient. Entry and Profile use one native tap at the observed control's center, sharing the existing iOS browser-close tap implementation.
 
-`openCard` expects the reader and captures XML and a screenshot if a paywall appears. The basic variant of COA-9667 expects the paywall through `openCardExpectingPaywall` and captures the same evidence. Detection and dismissal reuse the iOS onboarding paywall handlers. Cleanup dismisses the paywall and removes the created bookmark.
+`openCard` requires the reader to open and captures XML and a screenshot if a paywall appears. The base variant of COA-9667 requires the paywall through `openCardExpectingPaywall` and captures the same evidence before cleanup. Detection and dismissal reuse the iOS onboarding paywall handlers, including the close/RESTORE marker on both builds. Cleanup dismisses the paywall and removes the created bookmark from Today.
 
 ## Completion indicator after FINISH
 
@@ -109,7 +184,39 @@ The reference and negative fixtures under `src/test/resources/bookmarks/completi
 
 ## Fresh analytics and request evidence
 
+Select functional scenarios by method for the current Bookmarks acceptance run. COA-9662 is the pre-existing analytics test.
+
 COA-9662 reads append-only JSONL from `COACH_BOOKMARKS_ANALYTICS_LOG`; COA-9663 reads JSONL from `COACH_BOOKMARKS_NETWORK_LOG`. The tests checkpoint the file before the action and accept only complete records appended afterwards. Each save/delete event must contain the expected lesson and slide in that same event; each POST must contain the expected path, program, day, and slide in that same request.
+
+For COA-9663, set `COACH_BOOKMARKS_RECURRING_PROGRAM_TITLE`, `COACH_BOOKMARKS_RECURRING_PREVIOUS_PROGRAM_DAY` (D1), and `COACH_BOOKMARKS_RECURRING_PROGRAM_DAY` (D2). D1 and D2 must be distinct positive days of the same program with D1 before D2. Supply the exact practice and slide along with their expected request IDs and slide number. The practice must be initially unsaved. Leave `COACH_BOOKMARKS_RECURRING_INITIAL_CARDS` unset for an empty My Bookmarks list, or supply the existing titles separated by `|`. The test checks both occurrences, saves only from D2, verifies the new card and the captured POST, and restores the initial list and the original Today program and day.
+
+### COA-9664 recurring completion
+
+Prepare the approved `RECURRING` account with the practice already saved from D2, both occurrences incomplete, and the tooltip dismissed. Supply the practice and program titles, their IDs, both absolute program days, and `COACH_BOOKMARKS_PREVIOUS_DAY_TITLE` / `COACH_BOOKMARKS_SAVED_DAY_TITLE` with the exact Today labels. The test leaves Today on D1 before opening the saved D2 card and checks the two completion indicators after Finish.
+
+Set `COACH_EXPECTED_ACCOUNT_UID`, `COACH_BOOKMARKS_RECURRING_COMPLETION_SNAPSHOT`, and `COACH_BOOKMARKS_RECURRING_COMPLETION_CONTROL`. The control is the environment owner's executable and receives `<verify|restore> <snapshot-id> <bundle-id> <program-id> <lesson-id> <D1> <D2>`. It uses the approved UID and `COACH_BOOKMARKS_RECURRING_EMAIL` from its environment. `verify` reads the fixture, checks its identity and environment, confirms the two incomplete occurrences and exact D2 bookmark binding, and compares the progress and bookmarks with the named snapshot. `restore` restores that same snapshot for that account, including the D2 bookmark. The runner calls `verify` before the UI scenario and again after `restore`, including when a Finish or completion assertion fails. Both commands must return success within 30 seconds after their action is confirmed. Keep the snapshot and executable with the fixture owner.
+
+```bash
+TEST_ISOLATION_MODE=logout mvn -q test \
+  -Dtest=tests.BookmarksTests#recurringPracticeFinishCompletesSavedDay \
+  -Dplatform=ios -Dios.udid='<test-device-udid>' -Dios.bundleId=com.vamapps.The-Coach \
+  -Dappium.url='<appium-url>' -Dios.noReset=true -Dios.fullReset=false \
+  -Dcoach.ios.postAuthGoal='<fixture-matching primary goal>'
+```
+
+## Completion work — 2026-11-18, UI acceptance pending
+
+The additional variants cover lesson/practice toggling and list removal, inactive state on every traversed slide, list/inside deletion of the last lesson/practice, practice Finish, completed-state preservation after inside removal, and the full A → B → A account switch. COA-9649 also checks one whole-content card, rejects slide-text cards and reopens Daily Plan to verify persisted state. Removal assertions never repair the state they are measuring.
+
+These changes are implementation, not new accepted automation or Xray labels. Still prepare and verify: exact cross-program/module and single-category card/image fixtures for COA-9651; legacy Kegel and Kegel+sport for COA-9661; recurring earlier/later incomplete occurrences for COA-9663/9664; genuine old/new builds and independent install state for COA-9666; trial and active-to-expired fixtures for COA-9667/9668. Completion methods need isolated snapshots. Use the latest production builds for Bookmarks; keep the new onboarding Dev build separate.
+
+### Verification and device prerequisites
+
+The 18 November checks passed `test-compile`, 85 targeted Java unit tests and 11 controller unit tests. At that time, the XPath replay tests needed `-Djdk.xml.xpathExprOpLimit=1000`; the default limit rejected two unchanged Today-header expressions. The negative checks covered stale/offscreen bookmarks, incomplete list scans, action-specific evidence, missing goals, an unexpected full questionnaire, and the scoped main-program introduction.
+
+The 26 November integration simplifies that Today-header XPath and passes with the default JDK limits. The latest targeted reports contain 187 passing Java unit tests across 24 classes and 78 passing Python tests for Bookmarks Kegel evidence, update-account reading, the iOS controller, Android module evidence and email evidence. Existing test methods remain present. Review corrections cover the expired-access paywall oracle, custom-role credential redaction, current Kegel account/build/card corroboration, failed-update build restoration, and background-only reader recovery. These checks used no apps, devices, account transitions, fixture controls or TestFlight installations; the UI acceptance prerequisites above remain open.
+
+Production Him 1.15.0 (3597) and Her 2.2.0 (3596), plus Him Dev 1.15.0 (3608), were installed and verified on the test iPhone 11. Android Him 1.44.5 was installed on Galaxy A32. No new full Xray scenario was accepted or labelled in this work: the Android baseline stopped on the startup network/VPN error; the iOS diagnostics exposed the two ordinary login goals and current first-install popups, then lost WDA transport. Two concurrent Appium sessions were confirmed on the same iPhone, production on task-owned port 4793 and Dev on port 4728. The task-owned server was stopped without a device command. Resume UI acceptance on an exclusively assigned device after network preparation; existing regression labels are not changed by these diagnostics. Local evidence is under `target/bookmarks-completion-20261118` and `target/appium-logs` in the task worktree.
 
 The read-only Simulator observer extracts matching fresh SDK events and successful cached requests without writing credentials to the output:
 
@@ -142,7 +249,7 @@ The current simulator builds (male 1.13.34 and female 2.0.33, iOS 26.5) were che
 
 There were 38 distinct executed UI scenarios and 46 measured attempts including corrections and related checks. Recurring completion (COA-9664) remains the accepted data blocker on each variant. Update/reinstall (COA-9666) is blocked on each variant because both supplied old/current pairs contain the literal `CFBundleVersion=BITRISE_BUILD_NUMBER`; bundle metadata was not edited. These four blocked slots are not passing or skipped JUnit executions.
 
-In the October runs, Starting Point (male) and The Basics of Sexual Desire (female) opened from Daily Plan and could be saved. Tapping their saved cards showed the subscription paywall. The attempts failed the earlier assertion and restored the empty bookmark fixture. The November clarification established that the observed paywall is expected for the basic account.
+In the October runs, Starting Point (male) and The Basics of Sexual Desire (female) opened from Daily Plan and could be saved. Tapping their saved cards showed the subscription paywall. Those attempts failed the earlier assertion and restored the empty bookmark fixture. The November access clarification established that the observed paywall is expected for the base account.
 
 Male Kegel required correcting the restored-program locator and using a native tap on its selector card; the final Kegel checks pass on both variants. Related paid lesson/practice saved-slide checks also pass on both variants after these changes. The female analytics attempt initially captured only BookmarkDeleted during the parallel run. An isolated follow-up with a fresh observer captured all three required events with corroborated account identity and passed the unchanged assertions. The reason for the original incomplete capture is unconfirmed; retain this as an observability instability rather than a proven missing-product-event defect.
 
@@ -166,8 +273,8 @@ newer iOS files with older copies.
   reinstall phase explicitly signs in and checks the app-local tooltip state.
   The original iOS numeric-build validation is unchanged.
 - The Android no-subscription candidate checks for a paywall at the Bookmarks
-  entry point. The iOS basic variant checks for the paywall after tapping
-  the saved card.
+  entry point. The iOS base variant checks the paywall after tapping the saved
+  card. Confirm the Android entry-point expectation against the Android contract.
 
 Start with an already prepared `BASELINE` role and one non-completing method:
 
@@ -188,8 +295,12 @@ account. Missing roles/content, recurring-day state and fresh Android analytics/
 request observation are real prerequisites, not reasons to skip or loosen tests.
 The Simulator observer above is iOS-only and must not be used as Android evidence.
 Run tooltip-first and update/reinstall cases separately with their required
-app-local state. COA-9666 additionally needs `-Dandroid.update.old=<old.apk>` and
-`-Dandroid.update.new=<new.apk>` for genuine builds of the configured package.
+app-local state. COA-9666 uses the same `coach.bookmarks.installVariant` selector.
+Start update on the prepared old installation and pass both `-Dandroid.update.old=<old.apk>`
+and `-Dandroid.update.new=<new.apk>`. For standalone reinstall, start on the
+prepared new installation and pass `-Dandroid.update.new=<new.apk>`. The standard
+Android SDK `aapt` command is used to validate package, version and build before
+changing the installation. Set `-Dandroid.aapt=/path/to/aapt` or `AAPT` if it is outside `PATH`.
 Do not run the full class against shared accounts: completion cases need dedicated
 snapshots and the update case removes/reinstalls the selected test app.
 
@@ -242,8 +353,8 @@ Appium pass. The initial port had no attached Android target. The subsequent
 emulators and distinguishes successful authorization checks from Bookmarks
 attempts blocked during login. It does not establish full Bookmarks parity,
 completion, analytics/request collection, update/reinstall or the candidate
-access expectation. Keep this port Draft until those fixture-backed checks and
-contract review are done.
+access expectation. Those fixture-backed checks and the Android access-contract
+review remain prerequisites for declaring full UI parity.
 
 The follow-up recognizes the current Android `tvEmailNotfoundError` rather than
 waiting for an OTP screen after the app has already rejected the email. Hidden

@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Selector resources verified from manProd APK and the live bottom sheet. */
 public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject {
@@ -16,6 +18,7 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     private static final String LIST_LOCATOR = "xpath:"+LIST_QUERY;
     private static final By LIST = By.xpath(LIST_QUERY);
     private static final By TITLES = By.xpath(TITLES_QUERY);
+    private static final Pattern DAY_LABEL = Pattern.compile("^(Day|Stage) ([1-9][0-9]*)( of ([1-9][0-9]*))?$");
     public AndroidProgramSelectorPageObject(RemoteWebDriver driver) { super(driver); }
     @Override public void openProgramSelector() {
         new lib.ui.ProgramSwitchFeaturePageObject(driver).dismissProgramTooltipsIfPresent();
@@ -108,6 +111,24 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     public void waitForSelectedProgram(String title) {
         createWait(20).ignoring(StaleElementReferenceException.class).until(d -> title.equalsIgnoreCase(getActiveProgramName()));
         assertDailyPlanDaySwitcherIsDisplayed();
+    }
+
+    public void selectObservedDay(int targetDay) {
+        String label = getCurrentDayLabel().trim();
+        Matcher observed = DAY_LABEL.matcher(label);
+        Assert.assertTrue("Unreadable Android Daily Plan day: " + label, observed.matches());
+        Assert.assertTrue("Target day is outside the displayed Daily Plan range", targetDay > 0
+                && (observed.group(4) == null || targetDay <= Integer.parseInt(observed.group(4))));
+        int currentDay = Integer.parseInt(observed.group(2));
+        if (currentDay == targetDay) return;
+        int step = targetDay < currentDay ? -1 : 1;
+        String control = step < 0 ? LEFT_SWITCHER_ARROW : RIGHT_SWITCHER_ARROW;
+        for (int day = currentDay + step; day != targetDay + step; day += step) {
+            String expected = observed.group(1) + " " + day + (observed.group(3) == null ? "" : observed.group(3));
+            waitForElementAndClick(control, "Cannot navigate to " + expected, 10);
+            createWait(15).ignoring(StaleElementReferenceException.class).withMessage(
+                    "Android Daily Plan did not open " + expected).until(d -> expected.equals(getCurrentDayLabel().trim()));
+        }
     }
     public Rectangle firstCardBounds() {
         WebElement title=driver.findElements(TITLES).stream().filter(WebElement::isDisplayed).findFirst().orElseThrow(() -> new AssertionError("No selector card"));

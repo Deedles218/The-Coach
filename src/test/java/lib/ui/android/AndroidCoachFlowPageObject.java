@@ -386,6 +386,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     @Step("Log out from Android Profile")
     public void logOut() {
+        waitForElementNotVisible(androidId("pbLoading"), "Profile account state is still loading before logout", 20);
         scrollSettingsToBottom();
         waitForElementAndClick(LOG_OUT_BUTTON, "Cannot tap Android Log Out button", 10);
         confirmLogoutIfNeeded();

@@ -1,8 +1,12 @@
 package lib.ui.ios;
 
 import io.appium.java_client.HasSettings;
+import io.appium.java_client.InteractsWithApps;
+import io.appium.java_client.appmanagement.ApplicationState;
+import io.qameta.allure.Allure;
 import lib.Platform;
 import lib.ui.BookmarksPageObject;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class iOSBookmarksPageObject extends BookmarksPageObject {
@@ -39,6 +43,12 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
     }
 
     @Override
+    protected String tooltipFor(String text) {
+        return "xpath://XCUIElementTypeStaticText[@visible='true' and normalize-space(@name)="
+                + "normalize-space(" + xpathLiteral(text) + ")]";
+    }
+
+    @Override
     protected void selectRecurringDay(String expectedDay, boolean previous) {
         for (int attempt = 0; attempt < 8 && !isElementVisible("id:leftSwitcherArrow"); attempt++) swipe("down");
         // Repeated practices can be separated by several days (COA-9664).
@@ -57,8 +67,67 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
     }
 
     @Override
+    public void openCard(String title) {
+        inCoachWindow(() -> super.openCard(title));
+    }
+
+    @Override
     public void openCardExpectingPaywall(String title) {
         inCoachWindow(() -> super.openCardExpectingPaywall(title));
+    }
+
+    @Override
+    public void closeOpenedContent() {
+        try {
+            super.closeOpenedContent();
+        } catch (TimeoutException failure) {
+            if (!reactivateCoachAfterBackgrounding("closing the reader")) throw failure;
+            super.closeOpenedContentIfPresent();
+            waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
+                    "Neither Today nor My Bookmarks returned after closing the reader", 10);
+        }
+    }
+
+    @Override
+    public void closeOpenedContentIfPresent() {
+        try {
+            super.closeOpenedContentIfPresent();
+        } catch (TimeoutException failure) {
+            if (!reactivateCoachAfterBackgrounding("closing the reader during cleanup")) throw failure;
+            super.closeOpenedContentIfPresent();
+        }
+    }
+
+    @Override
+    public void backFromBookmarks() {
+        try {
+            super.backFromBookmarks();
+            waitForBookmarksOrigin();
+        } catch (TimeoutException failure) {
+            if (!reactivateCoachAfterBackgrounding("Back from My Bookmarks")) throw failure;
+            if (isScreenVisible()) super.backFromBookmarks();
+            waitForBookmarksOrigin();
+        }
+    }
+
+    private boolean reactivateCoachAfterBackgrounding(String action) {
+        return reactivateCoachAfterBackgrounding((InteractsWithApps) driver,
+                Platform.getInstance().getIOSBundleId(), action);
+    }
+
+    private static boolean reactivateCoachAfterBackgrounding(InteractsWithApps apps, String bundle, String action) {
+        ApplicationState state = apps.queryAppState(bundle);
+        if (state != ApplicationState.RUNNING_IN_BACKGROUND
+                && state != ApplicationState.RUNNING_IN_BACKGROUND_SUSPENDED) return false;
+        apps.activateApp(bundle);
+        Allure.addAttachment("Observed external application interruption",
+                "Coach lost foreground during " + action + " and was reactivated.");
+        return true;
+    }
+
+    private void waitForBookmarksOrigin() {
+        waitForFirstElementPresent(new String[]{TODAY_SELECTED, EXPLORE_SELECTED},
+                "Back from My Bookmarks did not return to a selected Coach tab", 10);
     }
 
     @Override
@@ -82,10 +151,8 @@ public class iOSBookmarksPageObject extends BookmarksPageObject {
     public void openFromToday() {
         try {
             super.openFromToday();
-        } catch (org.openqa.selenium.TimeoutException failure) {
-            if (!new iOSCoachFlowPageObject(driver).returnFromExternalAppIfVisible()) throw failure;
-            io.qameta.allure.Allure.addAttachment("Observed external application interruption",
-                    "A recognized external application interrupted opening My Bookmarks; Coach was reactivated.");
+        } catch (TimeoutException failure) {
+            if (!reactivateCoachAfterBackgrounding("opening My Bookmarks")) throw failure;
             super.openFromToday();
         }
     }

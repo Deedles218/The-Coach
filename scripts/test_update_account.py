@@ -1,5 +1,5 @@
 import base64
-from contextlib import closing
+from contextlib import closing, nullcontext
 import io
 import json
 from pathlib import Path
@@ -126,6 +126,45 @@ class UpdateAccountEvidenceTests(unittest.TestCase):
                 self.assertEqual("1.2.3", network.call_args.args[1]["AppVersion"])
                 self.assertEqual("456", network.call_args.args[1]["BuildVersion"])
             self.assertEqual(before, identity.read_bytes())
+
+    def test_physical_ios_rejects_the_wrong_account_before_reading_session(self):
+        with patch.object(evidence, "read_identity", return_value="other"), \
+                patch.object(evidence, "url_cache_snapshot") as cache, \
+                patch.object(evidence, "fetch_user") as network:
+            with self.assertRaisesRegex(RuntimeError, "differs"):
+                evidence.read_ios_device("00008030-0123456789ABCDEF", "com.vamapps.The-Coach", UID, "1.15.0", "3597")
+            cache.assert_not_called()
+            network.assert_not_called()
+
+    def test_physical_ios_uses_exact_device_build_and_expected_uid_for_user_read(self):
+        device, bundle = "00008030-0123456789ABCDEF", "com.vamapps.The-Coach"
+        database = Path("/local/fixture/Cache.db")
+        opener = MagicMock()
+        opener.open.return_value = io.StringIO(json.dumps({
+            "userdata": {"user_id": "ios_" + UID, "subscription": {"active": False}}}))
+        with patch.object(evidence, "read_identity", return_value=UID) as identity, \
+                patch.object(evidence, "url_cache_snapshot", return_value=nullcontext(database)) as cache, \
+                patch.object(evidence, "cached_headers", return_value={"Authorization": "Fixture only"}) as session, \
+                patch.object(evidence.urllib.request, "build_opener", return_value=opener):
+            result = evidence.read_ios_device(device, bundle, UID, "1.15.0", "3597")
+        self.assertEqual({"uid": UID, "subscriptionActive": False}, result)
+        identity.assert_called_once_with(device, bundle)
+        cache.assert_called_once_with(device, bundle)
+        session.assert_called_once_with(database, evidence.ANDROID_HOST, UID)
+        request = opener.open.call_args.args[0]
+        self.assertEqual("GET", request.get_method())
+        self.assertEqual(evidence.ANDROID_HOST + "/api/v1/user/", request.full_url)
+        self.assertEqual("1.15.0", request.get_header("Appversion"))
+        self.assertEqual("3597", request.get_header("Buildversion"))
+        opener.open.assert_called_once()
+
+    def test_user_response_for_another_account_cannot_prove_entitlement(self):
+        opener = MagicMock()
+        opener.open.return_value = io.StringIO(
+            '{"userdata":{"user_id":"ios_other","subscription":{"active":true}}}')
+        with patch.object(evidence.urllib.request, "build_opener", return_value=opener):
+            with self.assertRaisesRegex(RuntimeError, "differs"):
+                evidence.fetch_user(evidence.ANDROID_HOST, {}, UID)
 
 
 if __name__ == "__main__":

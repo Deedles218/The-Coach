@@ -59,6 +59,24 @@ public class UpdateEvidenceUnitTests {
         rejects(() -> UpdateEvidence.androidInstalledBuild("versionCode=353\n"));
     }
 
+    @Test public void apkMetadataMustNameTheSameApplication() {
+        String badging = "package: name='example.app' versionCode='356' versionName='1.44.5' compileSdkVersion='36'\n";
+        Map<String, String> apk = UpdateEvidence.androidApkBuild(badging, "example.app");
+        Assert.assertEquals("356", apk.get("build"));
+        Assert.assertEquals("1.44.5", apk.get("version"));
+        rejects(() -> UpdateEvidence.androidApkBuild(badging, "wrong.app"));
+        rejects(() -> UpdateEvidence.androidApkBuild("versionName=1.44.5", "example.app"));
+    }
+
+    @Test public void updateMustIncreaseTheNumericBuild() {
+        UpdateEvidence.assertNewerBuild("356", "357");
+        UpdateEvidence.assertNewerBuild("123.9", "123.10");
+        rejects(() -> UpdateEvidence.assertNewerBuild("356", "356"));
+        rejects(() -> UpdateEvidence.assertNewerBuild("123.1", "123.0.9"));
+        rejects(() -> UpdateEvidence.assertNewerBuild("123", "123.0"));
+        rejects(() -> UpdateEvidence.assertNewerBuild("123", "BITRISE_BUILD_NUMBER"));
+    }
+
     private Map<String,Object> account(String uid, boolean active) {
         Map<String,Object> state = new HashMap<>(); state.put("uid", uid); state.put("subscriptionActive", active); return state;
     }

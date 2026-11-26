@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read COA-7915 account state; never emit tokens, email or complete API payloads."""
+"""Read verified mobile account state; never emit tokens, email or complete API payloads."""
 import argparse
 import base64
 from contextlib import closing
@@ -15,17 +15,20 @@ import urllib.parse
 import urllib.request
 
 from read_android_module_content import adb, session, NoRedirect, HOST as ANDROID_HOST
+from ios_device_evidence import read_identity, url_cache_snapshot
 
 PREPROD_HOST = "https://coach-preprod-cf87bfd42b85.herokuapp.com"
 IOS_HOSTS = {"com.vamapps.preprod.The-Coach": PREPROD_HOST,
              "com.vamapps.The-Coach": ANDROID_HOST}
 
 
-def fetch_user(host, headers):
+def fetch_user(host, headers, expected_uid=None):
     # Exactly one read-only endpoint. Never call daily_program, which can select a day.
     request = urllib.request.Request(host + "/api/v1/user/", headers=headers)
     with urllib.request.build_opener(NoRedirect()).open(request, timeout=12) as response:
         user = json.load(response)["userdata"]
+    if expected_uid is not None and user.get("user_id") not in (expected_uid, "ios_" + expected_uid):
+        raise RuntimeError("Current account response differs from the approved fixture")
     active = user.get("subscription", {}).get("active")
     if type(active) is not bool:
         raise RuntimeError("Subscription state is missing or not boolean")
@@ -123,12 +126,30 @@ def read_ios(device, bundle, expected_uid):
     return {"uid": expected_uid, "subscriptionActive": fetch_user(IOS_HOSTS[bundle], headers)}
 
 
+def read_ios_device(device, bundle, expected_uid, version, build):
+    if bundle not in IOS_HOSTS:
+        raise RuntimeError("Unsupported iOS account evidence bundle")
+    if not all(isinstance(value, str) and re.fullmatch(r"[0-9]+(?:\.[0-9]+){0,2}", value)
+               for value in (version, build)):
+        raise RuntimeError("Account evidence requires the installed physical build metadata")
+    if read_identity(device, bundle) != expected_uid:
+        raise RuntimeError("Current iOS account differs from fixture")
+    host = IOS_HOSTS[bundle]
+    with url_cache_snapshot(device, bundle) as database:
+        headers = cached_headers(database, host, expected_uid)
+    headers.update({"AppVersion": version, "BuildVersion": build, "X-Gender": "male",
+                    "Language": "en", "Cache-Control": "no-cache"})
+    return {"uid": expected_uid, "subscriptionActive": fetch_user(host, headers, expected_uid)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--platform", choices=("android", "ios"), required=True)
     parser.add_argument("--device", required=True)
     parser.add_argument("--uid", required=True)
     parser.add_argument("--bundle")
+    parser.add_argument("--ios-version")
+    parser.add_argument("--ios-build")
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]{20,128}", args.uid):
         raise RuntimeError("An approved fixture UID is required")
@@ -136,10 +157,12 @@ def main():
         if not re.fullmatch(r"emulator-[0-9]+", args.device):
             raise RuntimeError("An explicit test emulator is required")
         result = read_android(args.device, args.uid)
-    else:
-        if not re.fullmatch(r"[A-Fa-f0-9-]{36}", args.device):
-            raise RuntimeError("An explicit iOS Simulator is required")
+    elif re.fullmatch(r"[A-Fa-f0-9-]{36}", args.device):
         result = read_ios(args.device, args.bundle, args.uid)
+    elif re.fullmatch(r"[A-Fa-f0-9]{8}-[A-Fa-f0-9]{16}", args.device):
+        result = read_ios_device(args.device, args.bundle, args.uid, args.ios_version, args.ios_build)
+    else:
+        raise RuntimeError("An explicit iOS test device is required")
     print(json.dumps(result))
 
 

@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,25 +17,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /** Read-only account evidence. The reader emits only UID and subscriptionActive. */
 public final class UpdateEvidence {
     private UpdateEvidence() { }
 
     public static Map<String, Object> account() throws Exception {
+        Map<String, Object> state = readAccountState();
+        Assert.assertEquals("Update requires a currently active subscription", Boolean.TRUE, state.get("subscriptionActive"));
+        Allure.addAttachment("Read-only update account state", "application/json", new Json().toJson(state), "json");
+        return state;
+    }
+
+    public static Map<String, Object> readAccountState() throws Exception {
+        return readAccountState(null);
+    }
+
+    public static Map<String, Object> readAccountState(RemoteWebDriver driver) throws Exception {
         String uid = System.getenv("COACH_EXPECTED_ACCOUNT_UID");
-        Assert.assertTrue("Update needs the approved account UID", uid != null && uid.matches("[A-Za-z0-9_-]{20,128}"));
+        Assert.assertTrue("Account evidence needs the approved fixture UID", uid != null && uid.matches("[A-Za-z0-9_-]{20,128}"));
         List<String> command = new ArrayList<>(Arrays.asList("python3", "scripts/read_update_account.py", "--uid", uid));
         if (Platform.getInstance().isAndroid()) {
             command.addAll(Arrays.asList("--platform", "android", "--device", AndroidDevice.serial()));
         } else {
-            command.addAll(Arrays.asList("--platform", "ios", "--device", simulatorUdid(),
-                    "--bundle", Platform.getInstance().getIOSBundleId()));
+            String udid = driver == null ? simulatorUdid() : System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+            if (driver != null) assertAppiumDevice(driver, udid);
+            String bundle = Platform.getInstance().getIOSBundleId();
+            command.addAll(Arrays.asList("--platform", "ios", "--device", udid, "--bundle", bundle));
+            if (udid.matches("(?i)[0-9a-f]{8}-[0-9a-f]{16}")) {
+                Object sessionBundle = driver.getCapabilities().getCapability("appium:bundleId");
+                if (sessionBundle == null) sessionBundle = driver.getCapabilities().getCapability("bundleId");
+                Assert.assertEquals("Account evidence must use the app selected by Appium", bundle, sessionBundle);
+                Map<String, String> installed = readInstalledIOSBuild(driver);
+                command.addAll(Arrays.asList("--ios-version", installed.get("version"), "--ios-build", installed.get("build")));
+            }
         }
         Map<String, Object> state = json(command);
-        Assert.assertEquals("Update account identity differs from fixture", uid, state.get("uid"));
-        Assert.assertEquals("Update requires a currently active subscription", Boolean.TRUE, state.get("subscriptionActive"));
-        Allure.addAttachment("Read-only update account state", "application/json", new Json().toJson(state), "json");
+        Assert.assertTrue("Account identity differs from fixture", uid.equals(state.get("uid")));
+        Assert.assertTrue("Account evidence is missing subscription status", state.get("subscriptionActive") instanceof Boolean);
         return state;
     }
 
@@ -49,6 +74,44 @@ public final class UpdateEvidence {
         Map<String,Object> info = installedIOSMetadata();
         validateIOSBuild(info, Platform.getInstance().getIOSBundleId());
         return info;
+    }
+
+    public static Map<String, String> iosInstallArtifact(String appPath, boolean simulator) throws Exception {
+        Map<String, Object> metadata;
+        if (simulator) {
+            metadata = iosBuild(appPath);
+        } else {
+            Path artifact = Paths.get(appPath);
+            Assert.assertTrue("A physical iPhone needs an existing .ipa artifact",
+                    appPath.endsWith(".ipa") && Files.isRegularFile(artifact));
+            Path plist = Files.createTempFile("coach-ipa-build-", ".plist");
+            try (ZipFile archive = new ZipFile(artifact.toFile())) {
+                ZipEntry entry = archive.stream().filter(item -> item.getName().matches("Payload/[^/]+\\.app/Info\\.plist"))
+                        .reduce((first, second) -> { throw new AssertionError("Multiple applications in iOS archive"); })
+                        .orElseThrow(() -> new AssertionError("No application Info.plist in iOS archive"));
+                try (InputStream source = archive.getInputStream(entry)) {
+                    Files.copy(source, plist, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+                metadata = json(Arrays.asList("plutil", "-convert", "json", "-o", "-", plist.toString()));
+                Assert.assertEquals("Update artifact belongs to another bundle", Platform.getInstance().getIOSBundleId(),
+                        metadata.get("CFBundleIdentifier"));
+                Assert.assertEquals("Physical iPhone requires a device build", "iphoneos", metadata.get("DTPlatformName"));
+                requireNumericBuild(metadata.get("CFBundleVersion"));
+            } finally {
+                Files.deleteIfExists(plist);
+            }
+        }
+        return installedBuildValues(metadata.get("CFBundleShortVersionString"), metadata.get("CFBundleVersion"));
+    }
+
+    public static Map<String, String> readInstalledIOSBuild(RemoteWebDriver driver) throws Exception {
+        String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));
+        assertAppiumDevice(driver, udid);
+        if (udid.matches("[A-Fa-f0-9-]{36}")) {
+            Map<String, Object> info = installedIOSBuild();
+            return installedBuildValues(info.get("CFBundleShortVersionString"), info.get("CFBundleVersion"));
+        }
+        return readPhysicalIOSBuild(udid, Platform.getInstance().getIOSBundleId());
     }
 
     private static Map<String, Object> installedIOSMetadata() throws Exception {
@@ -87,10 +150,7 @@ public final class UpdateEvidence {
         Platform platform = Platform.getInstance();
         String udid = platform.isIOS() ? System.getProperty("ios.udid", System.getenv("IOS_UDID"))
                 : System.getProperty("android.udid", System.getenv("ANDROID_UDID"));
-        Assert.assertTrue("Installed-build evidence requires an explicitly selected device", udid != null && !udid.trim().isEmpty());
-        Object actual = driver.getCapabilities().getCapability("appium:udid");
-        if (actual == null) actual = driver.getCapabilities().getCapability("udid");
-        Assert.assertEquals("Metadata must come from the actual Appium device", udid, actual);
+        assertAppiumDevice(driver, udid);
         if (platform.isIOS() && udid.matches("[A-Fa-f0-9-]{36}")) {
             attachInstalledBuild();
         } else if (platform.isAndroid()) {
@@ -99,16 +159,27 @@ public final class UpdateEvidence {
             Map<String,String> info = androidInstalledBuild(dump);
             attachBuild("android", info.get("version"), info.get("build"));
         } else {
-            Path output = Files.createTempFile("coach-installed-ios-app-", ".json");
-            try {
-                command(Arrays.asList("xcrun", "devicectl", "device", "info", "apps", "--device", udid,
-                        "--bundle-id", platform.getIOSBundleId(), "--include-default-apps", "--json-output", output.toString()));
-                Map<String,Object> response = new Json().toType(new String(Files.readAllBytes(output), StandardCharsets.UTF_8), Map.class);
-                Map<String,String> info = iosDeviceInstalledBuild(response, platform.getIOSBundleId());
-                attachBuild("ios", info.get("version"), info.get("build"));
-            } finally {
-                Files.deleteIfExists(output);
-            }
+            Map<String,String> info = readPhysicalIOSBuild(udid, platform.getIOSBundleId());
+            attachBuild("ios", info.get("version"), info.get("build"));
+        }
+    }
+
+    public static void assertAppiumDevice(RemoteWebDriver driver, String udid) {
+        Assert.assertTrue("Installed-build evidence requires an explicitly selected device", udid != null && !udid.trim().isEmpty());
+        Object actual = driver.getCapabilities().getCapability("appium:udid");
+        if (actual == null) actual = driver.getCapabilities().getCapability("udid");
+        Assert.assertEquals("Metadata must come from the actual Appium device", udid, actual);
+    }
+
+    private static Map<String,String> readPhysicalIOSBuild(String udid, String bundle) throws Exception {
+        Path output = Files.createTempFile("coach-installed-ios-app-", ".json");
+        try {
+            command(Arrays.asList("xcrun", "devicectl", "device", "info", "apps", "--device", udid,
+                    "--bundle-id", bundle, "--include-default-apps", "--json-output", output.toString()));
+            Map<String,Object> response = new Json().toType(new String(Files.readAllBytes(output), StandardCharsets.UTF_8), Map.class);
+            return iosDeviceInstalledBuild(response, bundle);
+        } finally {
+            Files.deleteIfExists(output);
         }
     }
 
@@ -131,6 +202,34 @@ public final class UpdateEvidence {
         return installedBuildValues(version.group(1), build.group(1));
     }
 
+    public static Map<String,String> androidApkBuild(Path apk) throws Exception {
+        String aapt = System.getProperty("android.aapt", System.getenv().getOrDefault("AAPT", "aapt"));
+        return androidApkBuild(command(Arrays.asList(aapt, "dump", "badging", apk.toString())),
+                Platform.getInstance().getAndroidAppPackage());
+    }
+
+    public static Map<String,String> androidApkBuild(String badging, String bundle) {
+        Matcher fields = Pattern.compile("(?m)^package: name='([^']+)' versionCode='([0-9]+)' versionName='([^']+)'")
+                .matcher(badging);
+        Assert.assertTrue("APK package, version and build were not identified", fields.find());
+        Assert.assertEquals("APK belongs to another package", bundle, fields.group(1));
+        return installedBuildValues(fields.group(3), fields.group(2));
+    }
+
+    public static void assertNewerBuild(String before, String after) {
+        requireNumericBuild(before);
+        requireNumericBuild(after);
+        String[] oldParts = before.split("\\."), newParts = after.split("\\.");
+        for (int index = 0; index < Math.max(oldParts.length, newParts.length); index++) {
+            BigInteger oldPart = index < oldParts.length ? new BigInteger(oldParts[index]) : BigInteger.ZERO;
+            BigInteger newPart = index < newParts.length ? new BigInteger(newParts[index]) : BigInteger.ZERO;
+            int comparison = newPart.compareTo(oldPart);
+            if (comparison > 0) return;
+            if (comparison < 0) break;
+        }
+        Assert.fail("Update requires a strictly newer build: " + before + " -> " + after);
+    }
+
     private static Map<String,String> installedBuildValues(Object version, Object build) {
         Assert.assertTrue("Installed application version is absent", version instanceof String && !((String)version).trim().isEmpty());
         Assert.assertTrue("Installed application build is absent", build instanceof String && !((String)build).trim().isEmpty());
@@ -142,8 +241,11 @@ public final class UpdateEvidence {
     public static void validateIOSBuild(Map<String, Object> info, String expectedBundle) {
         Assert.assertEquals("Update artifacts must have the same configured bundle ID", expectedBundle, info.get("CFBundleIdentifier"));
         Assert.assertEquals("Update evidence requires an iOS Simulator build", "iphonesimulator", info.get("DTPlatformName"));
-        Object build = info.get("CFBundleVersion");
-        Assert.assertTrue("CFBundleVersion must be a real build number, not a CI placeholder",
+        requireNumericBuild(info.get("CFBundleVersion"));
+    }
+
+    private static void requireNumericBuild(Object build) {
+        Assert.assertTrue("A real numeric build number is required",
                 build instanceof String && ((String) build).matches("[0-9]+(?:\\.[0-9]+){0,2}"));
     }
 
@@ -170,13 +272,14 @@ public final class UpdateEvidence {
 
     private static String command(List<String> args) throws Exception {
         Path result = Files.createTempFile("coach-update-evidence-", ".json");
-        Process process = new ProcessBuilder(args).redirectErrorStream(true).redirectOutput(result.toFile()).start();
+        Process process = null;
         try {
+            process = new ProcessBuilder(args).redirectErrorStream(true).redirectOutput(result.toFile()).start();
             Assert.assertTrue("Update evidence reader timed out", process.waitFor(35, TimeUnit.SECONDS));
             Assert.assertEquals("Cannot verify update evidence; check the fixture/device and authenticated session", 0, process.exitValue());
             return new String(Files.readAllBytes(result), StandardCharsets.UTF_8);
         } finally {
-            if (process.isAlive()) process.destroyForcibly();
+            if (process != null && process.isAlive()) process.destroyForcibly();
             Files.deleteIfExists(result);
         }
     }

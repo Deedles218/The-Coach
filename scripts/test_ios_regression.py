@@ -40,7 +40,7 @@ class IOSRegressionTests(unittest.TestCase):
     def test_matrix_has_bookmarks_for_both_variants_and_no_duplicate_job(self):
         module = self.runner()
         keys = [(job[0], job[1]) for job in module.JOBS]
-        self.assertEqual(76, len(keys))
+        self.assertEqual(86, len(keys))
         self.assertEqual(len(keys), len(set(keys)))
         for variant in ('male', 'female'):
             self.assertIn((variant, 'BookmarksTests'), keys)
@@ -51,15 +51,24 @@ class IOSRegressionTests(unittest.TestCase):
                                      (ROOT / 'src/test/java/tests/BookmarksTests.java').read_text())
         for variant in ('male', 'female'):
             jobs = [job for job in module.JOBS if job[0] == variant and job[1].startswith('Bookmarks')]
-            self.assertEqual(4, len(jobs))
+            self.assertEqual(9, len(jobs))
             observed = [method for job in jobs for method in job[2].split('#')[1].split('+')]
-            self.assertEqual(collections.Counter(expected), collections.Counter(observed))
-            self.assertEqual(21, len(observed))
+            self.assertEqual(collections.Counter(expected + ['bookmarksAndTooltipStateAcrossUpdateAndReinstall']),
+                             collections.Counter(observed))
+            self.assertEqual(31, len(observed))
             modes = {job[1]: (job[4], job[5]) for job in jobs}
             self.assertEqual((False, False), modes['BookmarksTests'])
             self.assertEqual((False, True), modes['BookmarksTooltipFirstEntry'])
+            self.assertEqual((False, True), modes['BookmarksTooltipNonEmptyFirstEntry'])
             self.assertEqual((False, True), modes['BookmarksTooltipDismissal'])
+            for suffix in ('Card', 'Bookmark', 'Navigation'):
+                self.assertEqual((False, True), modes['BookmarksTooltipDismissal' + suffix])
             self.assertEqual((True, False), modes['BookmarksUpdate'])
+            self.assertEqual((False, False), modes['BookmarksReinstall'])
+            for label, phase in (('BookmarksUpdate', 'update'), ('BookmarksReinstall', 'reinstall')):
+                job = next(job for job in jobs if job[1] == label)
+                self.assertIn('-Dcoach.bookmarks.installVariant=' + phase, job[3])
+                self.assertIn('-Dios.update.app=' + module.APPS[variant][0], job[3])
 
     def test_list_needs_neither_registry_nor_keychain(self):
         result = subprocess.run([sys.executable, str(HELPERS / 'run_regression.py'), '--config',
@@ -80,7 +89,7 @@ class IOSRegressionTests(unittest.TestCase):
         self.assertEqual('<redacted> <redacted-email>', module.redact('fixture-otp-value test@example.invalid'))
 
     def test_config_cannot_override_installation_mode_or_store_otp(self):
-        for name in ('ios.fullReset', 'coach.bookmarks.content.otp'):
+        for name in ('ios.fullReset', 'coach.bookmarks.content.otp', 'coach.bookmarks.installVariant'):
             config = json.loads((ROOT / 'docs/ios-regression.example.json').read_text())
             config['apps']['male']['properties'] = {name: 'placeholder'}
             with tempfile.TemporaryDirectory() as temporary:
@@ -136,6 +145,7 @@ class IOSRegressionTests(unittest.TestCase):
                 module.run_job('male', 'BookmarksTests', 'tests.BookmarksTests#emptyListNeverShowsTooltip')
                 env = popen.call_args[1]['env']
                 self.assertEqual('fixture@example.invalid', env['COACH_BOOKMARKS_BASELINE_EMAIL'])
+                self.assertIn('-Dcoach.ios.preparePostAuthQuestionnaire=false', popen.call_args[0][0])
             self.assertIsNone(module.RESULTS[0]['accountRegistrySha256'])
             self.assertEqual('variant-specific Bookmarks environment', module.RESULTS[0]['primaryAccountSource'])
 
