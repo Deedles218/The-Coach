@@ -4,6 +4,7 @@ package lib.ui;
 public interface VideoSharingPageObject {
     void openByExitingVideo(String lesson);
     void openByFinishingVideo(String lesson);
+    void assertNoSharingPopupAfterVideoExit(String lesson);
     String readSharePreview(String action);
     void dismissShareSheetIfPresent();
     void closePopupIfPresent();

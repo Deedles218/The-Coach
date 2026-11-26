@@ -61,8 +61,15 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
 
     @Override public void openFaqFromProfile() {
         openProfileItem(PROFILE_FAQ_BUTTON);
-        waitForElementVisible("xpath://android.webkit.WebView", "FAQ WebView is absent", 15);
-        waitForElementVisible(androidText("How do I use The Coach app?"), "FAQ content did not load", 25);
+        String url=System.getProperty("coach.profile.faq.url");
+        if(url!=null) {
+            String text=System.getProperty("coach.profile.faq.text");
+            Assert.assertTrue("Configure the reviewed FAQ text",text!=null&&!text.trim().isEmpty());
+            new AndroidWebViewPageObject(driver).assertLoaded(url,text);
+        } else {
+            waitForElementVisible("xpath://android.webkit.WebView", "FAQ WebView is absent", 15);
+            waitForElementVisible(androidText("How do I use The Coach app?"), "FAQ content did not load", 25);
+        }
     }
 
     @Override public void openTermsFromProfile() {
@@ -366,7 +373,11 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
     @Override
     @Step("Verify Android Profile metrics and settings")
     public void assertProfileSmokeContentIsDisplayed() {
-        for (int n=0; n<3 && !isElementVisible(PROFILE_PROGRAM_SETTINGS_TITLE); n++) {
+        String contract=System.getProperty("coach.profile.settings","program");
+        Assert.assertTrue("coach.profile.settings must be program or general",
+                "program".equals(contract)||"general".equals(contract));
+        String heading="general".equals(contract)?androidText("General"):PROFILE_PROGRAM_SETTINGS_TITLE;
+        for (int n=0; n<3 && !isElementVisible(heading); n++) {
             WebElement list=waitForElementVisible(PROFILE_SCREEN,"Profile settings list absent",10);
             Map<String,Object> args=new HashMap<String,Object>();
             args.put("elementId",((RemoteWebElement)list).getId());args.put("direction","up");args.put("percent",1.0);
@@ -376,8 +387,13 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         waitForElementPresent(PROFILE_PROGRESS_EXERCISES, "Completed exercises metric is not displayed", 10);
         waitForElementPresent(PROFILE_PROGRESS_LESSONS, "Completed lessons metric is not displayed", 10);
         waitForElementPresent(PROFILE_PROGRESS_STREAK, "Streak metric is not displayed", 10);
-        waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
-        waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
+        if("general".equals(contract)) {
+            waitForElementVisible(heading,"General settings block is not displayed",10);
+            waitForElementVisible(androidText("Language"),"Language setting is not displayed",10);
+        } else {
+            waitForElementPresent(PROFILE_PROGRAM_SETTINGS_TITLE, "Program settings block is not displayed", 10);
+            waitForElementPresent(PROFILE_PERSONALIZATION_BUTTON, "Personalization item is not displayed", 10);
+        }
         scrollSettingsToBottom();
         waitForElementPresent(PROFILE_ACCOUNT_SETTINGS_BUTTON, "Account settings item is not displayed", 10);
         waitForElementPresent(PROFILE_SUPPORT_BUTTON, "Support item is not displayed", 10);

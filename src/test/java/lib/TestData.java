@@ -218,7 +218,16 @@ public final class TestData {
             return "";
         }
 
-        String sanitized = sanitizeConfiguredUids(text);
+        String sanitized = text;
+        String marketingLink = System.getenv("COACH_MARKETING_LINK");
+        if (marketingLink != null && !marketingLink.trim().isEmpty()) {
+            // Mask the complete URL before UID replacement can alter its query.
+            for (String value : new String[]{marketingLink, marketingLink.trim()}) {
+                sanitized = sanitized.replace(value.replace("&", "&amp;"), "[redacted-link]")
+                        .replace(value, "[redacted-link]");
+            }
+        }
+        sanitized = sanitizeConfiguredUids(sanitized);
         for (String key : new String[]{"COA7949", "COA8235", "COA8231", "COA8232", "COA8511", "COA8512", "COA8517", "COA8518", "COA9044", "COA9551",
                 "COA8094", "COA8096", "COA8170", "COA8171", "COA7937",
                 "COA7917", "COA7980"}) {

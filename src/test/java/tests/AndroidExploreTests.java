@@ -93,8 +93,8 @@ public class AndroidExploreTests extends CoreTestCase {
 
     @Test
     @Features({@Feature("Explore navigation"), @Feature("Lessons and practices")})
-    @DisplayName("Quick Tips video card opens the Android video player")
-    @Description("The v7 coach_video redirect must leave Explore and expose the native Android video player controls after one tap.")
+    @DisplayName("Quick Tips availability and destination match the reviewed catalog (updated)")
+    @Description("The default legacy coach_video path remains strict. An explicit current catalog contract checks the configured article redirect or the absence of Quick Tips plus the presence of the current sections.")
     @Severity(SeverityLevel.CRITICAL)
     public void testQuickTipVideoCardOpensVideoPlayer() {
         explore.openQuickTipVideoAndVerifyPlayer();

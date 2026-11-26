@@ -20,6 +20,9 @@ public final class IOSVideoSharingPageObject extends MainPageObject implements V
     private static final String SHARE_SHEET = "id:ActivityListView";
     private static final String SHARE_PREVIEW = "id:LP.CaptionBar.BottomCaption";
     private static final String DISMISS_SHARE_SHEET = "id:PopoverDismissRegion";
+    private static final String SHARE_SHEET_HEADER = "xpath://XCUIElementTypeNavigationBar[@name='UIActivityContentView']";
+    private static final String HEADER_SHARE_PREVIEW = SHARE_SHEET_HEADER + "/XCUIElementTypeOther[normalize-space(@label) != '']";
+    private static final String HEADER_SHARE_CLOSE = SHARE_SHEET_HEADER + "/XCUIElementTypeButton[@name='Close']";
     private static final String SUBSCRIPTION = "xpath://XCUIElementTypeButton[starts-with(@name,'One Year Plan,')]";
     private static final String TODAY = "xpath://XCUIElementTypeButton[@name='Today' and @visible='true']";
     private static final String LESSON_CLOSE = "xpath://XCUIElementTypeButton[@name='ic outline close' and @visible='true']";
@@ -34,12 +37,30 @@ public final class IOSVideoSharingPageObject extends MainPageObject implements V
     public void openByExitingVideo(String lesson) {
         openVideo(lesson);
         Assert.assertTrue("The video must still be playing before its end", video.positionSeconds() < video.durationSeconds());
+        exitVideo(QUIT, POPUP_TITLE);
+        assertSharingPopup();
+    }
+
+    private void exitVideo(String... destinations) {
         waitForElementAndClick("id:nav bar back round black", "Cannot exit the video player", 10);
-        waitForFirstElementPresent(new String[]{QUIT, POPUP_TITLE}, "Video exit did not lead to SharingVideo", 15);
+        waitForFirstElementPresent(destinations, "Video exit did not lead to the expected screen", 15);
         if (isElementVisible(QUIT)) {
             waitForElementAndClick(QUIT, "Cannot confirm video exit", 10);
         }
-        assertSharingPopup();
+    }
+
+    @Override @Step("Exit the unconfigured iOS video {lesson} without SharingVideo")
+    public void assertNoSharingPopupAfterVideoExit(String lesson) {
+        openVideo(lesson);
+        Assert.assertTrue("Exit must occur before natural completion", video.positionSeconds() < video.durationSeconds());
+        exitVideo(QUIT, LESSON_CLOSE, TODAY, POPUP_TITLE);
+        waitForElementNotVisible(PLAYER, "The unconfigured video player is still open", 15);
+        waitForFirstElementPresent(new String[]{LESSON_CLOSE, TODAY}, "The video exit did not return to the app", 15);
+        long observeUntil = System.nanoTime() + Duration.ofSeconds(4).toNanos();
+        createWait(5).until(ignored -> {
+            Assert.assertFalse("SharingVideo appeared after exiting the unconfigured iOS video", isElementVisible(POPUP_TITLE));
+            return System.nanoTime() >= observeUntil;
+        });
     }
 
     @Step("Play {lesson} through to its natural end")
@@ -85,14 +106,15 @@ public final class IOSVideoSharingPageObject extends MainPageObject implements V
     @Override @Step("Read the system preview for {action}")
     public String readSharePreview(String action) {
         openShareSheet(action);
-        return getElementAccessibleName(waitForElementVisible(SHARE_PREVIEW,
+        return getElementAccessibleName(waitForFirstElementPresent(new String[]{SHARE_PREVIEW, HEADER_SHARE_PREVIEW},
                 "The system preview did not show the sharing content", 10)).replaceAll("\\s+", " ").trim();
     }
 
     @Step("Dismiss the native share sheet")
     public void dismissShareSheetIfPresent() {
         if (!isElementVisible(SHARE_SHEET)) return;
-        waitForElementAndClick(DISMISS_SHARE_SHEET, "Cannot dismiss the native share sheet", 10);
+        waitForFirstElementAndClick(new String[]{DISMISS_SHARE_SHEET, HEADER_SHARE_CLOSE},
+                "Cannot dismiss the native share sheet", 10);
         waitForElementNotVisible(SHARE_SHEET, "The native share sheet remained open", 10);
     }
 
@@ -113,9 +135,14 @@ public final class IOSVideoSharingPageObject extends MainPageObject implements V
     }
 
     public void restorePreparedToday() {
-        waitForFirstElementPresent(new String[]{TODAY, SUBSCRIPTION, SHARE_SHEET, POPUP_TITLE, LESSON_CLOSE},
+        waitForFirstElementPresent(new String[]{TODAY, SUBSCRIPTION, SHARE_SHEET, POPUP_TITLE, LESSON_CLOSE,
+                        iOSCoachFlowPageObject.PARTNER_PROMO_TITLE},
                 "The prepared sharing profile did not load", 45);
         returnFromSharingToToday();
-        waitForElementVisible(TODAY, "Today did not open for the prepared sharing profile", 30);
+        iOSCoachFlowPageObject coach = new iOSCoachFlowPageObject(driver);
+        createWait(30).withMessage("Today did not open for the prepared sharing profile").until(ignored -> {
+            coach.closePartnerPromoIfPresent();
+            return isElementVisible(TODAY);
+        });
     }
 }

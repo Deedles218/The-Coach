@@ -133,8 +133,9 @@ public class ConfiguredExploreTests extends CoreTestCase {
     private ExploreBannerPageObject exploreBanner() {
         Platform platform = Platform.getInstance();
         if (platform.isIOS()) {
-            Assert.assertEquals("Use the reviewed male production Explore fixture", "com.vamapps.The-Coach",
-                    platform.getIOSBundleId());
+            String bundle = platform.getIOSBundleId();
+            Assert.assertTrue("Use a reviewed iOS Explore fixture (Him or Her), got " + bundle,
+                    "com.vamapps.The-Coach".equals(bundle) || "com.vamapps.The-Coach-for-her".equals(bundle));
             return new IOSExploreBannerPageObject(driver);
         }
         String appPackage = platform.getAndroidAppPackage();
@@ -147,7 +148,7 @@ public class ConfiguredExploreTests extends CoreTestCase {
         explore.assertConfiguredCardTemplates();
         explore.assertConfiguredCardTitlesAreNonEmpty();
     }
-    @Test @DisplayName("Quick Tip opens its configured content")
+    @Test @DisplayName("Quick Tips availability and content match the reviewed configuration (updated)")
     public void testQuickTipVideoCardOpensVideoPlayer() {
         if (Platform.getInstance().isAndroid()) {
             ((AndroidExplorePageObject) explore).openConfiguredQuickTipAndVerifyDestination();

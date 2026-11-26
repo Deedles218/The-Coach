@@ -37,7 +37,10 @@ public final class IOSExploreBannerPageObject extends ExploreBannerPageObject {
         Assert.assertEquals("Explore banner must expose one visible image", 1, images.size());
         Rectangle heading = waitForElementVisible("xpath://XCUIElementTypeStaticText[@name='Explore' and @visible='true']",
                 "Explore heading is missing", 10).getRect();
-        Rectangle next = waitForElementVisible("id:Browse Programs", "The section below the banner is missing", 10).getRect();
+        // Her's reviewed catalog has an empty programsTitle; use its actual collection.
+        String nextSection = "com.vamapps.The-Coach-for-her".equals(Platform.getInstance().getIOSBundleId())
+                ? iOSExplorePageObject.programCollectionLocator() : "id:Browse Programs";
+        Rectangle next = waitForElementVisible(nextSection, "The section below the banner is missing", 10).getRect();
         Rectangle navigation = waitForElementVisible("xpath://XCUIElementTypeButton[@name='Explore' and @value='1']",
                 "Explore navigation is missing", 10).getRect();
         assertBannerLayoutAndImage(banner.getRect(), images.get(0).getRect(), heading, next, navigation);

@@ -409,6 +409,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Verify required configurable Explore sections")
     public void assertConfiguredSectionsAreDisplayed() {
+        String quickTip=quickTipRedirect();
         waitForElementPresent(EXPLORE_TITLE, "Explore title is not displayed", 10);
         revealConfiguredItem(MASTER_CLASSES_SECTION_TITLE);
         if (FOR_HER) {
@@ -418,9 +419,10 @@ public class AndroidExplorePageObject extends ExplorePageObject {
                 revealConfiguredItem(sectionTitle(section));
             }
         } else {
-            revealConfiguredItem(QUICK_TIPS_SECTION_TITLE);
+            if(!"absent".equals(quickTip))revealConfiguredItem(QUICK_TIPS_SECTION_TITLE);
             revealConfiguredItem(PRIVATE_COACHING_SECTION_TITLE);
         }
+        if("absent".equals(quickTip))assertRetiredSectionHeadingsAbsent("Quick Tips");
     }
 
     @Step("Verify the configured program catalog on Explore")
@@ -545,18 +547,22 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Verify configured card templates and titles")
     public void assertConfiguredCardTemplates() {
+        String quickTip=quickTipRedirect();
         revealConfiguredItem(MASTER_CLASSES_CARDS);
         assertConfiguredCardImage(MASTER_CLASSES_CARDS, "iv_banner", "Master Class card banner");
         if (FOR_HER) {
             assertHerConfiguredCardTemplates();
         } else {
-            revealConfiguredItem(QUICK_TIPS_CARDS);
-            assertConfiguredCardImage(QUICK_TIPS_CARDS, "iv_background", "Quick Tips card image");
+            if(!"absent".equals(quickTip)) {
+                revealConfiguredItem(QUICK_TIPS_CARDS);
+                assertConfiguredCardImage(QUICK_TIPS_CARDS, "iv_background", "Quick Tips card image");
+            }
             revealConfiguredItem(PRIVATE_COACHING_CARDS);
             waitForElementPresent(PRIVATE_COACHING_CARDS + "//*[@resource-id='" + ID_PREFIX + "btn_join']",
                     "Private coaching card action is absent", 10);
             assertConfiguredCardImage(PRIVATE_COACHING_CARDS, "iv_avatar", "Private coaching card avatar");
         }
+        if("absent".equals(quickTip))assertRetiredSectionHeadingsAbsent("Quick Tips");
     }
 
     private void assertHerConfiguredCardTemplates() {
@@ -595,6 +601,8 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Open the Quick Tips video card and verify the Android video player")
     public void openQuickTipVideoAndVerifyPlayer() {
+        String type=quickTipRedirect();
+        if(type!=null&&!"coach_video".equals(type)) {openConfiguredQuickTipAndVerifyDestination();return;}
         openQuickTipCard(FIRST_QUICK_TIP_CARD);
         waitForElementPresent(VIDEO_PLAYER, "Quick Tips video card did not open the Android video player", 20);
         assertVideoPlayerControlsAreDisplayed();
@@ -602,6 +610,20 @@ public class AndroidExplorePageObject extends ExplorePageObject {
 
     @Step("Open the configured Quick Tip and verify its destination")
     public void openConfiguredQuickTipAndVerifyDestination() {
+        String type=quickTipRedirect();
+        if("absent".equals(type)) {
+            assertConfiguredSectionsAreDisplayed();
+            io.qameta.allure.Allure.addAttachment("Quick Tips configuration contract",
+                    "The reviewed catalog has no Quick Tips section. Absence and the configured sections were checked; video navigation is not claimed.");
+            return;
+        }
+        if("coach_lesson".equals(type)) {
+            openQuickTipCard(FINISH_TOO_SOON_CARD);
+            waitForElementVisible(QUICK_TIP_ARTICLE_TITLE,"The configured Quick Tip article did not open",20);
+            assertFinishTooSoonArticle();Assert.assertFalse("An article redirect opened a video player",isElementVisible(VIDEO_PLAYER));
+            return;
+        }
+        if("coach_video".equals(type)) {openQuickTipVideoAndVerifyPlayer();return;}
         if (FOR_HER) {
             openQuickTipVideoAndVerifyPlayer();
             return;
@@ -614,6 +636,13 @@ public class AndroidExplorePageObject extends ExplorePageObject {
         } else {
             assertFinishTooSoonArticle();
         }
+    }
+
+    private static String quickTipRedirect() {
+        String type=System.getProperty("coach.explore.quickTip.redirect");
+        Assert.assertTrue("Quick Tip redirect must be absent, coach_lesson or coach_video",
+                type==null||"absent".equals(type)||"coach_lesson".equals(type)||"coach_video".equals(type));
+        return type;
     }
 
     private void openQuickTipCard(String card) {
@@ -659,6 +688,14 @@ public class AndroidExplorePageObject extends ExplorePageObject {
                 "The massage masterclass card is not tappable", 10);
         String title = card.findElement(By.id(ID_PREFIX + "tv_title")).getText();
         card.click();
+        String destination=System.getProperty("coach.explore.masterclass.url");
+        if(destination!=null) {
+            String text=System.getProperty("coach.explore.masterclass.text");
+            Assert.assertTrue("Configure the reviewed masterclass content",text!=null&&!text.trim().isEmpty());
+            waitForElementVisible(EXPLORE_TAB_WEBVIEW, "The masterclass did not open the Explore WebView", 20);
+            new AndroidWebViewPageObject(driver).assertLoaded(destination,text);
+            return;
+        }
         if (LEGACY_MASSAGE_MASTERCLASS_TITLE.equals(title)) {
             waitForExploreDestinationAfterCardTap("Master Classes card must open a lesson or WebView after one tap");
             return;

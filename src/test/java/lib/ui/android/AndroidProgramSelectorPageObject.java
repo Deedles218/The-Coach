@@ -20,6 +20,13 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
     private static final By TITLES = By.xpath(TITLES_QUERY);
     private static final Pattern DAY_LABEL = Pattern.compile("^(Day|Stage) ([1-9][0-9]*)( of ([1-9][0-9]*))?$");
     public AndroidProgramSelectorPageObject(RemoteWebDriver driver) { super(driver); }
+    /** Legacy remains the default for builds without program activation onboarding. */
+    public static boolean isActivationFlow() {
+        String contract=System.getProperty("coach.selector.contract","legacy");
+        Assert.assertTrue("coach.selector.contract must be legacy or activation-v3",
+                "legacy".equals(contract)||"activation-v3".equals(contract));
+        return "activation-v3".equals(contract);
+    }
     @Override public void openProgramSelector() {
         new lib.ui.ProgramSwitchFeaturePageObject(driver).dismissProgramTooltipsIfPresent();
         getActiveProgramName(); // Returns the Today list to its header.
@@ -79,7 +86,8 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
             for(WebElement title:driver.findElements(TITLES)) if(title.isDisplayed() && name.equalsIgnoreCase(title.getText())) {
                 title.click();
                 if(observeLoading) {
-                    waitForElementVisible("id:"+PREFIX+"pbLoading", "Today loading indicator was not observed after selection", 3);
+                    if(!isActivationFlow())
+                        waitForElementVisible("id:"+PREFIX+"pbLoading", "Today loading indicator was not observed after selection", 3);
                     waitForElementNotVisible("id:"+PREFIX+"pbLoading", "Today loading did not finish", 20);
                 }
                 waitForElementNotVisible(LIST_LOCATOR, "Selector did not close on selection",15);
@@ -134,21 +142,50 @@ public class AndroidProgramSelectorPageObject extends AndroidDailyPlanPageObject
         WebElement title=driver.findElements(TITLES).stream().filter(WebElement::isDisplayed).findFirst().orElseThrow(() -> new AssertionError("No selector card"));
         return driver.findElement(By.xpath("("+TITLES_QUERY+")[1]/ancestor::*[@clickable='true'][1]")).getRect();
     }
+    public Rectangle selectorMotionBounds() {
+        return isActivationFlow()?waitForElementVisible("id:"+PREFIX+"design_bottom_sheet","Selector surface is absent",10).getRect():firstCardBounds();
+    }
     public void assertActiveProgramIsFirst(String expected) {
         Assert.assertEquals("Active program is not first",expected.toLowerCase(Locale.ROOT),viewport().keySet().iterator().next().toLowerCase(Locale.ROOT));
         Assert.assertTrue("Selector is not a bottom sheet",firstCardBounds().y>0);
     }
+    public void assertActivationSelection(String main, Collection<String> programs, String active) {
+        Assert.assertTrue("The activation selector contract must be explicit",isActivationFlow());
+        Assert.assertTrue("The expected Main Journey is absent from the fixture",programs.contains(main));
+        List<String> secondary=new ArrayList<String>(programs);secondary.remove(main);
+        new AndroidMyProgramsPageObject(driver).assertPrograms(main,secondary,active);
+        Assert.assertEquals("Switching Active Program moved Main Journey",main,viewport().keySet().iterator().next());
+    }
     public void assertProgramsScrollVertically() {
+        assertProgramsScrollVertically(Collections.emptySet());
+    }
+    public void assertProgramsScrollVertically(Set<String> expectedPrograms) {
         Map<String,Rectangle> before=viewport();
+        boolean scrollable=Boolean.parseBoolean(driver.findElement(LIST).getAttribute("scrollable"));
         scroll("down");
         Map<String,Rectangle> after=viewport();
+        assertProgramListMotion(before,after,scrollable,expectedPrograms);
+        if(isActivationFlow()&&scrollable) {
+            Set<String> observed=new LinkedHashSet<String>(before.keySet());
+            observed.addAll(after.keySet());observed.addAll(getProgramNamesFromSelector());
+            Assert.assertEquals("Scrolling lost saved programs",expectedPrograms,observed);
+        }
+    }
+    protected static void assertProgramListMotion(Map<String,Rectangle> before, Map<String,Rectangle> after,
+                                                  boolean scrollable, Set<String> expectedPrograms) {
+        if(isActivationFlow()&&!scrollable) {
+            Assert.assertFalse("Non-scrolling v3 selector needs the independently verified saved program set",expectedPrograms.isEmpty());
+            Assert.assertEquals("A non-scrolling selector hides saved programs",expectedPrograms,before.keySet());
+            Assert.assertEquals("A non-scrolling selector changed its visible programs",expectedPrograms,after.keySet());
+        }
         boolean moved=false;
         for(String title:before.keySet()) if(after.containsKey(title)) {
             Rectangle a=before.get(title), b=after.get(title);
             Assert.assertTrue("Program moved horizontally",Math.abs(a.x-b.x)<=3);
             moved |= b.y<a.y;
         }
-        Assert.assertTrue("Program list did not scroll vertically",moved || !before.keySet().equals(after.keySet()));
+        if(!isActivationFlow()||scrollable)
+            Assert.assertTrue("Program list did not scroll vertically",moved || !before.keySet().equals(after.keySet()));
     }
     public void swipeSelectorDown() {
         int x,y;

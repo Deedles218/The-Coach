@@ -13,6 +13,13 @@ from observe_simulator_event import validate_program_expectation
 QUEUE = '/data/data/com.vamapps.thecoach/app_amplitude-disk-queue/'
 
 
+def decode_batch(raw):
+    def invalid_constant(value):
+        # Python accepts NaN/Infinity by default, but neither is valid SDK JSON.
+        raise json.JSONDecodeError('Invalid JSON constant', '', 0)
+    return json.loads(raw, parse_constant=invalid_constant)
+
+
 def events(serial, diagnostics=None):
     stats=diagnostics if diagnostics is not None else {}
     stats['queuePolls']=stats.get('queuePolls',0)+1
@@ -30,17 +37,26 @@ def events(serial, diagnostics=None):
         try:
             raw=adb(serial, *prefix, 'cat', folder + name)
             stats['fileReads']=stats.get('fileReads',0)+1
-            data = json.loads(raw)
+            try:
+                data = decode_batch(raw)
+            except json.JSONDecodeError:
+                # The SDK keeps its active .tmp batch as an open JSON array.
+                # Close only the container: an incomplete event or malformed
+                # payload still fails JSON decoding and is read on a later poll.
+                if not name.endswith('.tmp') or not raw.lstrip().startswith(b'['):
+                    raise
+                data = decode_batch(raw+b']')
+                stats['openBatchSnapshots']=stats.get('openBatchSnapshots',0)+1
             if isinstance(data, list): result.extend(x for x in data if isinstance(x, dict))
             else:stats['nonArrayPayloads']=stats.get('nonArrayPayloads',0)+1
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             # The SDK writes .tmp files incrementally; the next poll reads the complete file.
             stats['unparsedFiles']=stats.get('unparsedFiles',0)+1
             try:
                 lines=[x for x in raw.splitlines() if x.strip()]
                 if len(lines)>1 and all(isinstance(json.loads(x),dict) for x in lines):
                     stats['jsonLinesPayloads']=stats.get('jsonLinesPayloads',0)+1
-            except json.JSONDecodeError:pass
+            except (json.JSONDecodeError, UnicodeDecodeError):pass
             continue
         except RuntimeError:
             # Files may disappear as the SDK uploads the queue.

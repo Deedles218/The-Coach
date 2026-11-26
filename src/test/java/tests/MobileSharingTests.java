@@ -83,6 +83,46 @@ public class MobileSharingTests extends CoreTestCase {
         sharing.dismissShareSheetIfPresent();
     }
 
+    @Test @Issue("COA-9480")
+    @DisplayName("COA-9480 Share with a friend opens the native sheet and can be cancelled")
+    public void testCoa9480FriendOpensAndCancelsSystemShareSheet() {
+        sharing.openByExitingVideo(eligibleLesson());
+        assertSystemShareLink(FRIEND, eligibleFriendLink());
+        sharing.dismissShareSheetIfPresent();
+    }
+
+    @Test @Issue("COA-9488")
+    @DisplayName("COA-9488 Exiting an unfinished eligible video opens SharingVideo")
+    public void testCoa9488SharingPopupOnVideoExit() {
+        sharing.openByExitingVideo(eligibleLesson());
+    }
+
+    @Test @Issue("COA-9470")
+    @DisplayName("COA-9470 Switching lessons updates both SharingVideo payloads")
+    public void testCoa9470SharePayloadFollowsLesson() {
+        assertPayload(FIRST_LESSON, PARTNER, PARTNER_TEXT, FIRST_PARTNER_LINK);
+        assertPayload(FIRST_LESSON, FRIEND, FRIEND_TEXT, FIRST_FRIEND_LINK);
+        assertPayload(SECOND_LESSON, PARTNER, PARTNER_TEXT, SECOND_PARTNER_LINK);
+        assertPayload(SECOND_LESSON, FRIEND, FRIEND_TEXT, SECOND_FRIEND_LINK);
+    }
+
+    @Test @Issue("COA-9490")
+    @DisplayName("COA-9490 Exiting a video outside the sharing configuration shows no SharingVideo")
+    public void testCoa9490UnconfiguredVideoDoesNotOfferSharing() {
+        String lesson = System.getProperty("coach.sharing.unconfiguredLesson", "").trim();
+        Assert.assertFalse("Supply a fixture video confirmed outside the SharingVideo configuration", lesson.isEmpty());
+        Assert.assertFalse("Use a video other than the two known sharing fixtures",
+                FIRST_LESSON.equalsIgnoreCase(lesson) || SECOND_LESSON.equalsIgnoreCase(lesson));
+        sharing.assertNoSharingPopupAfterVideoExit(lesson);
+    }
+
+    private void assertPayload(String lesson, String action, String text, String link) {
+        sharing.openByExitingVideo(lesson);
+        Assert.assertEquals("Incorrect share preview for " + lesson + " / " + action,
+                text + " " + link, sharing.readSharePreview(action));
+        sharing.returnFromSharingToToday();
+    }
+
     @Test @Issue("COA-9482")
     @DisplayName("COA-9482 Each sharing action supplies its expected text and link")
     public void testCoa9482SharePayloadMatchesSelectedAction() {
