@@ -1,6 +1,7 @@
 import collections
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -182,6 +183,90 @@ class IOSRegressionTests(unittest.TestCase):
             for index, variant in enumerate(('male', 'female')):
                 path = out / variant / 'SmokeTests/allure-results' / (variant + '-result.json')
                 self.assertEqual(originals[index], path.read_text())
+
+    def allure_source(self, out):
+        config = json.loads((ROOT / 'docs/ios-regression.example.json').read_text())
+        (out / 'run-config.json').write_text(json.dumps(config))
+        source = out / 'male/SmokeTests/allure-results'
+        source.mkdir(parents=True)
+        (source / 'male-result.json').write_text(json.dumps({
+            'historyId': 'shared-history', 'parameters': [], 'labels': []}))
+        (source / 'evidence.txt').write_bytes(b'original attachment')
+        return source
+
+    def test_allure_repeated_finalization_does_not_archive_identical_results(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            self.allure_source(out)
+            with patch('subprocess.run') as generate:
+                self.load('finalize_allure', ['finalizer', str(out)])
+                original = {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()}
+                for _ in range(3):
+                    self.load('finalize_allure', ['finalizer', str(out)])
+                self.assertEqual(4, generate.call_count)
+            self.assertEqual(original, {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()})
+            self.assertEqual([], list((out / 'attempts').glob('allure-aggregate-*')))
+            self.assertEqual([], list(out.glob('.allure-results-*')))
+
+    def test_allure_archives_changed_attachment_even_with_same_size_and_mtime(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            source = self.allure_source(out)
+            attachment = source / 'evidence.txt'
+            with patch('subprocess.run'):
+                self.load('finalize_allure', ['finalizer', str(out)])
+                previous = attachment.stat()
+                attachment.write_bytes(b'modified attachment')
+                os.utime(attachment, ns=(previous.st_atime_ns, previous.st_mtime_ns))
+                self.load('finalize_allure', ['finalizer', str(out)])
+                self.load('finalize_allure', ['finalizer', str(out)])
+            archives = list((out / 'attempts').glob('allure-aggregate-*'))
+            self.assertEqual(1, len(archives))
+            self.assertEqual(b'original attachment', (archives[0] / 'evidence.txt').read_bytes())
+            self.assertEqual(b'modified attachment', (out / 'allure-results/evidence.txt').read_bytes())
+
+    def test_allure_archives_results_when_attachment_is_removed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            source = self.allure_source(out)
+            with patch('subprocess.run'):
+                self.load('finalize_allure', ['finalizer', str(out)])
+                (source / 'evidence.txt').unlink()
+                self.load('finalize_allure', ['finalizer', str(out)])
+            archives = list((out / 'attempts').glob('allure-aggregate-*'))
+            self.assertEqual(1, len(archives))
+            self.assertEqual(b'original attachment', (archives[0] / 'evidence.txt').read_bytes())
+            self.assertFalse((out / 'allure-results/evidence.txt').exists())
+
+    def test_allure_invalid_input_preserves_previous_results_and_cleans_staging(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            source = self.allure_source(out)
+            with patch('subprocess.run') as generate:
+                self.load('finalize_allure', ['finalizer', str(out)])
+                original = {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()}
+                (source / 'male-result.json').write_text('invalid json')
+                with self.assertRaises(json.JSONDecodeError):
+                    self.load('finalize_allure', ['finalizer', str(out)])
+                self.assertEqual(1, generate.call_count)
+            self.assertEqual(original, {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()})
+            self.assertEqual([], list((out / 'attempts').glob('allure-aggregate-*')))
+            self.assertEqual([], list(out.glob('.allure-results-*')))
+
+    def test_allure_generation_failure_and_retry_do_not_archive_identical_results(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            self.allure_source(out)
+            with patch('subprocess.run'):
+                self.load('finalize_allure', ['finalizer', str(out)])
+            original = {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()}
+            with patch('subprocess.run', side_effect=subprocess.CalledProcessError(1, ['allure'])):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    self.load('finalize_allure', ['finalizer', str(out)])
+            with patch('subprocess.run'):
+                self.load('finalize_allure', ['finalizer', str(out)])
+            self.assertEqual(original, {p.name: p.read_bytes() for p in (out / 'allure-results').iterdir()})
+            self.assertEqual([], list((out / 'attempts').glob('allure-aggregate-*')))
 
 
 if __name__ == '__main__':
