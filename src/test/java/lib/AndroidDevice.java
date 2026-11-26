@@ -15,8 +15,36 @@ public final class AndroidDevice {
         Assert.assertTrue("An explicit test emulator is required", serial != null && serial.matches("emulator-[0-9]+"));
         return serial;
     }
+    /** Readers verify the exact debug APK and SDK UID before reading app-private evidence. */
+    public static String appPrivateEvidenceSerial() {
+        return appPrivateEvidenceSerial(System.getenv("COACH_ANDROID_EVIDENCE_PACKAGE"));
+    }
+    private static String appPrivateEvidenceSerial(String debugPackage) {
+        if(debugPackage==null||debugPackage.isEmpty())return serial();
+        Assert.assertEquals("Debug evidence package differs from the app under test",
+                Platform.getInstance().getAndroidAppPackage(),debugPackage);
+        return uiSettingsSerial();
+    }
     public static String adb(String... arguments) throws Exception {
         return adbForSerial(serial(), arguments);
+    }
+
+    public static String emailRegressionSerial() {
+        String selected = System.getProperty("android.udid", System.getenv("ANDROID_UDID"));
+        if (selected != null && selected.matches("emulator-[0-9]+")) return selected;
+        Assert.assertTrue("Use an explicit disposable emulator or identify the approved USB test installation",
+                selected != null && selected.matches("[A-Za-z0-9_-]+")
+                        && selected.equals(System.getProperty("coach.emailRelease.dedicatedDevice")));
+        return selected;
+    }
+
+    public static String adbForEmailRegression(String selected, String... arguments) throws Exception {
+        Assert.assertEquals("ADB must use the selected email regression device", emailRegressionSerial(), selected);
+        if (!selected.matches("emulator-[0-9]+")) {
+            Assert.assertEquals("The selected regression device must be the connected USB test device",
+                    selected, runAdb(Collections.singletonList("-d"), "get-serialno").trim());
+        }
+        return adbForSerial(selected, arguments);
     }
 
     public static String uiSettingsSerial() {

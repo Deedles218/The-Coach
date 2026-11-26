@@ -23,6 +23,13 @@ public final class TestFlightHandoff {
         return directory != null && !directory.trim().isEmpty();
     }
     public static void perform(org.openqa.selenium.remote.RemoteWebDriver driver, String phase) {
+        String directory = configuredDirectory();
+        Assert.assertTrue("Configure the task-specific TestFlight handoff directory",
+                directory != null && !directory.trim().isEmpty());
+        perform(driver, phase, Paths.get(directory));
+    }
+
+    public static void perform(org.openqa.selenium.remote.RemoteWebDriver driver, String phase, Path directory) {
         Assert.assertTrue("TestFlight handoff requires an iOS bundle-ID attach session",
                 Platform.getInstance().isIOS() && Platform.getInstance().isTestFlightAttachConfigured());
         String udid = System.getProperty("ios.udid", System.getenv("IOS_UDID"));
@@ -31,7 +38,7 @@ public final class TestFlightHandoff {
         Assert.assertTrue("Unsupported TestFlight operation", java.util.Arrays.asList(
                 "prepare-clean-rc", "install-previous", "install-rc", "reinstall-rc", "ensure-rc").contains(phase));
         try {
-            exchange(driver, phase);
+            exchange(driver, phase, directory);
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("TestFlight operation interrupted: " + phase, error);
@@ -43,11 +50,8 @@ public final class TestFlightHandoff {
         if (enabled() && driver != null) perform(driver, "ensure-rc");
     }
 
-    private static void exchange(org.openqa.selenium.remote.RemoteWebDriver driver, String phase) throws Exception {
-        String configuredDirectory = configuredDirectory();
-        Assert.assertTrue("Configure the task-specific TestFlight handoff directory",
-                configuredDirectory != null && !configuredDirectory.trim().isEmpty());
-        Path directory = Paths.get(configuredDirectory);
+    private static void exchange(org.openqa.selenium.remote.RemoteWebDriver driver, String phase, Path directory)
+            throws Exception {
         Files.createDirectories(directory);
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("phase", phase);

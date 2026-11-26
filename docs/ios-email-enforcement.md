@@ -34,6 +34,67 @@ COA-9700 (update) отложен. Их ранее созданные метод�
 `Deferred`. Прямой запуск класса или отдельного метода обходит фильтр suite;
 для рабочего набора используйте suite или явно выбранный активный метод.
 
+## Релизный сьют для Him и Her
+
+`IOSEmailReleaseRegressionSuite` запускает те же десять методов
+`EmailReleaseRegression`, что и `AndroidEmailReleaseRegressionSuite`. Матрица
+сценариев приведена в [описании Android-сборок](android-email-enforcement.md#scope).
+Основной язык английский. COA-9807 запускается на испанском в Him и Her.
+Для отдельного прогона COA-9767, COA-9768 или COA-9806 доступен
+`-Dcoach.emailRelease.language=es`. На iOS проверка возврата с экрана
+существующего аккаунта нажимает Cancel. При закрытии второго запроса сьют
+проверяет дополнительное предупреждение iOS, если оно появилось,
+затем проверяет Daily и отсутствие нового запроса в том же запуске.
+
+На выделенном iPhone используйте две подписанные сборки одного bundle ID
+с возрастающим номером билда и включённым сбором email в целевой сборке.
+Для Simulator используйте два совместимых `.app`. Установите целевую сборку
+перед запуском. Каждый сценарий начинает с переустановки выбранного приложения.
+Для сценариев обновления предыдущая сборка должна позволять анонимному
+пользователю открыть Daily без обязательного запроса сразу после онбординга.
+COA-9700 также требует доступного первого закрываемого запроса в предыдущей сборке.
+Для нового профиля укажите подходящую цель через `coach.emailRelease.iosGoal`,
+если она отличается от цели по умолчанию для варианта.
+
+Передайте тестовый занятый адрес для выбранного варианта в
+`COACH_EXISTING_PROGRESS_EMAIL` и свободный тестовый адрес в
+`COACH_VALID_EMAIL_WITHOUT_PROGRESS`. Сценарии доставки OTP создают независимые
+почтовые ящики. Параметр `coach.emailRelease.firstRequestLaunch` задаёт номер
+холодного запуска с первым запросом. Значение по умолчанию для iOS равно 4,
+как в проверенной конфигурации с тремя запусками без запроса.
+При изменении доступного имени значка подтверждения передайте проверенный
+локатор `coach.emailRelease.iosConfirmationIcon`.
+
+```sh
+mvn -q test -Dtest=suites.IOSEmailReleaseRegressionSuite \
+  -Dplatform=ios -Dios.udid="$IOS_UDID" \
+  -Dios.deviceName="$IOS_DEVICE_NAME" -Dios.platformVersion="$IOS_PLATFORM_VERSION" \
+  -Dios.bundleId="$IOS_BUNDLE_ID" -Dios.noReset=true -Dios.fullReset=false \
+  -Dcoach.emailRelease.dedicatedDevice="$IOS_UDID" \
+  -Dcoach.emailRelease.previousApp="$COACH_PREVIOUS_IOS_APP" \
+  -Dcoach.emailRelease.updateApp="$COACH_TARGET_IOS_APP"
+```
+
+Выполните команду отдельно для `com.vamapps.The-Coach` и
+`com.vamapps.The-Coach-for-her` с соответствующими сборками и тестовыми
+адресами. Для одного сценария укажите
+`-Dtest=tests.IOSEmailReleaseRegression#testMethod`.
+
+На физическом iPhone можно использовать TestFlight. Вместо `previousApp` и
+`updateApp` передайте `-Dios.sessionBundleId=com.apple.TestFlight`,
+`-Dcoach.ios.testFlightHandoff=<каталог>`, `-Dcoach.run.appBuild=<целевой билд>`
+и `-Dcoach.ios.previousBuild=<предыдущий билд>`. Параметр
+`-Dcoach.run.appVersion=<версия>` включает сверку версии. Поле `ios.bundleId`
+указывает на выбранное приложение Coach. Appium должен определять активное
+приложение по переднему плану. Запустите внешний координатор согласно
+[протоколу TestFlight](ios-rc-regression-improvements.md#установка-через-внешний-testflight-coordinator).
+Сьют создаёт внутри каталога обмена отдельный подкаталог для каждого метода.
+Координатор обрабатывает запросы в этих подкаталогах. Для этого сьюта
+`install-previous` требует чистой установки предыдущей сборки,
+`install-rc` обновляет её с сохранением данных.
+
+Ниже описан сьют COA-9222 для заранее подготовленных состояний.
+
 ## Фикстура и независимость
 
 Стадия принадлежит **установке**, а не аккаунту. Перед каждым методом нужно

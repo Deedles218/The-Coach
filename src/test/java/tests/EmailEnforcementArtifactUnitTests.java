@@ -55,6 +55,10 @@ public class EmailEnforcementArtifactUnitTests {
         assertSafeArtifacts("ENTER SECURITY CODE");
     }
 
+    @Test public void spanishIosOtpArtifactsHideDigits() throws Exception {
+        assertSafeArtifacts("INTRODUCE EL CÓDIGO DE SEGURIDAD.");
+    }
+
     @Test public void androidCustomOtpArtifactsHideDigits() throws Exception {
         assertSafeArtifacts("com.vamapps.thecoach:id/smsVerifyView");
     }

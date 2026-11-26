@@ -253,13 +253,17 @@ public final class TestData {
         String noPdfEmail = configured("coach.noPdfEntitlement.email", "COACH_NO_PDF_ENTITLEMENT_EMAIL");
         String noPdfOtp = configured("coach.noPdfEntitlement.otp", "COACH_NO_PDF_ENTITLEMENT_OTP");
         if (email != null) {
-            sanitized = sanitized.replace(email, "<redacted-email>");
+            sanitized = sanitized.replaceAll("(?iu)" + java.util.regex.Pattern.quote(email), "<redacted-email>");
         }
         if (otp != null) {
             sanitized = sanitized.replace(otp, "<redacted-otp>");
         }
         if (noProgressEmail != null) {
-            sanitized = sanitized.replace(noProgressEmail, "<redacted-email>");
+            sanitized = sanitized.replaceAll("(?iu)" + java.util.regex.Pattern.quote(noProgressEmail), "<redacted-email>");
+        }
+        String emailReleaseOtp = configured("coach.emailRelease.otp", null);
+        if (emailReleaseOtp != null) {
+            sanitized = sanitized.replace(emailReleaseOtp, "<redacted-otp>");
         }
         if (invalidEmail != null) {
             sanitized = sanitized.replace(invalidEmail, "<redacted-email>");
@@ -325,7 +329,7 @@ public final class TestData {
             return propertyValue.trim();
         }
 
-        String environmentValue = System.getenv(environmentName);
+        String environmentValue = environmentName == null ? null : System.getenv(environmentName);
         if (environmentValue != null && !environmentValue.trim().isEmpty()) {
             return environmentValue.trim();
         }

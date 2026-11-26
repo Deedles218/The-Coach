@@ -201,6 +201,16 @@ public class KegelExerciseTests extends CoreTestCase {
         String program = System.getProperty("coach.kegelPlayer.program");
         if (Platform.getInstance().isIOS() && program != null && !program.trim().isEmpty()) {
             new lib.ui.ios.iOSProgramSelectorPageObject(driver).ensureWorkoutProgramSelected(program.trim());
+        } else if (Platform.getInstance().isAndroid() && program != null && !program.trim().isEmpty()) {
+            lib.ui.android.AndroidMyProgramsPageObject selector=new lib.ui.android.AndroidMyProgramsPageObject(driver);
+            if (!program.trim().equals(selector.getActiveProgramName())) {
+                selector.openProgramSelector();selector.selectSavedProgram(program.trim(),false);
+            }
+            String day=System.getProperty("coach.kegelPlayer.day");
+            if (day != null && !day.trim().isEmpty()) {
+                if (!day.trim().equals(selector.getCurrentDayLabel())) selector.openNextDayAndAssert(day.trim());
+                selector.assertCurrentDayMatches(day.trim());
+            }
         }
     }
     private void verifyAndroidMutableFixture() {

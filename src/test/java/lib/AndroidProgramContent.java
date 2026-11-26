@@ -13,7 +13,7 @@ public final class AndroidProgramContent {
     public static Map<String,Object> read(String program,long boundary) throws Exception {
         Path folder=Files.createTempDirectory(Paths.get("target"),"android-selector-content-");
         Path output=folder.resolve("content.json"), log=folder.resolve("reader.log");
-        Process reader=new ProcessBuilder("python3","scripts/read_android_program_content.py","--serial",AndroidDevice.serial(),
+        Process reader=new ProcessBuilder("python3","scripts/read_android_program_content.py","--serial",AndroidDevice.appPrivateEvidenceSerial(),
                 "--program",program,"--boundary",Long.toString(boundary),"--output",output.toString())
                 .redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {

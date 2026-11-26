@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/** Local Android emulator evidence source; never accepts a pre-existing log file. */
+/** Fresh app-private Android evidence; never accepts a pre-existing log file. */
 public final class AndroidAnalyticsEvidence implements AutoCloseable {
     private final Process observer;
     private final Path evidence;
@@ -38,9 +38,10 @@ public final class AndroidAnalyticsEvidence implements AutoCloseable {
             throw new IllegalArgumentException("Expected program_id is supported only for ProgramModalSelect");
         }
         Assert.assertNotNull("Fresh analytics verification needs the dedicated fixture UID", uid);
+        String serial=AndroidDevice.appPrivateEvidenceSerial();
         evidence = Paths.get("target", "test-model-evidence", caseKey + "-" + System.currentTimeMillis(), "analytics.json");
         ProcessBuilder builder = new ProcessBuilder("python3", "scripts/observe_android_event.py",
-                "--serial", AndroidDevice.serial(),
+                "--serial", serial,
                 "--event", event, "--output", evidence.toString()).redirectErrorStream(true);
         if (expectedProgramId != null) {
             builder.command().add("--expected-program-id");
