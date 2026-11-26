@@ -287,20 +287,18 @@ public class iOSDailyPlanPageObject extends DailyPlanPageObject {
         // Bookmarks. Titles restored from accounts are not a fixed catalog.
         String header = "//XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']"
                 + "/parent::XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]"
-                + "/XCUIElementTypeStaticText[@visible='true' and //XCUIElementTypeButton"
-                + "[@name='Today' and @value='1' and @visible='true']]";
+                + "/XCUIElementTypeStaticText[@visible='true']";
         // Keep the observed older-build labels only when this header is absent.
-        return "xpath:" + header + " | //XCUIElementTypeStaticText[not(//XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']) and //XCUIElementTypeButton[@name='Today' and @value='1' and @visible='true'] and @visible='true' and ("
-                + "@name='LL' or @label='LL' or @name='KIH' or @label='KIH' "
-                + "or @name='OH' or @label='OH' or @name='SIAS' or @label='SIAS' "
+        // Apply the common Today guard once, keeping the XPath below parser complexity limits.
+        return "xpath:(" + header + " | //XCUIElementTypeStaticText[not(//XCUIElementTypeButton[@name='nav bar bookmarks' and @visible='true']) and @visible='true' and ("
+                + "(@name | @label)[.='LL' or .='KIH' or .='OH' or .='SIAS' or .='Kegel Challenge' "
+                + "or contains(translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED')] "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'LAST LONGER') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'KEEP IT HARD') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'OVERALL HEALTH') "
                 + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SEX IS A SKILL') "
-                + "or contains(translate(@name, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED') "
-                + "or @name='Kegel Challenge' or @label='Kegel Challenge' "
-                + "or @name='Path to Desire' or @name='Kegel Journey' "
-                + "or contains(translate(@label, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'UNHOOKED'))]";
+                + "or @name='Path to Desire' or @name='Kegel Journey')])"
+                + "[//XCUIElementTypeButton[@name='Today' and @value='1' and @visible='true']]";
     }
 
     private static final String PLAYER_CONTAINER = "//XCUIElementTypeOther[XCUIElementTypeButton[@name='navBarRoundClose']"

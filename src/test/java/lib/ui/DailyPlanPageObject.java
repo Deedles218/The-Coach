@@ -761,6 +761,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Start Kegel exercise")
     public void startKegelExercise() {
+        startKegelExercise(() -> { });
+    }
+
+    public void startKegelExercise(Runnable inspectStretchingScreen) {
         boolean stretchingVideoExpected = isKegelStretchingVideoExpected();
         this.scrollToKegelStartButton();
         this.waitForFirstElementAndClick(
@@ -778,7 +782,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
                 "Kegel player loading indicator is still displayed",
                 20
         );
-        if (stretchingVideoExpected) this.continuePastStretchingVideo();
+        if (stretchingVideoExpected) this.continuePastStretchingVideo(inspectStretchingScreen);
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_PLAYER_PAUSE, KEGEL_PLAYER_PAUSE_BUTTON},
                 "Kegel player did not open after the stretching video",
@@ -791,17 +795,19 @@ abstract public class DailyPlanPageObject extends MainPageObject {
     }
 
     @Step("Complete the default Kegel stretching video")
-    private void continuePastStretchingVideo() {
+    private void continuePastStretchingVideo(Runnable inspectStretchingScreen) {
         this.waitForFirstElementPresent(
                 new String[]{KEGEL_MEDIA_PLAYER_BACK_BUTTON},
                 "Default Kegel stretching video did not open after starting the workout",
                 30
         );
+        inspectStretchingScreen.run();
         this.waitForFirstElementPresent(
                 new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
                 "Kegel stretching video did not reach its completion action",
                 300
         );
+        inspectStretchingScreen.run();
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_STRETCHING_LETS_GO, KEGEL_STRETCHING_COMPLETION_LETS_GO_BUTTON},
                 "Cannot continue from Kegel stretching video",
@@ -999,6 +1005,10 @@ abstract public class DailyPlanPageObject extends MainPageObject {
 
     @Step("Open Kegel player info")
     public void openKegelPlayerInfo() {
+        openKegelPlayerInfo(() -> { });
+    }
+
+    public void openKegelPlayerInfo(Runnable inspectInfo) {
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_PLAYER_INFO, KEGEL_PLAYER_INFO_BUTTON},
                 "Cannot tap Kegel player info control",
@@ -1006,6 +1016,7 @@ abstract public class DailyPlanPageObject extends MainPageObject {
         );
         this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_TITLE, "Kegel player info modal title is not displayed", 10);
         this.waitForElementPresent(KEGEL_PLAYER_INFO_MODAL_CONTENT, "Kegel player info modal content is not displayed", 10);
+        inspectInfo.run();
         this.waitForFirstElementAndClick(
                 new String[]{TEST_ID_PLAYER_INFO_CLOSE, KEGEL_PLAYER_INFO_MODAL_CLOSE_BUTTON},
                 "Cannot close Kegel player info modal",

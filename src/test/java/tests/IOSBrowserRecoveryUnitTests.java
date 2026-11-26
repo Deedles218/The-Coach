@@ -60,6 +60,10 @@ public class IOSBrowserRecoveryUnitTests {
             return close;
         }
         @Override public boolean isElementVisible(String locator) { return visible; }
+        @Override public boolean isElementPresent(String locator) {
+            Assert.assertEquals(PROFILE_PREMIUM_BADGE, locator);
+            return false;
+        }
         @Override public void waitForElementNotVisible(String locator, String message, long timeout) {
             Assert.assertEquals("id:TopBrowserBar", locator);
             checkedGone = true;

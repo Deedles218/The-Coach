@@ -5,6 +5,7 @@ import lib.Platform;
 import lib.ui.MainPageObject;
 import lib.ui.OnboardingGoal;
 import org.junit.Assert;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Android 13+ notification authorization, including its actual OS grant state. */
@@ -43,6 +44,24 @@ public final class AndroidPermissionPageObject extends MainPageObject {
         waitForElementNotVisible(ALLOW,"System permission dialog did not close",10);
         Assert.assertTrue("OS did not persist POST_NOTIFICATIONS grant",notificationGranted());
     }
+
+    public void dismissSystemNotificationPromptIfPresent() {
+        String message = "xpath://*[(starts-with(@resource-id,'com.android.permissioncontroller:id/')"
+                + " or starts-with(@resource-id,'com.google.android.permissioncontroller:id/'))"
+                + " and contains(@resource-id,':id/permission_message')"
+                + " and contains(translate(@text,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'notification')]";
+        String deny;
+        try {
+            String id = waitForElementVisible(message, "Waiting for the Android notification permission dialog", 5)
+                    .getAttribute("resource-id");
+            deny = "id:" + id.replace("permission_message", "permission_deny_button");
+        } catch (TimeoutException absent) {
+            return;
+        }
+        waitForElementAndClick(deny, "Cannot dismiss the Android notification permission dialog", 10);
+        waitForElementNotVisible(message, "Android notification permission dialog did not close", 10);
+    }
+
     public void finishOnboardingToToday() {
         waitForFirstElementPresent(new String[]{"id:"+P+"btnSignInAnonymous","id:"+P+"nav_graph_daily","id:"+P+"btnClose","id:"+P+"btnGotIt","id:"+P+"ivClose"},"App did not resume after the Android permission dialog",20);
         AndroidOnboardingPageObject onboarding=new AndroidOnboardingPageObject(driver);

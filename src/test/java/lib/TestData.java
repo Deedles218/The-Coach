@@ -15,7 +15,7 @@ import java.util.Map;
 public final class TestData {
     private static final String[] BOOKMARKS_FIXTURES = {
             "BASELINE", "CONTENT", "TOOLTIP", "RECURRING", "SWITCHA", "SWITCHB", "UPDATE",
-            "NOSUBSCRIPTION"
+            "NOSUBSCRIPTION", "ACTIVESUBSCRIPTION", "ACTIVETRIAL"
     };
 
     private TestData() {
@@ -230,9 +230,10 @@ public final class TestData {
             }
         }
         Set<String> bookmarksFixtures = new LinkedHashSet<>(Arrays.asList(BOOKMARKS_FIXTURES));
-        for (String selector : new String[]{"completion", "kegel"}) {
+        for (String selector : new String[]{"completion", "kegel", "available", "savedSlide"}) {
             String role = configured("coach.bookmarks." + selector + "AccountRole",
-                    "COACH_BOOKMARKS_" + selector.toUpperCase(Locale.ROOT) + "_ACCOUNT_ROLE");
+                    "COACH_BOOKMARKS_" + selector.replaceAll("([a-z0-9])([A-Z])", "$1_$2")
+                            .toUpperCase(Locale.ROOT) + "_ACCOUNT_ROLE");
             if (role != null) bookmarksFixtures.add(role.replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT));
         }
         for (String fixture : bookmarksFixtures) {
@@ -241,7 +242,9 @@ public final class TestData {
                         "coach.bookmarks." + fixture.toLowerCase(Locale.ROOT) + "." + field,
                         "COACH_BOOKMARKS_" + fixture + "_" + field.toUpperCase(Locale.ROOT)
                 );
-                if (value != null) sanitized = sanitized.replace(value, "<redacted-" + field + ">");
+                if (value != null) sanitized = "email".equals(field)
+                        ? sanitized.replaceAll("(?iu)" + java.util.regex.Pattern.quote(value), "<redacted-email>")
+                        : sanitized.replace(value, "<redacted-otp>");
             }
         }
         String email = configured("coach.existingProgress.email", "COACH_EXISTING_PROGRESS_EMAIL");

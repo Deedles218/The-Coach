@@ -1,6 +1,7 @@
 package lib.ui.ios;
 
 import io.qameta.allure.Step;
+import lib.PostAuthQuestionnaireException;
 import lib.ui.OnboardingGoal;
 import lib.ui.OnboardingPageObject;
 import org.junit.Assert;
@@ -176,6 +177,37 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         );
         closePreQuestionnairePrompts();
         completeAdditionalGoalsIfPresent();
+    }
+
+    @Step("Complete the two native iOS login goal questions for the configured fixture")
+    public void completePostLoginGoalQuestions(String goal) {
+        if (!isGoalSelectionDisplayed()) {
+            if (isElementVisible(ADDITIONAL_GOALS_TITLE) || isUnexpectedPostLoginQuestionnaireVisible()) {
+                throw new PostAuthQuestionnaireException("Unexpected or resumed questionnaire after OTP; "
+                        + "ordinary login only answers the two native goal questions from their first screen");
+            }
+            return;
+        }
+        if (goal == null || goal.trim().isEmpty()) {
+            throw new PostAuthQuestionnaireException("Configure an explicit fixture goal after OTP with "
+                    + "coach.ios.postAuthGoal; no default answer is selected");
+        }
+        // selectGoal already handles the observed primary and additional-goals
+        // screens, including the named Increase self confidence choice.
+        selectGoal(goal);
+        if (isGoalSelectionDisplayed() || isElementVisible(ADDITIONAL_GOALS_TITLE)
+                || isUnexpectedPostLoginQuestionnaireVisible()) {
+            throw new PostAuthQuestionnaireException("Unexpected questionnaire after the two login goals; "
+                    + "full onboarding was not completed automatically");
+        }
+    }
+
+    protected boolean isUnexpectedPostLoginQuestionnaireVisible() {
+        return !driver.findElements(By.xpath("//XCUIElementTypeWebView[@visible='true']"
+                + " | //XCUIElementTypeStaticText[@visible='true' and (starts-with(@name,'QUESTION ')"
+                + " or starts-with(@name,'STEP '))]"
+                + " | //XCUIElementTypeOther[@visible='true' and (@name='StartQuestionnaireOneTapAnswerView'"
+                + " or @name='StartQuestionnaireCheckedView')]")).isEmpty();
     }
 
     @Override

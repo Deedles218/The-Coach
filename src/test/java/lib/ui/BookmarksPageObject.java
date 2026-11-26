@@ -11,10 +11,16 @@ import lib.ui.factories.CoachFlowPageObjectFactory;
 import org.junit.Assert;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.List;
 import java.awt.image.BufferedImage;
@@ -56,6 +62,14 @@ public abstract class BookmarksPageObject extends MainPageObject {
         waitForElementPresent(BOOKMARKS_TITLE, "My Bookmarks did not open", 15);
     }
 
+    @Step("Open My Bookmarks from Today, allowing the first-visit tooltip")
+    public void openFromTodayAllowingTooltip(String tooltip) {
+        if (isScreenVisible()) return;
+        tapEntryFromToday();
+        waitForFirstElementPresent(new String[]{tooltip == null ? null : tooltipFor(tooltip), BOOKMARKS_TITLE},
+                "Neither My Bookmarks nor its tooltip appeared", 15);
+    }
+
     @Step("Tap My Bookmarks entry point from Today")
     public void tapEntryFromToday() {
         if (!isElementPresent(TODAY_SELECTED)) {
@@ -86,6 +100,18 @@ public abstract class BookmarksPageObject extends MainPageObject {
     public void backFromBookmarks() {
         waitForElementAndClick(BOOKMARKS_BACK, "Cannot return from My Bookmarks", 10);
         waitForElementNotVisible(BOOKMARKS_TITLE, "My Bookmarks stayed open", 10);
+    }
+
+    @Step("Verify Back from My Bookmarks returns to Today")
+    public void backFromBookmarksToToday() {
+        backFromBookmarks();
+        waitForElementVisible(TODAY_SELECTED, "Back from My Bookmarks did not return to Today", 10);
+    }
+
+    @Step("Verify Back from My Bookmarks returns to Explore")
+    public void backFromBookmarksToExplore() {
+        backFromBookmarks();
+        waitForElementVisible(EXPLORE_SELECTED, "Back from My Bookmarks did not return to Explore", 10);
     }
 
     @Step("Verify empty Bookmarks state")
@@ -156,6 +182,11 @@ public abstract class BookmarksPageObject extends MainPageObject {
         Assert.assertFalse("Both active and inactive bookmark controls are visible", isElementPresent(INACTIVE_BOOKMARK));
     }
 
+    public void assertOpenedContentNotSaved() {
+        waitForElementPresent(INACTIVE_BOOKMARK, "Bookmark is not inactive on the opened slide", 10);
+        Assert.assertFalse("Removed content still exposes an active bookmark", isElementPresent(ACTIVE_BOOKMARK));
+    }
+
     public void assertOpenedContentCannotBeSaved() {
         Assert.assertFalse("Kegel content exposes an inactive bookmark", isElementPresent(INACTIVE_BOOKMARK));
         Assert.assertFalse("Kegel content exposes an active bookmark", isElementPresent(ACTIVE_BOOKMARK));
@@ -164,33 +195,31 @@ public abstract class BookmarksPageObject extends MainPageObject {
     @Step("Close opened content")
     public void closeOpenedContent() {
         waitForElementAndClick(CONTENT_CLOSE, "Cannot close content", 10);
-        confirmContentExitIfNeeded();
-        waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
-                "Neither Today nor My Bookmarks returned after closing content", 15);
+        waitForContentExit();
     }
 
     public void closeOpenedContentIfPresent() {
         dismissContentPaywallIfPresent();
         if (isElementPresent(CONTENT_EXIT_QUIT)) {
-            confirmContentExitIfNeeded();
-            waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
-                    "Neither Today nor My Bookmarks returned after confirming content exit", 15);
+            waitForContentExit();
             return;
         }
         if (!isElementPresent(CONTENT_CLOSE)
                 || (!isElementPresent(INACTIVE_BOOKMARK) && !isElementPresent(ACTIVE_BOOKMARK))) return;
         waitForElementAndClick(CONTENT_CLOSE, "Cannot close interrupted bookmarked content", 10);
-        confirmContentExitIfNeeded();
-        waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
-                "Neither Today nor My Bookmarks returned after closing content", 15);
+        waitForContentExit();
     }
 
-    private void confirmContentExitIfNeeded() {
-        if (isElementPresent(CONTENT_EXIT_QUIT)) {
+    private void waitForContentExit() {
+        waitForFirstElementPresent(new String[]{CONTENT_EXIT_QUIT, TODAY_TAB, BOOKMARKS_TITLE},
+                "Neither the exit confirmation nor Today or My Bookmarks appeared after closing content", 15);
+        if (isElementVisible(CONTENT_EXIT_QUIT)) {
             waitForElementAndClick(CONTENT_EXIT_QUIT, "Cannot confirm leaving bookmarked content", 10);
             createWait(10).withMessage("Content exit dialog stayed visible")
                     .until(ignored -> !isElementVisible(CONTENT_EXIT_QUIT));
         }
+        waitForFirstElementPresent(new String[]{TODAY_TAB, BOOKMARKS_TITLE},
+                "Neither Today nor My Bookmarks returned after closing content", 15);
     }
 
     @Step("Verify bookmark card: {title}")
@@ -200,8 +229,79 @@ public abstract class BookmarksPageObject extends MainPageObject {
         assertNotEmpty();
     }
 
+    public void assertSingleCard(String title, String... slideTexts) {
+        assertCard(title);
+        Assert.assertEquals("The whole content must have exactly one bookmark card: " + title,
+                1, getAmountElements(cardFor(title)));
+        for (String slide : slideTexts) {
+            if (!title.equals(slide)) assertCardAbsent(slide);
+        }
+    }
+
     public void assertCardAbsent(String title) {
-        Assert.assertFalse("Bookmark card is still displayed: " + title, isElementPresent(exactText(title)));
+        assertScreenVisible();
+        // Recycler-backed lists may omit offscreen rows from the native tree.
+        // Reach the beginning, then verify every viewport through the end.
+        scanForAbsentCard(title, "down");
+        scanForAbsentCard(title, "up");
+    }
+
+    private void scanForAbsentCard(String title, String direction) {
+        scanBookmarkViewports(direction, () -> Assert.assertFalse(
+                "Bookmark card is still displayed: " + title, isElementPresent(exactText(title))));
+    }
+
+    private void scanBookmarkViewports(String direction, Runnable check) {
+        for (int viewport = 0; viewport < 20; viewport++) {
+            assertScreenVisible();
+            check.run();
+            String before = bookmarkListSignature();
+            swipe(direction);
+            if (before.equals(bookmarkListSignature())) {
+                check.run();
+                return;
+            }
+        }
+        Assert.fail("Bookmarks list boundary was not reached while scrolling " + direction);
+    }
+
+    public void assertExactCardTitles(List<String> expected, String absentCategory) {
+        scanBookmarkViewports("down", () -> { });
+        List<String> visited = new ArrayList<>();
+        scanBookmarkViewports("up", () -> {
+            if (absentCategory != null) assertCategoryAbsent(absentCategory);
+            List<String> visible = visibleCardTitles(expected);
+            Assert.assertFalse("Cannot read the saved cards in this viewport", visible.isEmpty());
+            Assert.assertEquals("Duplicate bookmark titles in one viewport", visible.size(), new LinkedHashSet<>(visible).size());
+            Assert.assertTrue("Unexpected bookmark cards in viewport: " + visible, expected.containsAll(visible));
+            // Merge only the ordered overlap so a nonadjacent repeated card is still detected.
+            int overlap = Math.min(visited.size(), visible.size());
+            while (overlap > 0 && !visited.subList(visited.size() - overlap, visited.size()).equals(visible.subList(0, overlap))) {
+                overlap--;
+            }
+            Assert.assertTrue("Bookmark list scroll skipped rows between viewports", visited.isEmpty() || overlap > 0);
+            for (String title : visible.subList(overlap, visible.size())) {
+                Assert.assertFalse("Bookmark card appears again after intervening rows: " + title, visited.contains(title));
+                visited.add(title);
+            }
+        });
+        Assert.assertEquals("Unexpected saved card set", new LinkedHashSet<>(expected), new LinkedHashSet<>(visited));
+    }
+
+    protected List<String> visibleCardTitles(List<String> expected) {
+        String anchor = expected.stream().filter(this::hasCard).findFirst()
+                .orElseThrow(() -> new AssertionError("No expected bookmark card is visible in this viewport"));
+        return getElementAccessibleNames(cardListTitleLocator(anchor));
+    }
+
+    protected String cardListTitleLocator(String anchor) {
+        return cardFor(anchor) + "/../*[self::XCUIElementTypeButton or self::XCUIElementTypeCell"
+                + " or self::XCUIElementTypeOther][@visible='true']"
+                + "/descendant::XCUIElementTypeStaticText[@visible='true'][1]";
+    }
+
+    protected String bookmarkListSignature() {
+        return driver.getPageSource();
     }
 
     public boolean hasCard(String title) {
@@ -223,10 +323,28 @@ public abstract class BookmarksPageObject extends MainPageObject {
     public void assertCardComposition(String title) {
         ensureBookmarkCardVisible(title);
         String card = cardFor(title);
-        waitForElementPresent(card, "Bookmark card container is absent: " + title, 10);
+        Rectangle row = waitForElementPresent(card, "Bookmark card container is absent: " + title, 10).getRect();
         waitForElementPresent(cardImageFor(title), "Bookmark card has no image: " + title, 10);
-        waitForElementPresent(cardBookmarkFor(title),
-                "Bookmark card has no active bookmark icon: " + title, 10);
+        Rectangle icon = waitForElementPresent(cardBookmarkFor(title),
+                "Bookmark card has no active bookmark icon: " + title, 10).getRect();
+        double iconCenterX = icon.x + icon.getWidth() / 2.0;
+        Assert.assertTrue("The active bookmark icon must be on the right side of the card: " + title,
+                iconCenterX > row.x + row.getWidth() / 2.0 && iconCenterX < row.x + row.getWidth());
+    }
+
+    public void assertCardCover(String title, BufferedImage expected) throws IOException {
+        ensureBookmarkCardVisible(title);
+        WebElement cover = waitForElementPresent(cardImageFor(title), "Bookmark card has no image: " + title, 10);
+        byte[] screenshot = cover.getScreenshotAs(OutputType.BYTES);
+        BufferedImage actual = ImageIO.read(new ByteArrayInputStream(screenshot));
+        Assert.assertNotNull("Unreadable bookmark cover: " + title, actual);
+        int width = expected.getWidth(), height = expected.getHeight();
+        boolean sameSize = actual.getWidth() == width && actual.getHeight() == height;
+        if (!sameSize || !Arrays.equals(expected.getRGB(0, 0, width, height, null, 0, width),
+                actual.getRGB(0, 0, width, height, null, 0, width))) {
+            Allure.addAttachment("Observed cover for " + title, "image/png", new ByteArrayInputStream(screenshot), "png");
+            Assert.fail("Bookmark cover differs from the approved reference: " + title);
+        }
     }
 
     public void assertGroupAndCategory(String group, String category) {
@@ -251,8 +369,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
         // In the observed native list, program/module/category headings and
         // card buttons are siblings. The nearest matching heading owns a card.
         String module = "starts-with(@name,'MODULE ')";
-        String heading = group.startsWith("MODULE ") ? module
-                : "not(" + module + ") and @name!='Lessons' and @name!='Practices'";
+        String heading = "@name!='Lessons' and @name!='Practices'";
+        if (!group.startsWith("MODULE ")) heading += " and not(" + module + ")";
         return cardFor(title) + "/preceding-sibling::XCUIElementTypeStaticText[" + heading + "][1]"
                 + "[@visible='true' and @name=" + xpathLiteral(group) + "]";
     }
@@ -320,42 +438,118 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void assertTooltipVisible(String text) {
-        waitForElementPresent(exactText(text), "Bookmarks tooltip is absent", 10);
+        waitForElementPresent(tooltipFor(text), "Bookmarks tooltip is absent", 10);
+    }
+
+    public void assertFirstEntryTooltip(String text, List<String> expectedTitles) {
+        openFromTodayAndInspectTooltip(text, expectedTitles);
+    }
+
+    @Step("Open My Bookmarks and inspect the first card while the tooltip is showing")
+    public String openFromTodayAndInspectTooltip(String text, List<String> expectedTitles) {
+        tapEntryFromToday();
+        Rectangle tooltip = waitForElementPresent(tooltipFor(text), "Bookmarks tooltip is absent", 10).getRect();
+        return assertTooltipPlacement(tooltip, expectedTitles);
+    }
+
+    protected String assertTooltipPlacement(Rectangle tooltip, List<String> expectedTitles) {
+        List<String> visibleTitles = visibleCardTitles(expectedTitles);
+        Assert.assertEquals("The expected cards must be visible without moving the tooltip",
+                new LinkedHashSet<>(expectedTitles), new LinkedHashSet<>(visibleTitles));
+        Assert.assertEquals("Duplicate or missing card in the tooltip fixture", expectedTitles.size(), visibleTitles.size());
+        Map<String, Rectangle> rows = new HashMap<>();
+        Map<String, Rectangle> icons = new HashMap<>();
+        for (String title : visibleTitles) {
+            rows.put(title, waitForElementPresent(cardFor(title), "Cannot inspect card under the tooltip: " + title, 5).getRect());
+            icons.put(title, waitForElementPresent(cardBookmarkFor(title), "Cannot locate the saved bookmark icon: " + title, 5).getRect());
+        }
+        return assertTooltipPlacement(tooltip, rows, icons);
+    }
+
+    protected String assertTooltipPlacement(Rectangle tooltip, Map<String, Rectangle> rows, Map<String, Rectangle> icons) {
+        String first = rows.keySet().stream().min(Comparator.comparingInt(title -> rows.get(title).y)).get();
+        Rectangle firstIcon = icons.get(first);
+        int gap = tooltipGapToIcon(tooltip, firstIcon);
+        Assert.assertTrue("Tooltip is not adjacent to the first card's bookmark icon: " + first,
+                gap <= rows.get(first).getHeight());
+        for (String title : rows.keySet()) {
+            if (!title.equals(first)) {
+                Assert.assertTrue("Tooltip is closer to another card's bookmark icon: " + title,
+                        gap < tooltipGapToIcon(tooltip, icons.get(title)));
+            }
+        }
+        Allure.addAttachment("First visible bookmark under tooltip", first + "\nTooltip " + tooltip + "\nBookmark icon " + firstIcon);
+        return first;
+    }
+
+    private static int tooltipGapToIcon(Rectangle tooltip, Rectangle icon) {
+        int x = icon.x + icon.getWidth() / 2, y = icon.y + icon.getHeight() / 2;
+        int horizontal = Math.max(tooltip.x - x, x - (tooltip.x + tooltip.getWidth()));
+        int vertical = Math.max(tooltip.y - y, y - (tooltip.y + tooltip.getHeight()));
+        if ((horizontal <= 0) == (vertical <= 0)) return Integer.MAX_VALUE;
+        return Math.max(horizontal, vertical);
     }
 
     public void assertTooltipAbsent(String text) {
-        Assert.assertFalse("Bookmarks tooltip must not be displayed", isElementPresent(exactText(text)));
+        Assert.assertFalse("Bookmarks tooltip must not be displayed", isElementPresent(tooltipFor(text)));
     }
 
     @Step("Dismiss the observed Bookmarks tooltip during fixture preparation")
     public void dismissTooltipIfVisible(String text) {
-        if (isElementVisible(exactText(text))) dismissTooltipByBlankArea(text);
+        if (isElementVisible(tooltipFor(text))) dismissTooltipByBlankArea(text);
+    }
+
+    @Step("Open prepared My Bookmarks with the tooltip dismissed")
+    public void openFromTodayWithTooltipDismissed(String title, String tooltip) {
+        if (!isScreenVisible()) tapEntryFromToday();
+        waitForFirstElementPresent(new String[]{tooltipFor(tooltip), cardBookmarkFor(title)},
+                "Neither the Bookmarks tooltip nor the prepared bookmark appeared", 15);
+        dismissTooltipIfVisible(tooltip);
+        assertScreenVisible();
     }
 
     public void dismissTooltipByBlankArea(String text) {
         Dimension size = driver.manage().window().getSize();
         tapBlankArea(size.width / 2, Math.max(80, size.height / 4));
-        waitForElementNotVisible(exactText(text), "Tooltip stayed visible after blank-area tap", 10);
+        waitForElementNotVisible(tooltipFor(text), "Tooltip stayed visible after blank-area tap", 10);
+    }
+
+    public void dismissTooltipBesideCard(String title, String text) {
+        Rectangle card = waitForElementPresent(cardFor(title), "Bookmark card is unavailable for the blank-area tap", 5).getRect();
+        Rectangle tooltip = waitForElementPresent(tooltipFor(text), "Bookmarks tooltip is absent", 5).getRect();
+        Dimension screen = driver.manage().window().getSize();
+        int y = card.y + card.getHeight() / 2;
+        Assert.assertTrue("The card center is outside the viewport", y > 0 && y < screen.height);
+        int right = card.x + card.getWidth();
+        for (Point candidate : Arrays.asList(new Point(card.x / 2, y), new Point((right + screen.width) / 2, y))) {
+            if (candidate.x <= 0 || candidate.x >= screen.width || (candidate.x >= card.x && candidate.x <= right)) continue;
+            if (candidate.x >= tooltip.x && candidate.x <= tooltip.x + tooltip.getWidth()
+                    && y >= tooltip.y && y <= tooltip.y + tooltip.getHeight()) continue;
+            tapBlankArea(candidate.x, candidate.y);
+            waitForElementNotVisible(tooltipFor(text), "Tooltip stayed visible after blank-area tap", 10);
+            return;
+        }
+        Assert.fail("Cannot identify a blank margin beside the bookmark card");
     }
 
     public void dismissTooltipByCard(String title, String text) {
         waitForElementAndClick(exactText(title), "Cannot tap bookmark card", 10);
-        waitForElementNotVisible(exactText(text), "Tooltip stayed visible after card tap", 10);
+        waitForElementNotVisible(tooltipFor(text), "Tooltip stayed visible after card tap", 10);
     }
 
     public void dismissTooltipByBookmark(String title, String text) {
-        ensureBookmarkCardVisible(title);
         waitForElementAndClick(cardBookmarkFor(title), "Cannot tap bookmark icon under tooltip", 10);
-        waitForElementNotVisible(exactText(text), "Tooltip stayed visible after bookmark tap", 10);
+        waitForElementNotVisible(tooltipFor(text), "Tooltip stayed visible after bookmark tap", 10);
         if (isElementVisible(CANCEL)) cancelRemoval();
     }
 
     public void dismissTooltipByNavigation(String text) {
         waitForElementAndClick(BOOKMARKS_BACK, "Cannot tap navigation under tooltip", 10);
-        waitForElementNotVisible(exactText(text), "Tooltip survived navigation tap", 10);
+        waitForElementNotVisible(tooltipFor(text), "Tooltip survived navigation tap", 10);
     }
 
     public void reopenAndAssertTooltipAbsent(String text) {
+        closeOpenedContentIfPresent();
         if (!isElementPresent(BOOKMARKS_TITLE)) openFromToday();
         else {
             backFromBookmarks();
@@ -370,7 +564,17 @@ public abstract class BookmarksPageObject extends MainPageObject {
     }
 
     public void swipeLeftToSlide(String expectedSlideText) {
+        moveToSlide("left", expectedSlideText, null);
+    }
+
+    public void swipeLeftAndAssertNotSaved(String expectedSlideText) {
         moveToSlide("left", expectedSlideText, false);
+        assertOpenedContentNotSaved();
+    }
+
+    public void swipeRightAndAssertNotSaved(String expectedSlideText) {
+        moveToSlide("right", expectedSlideText, false);
+        assertOpenedContentNotSaved();
     }
 
     public void swipeRightAndAssertSaved(String expectedSlideText) {
@@ -378,9 +582,48 @@ public abstract class BookmarksPageObject extends MainPageObject {
         assertOpenedContentSaved();
     }
 
+    @Step("Verify the bookmark state on every reader slide")
+    public void assertBookmarkOnEverySlide(List<String> markers, boolean saved) {
+        Assert.assertFalse("Configure the ordered markers for all reader slides", markers.isEmpty());
+        Assert.assertEquals("Each reader slide needs a distinct marker", markers.size(), new LinkedHashSet<>(markers).size());
+        moveToSlide("right", markers.get(0), saved);
+        assertSlideBookmarkState(saved);
+        for (int index = 1; index < markers.size(); index++) {
+            Assert.assertFalse("FINISH appeared before the final configured slide", isElementVisible(FINISH));
+            String previous = slideText(markers.get(index - 1));
+            String next = slideText(markers.get(index));
+            navigateOneSlide("left");
+            createWait(10).withMessage("Reader did not advance to configured slide " + (index + 1))
+                    .until(ignored -> isElementVisible(next) && !isElementVisible(previous));
+            assertSlideBookmarkState(saved);
+        }
+        waitForElementVisible(FINISH, "The final configured slide must display FINISH", 10);
+    }
+
+    private void assertSlideBookmarkState(boolean saved) {
+        if (saved) assertOpenedContentSaved();
+        else assertOpenedContentNotSaved();
+    }
+
+    public void assertOpenedContentTitle(String title) {
+        waitForElementPresent(CONTENT_CLOSE, "Bookmark did not open the content reader: " + title, 10);
+        assertContentTitleVisible(title);
+    }
+
     public void assertOpenedAtSlide(String title, String slideText) {
-        waitForElementPresent(exactText(title), "Wrong bookmarked content opened: " + title, 10);
+        assertContentTitleVisible(title);
         waitForElementPresent(slideText(slideText), "Content did not open at the saved slide: " + slideText, 10);
+    }
+
+    public void assertOpenedAtFirstOrSavedSlide(String title, String firstSlide, String savedSlide) {
+        assertContentTitleVisible(title);
+        WebElement slide = waitForFirstElementPresent(new String[]{slideText(savedSlide), slideText(firstSlide)},
+                "Content did not open at either accepted slide: " + firstSlide + " or " + savedSlide, 10);
+        Allure.addAttachment("Opened bookmarked slide: " + title, slide.getText());
+    }
+
+    private void assertContentTitleVisible(String title) {
+        waitForElementPresent(exactText(title), "Wrong bookmarked content opened: " + title, 10);
     }
 
     public void finishFromBookmarks() {
@@ -521,7 +764,8 @@ public abstract class BookmarksPageObject extends MainPageObject {
     protected String cardImageFor(String title) { return cardFor(title) + "//XCUIElementTypeImage"; }
 
     protected String cardBookmarkFor(String title) {
-        return cardFor(title) + "//*[@visible='true' and contains(translate(@name,'BOOKMARK','bookmark'),'bookmark')]";
+        return cardFor(title) + "//*[@visible='true' and @name!='empty bookmark'"
+                + " and contains(translate(@name,'BOOKMARK','bookmark'),'bookmark')]";
     }
 
     protected String completedMarkerFor(String title) {
@@ -535,22 +779,26 @@ public abstract class BookmarksPageObject extends MainPageObject {
         ((JavascriptExecutor) driver).executeScript("mobile: swipe", arguments);
     }
 
-    private void moveToSlide(String direction, String expectedText, boolean verifySaved) {
+    private void moveToSlide(String direction, String expectedText, Boolean expectedSaved) {
         String expected = slideText(expectedText);
         for (int page = 0; page < 30; page++) {
             if (isElementVisible(expected)) return;
             String before = driver.getPageSource();
-            String navigation = "left".equals(direction) ? CONTENT_NEXT : CONTENT_PREVIOUS;
-            if (navigation != null && isElementVisible(navigation)) {
-                waitForElementAndClick(navigation, "Cannot navigate to the expected content slide", 10);
-            } else {
-                swipe(direction);
-            }
+            navigateOneSlide(direction);
             createWait(10).withMessage("Content slide did not change after navigation")
                     .until(ignored -> !before.equals(driver.getPageSource()));
-            if (verifySaved) assertOpenedContentSaved();
+            if (expectedSaved != null) assertSlideBookmarkState(expectedSaved);
         }
         Assert.fail("Expected content slide was not reachable: " + expectedText);
+    }
+
+    private void navigateOneSlide(String direction) {
+        String navigation = "left".equals(direction) ? CONTENT_NEXT : CONTENT_PREVIOUS;
+        if (navigation != null && isElementVisible(navigation)) {
+            waitForElementAndClick(navigation, "Cannot navigate to the expected content slide", 10);
+        } else {
+            swipe(direction);
+        }
     }
 
     protected String slideText(String text) {
@@ -560,6 +808,10 @@ public abstract class BookmarksPageObject extends MainPageObject {
 
     protected String exactText(String text) {
         return "xpath://XCUIElementTypeStaticText[@name=" + xpathLiteral(text) + " and @visible='true']";
+    }
+
+    protected String tooltipFor(String text) {
+        return exactText(text);
     }
 
     protected String cardFor(String title) {

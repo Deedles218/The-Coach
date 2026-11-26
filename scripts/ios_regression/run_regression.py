@@ -38,6 +38,8 @@ for app in CONFIG['apps'].values():
     groups = [app.get('properties', {})] + list(app.get('suiteProperties', {}).values())
     for properties in groups:
         for name in properties:
+            if name == 'coach.bookmarks.installVariant':
+                parser.error('The selected BookmarksUpdate or BookmarksReinstall job sets the installation variant')
             if name.startswith(('ios.', 'allure.', 'appium.')) or name in ('test', 'platform'):
                 parser.error('Use top-level run settings for capability/output parameter: ' + name)
             if name.lower().endswith(('.email', '.otp', '.token', '.password')):
@@ -160,7 +162,7 @@ def run_job(variant, label, test, extra=(), old=False, fresh=False, role='premiu
         practice_fixture = CONFIG['apps'][variant].get('dailyPlanFixture', {})
         cmd.extend('-Dcoach.dailyPlan.' + key + '=' + value for key, value in practice_fixture.items())
     if label != 'offline-unit':
-        cmd.extend(['-Dcoach.ios.preparePostAuthQuestionnaire=' + str(not direct_existing_account).lower(),
+        cmd.extend(['-Dcoach.ios.preparePostAuthQuestionnaire=' + str(not (direct_existing_account or bookmarks_job)).lower(),
                     '-Dcoach.ios.postAuthGoal=' + CONFIG['apps'][variant]['postAuthGoal']])
     for key, value in CONFIG['apps'][variant].get('properties', {}).items():
         cmd.append('-D' + key + '=' + str(value))
@@ -260,15 +262,25 @@ for name in COMMON:
                                  (ROOT / 'src/test/java/tests/BookmarksTests.java').read_text())
             separate = {
                 'tooltipWaitsForFirstNonEmptyEntry': ('BookmarksTooltipFirstEntry', False, True),
+                'firstNonEmptyEntryShowsTooltip': ('BookmarksTooltipNonEmptyFirstEntry', False, True),
                 'anyTapDismissesTooltipAndItDoesNotReturn': ('BookmarksTooltipDismissal', False, True),
+                'tappingCardDismissesTooltipAndItDoesNotReturn': ('BookmarksTooltipDismissalCard', False, True),
+                'tappingBookmarkDismissesTooltipAndItDoesNotReturn': ('BookmarksTooltipDismissalBookmark', False, True),
+                'tappingNavigationDismissesTooltipAndItDoesNotReturn': ('BookmarksTooltipDismissalNavigation', False, True),
                 'bookmarksAndTooltipStateAcrossUpdateAndReinstall': ('BookmarksUpdate', True, False),
             }
             assert set(separate) <= set(methods) and len(methods) == len(set(methods))
             JOBS.append((variant, name, 'tests.' + name + '#' + '+'.join(m for m in methods if m not in separate),
                          (), False, False))
             for method, (label, old, fresh) in separate.items():
-                parameters = ['-Dios.update.app=' + APPS[variant][0]] if old else []
-                JOBS.append((variant, label, 'tests.' + name + '#' + method, parameters, old, fresh))
+                selector = 'tests.' + name + '#' + method
+                if label == 'BookmarksUpdate':
+                    artifact = '-Dios.update.app=' + APPS[variant][0]
+                    JOBS.append((variant, label, selector, [artifact, '-Dcoach.bookmarks.installVariant=update'], old, fresh))
+                    JOBS.append((variant, 'BookmarksReinstall', selector,
+                                 [artifact, '-Dcoach.bookmarks.installVariant=reinstall'], False, False))
+                else:
+                    JOBS.append((variant, label, selector, (), old, fresh))
             continue
         if name == 'SmokeTests':
             methods = re.findall(r'\bpublic\s+void\s+(test\w+)\s*\(',

@@ -46,6 +46,8 @@ public class AndroidBookmarksLocatorUnitTests {
         String completed(String text) { return completedMarkerFor(text); }
         String exploreEntry() { return exploreBookmarksEntry(); }
         String previous() { return previousDayControl(); }
+        String nextSlide() { return CONTENT_NEXT; }
+        String finish() { return FINISH; }
     }
 
     private static String label(String id, String text) {
@@ -106,6 +108,15 @@ public class AndroidBookmarksLocatorUnitTests {
         Assert.assertEquals(1, count(xml, new Screen().slide("Saved slide")));
     }
 
+    @Test public void slideNavigationCannotTapTheFinishActionWithTheSameResourceId() throws Exception {
+        Screen screen = new Screen();
+        String finishing = "<root>" + label("bContinueLesson", "Finish") + "</root>";
+        Assert.assertEquals(0, count(finishing, screen.nextSlide()));
+        Assert.assertEquals(1, count(finishing, screen.finish()));
+        String continuing = "<root>" + label("bContinueLesson", "CONTINUE") + "</root>";
+        Assert.assertEquals(1, count(continuing, screen.nextSlide()));
+    }
+
     @Test public void hiddenSlidesAndBothQuoteTypesAreHandled() throws Exception {
         String xml = "<root><androidx.recyclerview.widget.RecyclerView resource-id='" + P + "rvLessonDetail'>"
                 + "<android.widget.TextView text='Your &quot;partner&quot;&apos;s desire'/>"
@@ -152,8 +163,18 @@ public class AndroidBookmarksLocatorUnitTests {
     }
 
     @Test public void androidInheritsAll21CasesAndOnlyOverridesItsTwoDifferentContracts() throws Exception {
-        Assert.assertEquals(21, new BlockJUnit4ClassRunner(BookmarksTests.class).getDescription().getChildren().size());
-        Assert.assertEquals(21, new BlockJUnit4ClassRunner(AndroidBookmarksTests.class).getDescription().getChildren().size());
+        for (Class<?> type : Arrays.asList(BookmarksTests.class, AndroidBookmarksTests.class)) {
+            Set<String> cases = new HashSet<>();
+            for (java.lang.reflect.Method method : type.getMethods()) {
+                if (method.getAnnotation(Test.class) == null) continue;
+                io.qameta.allure.Issue issue = method.getAnnotation(io.qameta.allure.Issue.class);
+                Assert.assertNotNull("Every Bookmarks scenario must keep its Xray key", issue);
+                cases.add(issue.value());
+            }
+            Assert.assertEquals("Variants must retain all 21 Xray cases", 21, cases.size());
+        }
+        Assert.assertEquals(30, new BlockJUnit4ClassRunner(BookmarksTests.class).getDescription().getChildren().size());
+        Assert.assertEquals(30, new BlockJUnit4ClassRunner(AndroidBookmarksTests.class).getDescription().getChildren().size());
         Assert.assertEquals(AndroidBookmarksTests.class,
                 AndroidBookmarksTests.class.getMethod("availableLessonCanBeBookmarkedWithoutSubscription").getDeclaringClass());
         Assert.assertEquals(BookmarksTests.class,

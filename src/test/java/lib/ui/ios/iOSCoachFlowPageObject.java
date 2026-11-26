@@ -3,7 +3,6 @@ package lib.ui.ios;
 import lib.ui.CoachFlowPageObject;
 import lib.ui.KegelCasePageObject;
 import lib.Platform;
-import lib.PostAuthQuestionnaireException;
 import java.io.IOException;
 import io.qameta.allure.Step;
 import org.junit.Assert;
@@ -28,6 +27,20 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     private static final String EXPLORE_WELCOME_FALLBACK =
             "xpath://XCUIElementTypeStaticText[starts-with(@name, 'Welcome to Explore')]";
     private static final String PROGRAM_DISCOVERY_HINT = "id:Tap to explore more programs";
+    private static final String LOGIN_PROGRAM_INTRO = "xpath://XCUIElementTypeStaticText[@visible='true'"
+            + " and starts-with(@name,'Introducing your main program:')]";
+    private static final String LOGIN_PROGRAM_INTRO_CONFIRM = LOGIN_PROGRAM_INTRO
+            + "/ancestor::XCUIElementTypeOther[.//XCUIElementTypeButton[@name='GOT IT' and @visible='true']][1]"
+            + "//XCUIElementTypeButton[@name='GOT IT' and @visible='true']";
+    private static final String LOGIN_DAILY_PLAN_INTRO =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and @name=\"Here's how your Daily Plan works\"]";
+    private static final String LOGIN_SHOP_INTRO =
+            "xpath://XCUIElementTypeStaticText[@visible='true' and @name='Enhance your results with products from the Shop']";
+    private static final String LOGIN_SUBSCRIPTION_OFFER = "xpath://XCUIElementTypeStaticText[@visible='true'"
+            + " and starts-with(@name, \"YOU'RE IN THE RIGHT PLACE\")]";
+    private static final String LOGIN_SPECIAL_OFFER = "xpath://XCUIElementTypeStaticText[@visible='true'"
+            + " and contains(@name,'WITH A SPECIAL OFFER')]";
+    private static final int LAST_LOGIN_WALKTHROUGH_PAGE = 5;
     private static final String LESSON_FEEDBACK_TITLE = "id:How would you rate the lesson?";
     public static final String PARTNER_PROMO_TITLE =
             "xpath://XCUIElementTypeStaticText[@name='Get an access for your partner'"
@@ -38,7 +51,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             "xpath://XCUIElementTypeStaticText[@visible='true' and contains(@name,'Cannot create anonymous user')"
                     + " and contains(@name,'Network error')]";
     static final String CONTENT_PROMO_TITLE = "xpath://XCUIElementTypeStaticText[@visible='true' and (@name='Master the Art of Sensual Touch'"
-            + " or @name='Your Personal Guide Along the Way')]";
+            + " or @name='Your Personal Guide Along the Way' or @name='Early Black Friday Deal')]";
     public static final String WELCOME_START_BUTTON =
             "xpath://XCUIElementTypeButton[@name='START NOW' or @name='Get Started']";
     public static final String WELCOME_LOGIN_BUTTON =
@@ -149,7 +162,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         PDF_GUIDE_UPSELL_CLOSE_BUTTON = "xpath://XCUIElementTypeButton[@name='PDFGuideUpsellCloseImage' or @name='PDFGuideUpsellCloseImageFemale']";
 
         ONBOARDING_GOALS_TITLE = "xpath://XCUIElementTypeStaticText[@name='What do you want to achieve?' "
-                + "or @name='WHAT DO YOU WANT TO ACHIEVE?']";
+                + "or @name='WHAT DO YOU WANT TO ACHIEVE?' or @name='WHAT ELSE DO YOU WANT TO ACHIEVE?']";
         ONBOARDING_BACK_BUTTON = "id:ic outline chevron left";
 
         AUTHORIZED_DASHBOARD_MARKER = "xpath://XCUIElementTypeButton[(@name='UserProfileImage' or @name='WomanProfileImage') and @visible='true'] | //XCUIElementTypeButton[@name='Today' and @visible='true']";
@@ -292,6 +305,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         // first optional-popup check. Wait for an actionable entry surface.
         createWait(30).withMessage("No actionable screen after launching Coach").until(ignored -> {
             closeLessonFeedbackIfPresent();
+            closeLoginWalkthroughIfPresent();
             Assert.assertFalse("iOS startup is blocked by an anonymous-account network error; check network access",
                     isElementVisible(ANONYMOUS_ACCOUNT_NETWORK_ERROR));
             return isElementVisible(START_SCREEN_TITLE) || isElementVisible(TEST_ID_START_SCREEN)
@@ -413,25 +427,22 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                     closePostAuthPopupsIfPresent();
                     return isAuthorizedDashboardVisible() || isElementVisible(ONBOARDING_GOALS_TITLE);
                 });
-        if (isElementVisible(ONBOARDING_GOALS_TITLE) && !prepareQuestionnaire) {
-            throw new PostAuthQuestionnaireException("Existing-progress fixture requires goal selection after OTP. "
-                    + "Prepare the account and verify re-login restores Today before running regression; "
-                    + "the questionnaire was not completed automatically by the test.");
-        }
-        if (!prepareQuestionnaire) {
-            return;
-        }
-
-        if (isElementVisible(ONBOARDING_GOALS_TITLE)) {
+        boolean loginGoals = isElementVisible(ONBOARDING_GOALS_TITLE);
+        if (loginGoals) {
             String goal = System.getProperty("coach.ios.postAuthGoal");
-            Assert.assertTrue("Configure the approved new-account goal with -Dcoach.ios.postAuthGoal",
-                    goal != null && !goal.trim().isEmpty());
-            iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
-            onboarding.selectGoal(goal);
-            onboarding.completeQuestionnaire();
-            onboarding.closePaywallsAndPopups();
-            onboarding.waitForToday();
+            if (prepareQuestionnaire) {
+                Assert.assertTrue("Configure the approved new-account goal with -Dcoach.ios.postAuthGoal",
+                        goal != null && !goal.trim().isEmpty());
+                iOSOnboardingPageObject onboarding = new iOSOnboardingPageObject(driver);
+                onboarding.selectGoal(goal);
+                onboarding.completeQuestionnaire();
+                onboarding.closePaywallsAndPopups();
+                onboarding.waitForToday();
+            } else {
+                completePostLoginGoals(goal);
+            }
         }
+        if (!loginGoals && !prepareQuestionnaire) return;
         // The in-app permission screen can arrive after Today first renders.
         closePdfGuideUpsellIfPresent();
         closeNotificationPromptIfPresent();
@@ -440,6 +451,10 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
             closePostAuthPopupsIfPresent();
             return isAuthorizedDashboardVisible();
         });
+    }
+
+    protected void completePostLoginGoals(String goal) {
+        new iOSOnboardingPageObject(driver).completePostLoginGoalQuestions(goal);
     }
 
     private void revealProfileItem(String preferred, String fallback) {
@@ -497,11 +512,75 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
                 && isElementVisible("id:DailyPlanItem");
     }
 
+    @Step("Open Profile from the existing iOS session")
+    public void openProfileInExistingSession() {
+        createWait(30).withMessage("The existing session did not open Today after the iOS update")
+                .until(ignored -> {
+                    closeStartupPromptsIfPresent();
+                    return isAuthorizedDashboardVisible();
+                });
+        openProfile();
+    }
+
     private void closePostAuthPopupsIfPresent() {
+        closeLoginWalkthroughIfPresent();
+        if (preparingExistingProgressAccount) closeExistingAccountOffersIfPresent();
         closeContentPromoIfPresent();
         closePartnerPromoIfPresent();
+        closeStartupPromptsIfPresent();
+    }
+
+    private void closeStartupPromptsIfPresent() {
         if (isElementVisible(NOTIFICATION_PROMPT_TITLE)) closeNotificationPromptIfPresent();
         if (isElementVisible(PDF_GUIDE_UPSELL_TITLE)) closePdfGuideUpsellIfPresent();
+    }
+
+    private void closeExistingAccountOffersIfPresent() {
+        if (isElementVisible(LOGIN_SUBSCRIPTION_OFFER) && isElementVisible("id:RESTORE")) {
+            waitForElementAndClick("id:ic_outline_close", "Cannot close the observed login subscription offer", 10);
+            waitForElementNotVisible(LOGIN_SUBSCRIPTION_OFFER, "Login subscription offer stayed open", 10);
+        }
+        if (isElementVisible(LOGIN_SPECIAL_OFFER)) {
+            waitForElementAndClick("id:SpecialOfferClose", "Cannot close the observed follow-up login offer", 10);
+            waitForElementNotVisible(LOGIN_SPECIAL_OFFER, "Follow-up login offer stayed open", 10);
+        }
+    }
+
+    private void closeLoginWalkthroughIfPresent() {
+        if (isElementVisible(LOGIN_PROGRAM_INTRO)) {
+            waitForElementAndClick(LOGIN_PROGRAM_INTRO_CONFIRM,
+                    "Cannot close the observed main-program introduction after login", 10);
+            waitForElementNotVisible(LOGIN_PROGRAM_INTRO, "Main-program introduction remained open", 10);
+        }
+
+        // In the current production build, this specific second page identifies
+        // the informational carousel. Require each subsequent page in order.
+        boolean startedFromDailyPlanIntro = isElementVisible(LOGIN_DAILY_PLAN_INTRO)
+                && isElementVisible(loginWalkthroughPage(2));
+        if (startedFromDailyPlanIntro) {
+            for (int page = 2; page < LAST_LOGIN_WALKTHROUGH_PAGE; page++) {
+                clickLoginWalkthroughPage(page, "'GOT IT'");
+                waitForElementVisible(loginWalkthroughPage(page + 1),
+                        "Login walkthrough did not advance to page " + (page + 1), 10);
+            }
+        }
+        String lastPage = loginWalkthroughPage(LAST_LOGIN_WALKTHROUGH_PAGE);
+        if (startedFromDailyPlanIntro || (isElementVisible(LOGIN_SHOP_INTRO) && isElementVisible(lastPage))) {
+            waitForElementVisible(LOGIN_SHOP_INTRO, "Unexpected final login walkthrough page", 10);
+            clickLoginWalkthroughPage(LAST_LOGIN_WALKTHROUGH_PAGE, "\"LET'S START\"");
+            waitForElementNotVisible(lastPage, "Login walkthrough remained open", 10);
+        }
+    }
+
+    private static String loginWalkthroughPage(int number) {
+        return "xpath://XCUIElementTypePageIndicator[@visible='true' and @value='page "
+                + number + " of " + LAST_LOGIN_WALKTHROUGH_PAGE + "']";
+    }
+
+    private void clickLoginWalkthroughPage(int page, String buttonName) {
+        String button = "XCUIElementTypeButton[@name=" + buttonName + " and @visible='true']";
+        String action = loginWalkthroughPage(page) + "/ancestor::XCUIElementTypeOther[.//" + button + "][1]//" + button;
+        waitForElementAndClick(action, "Cannot advance the login walkthrough from page " + page, 10);
     }
 
     private KegelCasePageObject quizProfileFlow() {
@@ -513,6 +592,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
     }
 
     private void closeProgramScreensIfPresent() {
+        closeLoginWalkthroughIfPresent();
         closeLessonFeedbackIfPresent();
         closeProfileBrowserIfPresent();
         closeExploreWelcomeIfPresent();
@@ -637,6 +717,7 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
         createWait(10).withMessage("Profile button did not become available after Explore welcome")
                 .until(webDriver -> {
                     closeExploreWelcomeIfPresent();
+                    closeStartupPromptsIfPresent();
                     return isElementVisible(PROFILE_BUTTON)
                             || isElementVisible(PROFILE_BUTTON_FEMALE)
                             || isElementVisible(PROFILE_BUTTON_LEGACY);
@@ -658,7 +739,9 @@ public class iOSCoachFlowPageObject extends CoachFlowPageObject {
 
     boolean returnFromExternalAppIfVisible() {
         if (!isElementVisible("id:Mail.conversationView.Toolbar.ArchiveButton")
-                && !isElementVisible("id:What’s New in Calendar")) return false;
+                && !isElementVisible("id:Mail.conversationView.Toolbar.RevealActionButton")
+                && !isElementVisible("id:What’s New in Calendar")
+                && !isElementVisible("id:Что нового в Календаре")) return false;
         activateAppIfPossible();
         return true;
     }
