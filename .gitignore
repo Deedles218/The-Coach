@@ -28,5 +28,13 @@ __pycache__/
 /target/test-model-fixtures/
 /target/test-model-evidence/
 
+# macOS Finder metadata at any depth
+.DS_Store
+
 # Local build, simulator recordings and test reports
 /target/
+/allure-results/
+/allure-report/
+
+# Local validation output for QA fixture sets
+/qa-fixtures/**/validation-result.txt
