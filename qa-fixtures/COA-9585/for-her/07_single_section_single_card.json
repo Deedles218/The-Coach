@@ -1,0 +1,28 @@
+{
+  "programsTitle": "",
+  "toolsSubtitle": "For you",
+  "metricsId": "explore_for_her",
+  "tools": [],
+  "exerciseSections": [
+    {
+      "title": "QA One Section",
+      "order": 1,
+      "layout": "coaching_session_card",
+      "exercises": [
+        {
+          "title": "QA One Coaching Lesson",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          },
+          "subtitle": "QA: content from the working female config",
+          "buttonTitle": "Open"
+        }
+      ]
+    }
+  ]
+}

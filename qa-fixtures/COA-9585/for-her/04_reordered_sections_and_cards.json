@@ -1,0 +1,360 @@
+{
+  "programsTitle": "",
+  "toolsSubtitle": "For you",
+  "metricsId": "explore_for_her",
+  "tools": [],
+  "exerciseSections": [
+    {
+      "title": "QA Video Card",
+      "order": 1,
+      "layout": "video_card",
+      "exercises": [
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239442/card-14_vbb3n9.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          }
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239427/card-5_ytpgn7.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Coaching Session",
+      "order": 2,
+      "layout": "coaching_session_card",
+      "exercises": [
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          },
+          "subtitle": "QA: content from the working female config",
+          "buttonTitle": "Open"
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          },
+          "subtitle": "QA: content from the working female config",
+          "buttonTitle": "Open"
+        }
+      ]
+    },
+    {
+      "title": "QA Challenge",
+      "order": 3,
+      "layout": "challenge_card",
+      "exercises": [
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789477842/Frame_48095867_srwbg3.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          },
+          "description": "Create a shared menu of activities you’re excited to try, open to exploring, or not into."
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789477842/Frame_48095867_srwbg3.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          },
+          "description": "Explore this lesson and reconnect with your body."
+        }
+      ]
+    },
+    {
+      "title": "QA Square Ordinary",
+      "order": 4,
+      "layout": "square_ordinary_card",
+      "exercises": [
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239442/card-14_vbb3n9.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          }
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239427/card-5_ytpgn7.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Square",
+      "order": 5,
+      "layout": "square",
+      "exercises": [
+        {
+          "title": "Passionate Tango",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239465/card-25_aq40yx.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_passionate_tango_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246024/Passionate_Tango_wwpizj.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_passionate_tango_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_passionate_tango_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Passionate Tango",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Woman Voice, Her+Him.\n\nShe books a private tango lesson because she needs a distraction, something that makes her feel alive again. She gets ready slowly, carefully chosen lingerie under her dress just for herself, like a small secret. But the moment he takes her hands to dance, her body starts listening in a way her mind didn’t expect. Every step becomes a tease, every pause becomes a test, and his lead feels too steady to fight. She keeps following until the kiss stops feeling like a lesson and starts feeling like the moment she is truly alive again.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219012/art-4_ycjbpr.png"
+          }
+        },
+        {
+          "title": "Behind the Door",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239462/card-24_po7pgj.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_behind_closed_door_story",
+              "content_id": "explore4",
+              "content_type": "video",
+              "video_url": "https://res.cloudinary.com/hmmgzmwsv/video/upload/v1771246031/Behind_Closed_Door_ut4pd0.mp4",
+              "rating_page": {
+                "lesson_id": "lesson_behind_closed_door_story",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Can we make it even better for you?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Can we make it even better for you?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_behind_closed_door_story",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you like this sensual story?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "startScreen": {
+            "name": "Behind the Door",
+            "goal": "A sensual escape to help you slip into the mood, spark your imagination, and spend the evening purely for yourself.",
+            "description": "Women Voice, Her+Him.\n\nThis night, she wears her best dress to remind herself who she really is. Random bar, just one drink, then back home, she tells herself. But the glance she catches on her makes her forget everything. A labyrinth of words with this handsome stranger ends with him asking permission to go further, deeper. She’s been craving this for years, and at some point she can’t resist him anymore. She keeps saying yes until the door behind them shuts and there are no more questions left.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219013/art-3_l7dvzm.png"
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Vertical",
+      "order": 6,
+      "layout": "vertical",
+      "exercises": [
+        {
+          "title": "Yes / No / Maybe Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239442/card-14_vbb3n9.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "yes_no_maybe_practice_1",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Yes/No/Maybe Game",
+            "goal": "Create a shared menu of activities you’re excited to try, open to exploring, or not into.",
+            "description": "A simple, honest check-in tool. You each mark activities as yes, no, or maybe, then compare and pick overlaps. No pressure, just clarity and consent.\n\n🕑 Repeat monthly as desires evolve",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773219027/art-13_reks58.png"
+          }
+        },
+        {
+          "title": "Why Some Women Don’t Orgasm (Yet)",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1773239427/card-5_ytpgn7.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "none",
+              "lesson_id": "lesson_why_some_women_dont_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

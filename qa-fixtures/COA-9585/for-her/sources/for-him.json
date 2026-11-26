@@ -1,0 +1,298 @@
+{
+  "programsTitle": "Browse Programs",
+  "metricsId": "explore_for_him_new_masterclass",
+  "exerciseSections": [
+    {
+      "title": "Masterclasses",
+      "order": 1,
+      "layout": "challenge_card",
+      "exercises": [
+        {
+          "title": "The Art of Sensual Massage",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789477842/Frame_48095867_srwbg3.png",
+          "description": "The strokes, pressure, and pacing that turn a massage into the hottest part of the night.",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/sensualmassage"
+            }
+          },
+          "product": {
+            "is_native_paywall": true,
+            "purchased_url": "https://masterclass-iota-khaki.vercel.app",
+            "product_id": "male_masterclass_19.99",
+            "course_id": "male_masterclass_19.99"
+          },
+          "required_subscription": false
+        }
+      ]
+    },
+    {
+      "title": "Quick Tips",
+      "order": 2,
+      "layout": "square_ordinary_card",
+      "exercises": [
+        {
+          "title": "Finish Too Soon",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575429/Frame-3_lpyalq.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_finish_too_soon_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Losing Erection",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575431/Frame-4_vwebfr.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_losing_erection_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "She Doesn't Orgasm",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575431/Frame-2_ssdolu.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_she_doesnt_orgasm_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Pressure to Perform",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-1_sz19t0.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_pressure_to_perform_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Don't Know What She Likes",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-5_jn2z5b.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_dont_know_what_she_likes_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Before Sex Tonight",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575434/Frame-7_x8egpr.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_before_sex_tonight_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "After Sex Didn't Go Well",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575432/Frame-8_jzyo9z.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_after_sex_didnt_go_well_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Not Tonight",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575436/Frame_nuakvt.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_not_tonight_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "Not Turned On Yet",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575435/Frame-9_zajnjm.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_not_turned_on_yet_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        },
+        {
+          "title": "After Long Break",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575435/Frame-6_jztfaj.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "lesson_after_long_break_explore",
+              "feedback_id": "feedback_explore_article"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Private Coaching Sessions",
+      "order": 3,
+      "layout": "coaching_session_card",
+      "exercises": [
+        {
+          "title": "Relationships: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "subtitle": "Connell Barrett",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/connell-relationship"
+            }
+          }
+        },
+        {
+          "title": "Keep It Hard: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789051184/Frame_48095860_1_e0nhwt.png",
+          "subtitle": "Natalie Goldberg",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/part_of_keep_it_hard_private"
+            }
+          }
+        },
+        {
+          "title": "Last Longer: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575215/Frame_48095860-2_qrve5a.png",
+          "subtitle": "Katy Orah",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/lastlongerprivate"
+            }
+          }
+        },
+        {
+          "title": "Dating Skills: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover_hg6d1g.png",
+          "subtitle": "Connell Barrett",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/connell-dating"
+            }
+          }
+        },
+        {
+          "title": "Sex Is a Skill: 1:1 Session",
+          "required_subscription": false,
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1787575215/Frame_48095860-3_ajci0d.png",
+          "subtitle": "Katy Orah",
+          "buttonTitle": "Book",
+          "redirect": {
+            "web_view": {
+              "url": "https://vamapps.com/sexisaskillprivate"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Body Practices",
+      "order": 4,
+      "layout": "video_card",
+      "exercises": [
+        {
+          "title": "Custom Kegel",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467559/Custom_Kegel_cdmjzb.png",
+          "redirect": {
+            "kegel_workout": {
+              "workout_id": "workout_custom_morning_pe_100"
+            }
+          }
+        },
+        {
+          "title": "Arousal Practice",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467560/Arousal_Control_Exercise_g13fjk.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_arousal_exercise_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Basic Arousal Practice",
+            "goal": "Get comfortable with arousal so it stops running away from you.",
+            "description": "You let arousal build slowly, notice how it feels along the way, and stop before the point of no return. The more you practice, the better you know your own signals, and the more control you have.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464167/arousal_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Jacobson Relaxation",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467560/Jacobson_Relaxation_pp6ofh.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_jacobson_relaxation_technique_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Jacobson Relaxation Exercise",
+            "goal": "Let go of the tension your body holds without you noticing.",
+            "description": "You tense one muscle group at a time, then release it. Simple, but it teaches your body what being relaxed actually feels like, and makes it much easier to get there when you're nervous.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464160/relaxation_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Deep Breathing",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789467559/Breath_of_Light_cccksc.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "pe_deep_breathing_technique_explore_new",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Deep Breathing Practice",
+            "goal": "Calm your body down with your breath.",
+            "description": "Slow breathing from the belly tells your nervous system that everything is fine. Use it before sex, or any time you feel wound up.\n\n🎯 Part of Last Longer program",
+            "picture_url": "https://res.cloudinary.com/the-coach/image/upload/v1723464198/breathing_cover_pe.jpg"
+          }
+        },
+        {
+          "title": "Body Scan",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790615475/Body_Scanning_Meditation_lpjpvz.png",
+          "redirect": {
+            "coach_lesson": {
+              "program_id": "explore",
+              "lesson_id": "body_scanning_practice_pe_v4",
+              "feedback_id": "feedback_explore_practice"
+            }
+          },
+          "startScreen": {
+            "name": "Body Scan Practice",
+            "goal": "Get out of your head and back into your body.",
+            "description": "You move your attention slowly from head to toes and just notice what you feel. It quiets your mind and brings you back into the moment.",
+            "picture_url": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790615590/Body_Scanning_Meditation_avl2ih.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}

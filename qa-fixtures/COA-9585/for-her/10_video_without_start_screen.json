@@ -1,0 +1,509 @@
+{
+  "programsTitle": "",
+  "toolsSubtitle": "For you",
+  "metricsId": "explore_for_her",
+  "tools": [],
+  "exerciseSections": [
+    {
+      "title": "QA Direct Video - vertical",
+      "order": 1,
+      "layout": "vertical",
+      "exercises": [
+        {
+          "title": "QA vertical video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779280804/card-2_fxarg0.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Direct Video - square",
+      "order": 2,
+      "layout": "square",
+      "exercises": [
+        {
+          "title": "QA square video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779280804/card-2_fxarg0.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Direct Video - square_ordinary_card",
+      "order": 3,
+      "layout": "square_ordinary_card",
+      "exercises": [
+        {
+          "title": "QA square_ordinary_card video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779280804/card-2_fxarg0.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "QA Direct Video - challenge_card",
+      "order": 4,
+      "layout": "challenge_card",
+      "exercises": [
+        {
+          "title": "QA challenge_card video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1789477842/Frame_48095867_srwbg3.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Turn full-body self-massage into a relaxing ritual for tension release and body connection."
+        }
+      ]
+    },
+    {
+      "title": "QA Direct Video - coaching_session_card",
+      "order": 5,
+      "layout": "coaching_session_card",
+      "exercises": [
+        {
+          "title": "QA coaching_session_card video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1790305785/cover-2_f2lixv.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          },
+          "subtitle": "QA: content from the working female config",
+          "buttonTitle": "Open"
+        }
+      ]
+    },
+    {
+      "title": "QA Direct Video - video_card",
+      "order": 6,
+      "layout": "video_card",
+      "exercises": [
+        {
+          "title": "QA video_card video without startScreen",
+          "imageURL": "https://res.cloudinary.com/hmmgzmwsv/image/upload/v1779280804/card-2_fxarg0.png",
+          "redirect": {
+            "coach_video": {
+              "program_id": "sex_skill_app",
+              "lesson_id": "lesson_guided_self_massage_explore",
+              "content_id": "explore12",
+              "content_type": "video",
+              "video_url": "https://vz-ba0c8176-4ba.b-cdn.net/8ce1f3df-05d8-49cb-b64a-f85c9079872e/playlist.m3u8",
+              "rating_page": {
+                "lesson_id": "lesson_guided_self_massage_explore",
+                "text_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 1,
+                    "content_type": "header",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 3,
+                    "content_type": "header",
+                    "text": "Would you like to share your experience?",
+                    "Platform": "iOS,Android"
+                  }
+                ],
+                "image_content": [],
+                "freetext_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 4,
+                    "question": "Would you like to share your experience?",
+                    "Platform": "iOS,Android",
+                    "user_feedback": null
+                  },
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "email_feedback_2",
+                    "content_type": "free_text",
+                    "content_order": 6,
+                    "question": "default",
+                    "Platform": "iOS",
+                    "is_email": true,
+                    "user_feedback": null
+                  }
+                ],
+                "rating_content": [
+                  {
+                    "lesson_id": "lesson_guided_self_massage_explore",
+                    "page_id": "feedback_2",
+                    "page_order": 1,
+                    "content_id": "feedback_2",
+                    "content_order": 2,
+                    "content_type": "rating",
+                    "text": "Did you find this practice helpful?",
+                    "Platform": "iOS,Android"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
