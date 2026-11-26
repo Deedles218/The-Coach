@@ -327,7 +327,7 @@ public class iOSOnboardingPageObject extends OnboardingPageObject {
         return closePaywallsAndPopupsUntil(() -> false, true);
     }
 
-    private int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
+    int closePaywallsAndPopupsUntil(BooleanSupplier destinationVisible) {
         return closePaywallsAndPopupsUntil(destinationVisible, false);
     }
 

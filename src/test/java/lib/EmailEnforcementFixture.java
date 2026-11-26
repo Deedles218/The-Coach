@@ -104,6 +104,15 @@ public final class EmailEnforcementFixture {
         List<String> args = new ArrayList<>(Arrays.asList("python3",
                 ios ? "scripts/read_ios_email_enforcement.py" : "scripts/read_android_email_enforcement.py",
                 "--device", device, ios ? "--bundle" : "--package", appId(), "--mode", mode));
+        return readEvidence(args, mode, app);
+    }
+
+    public static Map<String, Object> iosEvidence(String device, String bundle, String mode, String app) throws Exception {
+        return readEvidence(new ArrayList<>(Arrays.asList("python3", "scripts/read_ios_email_enforcement.py",
+                "--device", device, "--bundle", bundle, "--mode", mode)), mode, app);
+    }
+
+    private static Map<String, Object> readEvidence(List<String> args, String mode, String app) throws Exception {
         if (app != null) args.addAll(Arrays.asList("--app", app));
         Map<String, Object> state = new Json().toType(run(args), Map.class);
         Allure.addAttachment("Email enforcement " + mode + " evidence", "application/json", new Json().toJson(state), "json");

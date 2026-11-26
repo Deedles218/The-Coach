@@ -11,7 +11,14 @@ import urllib.request
 from pathlib import Path
 from read_simulator_program_content import _oracle
 
-HOST = "https://content.the.coach"
+PRODUCTION_HOST = "https://content.the.coach"
+PREPROD_DEBUG_HOST = "https://coach-preprod-cf87bfd42b85.herokuapp.com"
+# Other platform readers import HOST as their production endpoint.
+HOST = PRODUCTION_HOST
+
+
+def api_host():
+    return PREPROD_DEBUG_HOST if os.environ.get("COACH_ANDROID_EVIDENCE_PACKAGE") else PRODUCTION_HOST
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -34,6 +41,8 @@ def adb(serial, *args):
 
 
 def session(serial, allow_anonymous=False):
+    if os.environ.get("COACH_ANDROID_EVIDENCE_PACKAGE"):
+        return debug_session(serial, allow_anonymous)
     base = "/data/data/com.vamapps.thecoach/shared_prefs/"
     files = adb(serial, "shell", "ls", base).decode().splitlines()
     names = [f for f in files if f.startswith("com.google.firebase.auth.api.Store.") and f.endswith(".xml")]
@@ -56,6 +65,31 @@ def session(serial, allow_anonymous=False):
     return uid, token
 
 
+def debug_session(serial, allow_anonymous=False):
+    # Explicit APK/package binding keeps USB evidence on the requested debug build.
+    # The legacy root-emulator reader above remains the default.
+    package = os.environ.get("COACH_ANDROID_EVIDENCE_PACKAGE")
+    expected_sha = os.environ.get("COACH_ANDROID_EVIDENCE_APK_SHA256", "")
+    if package not in ("com.vamapps.thecoach", "com.vamapps.thecoach.forher"):
+        raise EvidenceError("Unsupported debug evidence package")
+    if not re.fullmatch(r"[a-f0-9]{64}", expected_sha):
+        raise EvidenceError("Bind the reviewed debug APK SHA-256")
+    from read_android_email_enforcement import installed_build, session as debug_sdk_session
+    installed_build(serial, package)
+    paths = adb(serial, "shell", "pm", "path", package).decode().strip().splitlines()
+    if len(paths) != 1 or not paths[0].startswith("package:/data/app/"):
+        raise EvidenceError("Expected one installed debug APK")
+    actual_sha = adb(serial, "shell", "sha256sum", paths[0][8:]).decode().split()[0]
+    if actual_sha != expected_sha:
+        raise EvidenceError("Installed debug APK differs from the reviewed artifact")
+    uid, token = debug_sdk_session(serial, package, os.environ.get("COACH_EXPECTED_PROGRAM_UID"))
+    payload = token.split(".")[1]
+    claims = json.loads(base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)))
+    if not allow_anonymous and claims.get("firebase", {}).get("sign_in_provider") == "anonymous":
+        raise EvidenceError("Android session is missing or anonymous")
+    return uid, token
+
+
 def read_content(serial, program, day, boundary):
     # Catalog reads are evidence AFTER the UI has reached this day. Do not use
     # daily_program's selecting endpoint to prepare or drive the UI transition.
@@ -74,7 +108,7 @@ def read_content(serial, program, day, boundary):
                "Timezone": "Europe/Samara", "Cache-Control": "no-cache"}
     opener = urllib.request.build_opener(NoRedirect())
     def get(route):
-        with opener.open(urllib.request.Request(HOST + route, headers=headers), timeout=12) as response:
+        with opener.open(urllib.request.Request(api_host() + route, headers=headers), timeout=12) as response:
             return json.load(response)
     user = get("/api/v1/user/")["userdata"]
     expected_email = os.environ.get("COACH_COA9044_EMAIL", "").lower()

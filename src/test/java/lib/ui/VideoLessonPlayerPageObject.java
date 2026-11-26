@@ -99,10 +99,13 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
                 waitForElementNotVisible(ANDROID_FULLSCREEN_HINT, "The full-screen system hint remained open", 10);
             }
         }
-        showControls();
-        waitForElementVisible(android ? "id:" + ANDROID_ID + "exo_duration"
-                        : "xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']",
-                "Video lesson player did not open", 20);
+        if (!android) {
+            showControls();
+            waitForElementVisible("xpath://XCUIElementTypeNavigationBar[@name='The_Coach.SimplePlayerView']",
+                    "Video lesson player did not open", 20);
+        }
+        // Android clock reads reveal controls on each poll; a one-off reveal
+        // can expire while the following visibility wait is still running.
         createWait(20).withMessage("Video duration was not loaded").until(d -> durationSeconds() > 0);
     }
 
@@ -426,9 +429,12 @@ public final class VideoLessonPlayerPageObject extends MainPageObject {
 
     private Rectangle seekTrack() {
         if (android) {
-            showControls();
-            return waitForElementVisible("id:" + ANDROID_ID + "exo_progress",
-                    "Video seek bar is absent", 10).getRect();
+            return createWait(10).ignoring(StaleElementReferenceException.class)
+                    .withMessage("Video seek bar is absent").until(d -> {
+                        showControls();
+                        WebElement track = driver.findElement(By.id(ANDROID_ID + "exo_progress"));
+                        return track.isDisplayed() ? track.getRect() : null;
+                    });
         }
         return createWait(15).withMessage("Visible iOS seek track is not accessible").until(d -> {
             List<int[]> times = iosClockLabels();

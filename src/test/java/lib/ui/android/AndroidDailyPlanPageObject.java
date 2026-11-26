@@ -30,6 +30,8 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
             "xpath://*[@resource-id='" + ID_PREFIX + "rvQuestions']"
                     + "//*[@resource-id='" + ID_PREFIX + "tvGroupName'"
                     + " and ../*[@resource-id='" + ID_PREFIX + "tvPercentages']]";
+    protected static final String LOCKED_DAY_BALLOON =
+            "xpath://*[@resource-id='" + ID_PREFIX + "balloon_text' and @text='Complete current activities to unlock the next day']";
 
     private static final String DAILY_PRACTICE_SECTION_TITLE =
             "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvGroupName' and @text='DAILY PRACTICE']";
@@ -41,6 +43,10 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
             FIRST_PRACTICE_CARD + "//android.widget.TextView[@resource-id='" + ID_PREFIX + "tvLessonName']";
     private static final String FIRST_PRACTICE_TYPE_IN_SECTION =
             FIRST_PRACTICE_CARD + "//android.widget.TextView[@resource-id='" + ID_PREFIX + "tvTagText']";
+    protected static final String FIRST_LESSON_CARD_IN_SECTION =
+            "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvGroupName' and @text='DAILY LESSONS']"
+                    + "/parent::android.widget.LinearLayout/following-sibling::*[1][self::android.view.ViewGroup]"
+                    + "//androidx.cardview.widget.CardView[@resource-id='" + ID_PREFIX + "cvLessonContainer']";
 
     private static String aid(String name) { return "id:" + ID_PREFIX + name; }
     private static String at(String text) { return "xpath://*[@text='" + text + "']"; }
@@ -72,8 +78,28 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         findInToday(DAILY_LESSONS_TITLE);
         super.assertDailyLessonsAreDisplayed();
     }
+    @Override @Step("Open the first Android Daily Lesson")
+    public void openFirstDailyLesson() {
+        assertDailyLessonsAreDisplayed();
+        waitForElementAndClick(FIRST_LESSON_TITLE,"Cannot open first Daily Lesson",10);
+        waitForFirstElementPresent(new String[]{LESSON_SCREEN_TITLE,aid("viewPlayer")},
+                "Daily Lesson did not open its reader or video player",20);
+    }
+    @Override public void assertDailyLessonScreenIsDisplayed() {
+        if(isElementPresent(aid("viewPlayer"))) {
+            new lib.ui.VideoLessonPlayerPageObject(driver).waitUntilReady();
+            return;
+        }
+        super.assertDailyLessonScreenIsDisplayed();
+    }
     @Override public void returnFromDailyLessonToDailyPlan() {
+        if(isElementPresent(aid("viewPlayer"))) {
+            new lib.ui.VideoLessonPlayerPageObject(driver).closePlayer();
+            return;
+        }
         waitForElementAndClick(aid("ivButtonClose"), "Cannot close Android lesson", 10);
+        waitForFirstElementPresent(new String[]{aid("tvDialogtitle"),CURRENT_DAY_LABEL},
+                "Lesson did not reach exit confirmation or Today",10);
         if (isElementVisible(aid("tvDialogtitle"))) {
             waitForElementAndClick(aid("btnYes"), "Cannot quit unfinished lesson", 10);
         }
@@ -105,6 +131,11 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         waitForElementVisible(aid("rvQuestions"), "Today did not return", 15);
     }
     @Override public void assertRightArrowDoesNotChangeCurrentDayWhenLocked() {
+        if (!isElementPresent(aid("tvModuleName")) && getCurrentDayLabel().startsWith("Day ")) {
+            super.assertRightArrowDoesNotChangeCurrentDayWhenLocked();
+            if (getCurrentDayLabel().matches("Day 1 of \\d+")) assertLeftArrowKeepsCurrentDaySelected();
+            return;
+        }
         // Modules permit navigation inside a module; only the next module is locked.
         AndroidModulesPageObject modules = new AndroidModulesPageObject(driver);
         lib.ModuleStage original = modules.position();
@@ -116,6 +147,38 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         } finally { modules.restore(original); }
         if (original.stage == 1) assertLeftArrowKeepsCurrentDaySelected();
     }
+    @Override public boolean isLockedNextDayPopupDisplayed() {
+        return isElementVisible(LOCKED_DAY_BALLOON) || super.isLockedNextDayPopupDisplayed();
+    }
+    protected String nextDayStartConfirmation(String expectedDay) {
+        String label="START "+expectedDay.split(" of ",2)[0].toUpperCase(java.util.Locale.ROOT)+" RIGHT NOW";
+        return "xpath://*[@resource-id='"+ID_PREFIX+"btnYes' and @text="
+                +org.openqa.selenium.support.ui.Quotes.escape(label)+"]";
+    }
+    @Override public void openNextDayAndAssert(String expectedDay) {
+        Assert.assertNotNull("Expected target Daily Plan day must be configured",expectedDay);
+        String before=getCurrentDayLabel();
+        waitForFirstElementAndClick(new String[]{TEST_ID_DAILY_PLAN_RIGHT,RIGHT_SWITCHER_ARROW},
+                "Cannot tap Daily Plan right arrow",10);
+        String confirm=nextDayStartConfirmation(expectedDay);
+        createWait(15).withMessage("Daily Plan did not open "+expectedDay).until(d -> {
+            if(isElementVisible("xpath://*[@resource-id='"+ID_PREFIX+"tvTitle' and @text='Come tomorrow for new activities']")
+                    && isElementVisible(confirm)) {
+                waitForElementAndClick(confirm,"Cannot confirm the requested next day",10);
+                return false;
+            }
+            return isElementVisible(CURRENT_DAY_LABEL) && !before.equals(getCurrentDayLabel())
+                    && getCurrentDayLabel().contains(expectedDay);
+        });
+    }
+    @Override public void closeLockedNextDayPopup() {
+        if (isElementVisible(LOCKED_DAY_BALLOON)) {
+            driver.navigate().back();
+            waitForElementNotVisible(LOCKED_DAY_BALLOON, "Locked-day tooltip did not close", 10);
+            return;
+        }
+        super.closeLockedNextDayPopup();
+    }
     @Override public void mobileSwipeUp() { scrollList("rvQuestions", "down"); }
     @Override public void mobileSwipeDown() { scrollList("rvQuestions", "up"); }
 
@@ -126,13 +189,13 @@ public class AndroidDailyPlanPageObject extends DailyPlanPageObject {
         ACTIVE_PROGRAM_TITLE = "id:" + ID_PREFIX + "tvProgramName";
         CURRENT_DAY_LABEL = "id:" + ID_PREFIX + "tvDaysNumber";
         DAILY_PLAN_DAY_SWITCHER = CURRENT_DAY_LABEL;
-        LEFT_SWITCHER_ARROW = "id:" + ID_PREFIX + "ivBack";
-        RIGHT_SWITCHER_ARROW = "id:" + ID_PREFIX + "ivNext";
+        LEFT_SWITCHER_ARROW = "xpath://*[@resource-id='" + ID_PREFIX + "ivBack' or @resource-id='" + ID_PREFIX + "ivArrowLeft']";
+        RIGHT_SWITCHER_ARROW = "xpath://*[@resource-id='" + ID_PREFIX + "ivNext' or @resource-id='" + ID_PREFIX + "iv_arrow_right']";
 
-        // Lesson IDs observed on the Last Longer first-stage fixture.
+        // Both Day and Stage programs expose lesson cards under this section.
         DAILY_LESSONS_TITLE = at("DAILY LESSONS");
-        FIRST_LESSON_TITLE = "xpath:(//*[@resource-id='" + ID_PREFIX + "cvLessonContainer' and .//*[@resource-id='" + ID_PREFIX + "tvTagText' and starts-with(@text,'Lesson ')]])[1]//*[@resource-id='" + ID_PREFIX + "tvLessonName']";
-        FIRST_LESSON_TYPE = "xpath://android.widget.TextView[@resource-id='" + ID_PREFIX + "tvTagText' and starts-with(@text,'Lesson ')]";
+        FIRST_LESSON_TITLE = FIRST_LESSON_CARD_IN_SECTION + "//android.widget.TextView[@resource-id='" + ID_PREFIX + "tvLessonName']";
+        FIRST_LESSON_TYPE = FIRST_LESSON_CARD_IN_SECTION + "//android.widget.TextView[@resource-id='" + ID_PREFIX + "tvTagText']";
         LESSON_SCREEN_TITLE = aid("tvControlHeader");
         LESSON_SCREEN_CONTENT = aid("tvTextContent");
         LESSON_SCREEN_BACK_BUTTON = aid("ivButtonClose");

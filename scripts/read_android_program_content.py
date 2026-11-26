@@ -6,19 +6,25 @@ import os
 from pathlib import Path
 import time
 import urllib.request
-from read_android_module_content import session, HOST, NoRedirect
+from read_android_module_content import session, api_host, NoRedirect
 from read_simulator_program_content import _oracle
 
 
 def read(serial, program, boundary):
     if program not in ('last_longer', 'keep_it_hard'): raise RuntimeError('Unreviewed destination')
+    package=os.environ.get('COACH_ANDROID_EVIDENCE_PACKAGE')
+    if package and package!='com.vamapps.thecoach':raise RuntimeError('Destination evidence is scoped to the male app')
     uid, token=session(serial)
     if uid != os.environ.get('COACH_EXPECTED_ACCOUNT_UID'): raise RuntimeError('Wrong fixture UID')
-    headers={'Authorization':'FirebaseToken '+token,'AppVersion':'1.40.21','BuildVersion':'339',
+    version,build='1.40.21','339'
+    if package:
+        from read_android_email_enforcement import installed_build
+        artifact=installed_build(serial,package);version,build=artifact['version'],artifact['build']
+    headers={'Authorization':'FirebaseToken '+token,'AppVersion':version,'BuildVersion':build,
              'X-Gender':'male','Language':'en','Timezone':'Europe/Samara','Cache-Control':'no-cache'}
     opener=urllib.request.build_opener(NoRedirect())
     def get(route):
-        with opener.open(urllib.request.Request(HOST+route,headers=headers),timeout=12) as response:
+        with opener.open(urllib.request.Request(api_host()+route,headers=headers),timeout=12) as response:
             return json.load(response)
     user=get('/api/v1/user/')['userdata']
     if user.get('analytics_profile',{}).get('email','').lower()!=os.environ['COACH_EXISTING_PROGRESS_EMAIL'].lower():

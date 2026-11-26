@@ -476,6 +476,7 @@ public class CoreTestCase {
     private static boolean isOtpScreenSource(String source) {
         return source.contains("ENTER SECURITY CODE")
                 || source.contains("An email with a code has been sent to:")
+                || source.toLowerCase(java.util.Locale.ROOT).contains("código de seguridad")
                 || source.contains(":id/smsVerifyView");
     }
 

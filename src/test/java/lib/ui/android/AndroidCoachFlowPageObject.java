@@ -162,7 +162,7 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
         START_SCREEN_TITLE = "xpath://android.widget.TextView[@resource-id='" + APP_PACKAGE + ":id/tvTitle' and contains(@text,'FEEL THE NEW LEVEL')]";
         START_BUTTON = "id:" + APP_PACKAGE + ":id/btnSignInAnonymous";
         LOGIN_BUTTON = "id:" + APP_PACKAGE + ":id/btnLogin";
-        LOGIN_SCREEN_TITLE = "xpath://android.widget.TextView[@resource-id='" + APP_PACKAGE + ":id/tvTitleText' and contains(@text,'ENTER THE EMAIL')]";
+        LOGIN_SCREEN_TITLE = "xpath://android.widget.TextView[@resource-id='" + APP_PACKAGE + ":id/tvTitleText' and (contains(@text,'ENTER THE EMAIL') or @text='ENTER YOUR EMAIL TO SYNC YOUR PROGRESS AND SETTINGS')]";
         LOGIN_EMAIL_INPUT = "id:" + APP_PACKAGE + ":id/edtEmail";
         LOGIN_CONTINUE_BUTTON = "id:" + APP_PACKAGE + ":id/btnContinue";
         OTP_SCREEN_TITLE = "xpath://android.widget.TextView[@resource-id='" + APP_PACKAGE + ":id/tvTitleText' and @text='ENTER SECURITY CODE']";
@@ -697,12 +697,20 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
      * treated as an Explore detail close action.
      */
     private void closeAuthorizedTransientSurfaceIfPresent() {
+        waitForFirstElementPresent(new String[]{START_SCREEN_TITLE, LOGIN_SCREEN_TITLE, OTP_SCREEN_TITLE,
+                PROFILE_SCREEN, TAB_TODAY, TAB_EXPLORE, ANDROID_POST_AUTH_QUESTIONNAIRE_MARKER,
+                ANDROID_PERMISSION_DENY_BUTTON,
+                androidId("clPaywallContainer"), androidId("tvHeader"), androidId("tvGoalTitle"),
+                androidId("tvControlHeader"), androidId("viewPlayer"), androidId("tvProgramTitle"),
+                androidId("balloon_text"), CLOSE_LOGIN_BUTTON, "xpath://android.webkit.WebView"},
+                "Android did not expose a recognized surface after launch", 20);
         if (isElementVisible(ANDROID_PERMISSION_DENY_BUTTON)) {
             waitForElementAndClick(ANDROID_PERMISSION_DENY_BUTTON,
                     "Cannot dismiss the Android permission prompt during state recovery", 10);
             waitForElementNotVisible(ANDROID_PERMISSION_DENY_BUTTON,
                     "Android permission prompt did not close during state recovery", 10);
         }
+        if (isElementVisible(androidId("clPaywallContainer"))) closeStartupPaywalls();
         if (isElementVisible(androidId("ivClose")) && isElementVisible(androidId("tvHeader"))) {
             waitForElementAndClick(androidId("ivClose"), "Cannot dismiss Android promo", 10);
             waitForElementNotVisible(androidId("ivClose"), "Android promo did not close", 10);
@@ -749,6 +757,14 @@ public class AndroidCoachFlowPageObject extends CoachFlowPageObject {
                 // The surface may have disappeared during a re-render.
             }
         }
+    }
+
+    protected void closeStartupPaywalls() {
+        new AndroidOnboardingPageObject(driver).closePaywallsAndPopupsUntil(() ->
+                !isElementVisible(androidId("clPaywallContainer"))
+                        && (isElementVisible(TAB_TODAY) || isElementVisible(TAB_EXPLORE)
+                        || isElementVisible(PROFILE_SCREEN) || isElementVisible(START_SCREEN_TITLE)
+                        || isElementVisible(LOGIN_SCREEN_TITLE) || isElementVisible(OTP_SCREEN_TITLE)));
     }
 
     private boolean typeWithAppiumMobileCommand(String code) {

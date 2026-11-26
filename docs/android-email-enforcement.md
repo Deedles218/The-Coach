@@ -7,6 +7,80 @@ code or dependencies are changed.
 
 ## Scope
 
+Both mobile platforms run the same ten release scenarios from
+`EmailReleaseRegression` for Him and Her. Android uses
+`AndroidEmailReleaseRegressionSuite`. For iOS, see [iOS release execution](ios-email-enforcement.md#релизный-сьют-для-him-и-her).
+Run with the email collection feature enabled. The preprod debug suite is below.
+
+| Jira | Release regression |
+| --- | --- |
+| COA-9781 | I’ve Already Purchased → Please Start Here → questionnaire → close paywall. The mandatory form blocks Android Back and has no skip actions. |
+| COA-9782, COA-9764, COA-9765, COA-9766 | Update the anonymous installation from the previous release. Daily opens before the configured first request. Use X and Remind Me Later in separate scenarios. Check the E2 warning, return to Daily without another request, and mandatory E3 after restart. Android requires the warning on the form and also checks system Back. |
+| COA-9700, COA-9699 | Show the first request on the previous release and update in place. The next cold launch opens E2. Restart with E2 still open to verify E3. |
+| COA-9806 | Submit a known occupied address. Android Back or iOS Cancel returns to the mandatory form, then a different address opens OTP. |
+| COA-9807 | Him and Her in es-ES show the existing-account question and the Login action in Spanish. |
+| COA-9767 | Change Email restores an empty mandatory form and disables Continue for empty or invalid input. |
+| COA-9762 | Resend stays on OTP, restarts the countdown and delivers a second code email. |
+| COA-9768 | After entering the first digit with the numeric keyboard open, Support is below the OTP input. After valid OTP, the keyboard closes and Support is below the confirmation icon. |
+| COA-9761 | Open and leave Support, link and confirm a free email, verify Profile and Daily on cold launch, then sign into the same account from a clean local installation. |
+
+### Release execution
+
+Use a dedicated Android 13+ test installation with Google Play Billing available
+and Appium UiAutomator2. The test resets the selected Coach package for each
+method. Use an explicit emulator serial or set
+`-Dcoach.emailRelease.dedicatedDevice="$ANDROID_UDID"` for a designated USB
+device. Install the target APK before running. Use a test-only account of the
+correct variant in `COACH_EXISTING_PROGRESS_EMAIL` for the occupied-address
+checks and a free QA address in `COACH_VALID_EMAIL_WITHOUT_PROGRESS` for
+COA-9806 and COA-9767. The delivery and confirmation methods create independent
+test mailboxes with [Mail.tm](https://mail.tm/).
+
+Resend waits for the action to become available before capturing mailbox IDs.
+The next delivery must have a new ID and a `createdAt` timestamp at or after
+the tap boundary, using the [Mail.tm message metadata](https://docs.mail.tm/api/messages).
+Keep the runner clock synchronized with the mail service; missing or invalid
+delivery timestamps cannot establish a successful resend.
+
+```sh
+mkdir -p target/email-release
+swiftc -O scripts/read_android_questionnaire_text.swift -o target/email-release/read-questionnaire-text
+mvn -q test -Dplatform=android -Dandroid.udid="$ANDROID_UDID" \
+  -Dandroid.platformVersion=13 -Dandroid.noReset=true -Dandroid.fullReset=false \
+  -Dandroid.appPackage=com.vamapps.thecoach -Dappium.url=http://127.0.0.1:4725/ \
+  -Dcoach.emailRelease.dedicatedDevice="$ANDROID_UDID" \
+  -Dcoach.emailRelease.version=1.44.5 \
+  -Dcoach.emailRelease.previousVersion=1.44.4 \
+  -Dcoach.emailRelease.previousApk="$COACH_PREVIOUS_APK" \
+  -Dcoach.emailRelease.updateApk="$COACH_TARGET_APK" \
+  "-Dcoach.emailRelease.questionnaireReader=$PWD/target/email-release/read-questionnaire-text" \
+  -Dtest=suites.AndroidEmailReleaseRegressionSuite
+```
+
+Use the device's actual Android version in `android.platformVersion`. For Her,
+set `android.appPackage=com.vamapps.thecoach.forher` and use versions 2.19.4
+and 2.19.5 with the matching APKs. Both release APKs have version code 356.
+Set `coach.emailRelease.firstRequestLaunch` if the active configuration specifies
+a value other than 3. The suite runs the X and Remind Me Later scenarios independently.
+For a single method, pass `-Dtest=tests.AndroidEmailReleaseRegression#testMethod`.
+COA-9767 accepts `coach.emailRelease.language=en|es|fr|de|it` on Him and
+`en|es|fr` on Her. The common release matrix uses English for COA-9767,
+COA-9768 and COA-9806, with an `es` override for a targeted run on either
+variant. COA-9807 always uses Spanish on both variants.
+
+For a targeted rerun of a form or OTP scenario blocked at onboarding, set
+`-Dcoach.emailRelease.allowE3Preparation=true`. If onboarding lands in Daily,
+the setup reaches E3 through real cold launches and records the starting
+condition in Allure. COA-9781 still requires N immediately after onboarding.
+
+The questionnaire reader uses macOS Vision when the WebView omits a rendered
+control from accessibility. The tests use Appium locators when the controls
+are exposed. On a host with accessible questionnaire controls, omit the reader.
+Run Appium with `skipLogcatCapture=true` and warning-level logging for OTP runs.
+Reports are in `target/surefire-reports` and `target/allure-results`.
+
+## Preprod debug scope
+
 | Xray | Independent datasets per variant | Check |
 | --- | --- | --- |
 | COA-9411 | N | Free email, OTP, Change email validation, same account/subscription/progress, suppression after confirmation/restart |
@@ -18,7 +92,7 @@ code or dependencies are changed.
 
 COA-9697 (OFF), COA-9698 (Offline), COA-9415 (repeated submit) remain
 `NotRequired`, matching the existing Jira label `не_требует_автоматизации`.
-COA-9700 (update) is `Deferred`. `AndroidEmailEnforcementSuite` excludes both
+COA-9700 (update) is `Deferred` in the preprod debug suite. `AndroidEmailEnforcementSuite` excludes both
 categories; the runner only selects the six active methods. Do not execute the
 unfiltered inherited test class: it also contains the excluded drafts.
 

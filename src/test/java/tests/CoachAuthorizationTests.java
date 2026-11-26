@@ -28,7 +28,7 @@ public class CoachAuthorizationTests extends CoreTestCase {
     @Severity(SeverityLevel.BLOCKER)
     public void testStartNowOpensQuestionnaireWithoutLogin() throws Exception {
         requireMobilePlatform();
-        UpdateEvidence.attachInstalledBuild();
+        UpdateEvidence.attachInstalledBuild(driver);
         CoachFlowPageObject coachFlow = CoachFlowPageObjectFactory.get(driver);
         Assert.assertNotNull("Coach page object is not available for current platform", coachFlow);
         coachFlow.ensureLoggedOutOnStartScreen();

@@ -11,7 +11,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
@@ -64,6 +67,15 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                     + "count(android.widget.TextView)=1 and count(android.view.View)=1]"
                     + "/android.widget.TextView[string-length(normalize-space(@text)) > 0])[1]"
     );
+    private static final By FIRST_RELEASE_MULTI_CHOICE = By.xpath(
+            "(//android.webkit.WebView//*[@enabled='true' and ("
+                    + "starts-with(@text,'Experimenting with my ') or starts-with(@content-desc,'Experimenting with my ') "
+                    + "or @text='New Positions' or @content-desc='New Positions' "
+                    + "or @text='Unlocking Your Magnetism' or @content-desc='Unlocking Your Magnetism')])[1]");
+    private static final By RELEASE_MULTI_CHOICE_QUESTION = By.xpath(
+            "//android.webkit.WebView//*[@text='Would you like to explore any of these?' "
+                    + "or contains(@text,'Anything else spark your interest') "
+                    + "or contains(@text,'Are you also interested in the following topics')]");
 
     public AndroidOnboardingPageObject(RemoteWebDriver driver) {
         super(driver);
@@ -174,7 +186,7 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                 "Android did not restore a post-questionnaire destination after relaunch", 30);
     }
 
-    private void selectGoal(String goal) {
+    public void selectGoal(String goal) {
         selectGoal(goal, true);
     }
 
@@ -234,23 +246,63 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
     @Override
     @Step("Complete Android runtime questionnaire")
     public void completeQuestionnaire() {
+        completeQuestionnaire(false, null);
+    }
+
+    public void completeReleaseQuestionnaire(Path textReader) {
+        completeQuestionnaire(true, textReader);
+    }
+
+    private void completeQuestionnaire(boolean release, Path textReader) {
+        AndroidQuestionnaireTextReader reader = textReader == null ? null
+                : new AndroidQuestionnaireTextReader(driver, textReader);
         for (int actionNumber = 1; actionNumber <= MAX_QUESTIONNAIRE_ACTIONS; actionNumber++) {
             if (questionnaireDestinationIsVisible()) {
                 return;
             }
 
+            WebElement multiChoice = release ? firstDisplayedEnabled(RELEASE_MULTI_CHOICE_QUESTION) : null;
+            if (multiChoice != null) {
+                String question = elementText(multiChoice);
+                WebElement answer = firstDisplayedEnabled(FIRST_RELEASE_MULTI_CHOICE);
+                Assert.assertNotNull("The release questionnaire multi-choice answer is not exposed", answer);
+                // The WebView can expose the visible label without marking its row as clickable.
+                driver.executeScript("mobile: clickGesture",
+                        Collections.singletonMap("elementId", ((RemoteWebElement) answer).getId()));
+                waitForElementAndClick("xpath://android.webkit.WebView//*[@clickable='true' "
+                        + "and (@text='CONTINUE' or @text='Continue' or @content-desc='CONTINUE' "
+                        + "or @content-desc='Continue')]", "The selected questionnaire answer did not enable Continue", 10);
+                createWait(8).withMessage("The multi-choice question did not advance")
+                        .until(ignored -> !question.equals(elementText(firstDisplayedEnabled(RELEASE_MULTI_CHOICE_QUESTION))));
+                continue;
+            }
             WebElement action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
             if (action == null) {
                 action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
             }
             if (action == null) {
-                waitForQuestionnaireActionOrDestination(20);
+                waitForQuestionnaireActionOrDestination(reader == null ? 20 : 3);
                 if (questionnaireDestinationIsVisible()) {
                     return;
                 }
                 action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
                 if (action == null) {
                     action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
+                }
+            }
+            if (action == null && reader != null && isElementVisible("xpath://android.webkit.WebView")) {
+                String before = safePageSource();
+                if (reader.tapQuestionnaireAction()) {
+                    waitForSourceToChange(before, 6);
+                    continue;
+                }
+                waitForQuestionnaireActionOrDestination(14);
+                if (questionnaireDestinationIsVisible()) return;
+                action = firstDisplayedEnabled(SEMANTIC_QUESTIONNAIRE_ACTION);
+                if (action == null) action = firstDisplayedEnabled(QUESTIONNAIRE_ANSWER);
+                if (action == null && reader.tapQuestionnaireAction()) {
+                    waitForSourceToChange(before, 6);
+                    continue;
                 }
             }
             Assert.assertNotNull(
@@ -326,9 +378,13 @@ public class AndroidOnboardingPageObject extends OnboardingPageObject {
                         paywallClose
                 );
                 String before = safePageSource();
-                java.util.Map<String,Object> gesture=new java.util.HashMap<String,Object>();
-                gesture.put("elementId",((org.openqa.selenium.remote.RemoteWebElement)paywallClose).getId());
-                ((org.openqa.selenium.JavascriptExecutor)driver).executeScript("mobile: clickGesture",gesture);
+                try {
+                    driver.executeScript("mobile: clickGesture",
+                            Collections.singletonMap("elementId", ((RemoteWebElement) paywallClose).getId()));
+                } catch (StaleElementReferenceException ignored) {
+                    // The offer may have closed or rerendered while taking the snapshot.
+                    continue;
+                }
                 if (workbook) {
                     waitForElementNotVisible(WORKBOOK_UPSELL,
                             "Android workbook close did not dismiss the offer", 12);

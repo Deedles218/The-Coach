@@ -266,6 +266,7 @@ public class AndroidExplorePageObject extends ExplorePageObject {
     private void assertDestination(String title) {
         waitForElementNotVisible(PROGRAM_CATALOG_TITLE, "Card did not leave Explore", 15);
         waitForFirstElementPresent(new String[]{
+                "id:" + ID_PREFIX + "tvProgramTitle",
                 "id:" + ID_PREFIX + "rvQuestions",
                 "id:" + ID_PREFIX + "rvProgram",
                 "id:" + ID_PREFIX + "tvGoalBody",
